@@ -28,8 +28,10 @@ namespace Zelda.Game
 
         private static int Run(string[] args)
         {
-            MainLoop mainLoop = new MainLoop(new Arguments(args));
-            mainLoop.Run();
+            using (MainLoop mainLoop = new MainLoop(new Arguments(args)))
+            {
+                mainLoop.Run();
+            }
             return 0;
         }
 

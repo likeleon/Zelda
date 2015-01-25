@@ -36,11 +36,15 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SDL2-CS">
+      <HintPath>..\Libraries\SDL2-CS\SDL2-CS.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arguments.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="Engine\System.cs" />
     <Compile Include="MainLoop.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
