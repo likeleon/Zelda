@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Arguments.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="Engine\InputEvent.cs" />
     <Compile Include="Engine\System.cs" />
     <Compile Include="MainLoop.cs" />
     <Compile Include="Program.cs" />
