@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zelda.Game", "Zelda.Game\Zelda.Game.csproj", "{6BBF1ED2-D7C7-4C6D-B1E4-5D6F98672507}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zelda.Editor", "Zelda.Editor\Zelda.Editor.csproj", "{6D51E1AC-8ADF-4C48-98AA-D7FE8F726DBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -15,6 +17,10 @@ Global
 		{6BBF1ED2-D7C7-4C6D-B1E4-5D6F98672507}.Debug|x86.Build.0 = Debug|x86
 		{6BBF1ED2-D7C7-4C6D-B1E4-5D6F98672507}.Release|x86.ActiveCfg = Release|x86
 		{6BBF1ED2-D7C7-4C6D-B1E4-5D6F98672507}.Release|x86.Build.0 = Release|x86
+		{6D51E1AC-8ADF-4C48-98AA-D7FE8F726DBA}.Debug|x86.ActiveCfg = Debug|x86
+		{6D51E1AC-8ADF-4C48-98AA-D7FE8F726DBA}.Debug|x86.Build.0 = Debug|x86
+		{6D51E1AC-8ADF-4C48-98AA-D7FE8F726DBA}.Release|x86.ActiveCfg = Release|x86
+		{6D51E1AC-8ADF-4C48-98AA-D7FE8F726DBA}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,335 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6D51E1AC-8ADF-4C48-98AA-D7FE8F726DBA}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Zelda.Editor</RootNamespace>
+    <AssemblyName>Zelda.Editor</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Caliburn.Micro">
+      <HintPath>..\packages\Caliburn.Micro.Core.2.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
+    </Reference>
+    <Reference Include="Caliburn.Micro.Platform">
+      <HintPath>..\packages\Caliburn.Micro.2.0.1\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro">
+      <HintPath>..\packages\MahApps.Metro.1.0.0.0\lib\net45\MahApps.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.2.0.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="Xceed.Wpf.AvalonDock">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2013">
+      <HintPath>Lib\Xceed.Wpf.AvalonDock.Themes.VS2013.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.DataGrid">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Modules\ErrorList\Views\ErrorListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Progress\Views\ProgressDialogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Progress\Views\ProgressToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\MainMenu\Resources\Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\MainMenu\Views\MainMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\MainWindow\Views\MainWindowView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <ApplicationDefinition Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+    <Page Include="Modules\Output\Views\OutputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Shell\Views\ShellView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\StatusBar\Views\StatusBarView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Controls\Menu.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Controls\Tooltip.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Controls\Window.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Controls\WindowCommands.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\LightTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\DarkTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\Behaviors\WindowOptionsBehavior.cs" />
+    <Compile Include="Core\Commands\Command.cs" />
+    <Compile Include="Core\Commands\CommandDefinition.cs" />
+    <Compile Include="Core\Commands\CommandDefinitionAttribute.cs" />
+    <Compile Include="Core\Commands\CommandHandlerAttribute.cs" />
+    <Compile Include="Core\Commands\CommandHandlerWrapper.cs" />
+    <Compile Include="Core\Commands\CommandKeyGestureService.cs" />
+    <Compile Include="Core\Commands\CommandRouter.cs" />
+    <Compile Include="Core\Commands\CommandService.cs" />
+    <Compile Include="Core\Commands\ICommandHandler.cs" />
+    <Compile Include="Core\Commands\ICommandKeyGestureService.cs" />
+    <Compile Include="Core\Commands\ICommandRerouter.cs" />
+    <Compile Include="Core\Commands\ICommandRouter.cs" />
+    <Compile Include="Core\Commands\ICommandService.cs" />
+    <Compile Include="Core\Commands\TargetableCommand.cs" />
+    <Compile Include="Core\Controls\DynamicStyle.cs" />
+    <Compile Include="Core\IDocument.cs" />
+    <Compile Include="Core\ILayoutItem.cs" />
+    <Compile Include="Core\IModule.cs" />
+    <Compile Include="Core\ITool.cs" />
+    <Compile Include="Core\IWindow.cs" />
+    <Compile Include="Core\LayoutItemBase.cs" />
+    <Compile Include="Core\Menus\CommandMenuItemDefinition.cs" />
+    <Compile Include="Core\Menus\MenuBarDefinition.cs" />
+    <Compile Include="Core\Menus\MenuDefinition.cs" />
+    <Compile Include="Core\Menus\MenuDefinitionBase.cs" />
+    <Compile Include="Core\Menus\MenuItemDefinition.cs" />
+    <Compile Include="Core\Menus\MenuItemGroupDefinition.cs" />
+    <Compile Include="Core\Menus\TextMenuItemDefinition.cs" />
+    <Compile Include="Core\ModuleBase.cs" />
+    <Compile Include="Core\PropertyChangedBaseExtensions.cs" />
+    <Compile Include="Core\RelayCommand.cs" />
+    <Compile Include="Core\Services\IMainWindow.cs" />
+    <Compile Include="Core\Services\IShell.cs" />
+    <Compile Include="Core\Services\PaneLocation.cs" />
+    <Compile Include="Core\Threading\TaskUtility.cs" />
+    <Compile Include="Core\Tool.cs" />
+    <Compile Include="Core\Win32\NativeMethods.cs" />
+    <Compile Include="Core\WindowBase.cs" />
+    <Compile Include="Modules\ErrorList\Commands\ViewErrorListCommandDefinition.cs" />
+    <Compile Include="Modules\ErrorList\Commands\ViewErrorListCommandHandler.cs" />
+    <Compile Include="Modules\ErrorList\Converters\ErrorListItemTypeToImageConverter.cs" />
+    <Compile Include="Modules\ErrorList\ErrorListItem.cs" />
+    <Compile Include="Modules\ErrorList\ErrorListItemType.cs" />
+    <Compile Include="Modules\ErrorList\IErrorList.cs" />
+    <Compile Include="Modules\ErrorList\MenuDefinitions.cs" />
+    <Compile Include="Modules\ErrorList\ViewModels\ErrorListViewModel.cs" />
+    <Compile Include="Modules\ErrorList\Views\ErrorListView.xaml.cs">
+      <DependentUpon>ErrorListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Progress\Commands\ViewProgressCommandDefinition.cs" />
+    <Compile Include="Modules\Progress\Commands\ViewProgressCommandHandler.cs" />
+    <Compile Include="Modules\Progress\IJob.cs" />
+    <Compile Include="Modules\Progress\IProgressMonitor.cs" />
+    <Compile Include="Modules\Progress\IProgressTool.cs" />
+    <Compile Include="Modules\Progress\Job.cs" />
+    <Compile Include="Modules\Progress\IProgressService.cs" />
+    <Compile Include="Modules\Progress\MenuDefinitions.cs" />
+    <Compile Include="Modules\Progress\ProgressMonitor.cs" />
+    <Compile Include="Modules\Progress\ViewModels\ProgressDialogViewModel.cs" />
+    <Compile Include="Modules\Progress\ViewModels\ProgressToolViewModel.cs" />
+    <Compile Include="Modules\Progress\ViewModels\JobViewModel.cs" />
+    <Compile Include="Modules\Progress\Views\ProgressDialogView.xaml.cs">
+      <DependentUpon>ProgressDialogView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Progress\Views\ProgressToolView.xaml.cs">
+      <DependentUpon>ProgressToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\MainMenu\Controls\MenuEx.cs" />
+    <Compile Include="Modules\MainMenu\Controls\MenuItemEx.cs" />
+    <Compile Include="Modules\MainMenu\IMenu.cs" />
+    <Compile Include="Modules\MainMenu\IMenuBuilder.cs" />
+    <Compile Include="Modules\MainMenu\MenuBuilder.cs" />
+    <Compile Include="Modules\MainMenu\MenuDefinitions.cs" />
+    <Compile Include="Modules\MainMenu\Models\CommandMenuItem.cs" />
+    <Compile Include="Modules\MainMenu\Models\MenuItemBase.cs" />
+    <Compile Include="Modules\MainMenu\Models\MenuItemSeparator.cs" />
+    <Compile Include="Modules\MainMenu\Models\MenuModel.cs" />
+    <Compile Include="Modules\MainMenu\Models\StandardMenuItem.cs" />
+    <Compile Include="Modules\MainMenu\Models\TextMenuItem.cs" />
+    <Compile Include="Modules\MainMenu\ViewModels\MainMenuViewModel.cs" />
+    <Compile Include="Modules\MainMenu\Views\MainMenuView.xaml.cs">
+      <DependentUpon>MainMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\MainWindow\ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="Modules\MainWindow\Views\MainWindowView.xaml.cs">
+      <DependentUpon>MainWindowView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Output\Commands\ViewOutputCommandDefinition.cs" />
+    <Compile Include="Modules\Output\Commands\ViewOutputCommandHandler.cs" />
+    <Compile Include="Modules\Output\IOutput.cs" />
+    <Compile Include="Modules\Output\MenuDefinitions.cs" />
+    <Compile Include="Modules\Output\ViewModels\OutputViewModel.cs" />
+    <Compile Include="Modules\Output\ViewModels\OutputWriter.cs" />
+    <Compile Include="Modules\Output\Views\IOutputView.cs" />
+    <Compile Include="Modules\Output\Views\OutputView.xaml.cs">
+      <DependentUpon>OutputView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Commands\CommandDefinitionBase.cs" />
+    <Compile Include="Modules\Shell\Commands\ExitCommandDefinition.cs" />
+    <Compile Include="Modules\Shell\Commands\ExitCommandHandler.cs" />
+    <Compile Include="Modules\Shell\Controls\LayoutInitializer.cs" />
+    <Compile Include="Modules\Shell\Controls\PanesStyleSelector.cs" />
+    <Compile Include="Modules\Shell\Controls\PanesTemplateSelector.cs" />
+    <Compile Include="Modules\Shell\Converters\NullableValueConverter.cs" />
+    <Compile Include="Modules\Shell\MenuDefinitions.cs" />
+    <Compile Include="Modules\Shell\ViewModels\ShellViewModel.cs" />
+    <Compile Include="Modules\Shell\Views\IShellView.cs" />
+    <Compile Include="Modules\Shell\Views\ShellView.xaml.cs">
+      <DependentUpon>ShellView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Startup\Module.cs" />
+    <Compile Include="Modules\StatusBar\IStatusBar.cs" />
+    <Compile Include="Modules\StatusBar\ViewModels\StatusBarItemViewModel.cs" />
+    <Compile Include="Modules\StatusBar\ViewModels\StatusBarViewModel.cs" />
+    <Compile Include="Modules\StatusBar\Views\StatusBarView.xaml.cs">
+      <DependentUpon>StatusBarView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="Resources\Splash.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\BackgroundWorker_6235.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\ImmediateWindow_2644.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\KPI_32xLG.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\action_Cancel_16xLG.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\StatusAnnotations_Critical_32xLG_color.png" />
+    <Resource Include="Resources\Icons\StatusAnnotations_Information_32xLG_color.png" />
+    <Resource Include="Resources\Icons\StatusAnnotations_Warning_32xLG_color.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\BuildErrorList_7237.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,109 @@
+﻿<Window x:Class="Zelda.Editor.Modules.Progress.Views.ProgressDialogView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:behaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        Background="{x:Static SystemColors.ControlBrush}"
+        WindowStartupLocation="CenterOwner"
+        Width="500"
+        Height="200"
+        MaxHeight="500"
+        SizeToContent="Height"
+        ShowInTaskbar="False"
+        mc:Ignorable="d"
+        d:DesignHeight="500" d:DesignWidth="500">
+    <Window.Resources>
+        <xctk:InverseBoolConverter x:Key="InverseBoolConverter" />
+    </Window.Resources>
+    <i:Interaction.Behaviors>
+        <behaviors:WindowOptionsBehavior ShowIcon="False"
+                                         ShowMinimizeBox="False"
+                                         ShowMaximizeBox="False"
+                                         ShowCloseButton="False"
+                                         AllowClose="{Binding JobItem.IsRunning, Converter={StaticResource InverseBoolConverter}}" />
+    </i:Interaction.Behaviors>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <!-- Name with Icon -->
+        <StackPanel Orientation="Horizontal" DataContext="{Binding JobItem}">
+            <Image Source="{Binding Job.IconSource}" Width="16" Height="16" />
+            <StackPanel Margin="5 0 0 0" VerticalAlignment="Center" Orientation="Horizontal">
+                <!-- Job Name -->
+                <TextBlock Text="{Binding Job.Name}" FontWeight="Bold" />
+                
+                <!-- Status Text-->
+                <TextBlock Margin="5 0" FontWeight="Bold">
+                    <TextBlock.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Text" Value="" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCancellationRequested}" Value="True">
+                                    <Setter Property="Text" Value="(Cancelling)" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsCanceled}" Value="True">
+                                    <Setter Property="Text" Value="(Canceled)" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                    <Setter Property="Text" Value="(Completed)" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsFaulted}" Value="True">
+                                    <Setter Property="Text" Value="(Faulted)" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Resources>
+                </TextBlock>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Progress Bar -->
+        <ProgressBar Grid.Row="1" 
+                     Height="20" 
+                     Margin="0 15 0 0"
+                     HorizontalAlignment="Stretch"
+                     Minimum="0" 
+                     Maximum="{Binding JobItem.Job.TotalWork}"
+                     Value="{Binding JobItem.WorkProgress}" />
+
+        <!-- Message -->
+        <StackPanel Margin="0 10 0 0" Grid.Row="2" DataContext="{Binding JobItem}">
+            <TextBlock Text="{Binding Message}" 
+                       Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <TextBlock Text="{Binding Exception.Message}"
+                       Visibility="{Binding HasException, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </StackPanel>
+
+        <!-- Exception Detail -->
+        <TextBox Grid.Row="3" Margin="0 10 0 0"
+                 Visibility="{Binding JobItem.HasException, Converter={StaticResource BooleanToVisibilityConverter}}"
+                 Text="{Binding JobItem.Exception, Mode=OneWay}"
+                 HorizontalScrollBarVisibility="Auto"
+                 VerticalScrollBarVisibility="Auto"
+                 IsReadOnly="True"/>
+        
+        <!-- Buttons -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 20 0 0">
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                    <Setter Property="Margin" Value="12 0 0 0" />
+                    <Setter Property="Padding" Value="4" />
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="Run in Background" IsDefault="True" Width="120" Command="{Binding RunInBackgroundCommand}" />
+            <Button Content="Ok" IsDefault="True" Width="80" Command="{Binding OkCommand}" />
+            <Button Content="Cancel" IsCancel="True" Width="80" Command="{Binding JobItem.CancelCommand}" />
+        </StackPanel>
+    </Grid>
+</Window>

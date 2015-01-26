@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="Zelda.Editor.Modules.Progress.Views.ProgressToolView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <xcad:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <xctk:InverseBoolConverter x:Key="InverseBoolConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <ListBox ItemsSource="{Binding Items}"
+                 HorizontalContentAlignment="Stretch"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 ScrollViewer.CanContentScroll="False">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="2" ToolTip="{Binding Exception}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="30" />
+                        </Grid.ColumnDefinitions>
+                        <Image Source="{Binding Job.IconSource}" 
+                               Width="16" VerticalAlignment="Top" />
+                        <StackPanel Grid.Column="1">
+                            <StackPanel Orientation="Horizontal">
+                                <!-- Job Name -->
+                                <TextBlock Text="{Binding Job.Name}" FontWeight="Bold" />
+                                
+                                <!-- Status Text-->
+                                <TextBlock Margin="5 0" FontWeight="Bold">
+                                    <TextBlock.Resources>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Text" Value="" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCancellationRequested}" Value="True">
+                                                    <Setter Property="Text" Value="(Cancelling)" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsCanceled}" Value="True">
+                                                    <Setter Property="Text" Value="(Canceled)" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                                    <Setter Property="Text" Value="(Completed)" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsFaulted}" Value="True">
+                                                    <Setter Property="Text" Value="(Faulted)" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Resources>
+                                </TextBlock>
+                            </StackPanel>
+                            
+                            <!-- Progress Bar-->
+                            <ProgressBar Minimum="0" Maximum="{Binding Job.TotalWork}" Value="{Binding WorkProgress}" 
+                                         Height="12"  HorizontalAlignment="Stretch" Margin="0,3"
+                                         Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            
+                            <!-- Running Message -->
+                            <TextBlock Text="{Binding Message}" 
+                                       Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            
+                            <!-- Exception Message -->
+                            <TextBlock Text="{Binding Exception.Message}"
+                                       Visibility="{Binding HasException, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </StackPanel>
+                        
+                        <!-- Cancel button -->
+                        <Button Grid.Column="2" 
+                                Command="{Binding CancelCommand}"
+                                Width="25" Height="25"
+                                Background="Transparent"
+                                BorderThickness="0">
+                            <Image Source="/Zelda.Editor;component/Resources/Icons/action_Cancel_16xLG.png" Width="16" />
+                            <Button.Resources>
+                                <Style TargetType="{x:Type Button}">
+                                    <Setter Property="Visibility" Value="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsCancellationRequested}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</UserControl>
