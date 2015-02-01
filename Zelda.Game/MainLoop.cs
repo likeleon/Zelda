@@ -11,6 +11,7 @@ namespace Zelda.Game
         public MainLoop(Arguments args)
         {
             EngineSystem.Initialize(args);
+            Video.ShowWindow();
         }
 
         public void Dispose()

@@ -19,11 +19,13 @@ namespace Zelda.Game.Engine
             _initialTime = GetRealTime();
 
             InputEvent.Initialize();
+            Video.Initialize(args);
         }
 
         public static void Quit()
         {
             InputEvent.Quit();
+            Video.Quit();
 
             SDL.SDL_Quit();
         }

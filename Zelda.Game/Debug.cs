@@ -30,12 +30,6 @@ namespace Zelda.Game
             Console.Error.WriteLine("Error: {0}", message);
         }
 
-        public static void CheckAssertion(bool assertion, string message)
-        {
-            if (!assertion)
-                Die(message);
-        }
-
         public static void Die(string message)
         {
             ErrorFile.WriteLine("Fatal: {0}", message);
