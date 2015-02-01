@@ -6,20 +6,20 @@ using System.Reflection;
 
 namespace Zelda.Game.Engine
 {
-    public static class Video
+    public class Video
     {
-        private static Size _gameSize;
-        public static Size GameSize
+        private Size _gameSize;
+        public Size GameSize
         {
             get { return _gameSize; }
         }
 
-        private static IntPtr _mainWindow;
-        private static IntPtr _mainRenderer;
-        private static IntPtr _pixelFormat;
-        private static Size _wantedGameSize;
+        private IntPtr _mainWindow;
+        private IntPtr _mainRenderer;
+        private IntPtr _pixelFormat;
+        private Size _wantedGameSize;
 
-        public static void Initialize(Arguments args)
+        public void Initialize(Arguments args)
         {
             string gameSizeString = args.GetValue("-game-size", null);
 
@@ -31,7 +31,7 @@ namespace Zelda.Game.Engine
             CreateWindow(args);
         }
 
-        public static void Quit()
+        public void Quit()
         {
             if (_pixelFormat != IntPtr.Zero)
             {
@@ -53,7 +53,7 @@ namespace Zelda.Game.Engine
             _wantedGameSize = new Size();
         }
 
-        public static void DetermineGameSize()
+        public void DetermineGameSize()
         {
             _gameSize = _wantedGameSize;
 
@@ -61,7 +61,7 @@ namespace Zelda.Game.Engine
             InitializeVideoModes();
         }
 
-        private static Size ParseSize(string sizeString)
+        private Size ParseSize(string sizeString)
         {
             string[] words = sizeString.Split('x');
             if (words.Length < 2)
@@ -72,7 +72,7 @@ namespace Zelda.Game.Engine
             return new Size(Convert.ToInt32(words[0]), Convert.ToInt32(words[1]));
         }
 
-        private static void CreateWindow(Arguments args)
+        private void CreateWindow(Arguments args)
         {
             _mainWindow = SDL.SDL_CreateWindow(
                 "Zelda " + GetVersion(),
@@ -120,19 +120,19 @@ namespace Zelda.Game.Engine
                 Console.WriteLine("2D acceleration: no");
         }
 
-        private static void InitializeVideoModes()
+        private void InitializeVideoModes()
         {
             SDL.SDL_SetWindowFullscreen(_mainWindow, 0);
             SDL.SDL_RenderSetLogicalSize(_mainRenderer, _gameSize.Width, _gameSize.Height);
             SDL.SDL_ShowCursor(SDL.SDL_ENABLE);
         }
 
-        public static void ShowWindow()
+        public void ShowWindow()
         {
             SDL.SDL_ShowWindow(_mainWindow);
         }
 
-        private static string GetVersion()
+        private string GetVersion()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);

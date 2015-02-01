@@ -62,11 +62,12 @@
   <ItemGroup>
     <Compile Include="Arguments.cs" />
     <Compile Include="Debug.cs" />
-    <Compile Include="Engine\InputEvent.cs" />
+    <Compile Include="Engine\Input.cs" />
     <Compile Include="Engine\System.cs" />
     <Compile Include="Engine\Video.cs" />
     <Compile Include="MainLoop.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

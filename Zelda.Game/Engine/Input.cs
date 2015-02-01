@@ -2,8 +2,23 @@
 
 namespace Zelda.Game.Engine
 {
-    public class InputEvent
+    public class Input
     {
+        public class Event
+        {
+            public bool IsWindowClosing
+            {
+                get { return _internalEvent.type == SDL.SDL_EventType.SDL_QUIT; }
+            }
+
+            private readonly SDL.SDL_Event _internalEvent;
+
+            internal Event(SDL.SDL_Event sdlEvent)
+            {
+                _internalEvent = sdlEvent;
+            }
+        }
+
         public enum KeyboardKey
         {
             KEY_NONE = SDL.SDL_Keycode.SDLK_UNKNOWN,
@@ -136,35 +151,23 @@ namespace Zelda.Game.Engine
             KEY_LEFT_META = SDL.SDL_Keycode.SDLK_LGUI
         }
 
-        public bool IsWindowClosing
-        {
-            get { return _internalEvent.type == SDL.SDL_EventType.SDL_QUIT; }
-        }
-
-        private readonly SDL.SDL_Event _internalEvent;
-
-        public static void Initialize()
+        public void Initialize()
         {
             SDL.SDL_StartTextInput();
         }
 
-        public static void Quit()
+        public void Quit()
         {
             SDL.SDL_StopTextInput();
         }
 
-        public static InputEvent GetEvent()
+        public Input.Event GetEvent()
         {
             SDL.SDL_Event internalEvent;
             if (SDL.SDL_PollEvent(out internalEvent) == 0)
                 return null;
             
-            return new InputEvent(internalEvent);
-        }
-
-        private InputEvent(SDL.SDL_Event sdlEvent)
-        {
-            _internalEvent = sdlEvent;
+            return new Event(internalEvent);
         }
     }
 }

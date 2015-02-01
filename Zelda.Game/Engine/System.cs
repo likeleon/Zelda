@@ -2,45 +2,58 @@
 
 namespace Zelda.Game.Engine
 {
-    public static class System
+    public class System
     {
-        private static uint _initialTime = 0;      // 초기화 시점의 실제 시각, 밀리초
-        private static uint _ticks = 0;             // 게임 시각, 밀리초
-        public static readonly uint TimeStep = 10;  // 업데이트시마다 추가될 게임 시간, 밀리초
+        private readonly Video _video = new Video();
+        public Video Video
+        {
+            get { return _video; }
+        }
 
-        public static string Os
+        private readonly Input _input = new Input();
+        public Input Input
+        {
+            get { return _input; }
+        }
+
+        private uint _initialTime = 0;       // 초기화 시점의 실제 시각, 밀리초
+        private uint _ticks = 0;             // 게임 시각, 밀리초
+     
+        public readonly uint TimeStep = 10;  // 업데이트시마다 추가될 게임 시간, 밀리초
+        
+        public string Os
         {
             get { return SDL.SDL_GetPlatform(); }
         }
 
-        public static void Initialize(Arguments args)
+        public void Initialize(Arguments args)
         {
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
             _initialTime = GetRealTime();
 
-            InputEvent.Initialize();
-            Video.Initialize(args);
+            _input.Initialize();
+            _video.Initialize(args);
         }
 
-        public static void Quit()
+        public void Quit()
         {
-            InputEvent.Quit();
-            Video.Quit();
+            _input.Quit();
+            _video.Quit();
 
             SDL.SDL_Quit();
         }
 
-        public static void Update()
+        public void Update()
         {
             _ticks += TimeStep;
         }
 
-        public static uint GetRealTime()
+        public uint GetRealTime()
         {
             return SDL.SDL_GetTicks() - _initialTime;
         }
 
-        public static void Sleep(uint duration)
+        public void Sleep(uint duration)
         {
             SDL.SDL_Delay(duration);
         }
