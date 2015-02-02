@@ -25,10 +25,19 @@ namespace Zelda.Game.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("320, 240")]
-        public global::System.Drawing.Size DefaultGameSize {
+        [global::System.Configuration.DefaultSettingValueAttribute("320")]
+        public int DefaultGameWidth {
             get {
-                return ((global::System.Drawing.Size)(this["DefaultGameSize"]));
+                return ((int)(this["DefaultGameWidth"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("240")]
+        public int DefaultGameHeight {
+            get {
+                return ((int)(this["DefaultGameHeight"]));
             }
         }
     }

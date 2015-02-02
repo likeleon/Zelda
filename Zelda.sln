@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zelda.Game", "Zelda.Game\Ze
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zelda.Editor", "Zelda.Editor\Zelda.Editor.csproj", "{6D51E1AC-8ADF-4C48-98AA-D7FE8F726DBA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDL2-CS", "Libraries\SDL2-CS\SDL2-CS.csproj", "{85480198-8711-4355-830E-72FD794AD3F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -21,6 +23,10 @@ Global
 		{6D51E1AC-8ADF-4C48-98AA-D7FE8F726DBA}.Debug|x86.Build.0 = Debug|x86
 		{6D51E1AC-8ADF-4C48-98AA-D7FE8F726DBA}.Release|x86.ActiveCfg = Release|x86
 		{6D51E1AC-8ADF-4C48-98AA-D7FE8F726DBA}.Release|x86.Build.0 = Release|x86
+		{85480198-8711-4355-830E-72FD794AD3F6}.Debug|x86.ActiveCfg = Debug|x86
+		{85480198-8711-4355-830E-72FD794AD3F6}.Debug|x86.Build.0 = Debug|x86
+		{85480198-8711-4355-830E-72FD794AD3F6}.Release|x86.ActiveCfg = Release|x86
+		{85480198-8711-4355-830E-72FD794AD3F6}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

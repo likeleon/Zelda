@@ -9,12 +9,15 @@ namespace Zelda.Game
         public bool Exiting { get; set; }
 
         private readonly EngineSystem _system = new EngineSystem();
+        private readonly Surface _rootSurface;
 
         public MainLoop(Arguments args)
         {
             _system.Initialize(args);
 
             LoadAssetProperties();
+
+            _rootSurface = Surface.Create(_system.Video.GameSize);
             
             _system.Video.ShowWindow();
         }
@@ -97,6 +100,9 @@ namespace Zelda.Game
 
         private void Draw()
         {
+            _rootSurface.Clear();
+
+            _system.Video.Render(_rootSurface);
         }
 
         private void LoadAssetProperties()

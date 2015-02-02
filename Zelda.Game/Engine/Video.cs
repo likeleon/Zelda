@@ -23,7 +23,8 @@ namespace Zelda.Game.Engine
         {
             string gameSizeString = args.GetValue("-game-size", null);
 
-            _wantedGameSize = Properties.Settings.Default.DefaultGameSize;
+            _wantedGameSize = new Size(Properties.Settings.Default.DefaultGameWidth,
+                                       Properties.Settings.Default.DefaultGameHeight);
 
             if (gameSizeString != null)
                 _wantedGameSize = ParseSize(gameSizeString);
@@ -137,6 +138,15 @@ namespace Zelda.Game.Engine
             Assembly assembly = Assembly.GetExecutingAssembly();
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
             return fileVersionInfo.ProductVersion;
+        }
+
+        public void Render(Surface surface)
+        {
+            SDL.SDL_SetRenderDrawColor(_mainRenderer, 0, 0, 255, 255);
+            SDL.SDL_RenderSetClipRect(_mainRenderer, IntPtr.Zero);
+            SDL.SDL_RenderClear(_mainRenderer);
+            surface.Render(_mainRenderer);
+            SDL.SDL_RenderPresent(_mainRenderer);
         }
     }
 }

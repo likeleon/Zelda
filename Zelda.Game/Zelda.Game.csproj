@@ -53,16 +53,17 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SDL2-CS">
-      <HintPath>..\Libraries\SDL2-CS\SDL2-CS.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arguments.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="Engine\Drawable.cs" />
+    <Compile Include="Engine\Point.cs" />
+    <Compile Include="Engine\Rectangle.cs" />
     <Compile Include="Engine\Input.cs" />
+    <Compile Include="Engine\Size.cs" />
+    <Compile Include="Engine\Surface.cs" />
     <Compile Include="Engine\System.cs" />
     <Compile Include="Engine\Video.cs" />
     <Compile Include="MainLoop.cs" />
@@ -97,6 +98,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\SDL2-CS\SDL2-CS.csproj">
+      <Project>{85480198-8711-4355-830e-72fd794ad3f6}</Project>
+      <Name>SDL2-CS</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
