@@ -8,8 +8,15 @@ namespace Zelda.Game
     {
         public bool Exiting { get; set; }
 
+        private Game _game;
+        public Game Game
+        {
+            get { return _game; }
+        }
+
         private readonly EngineSystem _system = new EngineSystem();
         private readonly Surface _rootSurface;
+        private Game _nextGame;
 
         public MainLoop(Arguments args)
         {
@@ -24,6 +31,9 @@ namespace Zelda.Game
 
         public void Dispose()
         {
+            if (_game != null)
+                _game.Stop();
+
             _system.Quit();
         }
 
@@ -79,7 +89,18 @@ namespace Zelda.Game
 
         private void Update()
         {
+            if (_game != null)
+                _game.Update();
+
             _system.Update();
+
+            if (_nextGame != _game)
+            {
+                _game = _nextGame;
+                
+                if (_game != null)
+                    _game.Start();
+            }
         }
 
         private void CheckInput()
@@ -96,11 +117,17 @@ namespace Zelda.Game
         {
             if (inputEvent.IsWindowClosing)
                 Exiting = true;
+
+            if (_game != null)
+                _game.NotifyInput(inputEvent);
         }
 
         private void Draw()
         {
             _rootSurface.Clear();
+
+            if (_game != null)
+                _game.Draw(_rootSurface);
 
             _system.Video.Render(_rootSurface);
         }
@@ -108,6 +135,11 @@ namespace Zelda.Game
         private void LoadAssetProperties()
         {
             _system.Video.DetermineGameSize();
+        }
+
+        public void SetGame(Game game)
+        {
+            _nextGame = game;
         }
     }
 }
