@@ -54,20 +54,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arguments.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Engine\Drawable.cs" />
+    <Compile Include="Engine\FileSystem.cs" />
+    <Compile Include="Engine\ModFiles.cs" />
     <Compile Include="Engine\Point.cs" />
     <Compile Include="Engine\Rectangle.cs" />
     <Compile Include="Engine\Input.cs" />
     <Compile Include="Engine\Size.cs" />
     <Compile Include="Engine\Surface.cs" />
-    <Compile Include="Engine\System.cs" />
+    <Compile Include="Engine\EngineSystem.cs" />
     <Compile Include="Engine\Video.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="MainLoop.cs" />
+    <Compile Include="ModProperties.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

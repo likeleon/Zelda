@@ -1,8 +1,5 @@
 ﻿using SDL2;
 using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.Reflection;
 
 namespace Zelda.Game.Engine
 {
@@ -14,14 +11,20 @@ namespace Zelda.Game.Engine
             get { return _gameSize; }
         }
 
+        public string WindowTitle
+        {
+            get { return SDL.SDL_GetWindowTitle(_mainWindow); }
+            set { SDL.SDL_SetWindowTitle(_mainWindow, value); }
+        }
+
         private IntPtr _mainWindow;
         private IntPtr _mainRenderer;
         private IntPtr _pixelFormat;
         private Size _wantedGameSize;
 
-        public void Initialize(Arguments args)
+        public void Initialize(Arguments args, string zeldaVersion)
         {
-            string gameSizeString = args.GetValue("-game-size", null);
+            string gameSizeString = args.GetArgumentValue("-game-size");
 
             _wantedGameSize = new Size(Properties.Settings.Default.DefaultGameWidth,
                                        Properties.Settings.Default.DefaultGameHeight);
@@ -29,7 +32,7 @@ namespace Zelda.Game.Engine
             if (gameSizeString != null)
                 _wantedGameSize = ParseSize(gameSizeString);
 
-            CreateWindow(args);
+            CreateWindow(args, zeldaVersion);
         }
 
         public void Quit()
@@ -73,10 +76,10 @@ namespace Zelda.Game.Engine
             return new Size(Convert.ToInt32(words[0]), Convert.ToInt32(words[1]));
         }
 
-        private void CreateWindow(Arguments args)
+        private void CreateWindow(Arguments args, string zeldaVersion)
         {
             _mainWindow = SDL.SDL_CreateWindow(
-                "Zelda " + GetVersion(),
+                "Zelda " + zeldaVersion,
                 SDL.SDL_WINDOWPOS_CENTERED,
                 SDL.SDL_WINDOWPOS_CENTERED,
                 _wantedGameSize.Width,
@@ -131,13 +134,6 @@ namespace Zelda.Game.Engine
         public void ShowWindow()
         {
             SDL.SDL_ShowWindow(_mainWindow);
-        }
-
-        private string GetVersion()
-        {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            return fileVersionInfo.ProductVersion;
         }
 
         public void Render(Surface surface)

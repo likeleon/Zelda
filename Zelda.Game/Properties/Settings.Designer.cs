@@ -40,5 +40,23 @@ namespace Zelda.Game.Properties {
                 return ((int)(this["DefaultGameHeight"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".")]
+        public string DefaultMod {
+            get {
+                return ((string)(this["DefaultMod"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".Zelda")]
+        public string WriteDir {
+            get {
+                return ((string)(this["WriteDir"]));
+            }
+        }
     }
 }

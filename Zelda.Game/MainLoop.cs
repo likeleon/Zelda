@@ -1,6 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Xml.Serialization;
 using Zelda.Game.Engine;
-using EngineSystem = Zelda.Game.Engine.System;
 
 namespace Zelda.Game
 {
@@ -22,7 +23,7 @@ namespace Zelda.Game
         {
             _system.Initialize(args);
 
-            LoadAssetProperties();
+            LoadModProperties();
 
             _rootSurface = Surface.Create(_system.Video.GameSize);
             
@@ -41,15 +42,15 @@ namespace Zelda.Game
         // 메인 루프는 게임 시간을 컨트롤하고 반복해서 월드를 갱신, 화면을 그린다.
         public void Run()
         {
-            uint lastFrameDate = _system.GetRealTime();
-            uint lag = 0;               // 따라잡아야 하는 게임 시간
-            uint timeDropped = 0;      // 따라잡지 못한 시간
+            int lastFrameDate = _system.GetRealTime();
+            int lag = 0;               // 따라잡아야 하는 게임 시간
+            int timeDropped = 0;      // 따라잡지 못한 시간
 
             while (!Exiting)
             {
                 // 마지막 이터레이션 시간 측정
-                uint now = _system.GetRealTime() - timeDropped;
-                uint lastFrameDuration = now - lastFrameDate;
+                int now = _system.GetRealTime() - timeDropped;
+                int lastFrameDuration = now - lastFrameDate;
                 lastFrameDate = now;
                 lag += lastFrameDuration;
                 // 이제 lag은 게임 시각이 실제 시각과 비교해서 얼마나 늦었는지를 의미.
@@ -132,9 +133,46 @@ namespace Zelda.Game
             _system.Video.Render(_rootSurface);
         }
 
-        private void LoadAssetProperties()
+        private void LoadModProperties()
         {
+            // 모드 속성 파일을 읽습니다
+            string fileName = "Mod.xml";
+
+            ModProperties modProperties = null;
+            try
+            {
+                using (Stream buffer = _system.ModFiles.DataFileRead(fileName))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(ModProperties));
+                    modProperties = (ModProperties)serializer.Deserialize(buffer);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Die("Failed to load Mod.xml: " + ex.Message);
+            }
+
+            CheckVersionCompatibility(modProperties.ZeldaVersion);
+            _system.ModFiles.SetModWriteDir(modProperties.ModWriteDir);
+            if (!String.IsNullOrWhiteSpace(modProperties.TitleBar))
+                _system.Video.WindowTitle = modProperties.TitleBar;
+
             _system.Video.DetermineGameSize();
+        }
+
+        private void CheckVersionCompatibility(string zeldaRequiredVersion)
+        {
+            if (String.IsNullOrWhiteSpace(zeldaRequiredVersion))
+                Debug.Die("No Zelda version is specified in your Mod.xml file!");
+
+            Version requiredVersion = Version.Parse(zeldaRequiredVersion);
+            if (requiredVersion.Major != _system.ZeldaVersion.Major ||
+                requiredVersion.Minor != _system.ZeldaVersion.Minor)
+            {
+                string msg = "This mod is made for Zelda " + requiredVersion.Major + "." + requiredVersion.Minor
+                           + ".x but you are running Zelda" + _system.ZeldaVersion.ToString();
+                Debug.Die(msg);
+            }
         }
 
         public void SetGame(Game game)

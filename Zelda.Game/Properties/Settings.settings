@@ -8,5 +8,11 @@
     <Setting Name="DefaultGameHeight" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">240</Value>
     </Setting>
+    <Setting Name="DefaultMod" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">.</Value>
+    </Setting>
+    <Setting Name="WriteDir" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">.Zelda</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
