@@ -37,9 +37,10 @@ namespace Zelda.Game
 
         private static void FatalError(Exception e)
         {
+            Log.AddChannel("Exception", "Exception.log");
+
             string report = BuildExceptionReport(e).ToString();
-            using (StreamWriter writer = File.CreateText("exception.log"))
-                writer.WriteLine(report);
+            Log.Write("Exception", "{0}", report);
             Console.Error.WriteLine(report);
         }
 

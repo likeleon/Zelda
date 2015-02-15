@@ -176,7 +176,7 @@ namespace Zelda.Game
             }
             catch (Exception ex)
             {
-                Debug.Die("Failed to load Mod.xml: " + ex.Message);
+                throw new InvalidDataException("Failed to load Mod.xml: " + ex.Message);
             }
 
             CheckVersionCompatibility(modProperties.ZeldaVersion);
@@ -190,7 +190,7 @@ namespace Zelda.Game
         private void CheckVersionCompatibility(string zeldaRequiredVersion)
         {
             if (String.IsNullOrWhiteSpace(zeldaRequiredVersion))
-                Debug.Die("No Zelda version is specified in your Mod.xml file!");
+                throw new InvalidDataException("No Zelda version is specified in your Mod.xml file!");
 
             Version requiredVersion = Version.Parse(zeldaRequiredVersion);
             if (requiredVersion.Major != _engineSystem.ZeldaVersion.Major ||
@@ -198,7 +198,7 @@ namespace Zelda.Game
             {
                 string msg = "This mod is made for Zelda " + requiredVersion.Major + "." + requiredVersion.Minor
                            + ".x but you are running Zelda" + _engineSystem.ZeldaVersion.ToString();
-                Debug.Die(msg);
+                throw new InvalidDataException(msg);
             }
         }
 

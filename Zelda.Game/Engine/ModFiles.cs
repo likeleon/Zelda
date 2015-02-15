@@ -70,9 +70,9 @@ namespace Zelda.Game.Engine
             // 모드가 존재하는지 확인
             if (!DataFileExists("Mod.xml"))
             {
-                string msg = "No mod was found in the directory '" + _modPath + "'.\n" + 
-                             "To specify your mod's path, run: " + (programName ?? "Zelda") + " path/to/mod\n";
-                Debug.Die(msg);
+                Console.Write("No mod was found in the directory '" + _modPath + "'.\n" + 
+                              "To specify your mod's path, run: " + (programName ?? "Zelda") + " path/to/mod\n");
+                Environment.Exit(0);
             }
 
             // 엔진 루트 읽기 디렉토리를 설정합니다
@@ -98,11 +98,11 @@ namespace Zelda.Game.Engine
         public MemoryStream DataFileRead(string fileName)
         {
             if (FileSystem.PHYSFS_exists(fileName) == 0)
-                Debug.Die("Data file '" + fileName + "' does not exist");
+                throw new InvalidDataException("Data file '" + fileName + "' does not exist");
 
             IntPtr file = FileSystem.PHYSFS_openRead(fileName);
             if (file == IntPtr.Zero)
-                Debug.Die("Cannot open data file '" + fileName + "'");
+                throw new InvalidDataException("Cannot open data file '" + fileName + "'");
 
             long size = FileSystem.PHYSFS_fileLength(file);
             byte[] buffer;
@@ -127,7 +127,7 @@ namespace Zelda.Game.Engine
             // 새로운 모드 드렉토리를 생성하기 위해 쓰기 디렉토리를 엔진 디렉토리로 초기화합니다
             string fullWriteDir = BaseWriteDir + "/" + ZeldaWriteDir;
             if (FileSystem.PHYSFS_setWriteDir(fullWriteDir) == 0)
-                Debug.Die("Cannot set Zelda write directory to '" + fullWriteDir + "': " + FileSystem.PHYSFS_getLastError());
+                throw new Exception("Cannot set Zelda write directory to '" + fullWriteDir + "': " + FileSystem.PHYSFS_getLastError());
 
             if (!String.IsNullOrWhiteSpace(_modWriteDir))
             {
@@ -148,20 +148,20 @@ namespace Zelda.Game.Engine
         private void SetZeldaWriteDir(string zeldaWriteDir)
         {
             if (_zeldaWriteDir != null)
-                Debug.Die("The Zelda write directory already set");
+                throw new InvalidOperationException("The Zelda write directory already set");
 
             _zeldaWriteDir = zeldaWriteDir;
 
             // 디렉토리에 읽기를 수행할 수 있는지 확인합니다
             if (FileSystem.PHYSFS_setWriteDir(BaseWriteDir) == 0)
-                Debug.Die("Cannot write in user directory '" + BaseWriteDir + "': " + FileSystem.PHYSFS_getLastError());
+                throw new Exception("Cannot write in user directory '" + BaseWriteDir + "': " + FileSystem.PHYSFS_getLastError());
 
             // 디렉토리를 생성합니다
             FileSystem.PHYSFS_mkdir(zeldaWriteDir);
 
             string fullWriteDir = BaseWriteDir + "/" + zeldaWriteDir;
             if (FileSystem.PHYSFS_setWriteDir(fullWriteDir) == 0)
-                Debug.Die("Cannot set Zelda write directory to '" + fullWriteDir + "': " + FileSystem.PHYSFS_getLastError());
+                throw new Exception("Cannot set Zelda write directory to '" + fullWriteDir + "': " + FileSystem.PHYSFS_getLastError());
 
             // 모드 디렉토리를 생성합니다
             if (!String.IsNullOrWhiteSpace(_modWriteDir))

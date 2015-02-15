@@ -9,10 +9,7 @@ namespace Zelda.Game
         public bool ImportFromModFile(ModFiles modFiles, string modFileName)
         {
             if (!modFiles.DataFileExists(modFileName))
-            {
-                Debug.Error("Cannot find mod file '" + modFileName + "'");
-                return false;
-            }
+                throw new InvalidDataException("Cannot find mod file '" + modFileName + "'");
 
             using (Stream stream = modFiles.DataFileRead(modFileName))
             {

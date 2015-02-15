@@ -38,7 +38,7 @@ namespace Zelda.Game
                 }
                 catch (Exception ex)
                 {
-                    Debug.Die("Failed to load assembly '" + asmFile + "': " + ex.Message);
+                    throw new Exception("Failed to load assembly '" + asmFile + "': " + ex.Message);
                 }
 
                 _assemblies = asms.ToArray();

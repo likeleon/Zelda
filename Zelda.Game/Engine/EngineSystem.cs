@@ -48,8 +48,19 @@ namespace Zelda.Game.Engine
             _initialTime = (int)GetRealTime();
 
             _modFiles.Initialize(args);
+            InitializeLog();
             _input.Initialize();
             _video.Initialize(args, ZeldaVersion.ToString());
+        }
+
+        private void InitializeLog()
+        {
+            Log.Initialize(_modFiles.BaseWriteDir + "/" + _modFiles.ZeldaWriteDir + "/");
+
+            Log.AddChannel("Perf", "Perf.log");
+            Log.AddChannel("Debug", "Debug.log");
+            Log.AddChannel("Sound", "Sound.log");
+            Log.AddChannel("Graphics", "Graphics.log");
         }
 
         public void Quit()

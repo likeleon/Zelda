@@ -13,7 +13,7 @@ namespace Sample
 
         protected override void OnStarted()
         {
-            Console.WriteLine("Main.OnStarted");
+            Console.WriteLine("This is a sample mod for Zelda.");
         }
     }
 }
