@@ -2,7 +2,7 @@
 
 namespace Zelda.Game
 {
-    public class Game
+    class Game
     {
         private readonly MainLoop _mainLoop;
         public MainLoop MainLoop

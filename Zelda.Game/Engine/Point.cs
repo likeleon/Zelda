@@ -4,13 +4,13 @@ namespace Zelda.Game.Engine
 {
     public struct Point
     {
-        private readonly int _x;
+        readonly int _x;
         public int X
         {
             get { return _x; }
         }
 
-        private readonly int _y;
+        readonly int _y;
         public int Y
         {
             get { return _y; }

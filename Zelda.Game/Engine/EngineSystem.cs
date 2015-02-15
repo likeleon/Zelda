@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Zelda.Game.Engine
 {
-    public class EngineSystem
+    class EngineSystem
     {
         private readonly ModFiles _modFiles = new ModFiles();
         public ModFiles ModFiles

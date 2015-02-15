@@ -3,7 +3,7 @@ using System;
 
 namespace Zelda.Game.Engine
 {
-    public class Video
+    class Video
     {
         private Size _gameSize;
         public Size GameSize

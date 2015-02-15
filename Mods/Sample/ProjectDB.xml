@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectDB>
+  <Assemblies>
+    <Assembly>Sample.dll</Assembly>
+  </Assemblies>
+  <Maps>
+    <Map Id="FirstMap" Description="First map" />
+  </Maps>
+</ProjectDB>

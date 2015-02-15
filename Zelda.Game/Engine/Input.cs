@@ -19,7 +19,7 @@ namespace Zelda.Game.Engine
             }
         }
 
-        public enum KeyboardKey
+        enum KeyboardKey
         {
             KEY_NONE = SDL.SDL_Keycode.SDLK_UNKNOWN,
             KEY_BACKSPACE = SDL.SDL_Keycode.SDLK_BACKSPACE,

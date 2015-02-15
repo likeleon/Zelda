@@ -95,7 +95,7 @@ namespace Zelda.Game.Engine
             return (FileSystem.PHYSFS_exists(fileName) != 0);
         }
 
-        public Stream DataFileRead(string fileName)
+        public MemoryStream DataFileRead(string fileName)
         {
             if (FileSystem.PHYSFS_exists(fileName) == 0)
                 Debug.Die("Data file '" + fileName + "' does not exist");
