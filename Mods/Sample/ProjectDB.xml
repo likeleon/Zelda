@@ -6,4 +6,8 @@
   <Maps>
     <Map Id="FirstMap" Description="First map" />
   </Maps>
+  <Languages>
+    <Language Id="en" Description="English" />
+    <Language Id="kr" Description="Korean" />
+  </Languages>
 </ProjectDB>

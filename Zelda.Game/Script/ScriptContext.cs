@@ -18,7 +18,7 @@ namespace Zelda.Game.Script
 
         public void Initialize()
         {
-            _objectCreator = new ObjectCreator(_mainLoop.CurrentMod.Resources, _mainLoop.EngineSystem.ModFiles);
+            _objectCreator = new ObjectCreator(CurrentMod.Resources);
 
             CreateScriptMain();
             _scriptMain.OnStarted();

@@ -6,12 +6,6 @@ namespace Zelda.Game.Engine
 {
     class EngineSystem
     {
-        private readonly ModFiles _modFiles = new ModFiles();
-        public ModFiles ModFiles
-        {
-            get { return _modFiles; }
-        }
-
         private readonly Video _video = new Video();
         public Video Video
         {
@@ -47,7 +41,7 @@ namespace Zelda.Game.Engine
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
             _initialTime = (int)GetRealTime();
 
-            _modFiles.Initialize(args);
+            ModFiles.Initialize(args);
             InitializeLog();
             _input.Initialize();
             _video.Initialize(args, ZeldaVersion.ToString());
@@ -55,7 +49,7 @@ namespace Zelda.Game.Engine
 
         private void InitializeLog()
         {
-            Log.Initialize(_modFiles.BaseWriteDir + "/" + _modFiles.ZeldaWriteDir + "/");
+            Log.Initialize(ModFiles.BaseWriteDir + "/" + ModFiles.ZeldaWriteDir + "/");
 
             Log.AddChannel("Perf", "Perf.log");
             Log.AddChannel("Debug", "Debug.log");
@@ -67,7 +61,7 @@ namespace Zelda.Game.Engine
         {
             _input.Quit();
             _video.Quit();
-            _modFiles.Quit();
+            ModFiles.Quit();
 
             SDL.SDL_Quit();
         }

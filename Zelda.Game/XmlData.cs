@@ -6,12 +6,12 @@ namespace Zelda.Game
     // XML로부터 로드되거나 저장(이건 옵션)될 수 있는 추상 클래스
     public abstract class XmlData
     {
-        public bool ImportFromModFile(ModFiles modFiles, string modFileName)
+        public bool ImportFromModFile(string modFileName)
         {
-            if (!modFiles.DataFileExists(modFileName))
+            if (!ModFiles.DataFileExists(modFileName))
                 throw new InvalidDataException("Cannot find mod file '" + modFileName + "'");
 
-            using (Stream stream = modFiles.DataFileRead(modFileName))
+            using (Stream stream = ModFiles.DataFileRead(modFileName))
             {
                 return ImportFromStream(stream);
             }

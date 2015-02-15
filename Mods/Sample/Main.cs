@@ -14,6 +14,8 @@ namespace Sample
         protected override void OnStarted()
         {
             Console.WriteLine("This is a sample mod for Zelda.");
+
+            Language.LanguageCode = "en";
         }
     }
 }

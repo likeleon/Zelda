@@ -17,7 +17,7 @@ namespace Zelda.Game
         readonly Cache<Type, ConstructorInfo> _ctorCache;
         readonly Tuple<Assembly, string>[] _assemblies;
 
-        public ObjectCreator(ModResources resources, ModFiles modFiles)
+        public ObjectCreator(ModResources modResources)
         {
             _typeCache = new Cache<string,Type>(FindType);
             _ctorCache = new Cache<Type, ConstructorInfo>(GetCtor);
@@ -26,11 +26,11 @@ namespace Zelda.Game
                 .Select(c => new Tuple<Assembly, string>(typeof(Game).Assembly, c))
                 .ToList();
 
-            foreach (var asmFile in resources.Assemblies)
+            foreach (var asmFile in modResources.Assemblies)
             {
                 try
                 {
-                    using (MemoryStream stream = modFiles.DataFileRead(asmFile))
+                    using (MemoryStream stream = ModFiles.DataFileRead(asmFile))
                     {
                         Assembly asm = Assembly.Load(stream.ToArray());
                         asms.AddRange(asm.GetNamespaces().Select(ns => new Tuple<Assembly, string>(asm, ns)));

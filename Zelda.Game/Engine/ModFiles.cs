@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Zelda.Game.Engine
 {
-    public class ModFiles
+    public static class ModFiles
     {
         public enum DataFileLocation
         {
@@ -14,30 +14,30 @@ namespace Zelda.Game.Engine
             WriteDirectory
         };
 
-        private string _modPath;
-        public string ModPath
+        static string _modPath;
+        public static string ModPath
         {
             get { return _modPath; }
         }
 
-        public string BaseWriteDir
+        public static string BaseWriteDir
         {
             get { return FileSystem.PHYSFS_getUserDir(); }
         }
 
-        private string _zeldaWriteDir;
-        public string ZeldaWriteDir
+        static string _zeldaWriteDir;
+        public static string ZeldaWriteDir
         {
             get { return _zeldaWriteDir; }
         }
 
-        private string _modWriteDir;
-        public string ModWriteDir
+        static string _modWriteDir;
+        public static string ModWriteDir
         {
             get { return _modWriteDir; }
         }
 
-        public void Initialize(Arguments args)
+        public static void Initialize(Arguments args)
         {
             string programName = args.ProgramName;
             if (String.IsNullOrWhiteSpace(programName))
@@ -79,7 +79,7 @@ namespace Zelda.Game.Engine
             SetZeldaWriteDir(Properties.Settings.Default.WriteDir);
         }
 
-        public void Quit()
+        public static void Quit()
         {
             _modPath = null;
             _zeldaWriteDir = null;
@@ -90,19 +90,43 @@ namespace Zelda.Game.Engine
 
         #region 모드로부터 데이터 파일 읽기
         // 모드 데이터 디렉토리나 엔진 읽기 디렉토리에 지정한 파일이 존재하는지를 확인합니다
-        public bool DataFileExists(string fileName)
+        public static bool DataFileExists(string fileName, bool languageSpecific = false)
         {
-            return (FileSystem.PHYSFS_exists(fileName) != 0);
+            string fullFileName;
+            if (languageSpecific)
+            {
+                if (String.IsNullOrEmpty(Language.LanguageCode))
+                    return false;
+                fullFileName = "Languages/" + Language.LanguageCode + "/" + fileName;
+            }
+            else
+            {
+                fullFileName = fileName;
+            }
+
+            return (FileSystem.PHYSFS_exists(fullFileName) != 0);
         }
 
-        public MemoryStream DataFileRead(string fileName)
+        public static MemoryStream DataFileRead(string fileName, bool languageSpecific = false)
         {
-            if (FileSystem.PHYSFS_exists(fileName) == 0)
-                throw new InvalidDataException("Data file '" + fileName + "' does not exist");
+            string fullFileName;
+            if (languageSpecific)
+            {
+                if (String.IsNullOrEmpty(Language.LanguageCode))
+                    throw new Exception("Cannot open language-specific file '" + fileName + "': no language was set");
+                fullFileName = "Languages/" + Language.LanguageCode + "/" + fileName;
+            }
+            else
+            {
+                fullFileName = fileName;
+            }
 
-            IntPtr file = FileSystem.PHYSFS_openRead(fileName);
+            if (FileSystem.PHYSFS_exists(fullFileName) == 0)
+                throw new InvalidDataException("Data file '" + fullFileName + "' does not exist");
+
+            IntPtr file = FileSystem.PHYSFS_openRead(fullFileName);
             if (file == IntPtr.Zero)
-                throw new InvalidDataException("Cannot open data file '" + fileName + "'");
+                throw new InvalidDataException("Cannot open data file '" + fullFileName + "'");
 
             long size = FileSystem.PHYSFS_fileLength(file);
             byte[] buffer;
@@ -116,7 +140,7 @@ namespace Zelda.Game.Engine
 
         #region 파일 쓰기
         // 세이브나 설정 파일과 같이 모드에 종속적인 파일들이 저장될 디렉토리를 설정합니다
-        public void SetModWriteDir(string modWriteDir)
+        public static void SetModWriteDir(string modWriteDir)
         {
             // 이전 모드 디렉토리를 검색 경로에서 제외합니다
             if (!String.IsNullOrWhiteSpace(_modWriteDir))
@@ -145,7 +169,7 @@ namespace Zelda.Game.Engine
         #endregion
 
         // 엔진이 파일들을 쓸 수 있는 디렉토리를 설정합니다
-        private void SetZeldaWriteDir(string zeldaWriteDir)
+        private static void SetZeldaWriteDir(string zeldaWriteDir)
         {
             if (_zeldaWriteDir != null)
                 throw new InvalidOperationException("The Zelda write directory already set");

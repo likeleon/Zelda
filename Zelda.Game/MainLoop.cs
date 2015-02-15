@@ -22,12 +22,6 @@ namespace Zelda.Game
             get { return _engineSystem; }
         }
 
-        readonly CurrentMod _currentMod;
-        internal CurrentMod CurrentMod
-        {
-            get { return _currentMod; }
-        }
-
         readonly ScriptContext _scriptContext;
         readonly Surface _rootSurface;
         Game _nextGame;
@@ -38,8 +32,7 @@ namespace Zelda.Game
 
             LoadModProperties();
 
-            _currentMod = new CurrentMod(_engineSystem.ModFiles);
-            _currentMod.Initialize();
+            CurrentMod.Initialize();
 
             _rootSurface = Surface.Create(_engineSystem.Video.GameSize);
 
@@ -168,7 +161,7 @@ namespace Zelda.Game
             ModProperties modProperties = null;
             try
             {
-                using (Stream buffer = _engineSystem.ModFiles.DataFileRead(fileName))
+                using (Stream buffer = ModFiles.DataFileRead(fileName))
                 {
                     XmlSerializer serializer = new XmlSerializer(typeof(ModProperties));
                     modProperties = (ModProperties)serializer.Deserialize(buffer);
@@ -180,7 +173,7 @@ namespace Zelda.Game
             }
 
             CheckVersionCompatibility(modProperties.ZeldaVersion);
-            _engineSystem.ModFiles.SetModWriteDir(modProperties.ModWriteDir);
+            ModFiles.SetModWriteDir(modProperties.ModWriteDir);
             if (!String.IsNullOrWhiteSpace(modProperties.TitleBar))
                 _engineSystem.Video.WindowTitle = modProperties.TitleBar;
 

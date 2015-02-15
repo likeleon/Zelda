@@ -27,6 +27,10 @@ namespace Zelda.Game
 
             [XmlArrayItem("Sprite")]
             public Resource[] Sprites { get; set; }
+            
+            [XmlArrayItem("Language")]
+            public Resource[] Languages { get; set; }
+
         }
 
         public class ResourceMap : Dictionary<string, string>
@@ -57,6 +61,7 @@ namespace Zelda.Game
             
             FillResourceMap(ResourceType.Map, db.Maps);
             FillResourceMap(ResourceType.Sprite, db.Sprites);
+            FillResourceMap(ResourceType.Language, db.Languages);
             
             return true;
         }
@@ -78,6 +83,17 @@ namespace Zelda.Game
             {
                 resourceMap.Value.Clear();
             }
+        }
+
+        public bool Exists(ResourceType resourceType, string id)
+        {
+            ResourceMap resource = GetElements(resourceType);
+            return resource.ContainsKey(id);
+        }
+
+        public ResourceMap GetElements(ResourceType resourceType)
+        {
+            return _resourceMaps[resourceType];
         }
     }
 }
