@@ -22,7 +22,6 @@ namespace Zelda.Game
             get { return _engineSystem; }
         }
 
-        readonly ScriptContext _scriptContext;
         readonly Surface _rootSurface;
         Game _nextGame;
 
@@ -36,8 +35,7 @@ namespace Zelda.Game
 
             _rootSurface = Surface.Create(_engineSystem.Video.GameSize);
 
-            _scriptContext = new ScriptContext(this);
-            _scriptContext.Initialize();
+            ScriptContext.Initialize(this);
             
             _engineSystem.Video.ShowWindow();
         }
@@ -47,7 +45,7 @@ namespace Zelda.Game
             if (_game != null)
                 _game.Stop();
 
-            _scriptContext.Exit();
+            ScriptContext.Exit();
             _engineSystem.Quit();
         }
 
@@ -118,8 +116,8 @@ namespace Zelda.Game
                 }
                 else
                 {
-                    _scriptContext.Exit();
-                    _scriptContext.Initialize();
+                    ScriptContext.Exit();
+                    ScriptContext.Initialize(this);
                 }
             }
         }

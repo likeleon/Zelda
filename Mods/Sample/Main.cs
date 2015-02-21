@@ -4,7 +4,7 @@ using Zelda.Game.Script;
 
 namespace Sample
 {
-    public class Main : ScriptMain
+    public class Main : Zelda.Game.Script.Main
     {
         public Main(MainLoop mainLoop)
             : base(mainLoop)

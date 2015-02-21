@@ -3,11 +3,11 @@ using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
 {
-    public abstract class ScriptMain
+    public abstract class Main
     {
         private readonly MainLoop _mainLoop;
 
-        protected ScriptMain(MainLoop mainLoop)
+        protected Main(MainLoop mainLoop)
         {
             _mainLoop = mainLoop;
         }
