@@ -88,7 +88,9 @@
     <Compile Include="ResourceType.cs" />
     <Compile Include="Script\Language.cs" />
     <Compile Include="Script\Main.cs" />
+    <Compile Include="Script\Menu.cs" />
     <Compile Include="Script\ScriptContext.cs" />
+    <Compile Include="Script\ScriptContext.MenuApi.cs" />
     <Compile Include="XmlData.cs" />
   </ItemGroup>
   <ItemGroup>

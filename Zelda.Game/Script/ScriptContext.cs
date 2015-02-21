@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Zelda.Game.Script
 {
-    static class ScriptContext
+    static partial class ScriptContext
     {
         static MainLoop _mainLoop;
         static ObjectCreator _objectCreator;
@@ -24,9 +24,16 @@ namespace Zelda.Game.Script
         {
             if (_scriptMain != null)
                 _scriptMain.OnFinished();
+
+            DestroyMenus();
         }
 
-        private static void CreateScriptMain()
+        public static void Update()
+        {
+            UpdateMenus();
+        }
+
+        static void CreateScriptMain()
         {
             var mainTypes = _objectCreator.GetTypesImplementing<Main>();
             if (mainTypes.Count() <= 0)
