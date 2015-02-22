@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace Zelda.Game.Engine
 {
-    public class Surface : Drawable
+    class Surface : Drawable
     {
-        private class SubSurfaceNode
+        class SubSurfaceNode
         {
             public Surface SrcSurface { get; private set; }
             public Rectangle SrcRect { get; private set; }
@@ -26,13 +26,13 @@ namespace Zelda.Game.Engine
             }
         }
 
-        private readonly int _width;
+        readonly int _width;
         public int Width
         {
             get { return _width; }
         }
 
-        private readonly int _height;
+        readonly int _height;
         public int Height
         {
             get { return _height; }
@@ -43,9 +43,9 @@ namespace Zelda.Game.Engine
             get { return new Size(_width, _height); }
         }
 
-        private readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
-        private bool _isRendered;
-        private byte _internalOpacity = 255;
+        readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
+        bool _isRendered;
+        byte _internalOpacity = 255;
 
         public static Surface Create(int width, int height)
         {
@@ -57,7 +57,7 @@ namespace Zelda.Game.Engine
             return new Surface(size.Width, size.Height);
         }
 
-        private Surface(int width, int height)
+        Surface(int width, int height)
         {
             if (width <= 0 || height <= 0)
                 throw new ArgumentOutOfRangeException("", "Attempt to create a surface with an empty size");
@@ -72,7 +72,7 @@ namespace Zelda.Game.Engine
             Render(renderer, size, size, size, 255, _subsurfaces);
         }
 
-        private void Render(
+        void Render(
             IntPtr renderer, 
             Rectangle srcRect, 
             Rectangle dstRect, 
@@ -118,7 +118,7 @@ namespace Zelda.Game.Engine
             ClearSubsurfaces();
         }
 
-        private void ClearSubsurfaces()
+        void ClearSubsurfaces()
         {
             _subsurfaces.Clear();
         }
@@ -135,7 +135,7 @@ namespace Zelda.Game.Engine
             dstSurface._isRendered = false;
         }
 
-        private void AddSubSurface(Surface srcSurface, Rectangle region, Point dstPosistion)
+        void AddSubSurface(Surface srcSurface, Rectangle region, Point dstPosistion)
         {
             SubSurfaceNode node = new SubSurfaceNode(
                 srcSurface, 

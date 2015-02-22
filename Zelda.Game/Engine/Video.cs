@@ -3,26 +3,26 @@ using System;
 
 namespace Zelda.Game.Engine
 {
-    class Video
+    static class Video
     {
-        private Size _gameSize;
-        public Size GameSize
+        static Size _modSize;
+        public static Size ModSize
         {
-            get { return _gameSize; }
+            get { return _modSize; }
         }
 
-        public string WindowTitle
+        public static string WindowTitle
         {
             get { return SDL.SDL_GetWindowTitle(_mainWindow); }
             set { SDL.SDL_SetWindowTitle(_mainWindow, value); }
         }
 
-        private IntPtr _mainWindow;
-        private IntPtr _mainRenderer;
-        private IntPtr _pixelFormat;
-        private Size _wantedGameSize;
+        static IntPtr _mainWindow;
+        static IntPtr _mainRenderer;
+        static IntPtr _pixelFormat;
+        static Size _wantedGameSize;
 
-        public void Initialize(Arguments args, string zeldaVersion)
+        public static void Initialize(Arguments args, string zeldaVersion)
         {
             string gameSizeString = args.GetArgumentValue("-game-size");
 
@@ -35,7 +35,7 @@ namespace Zelda.Game.Engine
             CreateWindow(args, zeldaVersion);
         }
 
-        public void Quit()
+        public static void Quit()
         {
             if (_pixelFormat != IntPtr.Zero)
             {
@@ -53,19 +53,19 @@ namespace Zelda.Game.Engine
                 _mainWindow = IntPtr.Zero;
             }
 
-            _gameSize = new Size();
+            _modSize = new Size();
             _wantedGameSize = new Size();
         }
 
-        public void DetermineGameSize()
+        public static void DetermineModSize()
         {
-            _gameSize = _wantedGameSize;
+            _modSize = _wantedGameSize;
 
             // 게임 크기가 결정되었기 때문에 초기화를 완료한다
             InitializeVideoModes();
         }
 
-        private Size ParseSize(string sizeString)
+        static Size ParseSize(string sizeString)
         {
             string[] words = sizeString.Split('x');
             if (words.Length < 2)
@@ -76,7 +76,7 @@ namespace Zelda.Game.Engine
             return new Size(Convert.ToInt32(words[0]), Convert.ToInt32(words[1]));
         }
 
-        private void CreateWindow(Arguments args, string zeldaVersion)
+        static void CreateWindow(Arguments args, string zeldaVersion)
         {
             _mainWindow = SDL.SDL_CreateWindow(
                 "Zelda " + zeldaVersion,
@@ -124,19 +124,19 @@ namespace Zelda.Game.Engine
                 Console.WriteLine("2D acceleration: no");
         }
 
-        private void InitializeVideoModes()
+        static void InitializeVideoModes()
         {
             SDL.SDL_SetWindowFullscreen(_mainWindow, 0);
-            SDL.SDL_RenderSetLogicalSize(_mainRenderer, _gameSize.Width, _gameSize.Height);
+            SDL.SDL_RenderSetLogicalSize(_mainRenderer, _modSize.Width, _modSize.Height);
             SDL.SDL_ShowCursor(SDL.SDL_ENABLE);
         }
 
-        public void ShowWindow()
+        public static void ShowWindow()
         {
             SDL.SDL_ShowWindow(_mainWindow);
         }
 
-        public void Render(Surface surface)
+        public static void Render(Surface surface)
         {
             SDL.SDL_SetRenderDrawColor(_mainRenderer, 0, 0, 255, 255);
             SDL.SDL_RenderSetClipRect(_mainRenderer, IntPtr.Zero);

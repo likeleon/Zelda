@@ -2,9 +2,13 @@
 
 namespace Zelda.Game.Engine
 {
-    public abstract class Drawable
+    abstract class Drawable
     {
         public Point XY { get; set; }
+
+        protected Drawable()
+        {
+        }
 
         public void Draw(Surface dstSurface)
         {
@@ -34,7 +38,7 @@ namespace Zelda.Game.Engine
         public abstract void RawDraw(Surface dstSurface, Point dstPosition);
         public abstract void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition);
 
-        protected Drawable()
+        public virtual void Update()
         {
         }
     }

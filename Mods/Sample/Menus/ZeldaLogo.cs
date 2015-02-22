@@ -7,6 +7,13 @@ namespace Sample.Menus
     {
         public event EventHandler Started;
 
+        readonly Surface _surface;
+
+        public ZeldaLogo()
+        {
+            _surface = Surface.Create(201, 48);
+        }
+
         protected override void OnStarted()
         {
             if (Started != null)

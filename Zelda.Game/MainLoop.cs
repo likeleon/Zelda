@@ -2,7 +2,7 @@
 using System.IO;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
-using Zelda.Game.Script;
+using ScriptContext = Zelda.Game.Script.ScriptContext;
 
 namespace Zelda.Game
 {
@@ -33,11 +33,11 @@ namespace Zelda.Game
 
             CurrentMod.Initialize();
 
-            _rootSurface = Surface.Create(_engineSystem.Video.GameSize);
+            _rootSurface = Surface.Create(Video.ModSize);
 
             ScriptContext.Initialize(this);
             
-            _engineSystem.Video.ShowWindow();
+            Video.ShowWindow();
         }
 
         public void Dispose()
@@ -148,7 +148,7 @@ namespace Zelda.Game
             if (_game != null)
                 _game.Draw(_rootSurface);
 
-            _engineSystem.Video.Render(_rootSurface);
+            Video.Render(_rootSurface);
         }
 
         private void LoadModProperties()
@@ -173,9 +173,9 @@ namespace Zelda.Game
             CheckVersionCompatibility(modProperties.ZeldaVersion);
             ModFiles.SetModWriteDir(modProperties.ModWriteDir);
             if (!String.IsNullOrWhiteSpace(modProperties.TitleBar))
-                _engineSystem.Video.WindowTitle = modProperties.TitleBar;
+                Video.WindowTitle = modProperties.TitleBar;
 
-            _engineSystem.Video.DetermineGameSize();
+            Video.DetermineModSize();
         }
 
         private void CheckVersionCompatibility(string zeldaRequiredVersion)

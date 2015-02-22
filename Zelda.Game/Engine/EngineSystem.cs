@@ -6,12 +6,6 @@ namespace Zelda.Game.Engine
 {
     class EngineSystem
     {
-        private readonly Video _video = new Video();
-        public Video Video
-        {
-            get { return _video; }
-        }
-
         private readonly Input _input = new Input();
         public Input Input
         {
@@ -44,7 +38,7 @@ namespace Zelda.Game.Engine
             ModFiles.Initialize(args);
             InitializeLog();
             _input.Initialize();
-            _video.Initialize(args, ZeldaVersion.ToString());
+            Video.Initialize(args, ZeldaVersion.ToString());
         }
 
         private void InitializeLog()
@@ -60,7 +54,7 @@ namespace Zelda.Game.Engine
         public void Quit()
         {
             _input.Quit();
-            _video.Quit();
+            Video.Quit();
             ModFiles.Quit();
 
             SDL.SDL_Quit();

@@ -26,11 +26,15 @@ namespace Zelda.Game.Script
                 _scriptMain.OnFinished();
 
             DestroyMenus();
+            DestroyDrawables();
         }
 
         public static void Update()
         {
+            UpdateDrawables();
             UpdateMenus();
+
+            _scriptMain.OnUpdate();
         }
 
         static void CreateScriptMain()

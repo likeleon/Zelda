@@ -91,6 +91,7 @@
     <Compile Include="Script\Menu.cs" />
     <Compile Include="Script\ScriptContext.cs" />
     <Compile Include="Script\ScriptContext.MenuApi.cs" />
+    <Compile Include="Script\Surface.cs" />
     <Compile Include="XmlData.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -99,6 +100,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Compile Include="Script\ScriptContext.DrawableApi.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
