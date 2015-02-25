@@ -6,14 +6,8 @@ namespace Zelda.Game.Engine
 {
     class EngineSystem
     {
-        private readonly Input _input = new Input();
-        public Input Input
-        {
-            get { return _input; }
-        }
-
-        private int _initialTime = 0;       // 초기화 시점의 실제 시각, 밀리초
-        private int _ticks = 0;             // 게임 시각, 밀리초
+        int _initialTime = 0;       // 초기화 시점의 실제 시각, 밀리초
+        int _ticks = 0;             // 게임 시각, 밀리초
      
         public readonly int TimeStep = 10;  // 업데이트시마다 추가될 게임 시간, 밀리초
         
@@ -37,8 +31,9 @@ namespace Zelda.Game.Engine
 
             ModFiles.Initialize(args);
             InitializeLog();
-            _input.Initialize();
+            Input.Initialize();
             Video.Initialize(args, ZeldaVersion.ToString());
+            //Sprite.Initialize();
         }
 
         private void InitializeLog()
@@ -53,7 +48,8 @@ namespace Zelda.Game.Engine
 
         public void Quit()
         {
-            _input.Quit();
+            Input.Quit();
+            //Sprite.Quit();
             Video.Quit();
             ModFiles.Quit();
 

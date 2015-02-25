@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -19,6 +20,11 @@ namespace Zelda.Game
         public static bool HasAttribute<T>(this MemberInfo mi)
         {
             return (mi.GetCustomAttributes(typeof(T), true).Length != 0);
+        }
+
+        public static Lazy<T> Lazy<T>(Func<T> p)
+        {
+            return new Lazy<T>(p);
         }
     }
 }

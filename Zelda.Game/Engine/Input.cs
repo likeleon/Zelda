@@ -2,7 +2,7 @@
 
 namespace Zelda.Game.Engine
 {
-    public class Input
+    public static class Input
     {
         public class Event
         {
@@ -151,17 +151,17 @@ namespace Zelda.Game.Engine
             KEY_LEFT_META = SDL.SDL_Keycode.SDLK_LGUI
         }
 
-        public void Initialize()
+        public static void Initialize()
         {
             SDL.SDL_StartTextInput();
         }
 
-        public void Quit()
+        public static void Quit()
         {
             SDL.SDL_StopTextInput();
         }
 
-        public Input.Event GetEvent()
+        public static Input.Event GetEvent()
         {
             SDL.SDL_Event internalEvent;
             if (SDL.SDL_PollEvent(out internalEvent) == 0)

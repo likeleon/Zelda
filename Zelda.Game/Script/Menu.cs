@@ -11,5 +11,9 @@ namespace Zelda.Game.Script
         protected internal virtual void OnStarted()
         {
         }
+        
+        protected internal virtual void OnDraw(Surface dstSurface)
+        {
+        }
     }
 }

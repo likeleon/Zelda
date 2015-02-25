@@ -138,7 +138,7 @@ namespace Zelda.Game.Engine
 
         public static void Render(Surface surface)
         {
-            SDL.SDL_SetRenderDrawColor(_mainRenderer, 0, 0, 255, 255);
+            SDL.SDL_SetRenderDrawColor(_mainRenderer, 0, 0, 0, 255);
             SDL.SDL_RenderSetClipRect(_mainRenderer, IntPtr.Zero);
             SDL.SDL_RenderClear(_mainRenderer);
             surface.Render(_mainRenderer);

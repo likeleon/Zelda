@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Arguments.cs" />
     <Compile Include="CurrentMod.cs" />
+    <Compile Include="Engine\Color.cs" />
     <Compile Include="Engine\Drawable.cs" />
     <Compile Include="Engine\FileSystem.cs" />
     <Compile Include="Engine\ModFiles.cs" />
@@ -66,6 +67,9 @@
     <Compile Include="Engine\Rectangle.cs" />
     <Compile Include="Engine\Input.cs" />
     <Compile Include="Engine\Size.cs" />
+    <Compile Include="Script\Drawable.cs" />
+    <Compile Include="Script\Sprite.cs" />
+    <Compile Include="Sprite.cs" />
     <Compile Include="Engine\Surface.cs" />
     <Compile Include="Engine\EngineSystem.cs" />
     <Compile Include="Engine\Video.cs" />

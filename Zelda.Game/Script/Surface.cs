@@ -4,9 +4,28 @@ using RawSurface = Zelda.Game.Engine.Surface;
 
 namespace Zelda.Game.Script
 {
-    public class Surface
+    public class Surface : Drawable
     {
+        public byte Opacity
+        {
+            set { _rawSurface.Opacity = value; }
+        }
+
+        public int Width
+        {
+            get { return _rawSurface.Width; }
+        }
+
+        public int Height
+        {
+            get { return _rawSurface.Height; }
+        }
+
         readonly RawSurface _rawSurface;
+        internal RawSurface RawSurface
+        {
+            get { return _rawSurface; }
+        }
 
         public static Surface Create()
         {
@@ -23,11 +42,9 @@ namespace Zelda.Game.Script
             return new Surface(rawSurface);
         }
 
-        Surface(RawSurface rawSurface)
+        internal Surface(RawSurface rawSurface)
+            : base(rawSurface)
         {
-            if (rawSurface == null)
-                throw new ArgumentNullException("rawSurface");
-
             _rawSurface = rawSurface;
         }
 

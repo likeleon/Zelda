@@ -62,5 +62,17 @@ namespace Zelda.Game.Script
         {
             _menus.Clear();
         }
+
+        static void MenusOnDraw(object context, Surface dstSurface)
+        {
+            ScriptMenuData menu = _menus.Find(m => m.Context == context);
+            if (menu != null)
+                MenuOnDraw(menu.Menu, dstSurface);
+        }
+
+        static void MenuOnDraw(Menu menu, Surface dstSurface)
+        {
+            menu.OnDraw(dstSurface);
+        }
     }
 }

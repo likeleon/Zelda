@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
 using ScriptContext = Zelda.Game.Script.ScriptContext;
+using ScriptSurface = Zelda.Game.Script.Surface;
 
 namespace Zelda.Game
 {
@@ -23,6 +24,7 @@ namespace Zelda.Game
         }
 
         readonly Surface _rootSurface;
+        readonly ScriptSurface _rootScriptSurface;
         Game _nextGame;
 
         public MainLoop(Arguments args)
@@ -34,6 +36,7 @@ namespace Zelda.Game
             CurrentMod.Initialize();
 
             _rootSurface = Surface.Create(Video.ModSize);
+            _rootScriptSurface = new ScriptSurface(_rootSurface);
 
             ScriptContext.Initialize(this);
             
@@ -124,11 +127,11 @@ namespace Zelda.Game
 
         private void CheckInput()
         {
-            Input.Event inputEvent = _engineSystem.Input.GetEvent();
+            Input.Event inputEvent = Input.GetEvent();
             while (inputEvent != null)
             {
                 NotifyInput(inputEvent);
-                inputEvent = _engineSystem.Input.GetEvent();
+                inputEvent = Input.GetEvent();
             }
         }
 
@@ -147,7 +150,7 @@ namespace Zelda.Game
 
             if (_game != null)
                 _game.Draw(_rootSurface);
-
+            ScriptContext.MainOnDraw(_rootScriptSurface);
             Video.Render(_rootSurface);
         }
 

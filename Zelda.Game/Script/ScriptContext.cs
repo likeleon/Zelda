@@ -50,5 +50,11 @@ namespace Zelda.Game.Script
             ConstructorInfo ctor = mainType.GetConstructor(new Type[] { typeof(MainLoop) });
             _scriptMain = (Main)ctor.Invoke(new object[] { _mainLoop });
         }
+
+        internal static void MainOnDraw(Surface dstSurface)
+        {
+            _scriptMain.OnDraw(dstSurface);
+            MenusOnDraw(_scriptMain, dstSurface);
+        }
     }
 }

@@ -19,7 +19,6 @@ namespace Sample
             Language.LanguageCode = "en";
 
             ZeldaLogo zeldaLogo = new ZeldaLogo();
-            zeldaLogo.Started += (o, e) => Console.WriteLine("Show logo here");
             Menu.Start(this, zeldaLogo);
         }
     }

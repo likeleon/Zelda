@@ -8,7 +8,7 @@ using SDL2;
 
 namespace Zelda.Game.Engine
 {
-    public struct Rectangle
+    struct Rectangle
     {
         public int X
         {

@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using Zelda.Game.Engine;
+using RawDrawable = Zelda.Game.Engine.Drawable;
 
 namespace Zelda.Game.Script
 {
     static partial class ScriptContext
     {
-        static readonly HashSet<Drawable> _drawables = new HashSet<Drawable>();
-        static readonly HashSet<Drawable> _drawablesToRemove = new HashSet<Drawable>();
+        static readonly HashSet<RawDrawable> _drawables = new HashSet<RawDrawable>();
+        static readonly HashSet<RawDrawable> _drawablesToRemove = new HashSet<RawDrawable>();
 
-        public static bool HasDrawable(Drawable drawable)
+        public static bool HasDrawable(RawDrawable drawable)
         {
             return _drawables.Contains(drawable);
         }
 
-        public static void AddDrawable(Drawable drawable)
+        public static void AddDrawable(RawDrawable drawable)
         {
             if (HasDrawable(drawable))
                 throw new ArgumentException("This drawable object is already registered", "drawable");
@@ -22,7 +22,7 @@ namespace Zelda.Game.Script
             _drawables.Add(drawable);
         }
 
-		public static void RemoveDrawable(Drawable drawable)
+		public static void RemoveDrawable(RawDrawable drawable)
         {
             if (!HasDrawable(drawable))
                 throw new ArgumentException("This drawable object was not created by Mod");
@@ -33,7 +33,7 @@ namespace Zelda.Game.Script
 
 		static void UpdateDrawables()
         {
-            foreach (Drawable drawable in _drawables)
+            foreach (RawDrawable drawable in _drawables)
                 drawable.Update();
 
             _drawablesToRemove.Clear();

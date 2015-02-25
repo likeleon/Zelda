@@ -18,7 +18,7 @@ namespace Zelda.Game.Script
 
         internal protected virtual void OnFinished()
         {
-        }
+        } 
 
         internal protected virtual void OnUpdate()
         {

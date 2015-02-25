@@ -1,11 +1,20 @@
 ﻿using SDL2;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 
 namespace Zelda.Game.Engine
 {
     class Surface : Drawable
     {
+        public enum ImageDirectory
+        {
+            Data,       // 데이터 루트
+            Sprites,    // 데이터의 sprites 하위 디렉토리 (기본)
+            Language    // 데이터의 (현재) 언어 이미지 디렉토리
+        }
+
         class SubSurfaceNode
         {
             public Surface SrcSurface { get; private set; }
@@ -43,9 +52,27 @@ namespace Zelda.Game.Engine
             get { return new Size(_width, _height); }
         }
 
-        readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
-        bool _isRendered;
+        [Description("투명도")]
         byte _internalOpacity = 255;
+        public byte Opacity
+        {
+            set 
+            {
+                _internalOpacity = value;
+            }
+        }
+
+        //[Description("그리기 동작이 RAM과 GPU 어디에서 일어나는지를 의미합니다.")]
+        //bool _softwareDestination = true;
+        //public bool SoftwareDestination
+        //{
+        //    get { return _softwareDestination; }
+        //    set { _softwareDestination = value; }
+        //}
+
+        readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
+        IntPtr _internalSurface;
+        bool _isRendered;
 
         public static Surface Create(int width, int height)
         {
@@ -57,6 +84,49 @@ namespace Zelda.Game.Engine
             return new Surface(size.Width, size.Height);
         }
 
+        public static Surface Create(string fileName, Size size, ImageDirectory baseDirectory = ImageDirectory.Sprites)
+        {
+            IntPtr sdlSurface = GetSurfaceFromFile(fileName, baseDirectory);
+            if (sdlSurface == IntPtr.Zero)
+                return null;
+
+            return new Surface(sdlSurface, size);
+        }
+
+        private static IntPtr GetSurfaceFromFile(string fileName, ImageDirectory baseDirectory)
+        {
+            string prefix = String.Empty;
+            bool languageSpecific = false;
+
+            if (baseDirectory == ImageDirectory.Sprites)
+            {
+                prefix = "Sprites/";
+            }
+            else if (baseDirectory == ImageDirectory.Language)
+            {
+                languageSpecific = true;
+                prefix = "Images/";
+            }
+            string prefixedFileName = prefix + fileName;
+
+            if (!ModFiles.DataFileExists(prefixedFileName, languageSpecific))
+                return IntPtr.Zero;
+
+            IntPtr softwareSurface;
+            using (MemoryStream stream = ModFiles.DataFileRead(prefixedFileName, languageSpecific))
+            {
+                byte[] buffer = stream.ToArray();
+                IntPtr rw = SDL.SDL_RWFromMem(buffer, buffer.Length);
+                softwareSurface = SDL_image.IMG_Load_RW(rw, 0);
+                // TODO: 네이티브의 SDL_RWclose(rw)에 해당하는 구현 방법을 찾지 못했다. 메모리 릭 확인할 것.
+            }
+
+            if (softwareSurface == IntPtr.Zero)
+                throw new Exception("Cannot load image '" + prefixedFileName + "'");
+
+            return softwareSurface;
+        }
+
         Surface(int width, int height)
         {
             if (width <= 0 || height <= 0)
@@ -64,6 +134,13 @@ namespace Zelda.Game.Engine
 
             _width = width;
             _height = height;
+        }
+
+        Surface(IntPtr internalSurface, Size size)
+        {
+            _internalSurface = internalSurface;
+            _width = size.Width;
+            _height = size.Height;
         }
 
         public void Render(IntPtr renderer)
@@ -80,6 +157,10 @@ namespace Zelda.Game.Engine
             byte opacity, 
             HashSet<SubSurfaceNode> subsurfaces)
         {
+            if (_internalSurface != IntPtr.Zero)
+            {
+            }
+
             byte currentOpacity = Math.Min(_internalOpacity, opacity);
 
             foreach (SubSurfaceNode subsurface in _subsurfaces)
