@@ -7,9 +7,9 @@ namespace Zelda.Game.Script
     {
         readonly RawSprite _rawSprite;
 
-        public static Sprite Create(string imageFileName, int width, int height)
+        public static Sprite Create(string imageFileName)
         {
-            RawSprite rawSprite = new RawSprite(imageFileName, new Size(width, height));
+            RawSprite rawSprite = new RawSprite(imageFileName);
             return new Sprite(rawSprite);
         }
 

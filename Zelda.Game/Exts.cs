@@ -1,7 +1,9 @@
-﻿using System;
+﻿using SDL2;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Zelda.Game
 {
@@ -25,6 +27,12 @@ namespace Zelda.Game
         public static Lazy<T> Lazy<T>(Func<T> p)
         {
             return new Lazy<T>(p);
+        }
+
+        [CLSCompliant(false)]
+        public static SDL.SDL_Surface GetStruct(this IntPtr surface)
+        {
+            return (SDL.SDL_Surface)Marshal.PtrToStructure(surface, typeof(SDL.SDL_Surface));
         }
     }
 }

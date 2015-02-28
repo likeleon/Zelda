@@ -15,9 +15,9 @@ namespace Zelda.Game
         {
         }
 
-        public Sprite(string imageFileName, Size size)
+        public Sprite(string imageFileName)
         {
-            _srcImage = Surface.Create(imageFileName, size);
+            _srcImage = Surface.Create(imageFileName);
             if (_srcImage == null)
                 throw new ArgumentException("Cannot load image '" + imageFileName + "'");
         }

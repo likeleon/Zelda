@@ -10,7 +10,7 @@ namespace Sample.Menus
         public ZeldaLogo()
         {
             _surface = Surface.Create(400, 240);
-            _logo = Sprite.Create("Menus/zelda_logo.png", 400, 240);
+            _logo = Sprite.Create("Menus/zelda_logo.png");
         }
 
         protected override void OnStarted()

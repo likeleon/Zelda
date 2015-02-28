@@ -84,13 +84,13 @@ namespace Zelda.Game.Engine
             return new Surface(size.Width, size.Height);
         }
 
-        public static Surface Create(string fileName, Size size, ImageDirectory baseDirectory = ImageDirectory.Sprites)
+        public static Surface Create(string fileName, ImageDirectory baseDirectory = ImageDirectory.Sprites)
         {
             IntPtr sdlSurface = GetSurfaceFromFile(fileName, baseDirectory);
             if (sdlSurface == IntPtr.Zero)
                 return null;
 
-            return new Surface(sdlSurface, size);
+            return new Surface(sdlSurface);
         }
 
         private static IntPtr GetSurfaceFromFile(string fileName, ImageDirectory baseDirectory)
@@ -136,11 +136,11 @@ namespace Zelda.Game.Engine
             _height = height;
         }
 
-        Surface(IntPtr internalSurface, Size size)
+        Surface(IntPtr internalSurface)
         {
             _internalSurface = internalSurface;
-            _width = size.Width;
-            _height = size.Height;
+            _width = _internalSurface.GetStruct().w;
+            _height = _internalSurface.GetStruct().h;
         }
 
         public void Render(IntPtr renderer)
