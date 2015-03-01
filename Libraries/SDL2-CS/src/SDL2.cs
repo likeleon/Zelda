@@ -2127,6 +2127,15 @@ namespace SDL2
 			int pitch
 		);
 
+        /* texture refers to an SDL_Texture* */
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_UpdateTexture(
+            IntPtr texture,
+            IntPtr rect,
+            IntPtr pixels,
+            int pitch
+        );
+
 		/* renderer refers to an SDL_Renderer* */
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern SDL_bool SDL_RenderTargetSupported(
@@ -2933,6 +2942,14 @@ namespace SDL2
 			ref SDL_Rect rect,
 			uint color
 		);
+
+        /* dst refers to an SDL_Surface* */
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_FillRect(
+            IntPtr dst,
+            IntPtr rect,
+            uint color
+        );
 
 		/* dst refers to an SDL_Surface* */
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]

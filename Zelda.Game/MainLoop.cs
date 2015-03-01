@@ -36,6 +36,8 @@ namespace Zelda.Game
             CurrentMod.Initialize();
 
             _rootSurface = Surface.Create(Video.ModSize);
+            _rootSurface.SoftwareDestination = false;
+
             _rootScriptSurface = new ScriptSurface(_rootSurface);
 
             ScriptContext.Initialize(this);

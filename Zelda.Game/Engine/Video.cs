@@ -17,9 +17,20 @@ namespace Zelda.Game.Engine
             set { SDL.SDL_SetWindowTitle(_mainWindow, value); }
         }
 
-        static IntPtr _mainWindow;
-        static IntPtr _mainRenderer;
         static IntPtr _pixelFormat;
+        public static IntPtr PixelFormat
+        {
+            get { return _pixelFormat; }
+        }
+
+        static IntPtr _mainWindow;
+
+        static IntPtr _mainRenderer;
+        public static IntPtr Renderer
+        {
+            get { return _mainRenderer; }
+        }
+
         static Size _wantedGameSize;
 
         public static void Initialize(Arguments args, string zeldaVersion)
@@ -138,7 +149,7 @@ namespace Zelda.Game.Engine
 
         public static void Render(Surface surface)
         {
-            SDL.SDL_SetRenderDrawColor(_mainRenderer, 0, 0, 0, 255);
+            SDL.SDL_SetRenderDrawColor(_mainRenderer, 255, 255, 255, 255);
             SDL.SDL_RenderSetClipRect(_mainRenderer, IntPtr.Zero);
             SDL.SDL_RenderClear(_mainRenderer);
             surface.Render(_mainRenderer);

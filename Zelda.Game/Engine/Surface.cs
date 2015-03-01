@@ -35,6 +35,45 @@ namespace Zelda.Game.Engine
             }
         }
 
+        class Texture : IDisposable
+        {
+            readonly IntPtr _internalTexture;
+            public IntPtr InternalTexture
+            {
+                get { return _internalTexture; }
+            }
+
+            bool _disposed;
+
+            public Texture(IntPtr internalTexture)
+            {
+                if (internalTexture == IntPtr.Zero)
+                    throw new ArgumentNullException("internalTexture");
+
+                _internalTexture = internalTexture;
+            }
+
+            ~Texture()
+            {
+                Dispose(false);
+            }
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            void Dispose(bool disposing)
+            {
+                if (_disposed)
+                    return;
+
+                SDL.SDL_DestroyTexture(_internalTexture);
+                _disposed = true;
+            }
+        }
+
         readonly int _width;
         public int Width
         {
@@ -58,20 +97,35 @@ namespace Zelda.Game.Engine
         {
             set 
             {
-                _internalOpacity = value;
+                if (_softwareDestination)
+                {
+                    if (_internalSurface == IntPtr.Zero)
+                        CreateSoftwareSurface();
+
+                    ConvertSoftwareSurface();
+
+                    int error = SDL.SDL_SetSurfaceAlphaMod(_internalSurface, value);
+                    if (error != 0)
+                        throw new InvalidOperationException(SDL.SDL_GetError());
+
+                    _isRendered = false;
+                }
+                else
+                    _internalOpacity = value;
             }
         }
 
-        //[Description("그리기 동작이 RAM과 GPU 어디에서 일어나는지를 의미합니다.")]
-        //bool _softwareDestination = true;
-        //public bool SoftwareDestination
-        //{
-        //    get { return _softwareDestination; }
-        //    set { _softwareDestination = value; }
-        //}
+        [Description("그리기 동작이 RAM과 GPU 어디에서 일어나는지를 의미합니다.")]
+        bool _softwareDestination = true;
+        public bool SoftwareDestination
+        {
+            get { return _softwareDestination; }
+            set { _softwareDestination = value; }
+        }
 
         readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
         IntPtr _internalSurface;
+        Texture _internalTexture;
         bool _isRendered;
         bool _disposed;
 
@@ -140,8 +194,8 @@ namespace Zelda.Game.Engine
         Surface(IntPtr internalSurface)
         {
             _internalSurface = internalSurface;
-            _width = _internalSurface.GetStruct().w;
-            _height = _internalSurface.GetStruct().h;
+            _width = _internalSurface.ToSDLSurface().w;
+            _height = _internalSurface.ToSDLSurface().h;
         }
 
         ~Surface()
@@ -182,14 +236,39 @@ namespace Zelda.Game.Engine
         {
             if (_internalSurface != IntPtr.Zero)
             {
+                if (_internalTexture == null)
+                    CreateTextureFromSurface();
+
+                // 소프트웨어 표면에 변경이 있다면 하드웨어 텍스쳐를 갱신합니다
+                else if (SoftwareDestination && !_isRendered)
+                {
+                    ConvertSoftwareSurface();
+                    SDL.SDL_UpdateTexture(
+                        _internalTexture.InternalTexture,
+                        IntPtr.Zero,
+                        _internalSurface.ToSDLSurface().pixels,
+                        _internalSurface.ToSDLSurface().pitch);
+                    SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out _internalOpacity);
+                }
             }
 
             byte currentOpacity = Math.Min(_internalOpacity, opacity);
 
+            // 내부 텍스쳐를 그립니다
+            if (_internalTexture != null)
+            {
+                SDL.SDL_SetTextureAlphaMod(_internalTexture.InternalTexture, currentOpacity);
+
+                SDL.SDL_RenderCopy(
+                    renderer,
+                    _internalTexture.InternalTexture,
+                    ref srcRect._rect,
+                    ref dstRect._rect);
+            }
+
+            // 현재 표면은 모두 그려졌고 이어서 하위 표면들의 텍스쳐들을 그립니다
             foreach (SubSurfaceNode subsurface in _subsurfaces)
             {
-                // 딸린 표면들은 이 표면에 그려져야 함
-
                 // 스크린 상의 절대 좌표 계산
                 Rectangle subsurfaceDstRect = new Rectangle(
                     x: dstRect.X + subsurface.DstRect.X - srcRect.X,
@@ -207,7 +286,7 @@ namespace Zelda.Game.Engine
                     subsurface.SrcSurface.Render(
                         renderer,
                         subsurface.SrcRect,
-                        subsurface.DstRect,
+                        subsurfaceDstRect,
                         superimposedClipRect,
                         currentOpacity,
                         subsurface.Subsurfaces);
@@ -220,6 +299,14 @@ namespace Zelda.Game.Engine
         public void Clear()
         {
             ClearSubsurfaces();
+
+            if (_internalSurface != null)
+            {
+                if (_softwareDestination)
+                    SDL.SDL_FillRect(_internalSurface, IntPtr.Zero, GetColorValue(Color.Transparent));
+                else
+                    _internalSurface = IntPtr.Zero;
+            }
         }
 
         void ClearSubsurfaces()
@@ -235,7 +322,47 @@ namespace Zelda.Game.Engine
 
         public override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
         {
-            dstSurface.AddSubSurface(this, region, dstPosition);
+            if (dstSurface.SoftwareDestination)
+            {
+                if (dstSurface._internalSurface == IntPtr.Zero)
+                    dstSurface.CreateSoftwareSurface();
+
+                if (_subsurfaces.Count > 0)
+                {
+                    if (_internalSurface == IntPtr.Zero)
+                        CreateSoftwareSurface();
+
+                    HashSet<SubSurfaceNode> subsurfaces = new HashSet<SubSurfaceNode>(_subsurfaces);
+                    _subsurfaces.Clear();
+
+                    foreach (SubSurfaceNode subsurface in subsurfaces)
+                    {
+                        subsurface.SrcSurface.RawDrawRegion(
+                            subsurface.SrcRect,
+                            this,
+                            subsurface.DstRect.XY);
+                    }
+                    ClearSubsurfaces();
+                }
+
+                if (_internalSurface != null)
+                {
+                    Rectangle dstRect = new Rectangle(dstPosition);
+                    SDL.SDL_BlitSurface(
+                        _internalSurface,
+                        ref region._rect,
+                        dstSurface._internalSurface,
+                        ref dstRect._rect);
+                }
+            }
+            else
+            {
+                // 목표가 GPU 표면인 경우(텍스쳐).
+                // 명시적으로 그리기를 하지 않고 추후에 GPU에 의해 렌더링될 수 있도록
+                // 트리에 명령만 추가합니다.
+                dstSurface.AddSubSurface(this, region, dstPosition);
+            }
+
             dstSurface._isRendered = false;
         }
 
@@ -252,6 +379,87 @@ namespace Zelda.Game.Engine
                 ClearSubsurfaces();
 
             _subsurfaces.Add(node);
+        }
+
+        // 내부 표면을 소프트웨어 모드로 생성합니다
+        void CreateSoftwareSurface()
+        {
+            if (_internalSurface != IntPtr.Zero)
+                throw new InvalidOperationException("Software surface already exists");
+
+            SDL.SDL_PixelFormat format = Video.PixelFormat.ToSDLPixelFormat();
+            _internalSurface = SDL.SDL_CreateRGBSurface(
+                0,
+                _width,
+                _height,
+                32,
+                format.Rmask,
+                format.Gmask,
+                format.Bmask,
+                format.Amask);
+            SDL.SDL_SetSurfaceBlendMode(_internalSurface, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
+            _isRendered = false;
+
+            if (_internalSurface == null)
+                throw new Exception("Failed to create software surface");
+        }
+
+        // 소프트웨어 표면을 32-bit 알파 채널의 픽셀 포맷으로 변경합니다
+        void ConvertSoftwareSurface()
+        {
+            if (_internalSurface == null)
+                throw new InvalidOperationException("Missing software surface to convert");
+
+            SDL.SDL_PixelFormat videoPixelFormat = Video.PixelFormat.ToSDLPixelFormat();
+            SDL.SDL_PixelFormat surfacePixelFormat = _internalSurface.ToSDLSurface().format.ToSDLPixelFormat();
+            if (surfacePixelFormat.format != videoPixelFormat.format)
+            {
+                byte opacity;
+                SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out opacity);
+                IntPtr convertedSurface = SDL.SDL_ConvertSurface(
+                    _internalSurface, 
+                    Video.PixelFormat, 
+                    0);
+                if (convertedSurface == null)
+                    throw new Exception("Failed to convert software surface");
+
+                _internalSurface = convertedSurface;
+                SDL.SDL_SetSurfaceAlphaMod(_internalSurface, opacity);  // alpha값 복구 
+            }
+        }
+
+        // 색상 값을 현재 비디오 픽셀 포맷에 맞는 32-bit 값으로 변환합니다
+        uint GetColorValue(Color color)
+        {
+            return SDL.SDL_MapRGBA(Video.PixelFormat, color.R, color.G, color.B, color.A);
+        }
+
+        // 소프트웨어 표면으로부터 하드웨어 텍스쳐를 생성합니다
+        void CreateTextureFromSurface()
+        {
+            IntPtr renderer = Video.Renderer;
+            if (renderer == IntPtr.Zero)
+                throw new Exception("Missing software surface to create texture from");
+
+            // 성능의 이유로 SDL_UpdateTexture가 픽셀 포맷을 인자로 받아들이지 않기 때문에
+            // 소프트웨어 표면이 텍스쳐와 같은 포맷이어야 합니다
+            ConvertSoftwareSurface();
+
+            IntPtr sdlTexture = SDL.SDL_CreateTexture(
+                renderer,
+                Video.PixelFormat.ToSDLPixelFormat().format,
+                (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_STATIC,
+                _internalSurface.ToSDLSurface().w,
+                _internalSurface.ToSDLSurface().h);
+            _internalTexture = new Texture(sdlTexture);
+            SDL.SDL_SetTextureBlendMode(_internalTexture.InternalTexture, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
+
+            // 소프트웨어 표면의 픽셀들을 GPU 텍스쳐로 복사합니다
+            SDL.SDL_UpdateTexture(_internalTexture.InternalTexture,
+                IntPtr.Zero,
+                _internalSurface.ToSDLSurface().pixels,
+                _internalSurface.ToSDLSurface().pitch);
+            SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out _internalOpacity);
         }
     }
 }

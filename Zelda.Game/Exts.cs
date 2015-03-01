@@ -30,9 +30,15 @@ namespace Zelda.Game
         }
 
         [CLSCompliant(false)]
-        public static SDL.SDL_Surface GetStruct(this IntPtr surface)
+        public static SDL.SDL_Surface ToSDLSurface(this IntPtr surface)
         {
             return (SDL.SDL_Surface)Marshal.PtrToStructure(surface, typeof(SDL.SDL_Surface));
+        }
+
+        [CLSCompliant(false)]
+        public static SDL.SDL_PixelFormat ToSDLPixelFormat(this IntPtr pixelFormat)
+        {
+            return (SDL.SDL_PixelFormat)Marshal.PtrToStructure(pixelFormat, typeof(SDL.SDL_PixelFormat));
         }
     }
 }
