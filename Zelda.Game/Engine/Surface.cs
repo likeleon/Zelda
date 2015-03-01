@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Zelda.Game.Engine
 {
-    class Surface : Drawable
+    class Surface : Drawable, IDisposable
     {
         public enum ImageDirectory
         {
@@ -73,6 +73,7 @@ namespace Zelda.Game.Engine
         readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
         IntPtr _internalSurface;
         bool _isRendered;
+        bool _disposed;
 
         public static Surface Create(int width, int height)
         {
@@ -141,6 +142,28 @@ namespace Zelda.Game.Engine
             _internalSurface = internalSurface;
             _width = _internalSurface.GetStruct().w;
             _height = _internalSurface.GetStruct().h;
+        }
+
+        ~Surface()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (_internalSurface != IntPtr.Zero)
+                SDL.SDL_FreeSurface(_internalSurface);
+
+            _disposed = true;
         }
 
         public void Render(IntPtr renderer)
