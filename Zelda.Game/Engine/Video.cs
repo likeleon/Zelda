@@ -1,11 +1,14 @@
 ﻿using SDL2;
 using System;
+using System.ComponentModel;
 
 namespace Zelda.Game.Engine
 {
     static class Video
     {
         static Size _modSize;
+       
+        [Description("렌더링할 모드 표면 크기")]
         public static Size ModSize
         {
             get { return _modSize; }
@@ -31,17 +34,20 @@ namespace Zelda.Game.Engine
             get { return _mainRenderer; }
         }
 
-        static Size _wantedGameSize;
+        static Size _normalModSize;     // 모드에 설정된 기본 크기
+        static Size _minModSize;        // 모드에 설정된 최소 크기
+        static Size _maxModSize;        // 모드에 설정된 최대 크기
+        static Size _wantedModSize;     // 유저가 원한 크기
 
         public static void Initialize(Arguments args, string zeldaVersion)
         {
-            string gameSizeString = args.GetArgumentValue("-game-size");
+            string modSizeString = args.GetArgumentValue("-mod-size");
 
-            _wantedGameSize = new Size(Properties.Settings.Default.DefaultGameWidth,
-                                       Properties.Settings.Default.DefaultGameHeight);
+            _wantedModSize = new Size(Properties.Settings.Default.DefaultModWidth,
+                                      Properties.Settings.Default.DefaultModHeight);
 
-            if (gameSizeString != null)
-                _wantedGameSize = ParseSize(gameSizeString);
+            if (modSizeString != null)
+                _wantedModSize = ParseSize(modSizeString);
 
             CreateWindow(args, zeldaVersion);
         }
@@ -65,15 +71,7 @@ namespace Zelda.Game.Engine
             }
 
             _modSize = new Size();
-            _wantedGameSize = new Size();
-        }
-
-        public static void DetermineModSize()
-        {
-            _modSize = _wantedGameSize;
-
-            // 게임 크기가 결정되었기 때문에 초기화를 완료한다
-            InitializeVideoModes();
+            _wantedModSize = new Size();
         }
 
         static Size ParseSize(string sizeString)
@@ -93,8 +91,8 @@ namespace Zelda.Game.Engine
                 "Zelda " + zeldaVersion,
                 SDL.SDL_WINDOWPOS_CENTERED,
                 SDL.SDL_WINDOWPOS_CENTERED,
-                _wantedGameSize.Width,
-                _wantedGameSize.Height,
+                _wantedModSize.Width,
+                _wantedModSize.Height,
                 SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN | SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
             if (_mainWindow == IntPtr.Zero)
                 throw new Exception("Cannot create the window: " + SDL.SDL_GetError());
@@ -154,6 +152,38 @@ namespace Zelda.Game.Engine
             SDL.SDL_RenderClear(_mainRenderer);
             surface.Render(_mainRenderer);
             SDL.SDL_RenderPresent(_mainRenderer);
+        }
+
+        public static void SetModSizeRange(Size normalSize, Size minSize, Size maxSize)
+        {
+            if (normalSize.Width < minSize.Width ||
+                normalSize.Height < minSize.Height ||
+                normalSize.Width > maxSize.Width ||
+                normalSize.Height > maxSize.Height)
+                throw new Exception("Invalid mod size range");
+
+            _normalModSize = normalSize;
+            _minModSize = minSize;
+            _maxModSize = maxSize;
+
+            if (_wantedModSize.Width < minSize.Width ||
+                _wantedModSize.Height < minSize.Height ||
+                _wantedModSize.Width > maxSize.Width ||
+                _wantedModSize.Height > maxSize.Height)
+            {
+                string msg = String.Format("Cannot use mod size {0}x{1}", _wantedModSize.Width, _wantedModSize.Height);
+                msg += String.Format(": this mod only supports {0}x{1} to {2}x{3}",
+                    minSize.Width, minSize.Height, maxSize.Width, maxSize.Height);
+                msg += String.Format(". Using {0}x{1} instead.", normalSize.Width, normalSize.Height);
+                Log.Write("graphics", msg);
+                _modSize = normalSize;
+            }
+            else
+            {
+                _modSize = _wantedModSize;
+            }
+
+            InitializeVideoModes();
         }
     }
 }

@@ -2,10 +2,10 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Zelda.Game.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="DefaultGameWidth" Type="System.Int32" Scope="Application">
+    <Setting Name="DefaultModWidth" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">320</Value>
     </Setting>
-    <Setting Name="DefaultGameHeight" Type="System.Int32" Scope="Application">
+    <Setting Name="DefaultModHeight" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">240</Value>
     </Setting>
     <Setting Name="DefaultMod" Type="System.String" Scope="Application">

@@ -161,26 +161,17 @@ namespace Zelda.Game
             // 모드 속성 파일을 읽습니다
             string fileName = "Mod.xml";
 
-            ModProperties modProperties = null;
-            try
-            {
-                using (Stream buffer = ModFiles.DataFileRead(fileName))
-                {
-                    XmlSerializer serializer = new XmlSerializer(typeof(ModProperties));
-                    modProperties = (ModProperties)serializer.Deserialize(buffer);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidDataException("Failed to load Mod.xml: " + ex.Message);
-            }
+            ModProperties modProperties = ModProperties.ImportFrom(fileName);
 
             CheckVersionCompatibility(modProperties.ZeldaVersion);
             ModFiles.SetModWriteDir(modProperties.ModWriteDir);
             if (!String.IsNullOrWhiteSpace(modProperties.TitleBar))
                 Video.WindowTitle = modProperties.TitleBar;
 
-            Video.DetermineModSize();
+            Video.SetModSizeRange(
+                modProperties.NormalModSize,
+                modProperties.MinModSize,
+                modProperties.MaxModSize);
         }
 
         private void CheckVersionCompatibility(string zeldaRequiredVersion)
