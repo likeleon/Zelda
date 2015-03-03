@@ -36,15 +36,6 @@ namespace Zelda.Game
         [XmlIgnore]
         internal Size MaxModSize { get; set; }
 
-        static Size ParseSize(string size_string)
-        {
-            string[] words = size_string.Split('x');
-            if (words == null || words.Length < 2)
-                throw new ArgumentException("Invalid size string format: " + size_string, "size_string");
-            
-            return new Size(int.Parse(words[0]), int.Parse(words[1]));
-        }
-
         public static ModProperties ImportFrom(string fileName)
         {
             try
@@ -63,9 +54,9 @@ namespace Zelda.Game
                 if (properties.MaxModSizeString == null)
                     properties.MaxModSizeString = properties.NormalModSizeString;
 
-                properties.NormalModSize = ParseSize(properties.NormalModSizeString);
-                properties.MinModSize = ParseSize(properties.MinModSizeString);
-                properties.MaxModSize = ParseSize(properties.MaxModSizeString);
+                properties.NormalModSize = Video.ParseSize(properties.NormalModSizeString);
+                properties.MinModSize = Video.ParseSize(properties.MinModSizeString);
+                properties.MaxModSize = Video.ParseSize(properties.MaxModSizeString);
 
                 if (properties.NormalModSize.Width < properties.MinModSize.Width ||
                     properties.NormalModSize.Height < properties.MinModSize.Height ||

@@ -74,7 +74,7 @@ namespace Zelda.Game.Engine
             _wantedModSize = new Size();
         }
 
-        static Size ParseSize(string sizeString)
+        public static Size ParseSize(string sizeString)
         {
             string[] words = sizeString.Split('x');
             if (words.Length < 2)
