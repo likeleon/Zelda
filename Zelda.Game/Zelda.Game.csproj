@@ -96,6 +96,9 @@
     <Compile Include="Script\ScriptContext.cs" />
     <Compile Include="Script\ScriptContext.MenuApi.cs" />
     <Compile Include="Script\Surface.cs" />
+    <Compile Include="SpriteAnimation.cs" />
+    <Compile Include="SpriteAnimationDirection.cs" />
+    <Compile Include="SpriteAnimationSet.cs" />
     <Compile Include="XmlData.cs" />
   </ItemGroup>
   <ItemGroup>

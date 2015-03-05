@@ -1,9 +1,11 @@
 ﻿using SDL2;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Xml.Serialization;
 
 namespace Zelda.Game
 {
@@ -39,6 +41,12 @@ namespace Zelda.Game
         public static SDL.SDL_PixelFormat ToSDLPixelFormat(this IntPtr pixelFormat)
         {
             return (SDL.SDL_PixelFormat)Marshal.PtrToStructure(pixelFormat, typeof(SDL.SDL_PixelFormat));
+        }
+
+        public static T XmlDeserialize<T>(this Stream stream)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            return (T)serializer.Deserialize(stream);
         }
     }
 }
