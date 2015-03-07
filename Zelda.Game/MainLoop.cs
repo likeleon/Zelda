@@ -77,7 +77,7 @@ namespace Zelda.Game
 
                 // 2. 월드를 한번, 혹은 시스템이 느릴 경우 따라잡기 위해 여러번 갱신 (그리기는 스킵).
                 int numUpdates = 0;
-                while (lag >=- EngineSystem.TimeStep &&
+                while (lag >= EngineSystem.TimeStep &&
                        numUpdates < 10 && // 매우 느린 시스템에서도 적어도 가끔은 그리기 위해
                        !Exiting)
                 {
@@ -102,6 +102,7 @@ namespace Zelda.Game
             if (_game != null)
                 _game.Update();
 
+            ScriptContext.Update();
             EngineSystem.Update();
 
             if (_nextGame != _game)

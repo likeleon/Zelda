@@ -8,6 +8,11 @@ namespace Zelda.Game.Script
     static partial class ScriptContext
     {
         static MainLoop _mainLoop;
+        internal static MainLoop MainLoop
+        {
+            get { return _mainLoop; }
+        }
+
         static ObjectCreator _objectCreator;
         static Main _scriptMain;
 
@@ -26,6 +31,7 @@ namespace Zelda.Game.Script
                 _scriptMain.OnFinished();
 
             DestroyMenus();
+            DestroyTimers();
             DestroyDrawables();
         }
 
@@ -33,6 +39,7 @@ namespace Zelda.Game.Script
         {
             UpdateDrawables();
             UpdateMenus();
+            UpdateTimers();
 
             _scriptMain.OnUpdate();
         }

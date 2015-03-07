@@ -1,4 +1,5 @@
-﻿using Zelda.Game.Script;
+﻿using System;
+using Zelda.Game.Script;
 
 namespace Sample.Menus
 {
@@ -13,6 +14,12 @@ namespace Sample.Menus
             
             _title = Sprite.Create("Menus/solarus_logo");
             _title.SetAnimation("title");
+
+            Timer.Start(this, 5000, () =>
+            {
+                Console.WriteLine("Timer expired");
+                return true;
+            });
         }
 
         protected override void OnStarted()

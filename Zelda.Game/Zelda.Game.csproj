@@ -70,6 +70,7 @@
     <Compile Include="Engine\Size.cs" />
     <Compile Include="Script\Drawable.cs" />
     <Compile Include="Script\Sprite.cs" />
+    <Compile Include="Script\Timer.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="Engine\Surface.cs" />
     <Compile Include="Engine\EngineSystem.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="SpriteAnimation.cs" />
     <Compile Include="SpriteAnimationDirection.cs" />
     <Compile Include="SpriteAnimationSet.cs" />
+    <Compile Include="Timer.cs" />
     <Compile Include="XmlData.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +111,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Compile Include="Script\ScriptContext.DrawableApi.cs" />
+    <Compile Include="Script\ScriptContext.TimerApi.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
