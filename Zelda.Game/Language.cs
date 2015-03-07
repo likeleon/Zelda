@@ -11,7 +11,7 @@ namespace Zelda.Game
             set
             {
                 if (!HasLanguage(value))
-                    throw new Exception("No such language: '" + value + "'");
+                    throw new Exception("No such language: '{0}'".F(value));
 
                 _languageCode = value;
             }

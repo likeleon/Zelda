@@ -78,7 +78,7 @@ namespace Zelda.Game.Engine
 
         public override string ToString()
         {
-            return String.Format("({0},{1})", _width, _height);
+            return "({0},{1})".F(_width, _height);
         }
     }
 }

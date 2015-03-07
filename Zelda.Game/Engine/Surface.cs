@@ -177,7 +177,7 @@ namespace Zelda.Game.Engine
             }
 
             if (softwareSurface == IntPtr.Zero)
-                throw new Exception("Cannot load image '" + prefixedFileName + "'");
+                throw new Exception("Cannot load image '{0}'".F(prefixedFileName));
 
             return softwareSurface;
         }

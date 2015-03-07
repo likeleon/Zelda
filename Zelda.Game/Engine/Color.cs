@@ -67,7 +67,7 @@ namespace Zelda.Game.Engine
      
         public override string ToString()
         {
-            return String.Format("({0},{1},{2},{3})", _r, _g, _b, _a);
+            return "({0},{1},{2},{3})".F(_r, _g, _b, _a);
         }
 
         #region 알려진 색들

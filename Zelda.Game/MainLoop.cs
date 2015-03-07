@@ -176,8 +176,8 @@ namespace Zelda.Game
             if (requiredVersion.Major != EngineSystem.ZeldaVersion.Major ||
                 requiredVersion.Minor != EngineSystem.ZeldaVersion.Minor)
             {
-                string msg = "This mod is made for Zelda " + requiredVersion.Major + "." + requiredVersion.Minor
-                           + ".x but you are running Zelda" + EngineSystem.ZeldaVersion.ToString();
+                string msg = "This mod is made for Zelda {0}.{1}".F(requiredVersion.Major, requiredVersion.Minor);
+                msg += ".x but you are running Zelda {0}".F(EngineSystem.ZeldaVersion.ToString());
                 throw new InvalidDataException(msg);
             }
         }

@@ -16,7 +16,7 @@ namespace Zelda.Game.Script
             if (languageCode != null)
             {
                 if (!LanguageInternal.HasLanguage(languageCode))
-                    throw new Exception("No such language: '" + languageCode + "'");
+                    throw new Exception("No such language: '{0}'".F(languageCode));
                 
                 return LanguageInternal.GetLanguageName(languageCode);
             }

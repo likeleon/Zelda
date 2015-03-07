@@ -171,10 +171,9 @@ namespace Zelda.Game.Engine
                 _wantedModSize.Width > maxSize.Width ||
                 _wantedModSize.Height > maxSize.Height)
             {
-                string msg = String.Format("Cannot use mod size {0}x{1}", _wantedModSize.Width, _wantedModSize.Height);
-                msg += String.Format(": this mod only supports {0}x{1} to {2}x{3}",
-                    minSize.Width, minSize.Height, maxSize.Width, maxSize.Height);
-                msg += String.Format(". Using {0}x{1} instead.", normalSize.Width, normalSize.Height);
+                string msg = "Cannot use mod size {0}x{1}".F(_wantedModSize.Width, _wantedModSize.Height);
+                msg += ": this mod only supports {0}x{1} to {2}x{3}".F(minSize.Width, minSize.Height, maxSize.Width, maxSize.Height);
+                msg += ". Using {0}x{1} instead.".F(normalSize.Width, normalSize.Height);
                 Log.Write("Graphics", msg);
                 _modSize = normalSize;
             }

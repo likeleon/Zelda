@@ -135,10 +135,7 @@ namespace Zelda.Game
                     }
 
                     if (_animations.ContainsKey(animationName))
-                    {
-                        string msg = String.Format("Duplicate animation '{0}' in sprite '{1}'", animationName, _id);
-                        throw new Exception(msg);
-                    }
+                        throw new Exception("Duplicate animation '{0}' in sprite '{1}'".F(animationName, _id));
 
                     _animations.Add(animationName, new SpriteAnimation(srcImage, directions, frameDelay, frameToLoopOn));
 
@@ -152,7 +149,7 @@ namespace Zelda.Game
         string CheckStringField(string value, string name)
         {
             if (value == null)
-                throw new Exception(String.Format("Bad field '{0}' (non-null string expected)", name));
+                throw new Exception("Bad field '{0}' (non-null string expected)".F(name));
             
             return value;
         }
@@ -160,7 +157,7 @@ namespace Zelda.Game
         int CheckIntField(int? value, string name)
         {
             if (!value.HasValue)
-                throw new Exception(String.Format("Bad field '{0}' (non-null int expected)", name));
+                throw new Exception("Bad field '{0}' (non-null int expected)".F(name));
 
             return value.Value;
         }
@@ -181,7 +178,7 @@ namespace Zelda.Game
         public SpriteAnimation GetAnimation(string animationName)
         {
             if (!HasAnimation(animationName))
-                throw new Exception("No animation '" + animationName + "' in animation set '" + _id + "'");
+                throw new Exception("No animation '{0}' in animation set '{1}'".F(animationName, _id));
 
             return _animations[animationName];
         }

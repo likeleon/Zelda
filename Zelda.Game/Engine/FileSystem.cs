@@ -52,7 +52,7 @@ namespace Zelda.Game.Engine
             public string url;
             public override string ToString()
             {
-                return string.Format("{0} - {1} ({2} - {3})", extension, description, author, url);
+                return "{0} - {1} ({2} - {3})".F(extension, description, author, url);
             }
         }
 
