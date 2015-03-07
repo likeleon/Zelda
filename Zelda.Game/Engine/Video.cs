@@ -147,7 +147,7 @@ namespace Zelda.Game.Engine
 
         public static void Render(Surface surface)
         {
-            SDL.SDL_SetRenderDrawColor(_mainRenderer, 255, 255, 255, 255);
+            SDL.SDL_SetRenderDrawColor(_mainRenderer, 0, 0, 0, 255);
             SDL.SDL_RenderSetClipRect(_mainRenderer, IntPtr.Zero);
             SDL.SDL_RenderClear(_mainRenderer);
             surface.Render(_mainRenderer);
@@ -175,7 +175,7 @@ namespace Zelda.Game.Engine
                 msg += String.Format(": this mod only supports {0}x{1} to {2}x{3}",
                     minSize.Width, minSize.Height, maxSize.Width, maxSize.Height);
                 msg += String.Format(". Using {0}x{1} instead.", normalSize.Width, normalSize.Height);
-                Log.Write("graphics", msg);
+                Log.Write("Graphics", msg);
                 _modSize = normalSize;
             }
             else

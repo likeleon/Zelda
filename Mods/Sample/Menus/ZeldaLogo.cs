@@ -5,12 +5,14 @@ namespace Sample.Menus
     class ZeldaLogo : Menu
     {
         readonly Surface _surface;
-        readonly Sprite _logo;
+        readonly Sprite _title;
 
         public ZeldaLogo()
         {
-            _surface = Surface.Create(400, 240);
-            _logo = Sprite.Create("Menus/zelda_logo.png");
+            _surface = Surface.Create(201, 48);
+            
+            _title = Sprite.Create("Menus/solarus_logo");
+            _title.SetAnimation("title");
         }
 
         protected override void OnStarted()
@@ -23,12 +25,12 @@ namespace Sample.Menus
         void RebuildSurface()
         {
             _surface.Clear();
-            _logo.Draw(_surface, 0, 0);
+            _title.Draw(_surface, 0, 0);
         }
 
         protected override void OnDraw(Surface screen)
         {
-            _surface.Draw(screen, 0, 0);
+            _surface.Draw(screen, screen.Width / 2 - 100, screen.Height / 2 - 24);
         }
     }
 }

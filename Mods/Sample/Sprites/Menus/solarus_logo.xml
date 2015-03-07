@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnimationSet>
+  <Animation>
+    <Name>title</Name>
+    <SrcImage>Menus/solarus_logo.png</SrcImage>
+    <Directions>
+      <Direction>
+        <X>0</X>
+        <Y>0</Y>
+        <FrameWidth>201</FrameWidth>
+        <FrameHeight>32</FrameHeight>
+        <OriginY>-1</OriginY>
+      </Direction>
+    </Directions>
+  </Animation>
+</AnimationSet>

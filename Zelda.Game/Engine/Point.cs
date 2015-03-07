@@ -73,7 +73,7 @@ namespace Zelda.Game.Engine
 
         public override string ToString()
         {
-            return String.Format("({0},{1}", _x, _y);
+            return "({0},{1})".F(_x, _y);
         }
     }
 }

@@ -66,10 +66,10 @@ namespace Zelda.Game
             if (!_channels.TryGetValue(channel, out info))
                 throw new Exception("Tried logging to non-existant channel " + channel);
 
-            if (info.Writer == null)
-                return;
+            if (info.Writer != null)
+                info.Writer.WriteLine(format, args);
 
-            info.Writer.WriteLine(format, args);
+            Console.WriteLine("{0}: {1}".F(channel, String.Format(format, args)));
         }
     }
 }

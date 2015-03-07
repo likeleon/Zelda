@@ -1,4 +1,5 @@
-﻿using Zelda.Game.Engine;
+﻿using System;
+using Zelda.Game.Engine;
 using RawSprite = Zelda.Game.Sprite;
 
 namespace Zelda.Game.Script
@@ -17,6 +18,15 @@ namespace Zelda.Game.Script
             : base(rawSprite)
         {
             _rawSprite = rawSprite;
+        }
+
+        public void SetAnimation(string animationName)
+        {
+            if (animationName == null)
+                throw new ArgumentNullException("animationName");
+
+            _rawSprite.SetCurrentAnimation(animationName);
+            _rawSprite.RestartAnimation();
         }
     }
 }

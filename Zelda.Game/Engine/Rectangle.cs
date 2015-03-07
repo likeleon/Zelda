@@ -140,5 +140,10 @@ namespace Zelda.Game.Engine
         {
             return (Height + Width) ^ X + Y;
         }
+
+        public override string ToString()
+        {
+            return "{0}x{1}".F(XY, Size);
+        }
     }
 }
