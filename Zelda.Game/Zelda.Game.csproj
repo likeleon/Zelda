@@ -68,7 +68,10 @@
     <Compile Include="Engine\Rectangle.cs" />
     <Compile Include="Engine\Input.cs" />
     <Compile Include="Engine\Size.cs" />
+    <Compile Include="Movements\Movement.cs" />
     <Compile Include="Script\Drawable.cs" />
+    <Compile Include="Script\Movement.cs" />
+    <Compile Include="Script\MovementType.cs" />
     <Compile Include="Script\Sprite.cs" />
     <Compile Include="Script\Timer.cs" />
     <Compile Include="Sprite.cs" />
