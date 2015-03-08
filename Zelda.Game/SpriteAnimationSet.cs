@@ -28,6 +28,7 @@ namespace Zelda.Game
 
         public class Animation
         {
+            [XmlAttribute]
             public string Name { get; set; }
             public string SrcImage { get; set; }
             public int? FrameDelay { get; set; }

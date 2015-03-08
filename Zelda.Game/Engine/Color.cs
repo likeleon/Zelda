@@ -2,7 +2,7 @@
 
 namespace Zelda.Game.Engine
 {
-    struct Color
+    public struct Color
     {
         readonly byte _r;
         public byte R
@@ -35,7 +35,15 @@ namespace Zelda.Game.Engine
             _b = (byte)b;
             _a = (byte)a;
         }
-     
+
+        public void GetComponents(out byte r, out byte g, out byte b, out byte a)
+        {
+            r = _r;
+            g = _g;
+            b = _b;
+            a = _a;
+        }
+
         public static bool operator ==(Color color1, Color color2)
         {
             return ((color1._r == color2._r) &&

@@ -2,7 +2,7 @@
 
 namespace Zelda.Game.Engine
 {
-    struct Size
+    public struct Size
     {
         readonly int _width;
         public int Width

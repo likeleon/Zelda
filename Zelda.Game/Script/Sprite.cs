@@ -8,6 +8,11 @@ namespace Zelda.Game.Script
     {
         readonly RawSprite _rawSprite;
 
+        public int Direction
+        {
+            get { return _rawSprite.CurrentDirection; }
+        }
+
         public static Sprite Create(string imageFileName)
         {
             RawSprite rawSprite = new RawSprite(imageFileName);
@@ -27,6 +32,18 @@ namespace Zelda.Game.Script
 
             _rawSprite.SetCurrentAnimation(animationName);
             _rawSprite.RestartAnimation();
+        }
+
+        public void SetDirection(int direction)
+        {
+            if (direction < 0 || direction >= _rawSprite.NumDirections)
+            {
+                string msg = "Illegal direction {0} for sprite '{1}' in animation '{2}'"
+                    .F(direction, _rawSprite.AnimationSetId, _rawSprite.CurrentAnimation);
+                throw new ArgumentOutOfRangeException("direction", msg);
+            }
+
+            _rawSprite.SetCurrentDirection(direction);
         }
     }
 }

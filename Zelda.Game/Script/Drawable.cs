@@ -1,10 +1,17 @@
-﻿using RawDrawable = Zelda.Game.Engine.Drawable;
+﻿using Zelda.Game.Engine;
+using RawDrawable = Zelda.Game.Engine.Drawable;
 
 namespace Zelda.Game.Script
 {
     public abstract class Drawable
     {
         readonly RawDrawable _rawDrawable;
+
+        public Point XY
+        {
+            get { return _rawDrawable.XY; }
+            set { _rawDrawable.XY = value; }
+        }
 
         internal Drawable(RawDrawable rawDrawable)
         {

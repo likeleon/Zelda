@@ -126,6 +126,7 @@ namespace Zelda.Game.Engine
         readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
         IntPtr _internalSurface;
         Texture _internalTexture;
+        Color? _internalColor;
         bool _isRendered;
         bool _disposed;
 
@@ -254,6 +255,15 @@ namespace Zelda.Game.Engine
 
             byte currentOpacity = Math.Min(_internalOpacity, opacity);
 
+            // 배경색을 그립니다
+            if (_internalColor != null)
+            {
+                byte r, g, b, a;
+                _internalColor.Value.GetComponents(out r, out g, out b, out a);
+                SDL.SDL_SetRenderDrawColor(renderer, r, g, b, Math.Min(a, currentOpacity));
+                SDL.SDL_RenderFillRect(renderer, ref clipRect._rect);
+            }
+
             // 내부 텍스쳐를 그립니다
             if (_internalTexture != null)
             {
@@ -300,6 +310,8 @@ namespace Zelda.Game.Engine
         {
             ClearSubsurfaces();
 
+            _internalColor = null;
+
             if (_internalSurface != null)
             {
                 if (_softwareDestination)
@@ -345,7 +357,7 @@ namespace Zelda.Game.Engine
                     ClearSubsurfaces();
                 }
 
-                if (_internalSurface != null)
+                if (_internalSurface != IntPtr.Zero)
                 {
                     Rectangle dstRect = new Rectangle(dstPosition);
                     SDL.SDL_BlitSurface(
@@ -353,6 +365,33 @@ namespace Zelda.Game.Engine
                         ref region._rect,
                         dstSurface._internalSurface,
                         ref dstRect._rect);
+                }
+                else if (_internalColor != null)
+                {
+                    if (_internalColor.Value.A == 255)
+                    {
+                        // 불투명. 대상 픽셀을 직접 수정할 수 있습니다
+                        Rectangle dstRect = new Rectangle(dstPosition, region.Size);
+                        SDL.SDL_FillRect(
+                            dstSurface._internalSurface,
+                            ref dstRect._rect,
+                            GetColorValue(_internalColor.Value));
+                    }
+                    else
+                    {
+                        // 반투명. 알파 블렌딩이 필요합니다
+                        CreateSoftwareSurface();
+                        SDL.SDL_FillRect(
+                            _internalSurface,
+                            IntPtr.Zero,
+                            GetColorValue(_internalColor.Value));
+                        Rectangle dstRect = new Rectangle(dstPosition);
+                        SDL.SDL_BlitSurface(
+                            _internalSurface,
+                            ref region._rect,
+                            dstSurface._internalSurface,
+                            ref dstRect._rect);
+                    }
                 }
             }
             else
@@ -460,6 +499,15 @@ namespace Zelda.Game.Engine
                 _internalSurface.ToSDLSurface().pixels,
                 _internalSurface.ToSDLSurface().pitch);
             SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out _internalOpacity);
+        }
+
+        public void FillWithColor(Color color, Rectangle? where)
+        {
+            Rectangle fillwhere = where ?? new Rectangle(0, 0, _width, _height);
+            Surface coloredSurface = Surface.Create(fillwhere.Size);
+            coloredSurface.SoftwareDestination = false;
+            coloredSurface._internalColor = color;
+            coloredSurface.RawDrawRegion(new Rectangle(coloredSurface.Size), this, fillwhere.XY);
         }
     }
 }

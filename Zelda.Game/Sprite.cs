@@ -65,6 +65,12 @@ namespace Zelda.Game
         }
 
         string _currentAnimationName;
+        [Description("현재 애니메이션")]
+        public string CurrentAnimation
+        {
+            get { return _currentAnimationName; }
+        }
+
         SpriteAnimation _currentAnimation;
         uint nextFrameDate;        
 

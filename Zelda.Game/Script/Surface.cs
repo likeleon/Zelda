@@ -52,5 +52,10 @@ namespace Zelda.Game.Script
         {
             _rawSurface.Clear();
         }
+
+        public void FillColor(Color color, Rectangle? where = null)
+        {
+            _rawSurface.FillWithColor(color, where);
+        }
     }
 }
