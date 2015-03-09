@@ -1,8 +1,15 @@
-﻿
+﻿using Zelda.Game.Engine;
+
 namespace Zelda.Game.Movements
 {
-    class Movement
+    abstract class Movement
     {
+        Point _xy;
+        public Point XY
+        {
+            get { return _xy; }
+        }
+
         bool _isScriptCallbackEnable;
         public bool IsScriptCallbackEnable
         {

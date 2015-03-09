@@ -63,13 +63,21 @@ namespace Sample.Menus
             _sun.XY = new Point(0, 0);
             _sword.XY = new Point(0, 0);
 
-            //StartAnimation();
+            StartAnimation();
             RebuildSurface();
         }
 
         protected override void OnDraw(Surface screen)
         {
             _surface.Draw(screen, screen.Width / 2 - 100, screen.Height / 2 - 24);
+        }
+
+        void StartAnimation()
+        {
+            TargetMovement sunMovement = Movement.Create(MovementType.Target) as TargetMovement;
+            sunMovement.SetSpeed(64);
+            sunMovement.SetTarget(new Point(0, -33));
+            sunMovement.PositionChanged += () => RebuildSurface();
         }
     }
 }

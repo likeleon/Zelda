@@ -63,12 +63,15 @@
     <Compile Include="Engine\Color.cs" />
     <Compile Include="Engine\Drawable.cs" />
     <Compile Include="Engine\FileSystem.cs" />
+    <Compile Include="Engine\Geometry.cs" />
     <Compile Include="Engine\ModFiles.cs" />
     <Compile Include="Engine\Point.cs" />
     <Compile Include="Engine\Rectangle.cs" />
     <Compile Include="Engine\Input.cs" />
     <Compile Include="Engine\Size.cs" />
     <Compile Include="Movements\Movement.cs" />
+    <Compile Include="Movements\StraightMovement.cs" />
+    <Compile Include="Movements\TargetMovement.cs" />
     <Compile Include="Script\Drawable.cs" />
     <Compile Include="Script\Movement.cs" />
     <Compile Include="Script\MovementType.cs" />

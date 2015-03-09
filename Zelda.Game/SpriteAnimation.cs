@@ -55,7 +55,7 @@ namespace Zelda.Game
 
             _directions[currentDirection].Draw(dstSurface, dstPosition, currentFrame, _srcImage);
         }
-     
+
         public void Dispose()
         {
             _srcImage.Dispose();
