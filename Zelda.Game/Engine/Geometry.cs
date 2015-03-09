@@ -31,14 +31,14 @@ namespace Zelda.Game.Engine
             return GetAngle(point1.X, point1.Y, point2.X, point2.Y);
         }
 
-        public double GetDistance(int x1, int y1, int x2, int y2)
+        public static double GetDistance(int x1, int y1, int x2, int y2)
         {
             int dx = x2 - x1;
             int dy = y2 - y1;
             return Math.Sqrt((double)(dx * dx + dy * dy));
         }
 
-        public double GetDistance(Point point1, Point point2)
+        public static double GetDistance(Point point1, Point point2)
         {
             return GetDistance(point1.X, point1.Y, point2.X, point2.Y);
         }

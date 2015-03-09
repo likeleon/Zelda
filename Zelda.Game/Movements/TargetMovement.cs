@@ -59,7 +59,7 @@ namespace Zelda.Game.Movements
                     // 각도가 변했거나 이동이 멈춘 경우
                     SetSpeed(_movingSpeed);
                     SetAngle(angle);
-                    MaxDistance = (int)Geometry.GetDistance(XY, target);
+                    MaxDistance = (int)Geometry.GetDistance(XY, _target);
                 }
             }
         }
