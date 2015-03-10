@@ -75,6 +75,7 @@
     <Compile Include="Script\Drawable.cs" />
     <Compile Include="Script\Movement.cs" />
     <Compile Include="Script\MovementType.cs" />
+    <Compile Include="Script\ScriptContext.MovementApi.cs" />
     <Compile Include="Script\Sprite.cs" />
     <Compile Include="Script\Timer.cs" />
     <Compile Include="Sprite.cs" />

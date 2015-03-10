@@ -1,4 +1,5 @@
-﻿
+﻿using System.Linq;
+
 namespace Zelda.Game.Script
 {
     public abstract class Menu
@@ -14,6 +15,20 @@ namespace Zelda.Game.Script
         
         protected internal virtual void OnDraw(Surface dstSurface)
         {
+        }
+
+        protected internal virtual void OnFinished()
+        {
+        }
+
+        public bool IsStarted()
+        {
+            return ScriptContext.IsStarted(this);
+        }
+
+        public void Stop()
+        {
+            ScriptContext.Stop(this);
         }
     }
 }

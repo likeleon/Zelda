@@ -13,6 +13,7 @@ namespace Sample.Menus
         readonly Sprite _sword;
         readonly Surface _blackSquare;
         int _animationStep;
+        Timer _timer;
 
         public ZeldaLogo()
         {
@@ -44,7 +45,7 @@ namespace Sample.Menus
         {
             _surface.Clear();
 
-            //if (_animationStep >= 1)
+            if (_animationStep >= 1)
                 _title.Draw(_surface, 0, 0);
 
             _sun.Draw(_surface, 0, 33);
@@ -74,10 +75,77 @@ namespace Sample.Menus
 
         void StartAnimation()
         {
+            // 태양의 이동
             TargetMovement sunMovement = Movement.Create(MovementType.Target) as TargetMovement;
             sunMovement.SetSpeed(64);
             sunMovement.SetTarget(new Point(0, -33));
-            sunMovement.PositionChanged += () => RebuildSurface();
+            sunMovement.PositionChanged += (o, e) => RebuildSurface();
+
+            // 검의 이동
+            TargetMovement swordMovement = Movement.Create(MovementType.Target) as TargetMovement;
+            swordMovement.SetSpeed(96);
+            swordMovement.SetTarget(new Point(-48, 48));
+            swordMovement.PositionChanged += (o, e) => RebuildSurface();
+
+            // 이동을 시작합니다
+            sunMovement.Start(_sun, () =>
+            {
+                swordMovement.Start(_sword, () =>
+                {
+                    if (!IsStarted())
+                    {
+                        // 메뉴는 정지되었지만 이동은 계속된 경우
+                        return;
+                    }
+
+                    if (_animationStep <= 0)
+                    {
+                        // 스텝 1을 시작합니다
+                        Step1();
+
+                        // 스텝 2를 위한 타이머를 생성합니다.
+                        _timer = Timer.Start(this, 250, () =>
+                        {
+                            if (_animationStep <= 1)
+                                Step2();
+                            
+                            return false;
+                        });
+                    }
+                });
+            });
+        }
+
+        void Step1()
+        {
+            _animationStep = 1;
+            
+            _sun.SetDirection(1);
+            _sun.StopMovement();
+            _sun.XY = new Point(0, -33);
+
+            _sword.StopMovement();
+            _sword.XY = new Point(-48, 48);
+
+            RebuildSurface();
+        }
+
+        void Step2()
+        {
+            _animationStep = 2;
+
+            RebuildSurface();
+
+            Timer.Start(this, 500, () =>
+            {
+                //_surface.FadeOut();
+                Timer.Start(this, 700, () =>
+                {
+                    Stop();
+                    return false;
+                });
+                return false;
+            });
         }
     }
 }

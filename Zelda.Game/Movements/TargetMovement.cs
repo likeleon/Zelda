@@ -1,22 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Zelda.Game.Engine;
 
 namespace Zelda.Game.Movements
 {
     class TargetMovement : StraightMovement
     {
+        bool _finished;
+        public override bool IsFinished
+        {
+            get { return _finished; }
+        }
+
         Point _target;
         int _movingSpeed;
         uint _nextRecomputationDate;
-        bool _finished;
         int _signX;         // X 방향 (1: 우, -1: 좌)
         int _signY;         // Y 방향 (1: 아래, -1: 위)
 
-        static readonly uint s_recomputationDelay = 150;
+        static readonly uint RecomputationDelay = 150;
 
         public TargetMovement(Point target, int movingSpeed)
         {
@@ -38,7 +39,7 @@ namespace Zelda.Game.Movements
             _target = xy;
 
             RecomputeMovement();
-            _nextRecomputationDate = EngineSystem.Now + s_recomputationDelay;
+            _nextRecomputationDate = EngineSystem.Now + RecomputationDelay;
         }
 
         // 타겟에 기반해 방향과 속력을 계산합니다
@@ -62,6 +63,34 @@ namespace Zelda.Game.Movements
                     MaxDistance = (int)Geometry.GetDistance(XY, _target);
                 }
             }
+        }
+
+        public override void NotifyObjectControlled()
+        {
+            base.NotifyObjectControlled();
+
+            // 좌표가 변경되었으니 다시 계산합니다
+            RecomputeMovement();
+        }
+
+        public override void Update()
+        {
+            if (EngineSystem.Now >= _nextRecomputationDate)
+            {
+                RecomputeMovement();
+                _nextRecomputationDate += RecomputationDelay;
+            }
+
+            // 타겟에 다다랐는지를 확인합니다
+            Point dxy = _target - XY;
+            if (dxy.X * _signX <= 0 && dxy.Y * _signY <= 0)
+            {
+                SetXY(_target); // 매우 정확하게 이동하지 않을 가능성이 있기 때문에 명시적으로 설정
+                Stop();
+                _finished = true;
+            }
+
+            base.Update();
         }
     }
 }

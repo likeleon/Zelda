@@ -1,10 +1,17 @@
 ﻿using System.Drawing;
+using Zelda.Game.Movements;
 
 namespace Zelda.Game.Engine
 {
     abstract class Drawable
     {
         public Point XY { get; set; }
+
+        Movement _movement;
+        public Movement Movement
+        {
+            get { return _movement; }
+        }
 
         protected Drawable()
         {
@@ -40,6 +47,24 @@ namespace Zelda.Game.Engine
 
         public virtual void Update()
         {
+            if (_movement != null)
+            {
+                _movement.Update();
+                if (_movement != null && _movement.IsFinished)
+                    StopMovement();
+            }
+        }
+
+        public void StartMovement(Movement movement)
+        {
+            StopMovement();
+            _movement = movement;
+            movement.SetDrawable(this);
+        }
+
+        public void StopMovement()
+        {
+            _movement = null;
         }
     }
 }

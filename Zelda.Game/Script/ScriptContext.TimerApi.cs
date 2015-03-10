@@ -81,8 +81,11 @@ namespace Zelda.Game.Script
 
         static void UpdateTimers()
         {
+            // DoTimerCallback에서 _timers를 변경할 수 있기 때문에 이에 대한 복사본을 얻습니다
+            var timersToUpdate = new Dictionary<RawTimer, ScriptTimerData>(_timers);
+            
             // 모든 유효한 타이머들을 갱신합니다
-            foreach (var entry in _timers)
+            foreach (var entry in timersToUpdate)
             {
                 RawTimer timer = entry.Key;
                 TimerCallback callback = entry.Value.Callback;
@@ -97,8 +100,8 @@ namespace Zelda.Game.Script
             // 삭제 예정 타이머들을 삭제합니다
             foreach (RawTimer timer in _timersToRemove)
             {
-                if (!_timers.Remove(timer))
-                    throw new Exception("Failed to remove timer");
+                if (_timers.ContainsKey(timer))
+                    _timers.Remove(timer);
             }
             _timersToRemove.Clear();
         }
@@ -106,6 +109,20 @@ namespace Zelda.Game.Script
         static void DestroyTimers()
         {
             _timers.Clear();
+        }
+
+        // context와 관련된 모든 타이머들을 해제합니다
+        static void RemoveTimers(object context)
+        {
+            foreach (var entry in _timers)
+            {
+                RawTimer timer = entry.Key;
+                if (entry.Value.Context == context)
+                {
+                    entry.Value.Callback = null;
+                    _timersToRemove.Add(timer);
+                }
+            }
         }
     }
 }

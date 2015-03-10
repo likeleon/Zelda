@@ -13,9 +13,10 @@ namespace Zelda.Game.Script
             get { return _rawSprite.CurrentDirection; }
         }
 
-        public static Sprite Create(string imageFileName)
+        public static Sprite Create(string animationSetId)
         {
-            RawSprite rawSprite = new RawSprite(imageFileName);
+            RawSprite rawSprite = new RawSprite(animationSetId);
+            ScriptContext.AddDrawable(rawSprite);
             return new Sprite(rawSprite);
         }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using Zelda.Game.Engine;
-using Zelda.Game.Movements;
 using RawMovement = Zelda.Game.Movements.Movement;
 using RawStraightMovement = Zelda.Game.Movements.StraightMovement;
 using RawTargetMovement = Zelda.Game.Movements.TargetMovement;
@@ -9,6 +8,9 @@ namespace Zelda.Game.Script
 {
     public abstract class Movement
     {
+        public event EventHandler<Point> PositionChanged;
+        public event EventHandler MovementFinished;
+
         readonly RawMovement _rawMovement;
 
         public static Movement Create(MovementType type)
@@ -28,13 +30,56 @@ namespace Zelda.Game.Script
                 throw new ArgumentOutOfRangeException("type", "should be one of: {0}".F(enumNames));
             }
 
-            movement._rawMovement.IsScriptCallbackEnable = true;
+            movement._rawMovement.ScriptMovement = movement;
             return movement;
         }
 
         internal Movement(RawMovement rawMovement)
         {
             _rawMovement = rawMovement;
+        }
+
+        public void Start(object objectToMove, Action finishedCallback)
+        {
+            Stop();
+
+            if (objectToMove is Drawable)
+            {
+                Drawable drawable = objectToMove as Drawable;
+                drawable.RawDrawable.StartMovement(_rawMovement);
+            }
+            else
+            {
+                throw new ArgumentException("Point, Entity or Drawable", "objectToMove");
+            }
+            _rawMovement.FinishedCallback = finishedCallback;
+        }
+
+        public void Stop()
+        {
+
+        }
+
+        internal void NotifyPositionChanged(Point xy)
+        {
+            OnPositionChanged(xy);
+            if (PositionChanged != null)
+                PositionChanged(this, xy);
+        }
+
+        public virtual void OnPositionChanged(Point xy)
+        {
+        }
+
+        internal void NotifyMovementFinished()
+        {
+            OnMovementFinished();
+            if (MovementFinished != null)
+                MovementFinished(this, EventArgs.Empty);
+        }
+
+        public virtual void OnMovementFinished()
+        {
         }
     }
 
@@ -45,6 +90,7 @@ namespace Zelda.Game.Script
         internal StraightMovement(RawStraightMovement rawStraightMovement)
             : base(rawStraightMovement)
         {
+            _rawStraightMovement = rawStraightMovement;
         }
     }
 

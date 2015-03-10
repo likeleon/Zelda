@@ -1,30 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Zelda.Game.Script
 {
     static partial class ScriptContext
     {
-        class ScriptMenuData
+        internal class ScriptMenuData
         {
-            readonly Menu _menu;
-            public Menu Menu
-            {
-                get { return _menu; }
-            }
-
-            readonly object _context;
-            public object Context
-            {
-                get { return _context; }
-            }
-
+            public Menu Menu { get; set; }
+            public object Context { get; set; }
             public bool RecentlyAdded { get; set; }
 
             public ScriptMenuData(Menu menu, object context)
             {
-                _menu = menu;
-                _context = context;
+                Menu = menu;
+                Context = context;
                 RecentlyAdded = true;
             }
         }
@@ -73,6 +64,46 @@ namespace Zelda.Game.Script
         static void MenuOnDraw(Menu menu, Surface dstSurface)
         {
             menu.OnDraw(dstSurface);
+        }
+
+        public static bool IsStarted(Menu menu)
+        {
+            return _menus.Any(m => m.Menu == menu);
+        }
+
+        public static void Stop(Menu menu)
+        {
+            ScriptMenuData menuData = _menus.Find(m => m.Menu == menu);
+            if (menuData != null)
+            {
+                menuData.Menu = null;
+                menuData.Context = null;
+                MenuOnFinished(menu);
+            }
+        }
+
+        static void MenuOnFinished(Menu menu)
+        {
+            RemoveMenus(menu);  // 먼저 모든 자식 메뉴들을 정지시킵니다
+            menu.OnFinished();
+            RemoveTimers(menu); // 이 메뉴에 관련된 타이머들을 모두 정지시킵니다
+        }
+
+        // context와 관련된 모든 메뉴를 해제합니다
+        static void RemoveMenus(object context)
+        {
+            // 어떤 메뉴들은 OnFinished 시점에 새로운 메뉴들을 생성할 수 있는데, 이들은 제거되지 않아야 합니다
+            _menus.ForEach(m => m.RecentlyAdded = false);
+
+            foreach (ScriptMenuData menu in _menus)
+            {
+                if (menu.Context == context && !menu.RecentlyAdded)
+                {
+                    menu.Menu = null;
+                    menu.Context = null;
+                    MenuOnFinished(menu.Menu);
+                }
+            }
         }
     }
 }
