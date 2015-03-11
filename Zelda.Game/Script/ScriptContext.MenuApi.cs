@@ -29,7 +29,7 @@ namespace Zelda.Game.Script
             else
                 _menus.Insert(0, new ScriptMenuData(menu, context));
 
-            menu.OnStarted();
+            menu.NotifyStarted();
         }
 
         static void UpdateMenus()
@@ -85,7 +85,7 @@ namespace Zelda.Game.Script
         static void MenuOnFinished(Menu menu)
         {
             RemoveMenus(menu);  // 먼저 모든 자식 메뉴들을 정지시킵니다
-            menu.OnFinished();
+            menu.NotifyFinished();
             RemoveTimers(menu); // 이 메뉴에 관련된 타이머들을 모두 정지시킵니다
         }
 

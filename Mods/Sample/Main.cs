@@ -19,7 +19,8 @@ namespace Sample
             Language.LanguageCode = "en";
 
             ZeldaLogo zeldaLogo = new ZeldaLogo();
-            Menu.Start(this, zeldaLogo);
+            zeldaLogo.Finished += (o, e) => Console.WriteLine("Time to start gamme");
+            zeldaLogo.Start(this);
         }
     }
 }

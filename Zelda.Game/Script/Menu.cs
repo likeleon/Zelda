@@ -1,15 +1,19 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace Zelda.Game.Script
 {
     public abstract class Menu
     {
-        public static void Start(object context, Menu menu, bool onTop = true)
+        public event EventHandler Started;
+        public event EventHandler Finished;
+
+        public void Start(object context, bool onTop = true)
         {
-            ScriptContext.AddMenu(menu, context, onTop);
+            ScriptContext.AddMenu(this, context, onTop);
         }
 
-        protected internal virtual void OnStarted()
+        protected virtual void OnStarted()
         {
         }
         
@@ -17,7 +21,7 @@ namespace Zelda.Game.Script
         {
         }
 
-        protected internal virtual void OnFinished()
+        protected virtual void OnFinished()
         {
         }
 
@@ -29,6 +33,20 @@ namespace Zelda.Game.Script
         public void Stop()
         {
             ScriptContext.Stop(this);
+        }
+
+        internal void NotifyStarted()
+        {
+            OnStarted();
+            if (Started != null)
+                Started(this, EventArgs.Empty);
+        }
+
+        internal void NotifyFinished()
+        {
+            OnFinished();
+            if (Finished != null)
+                Finished(this, EventArgs.Empty);
         }
     }
 }
