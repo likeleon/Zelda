@@ -38,7 +38,7 @@ namespace Zelda.Game.Engine
 
             ModFiles.Initialize(args);
             InitializeLog();
-            Input.Initialize();
+            InputEvent.Initialize();
             Video.Initialize(args, ZeldaVersion.ToString());
             Sprite.Initialize();
         }
@@ -55,7 +55,7 @@ namespace Zelda.Game.Engine
 
         public static void Quit()
         {
-            Input.Quit();
+            InputEvent.Quit();
             Sprite.Quit();
             Video.Quit();
             ModFiles.Quit();

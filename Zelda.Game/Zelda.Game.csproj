@@ -67,14 +67,16 @@
     <Compile Include="Engine\ModFiles.cs" />
     <Compile Include="Engine\Point.cs" />
     <Compile Include="Engine\Rectangle.cs" />
-    <Compile Include="Engine\Input.cs" />
+    <Compile Include="Engine\InputEvent.cs" />
     <Compile Include="Engine\Size.cs" />
     <Compile Include="Movements\Movement.cs" />
     <Compile Include="Movements\StraightMovement.cs" />
     <Compile Include="Movements\TargetMovement.cs" />
     <Compile Include="Script\Drawable.cs" />
+    <Compile Include="Script\IInputEventHandler.cs" />
     <Compile Include="Script\Movement.cs" />
     <Compile Include="Script\MovementType.cs" />
+    <Compile Include="Script\ScriptContext.MainApi.cs" />
     <Compile Include="Script\ScriptContext.MovementApi.cs" />
     <Compile Include="Script\Sprite.cs" />
     <Compile Include="Script\Timer.cs" />

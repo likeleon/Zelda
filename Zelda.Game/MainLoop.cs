@@ -123,20 +123,21 @@ namespace Zelda.Game
 
         private void CheckInput()
         {
-            Input.Event inputEvent = Input.GetEvent();
+            InputEvent inputEvent = InputEvent.GetEvent();
             while (inputEvent != null)
             {
                 NotifyInput(inputEvent);
-                inputEvent = Input.GetEvent();
+                inputEvent = InputEvent.GetEvent();
             }
         }
 
-        private void NotifyInput(Input.Event inputEvent)
+        private void NotifyInput(InputEvent inputEvent)
         {
             if (inputEvent.IsWindowClosing)
                 Exiting = true;
 
-            if (_game != null)
+            bool handled = ScriptContext.MainOnInput(inputEvent);
+            if (!handled && _game != null)
                 _game.NotifyInput(inputEvent);
         }
 

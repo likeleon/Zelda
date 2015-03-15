@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
 {
@@ -58,10 +59,32 @@ namespace Zelda.Game.Script
             _scriptMain = (Main)ctor.Invoke(new object[] { _mainLoop });
         }
 
-        internal static void MainOnDraw(Surface dstSurface)
+        static bool OnInput(IInputEventHandler handler, InputEvent input)
         {
-            _scriptMain.OnDraw(dstSurface);
-            MenusOnDraw(_scriptMain, dstSurface);
+            bool handled = false;
+            if (input.IsKeyboardEvent)
+            {
+                if (input.IsKeyboardKeyPressed)
+                    handled = OnKeyPressed(handler, input) || handled;
+                else if (input.IsKeyboardKeyReleased)
+                    handled = OnKeyReleased(handler, input) || handled;
+            }
+            return handled;
+        }
+
+        static bool OnKeyPressed(IInputEventHandler handler, InputEvent input)
+        {
+            string keyName = InputEvent.GetKeyboardKeyName(input.KeyboardKey);
+            bool shift = input.IsWithShift;
+            bool control = input.IsWithControl;
+            bool alt = input.IsWithAlt;
+            return handler.OnKeyPressed(keyName, shift, control, alt);
+        }
+
+        static bool OnKeyReleased(IInputEventHandler context, InputEvent input)
+        {
+            string keyName = InputEvent.GetKeyboardKeyName(input.KeyboardKey);
+            return context.OnKeyReleased(keyName);
         }
     }
 }

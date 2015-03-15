@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
 {
@@ -104,6 +105,30 @@ namespace Zelda.Game.Script
                     MenuOnFinished(menu.Menu);
                 }
             }
+        }
+
+        static bool MenusOnInput(object context, InputEvent input)
+        {
+            bool handled = false;
+            foreach (ScriptMenuData menu in Enumerable.Reverse(_menus))
+            {
+                if (menu.Context == context)
+                    handled = MenuOnInput(menu.Menu, input);
+                if (handled)
+                    break;
+            }
+            return handled;
+        }
+
+        static bool MenuOnInput(Menu menu, InputEvent input)
+        {
+            // 자식 메뉴들에게 먼저 이벤트를 보냅니다
+            bool handled = MenusOnInput(menu, input);
+
+            if (!handled)
+                handled = OnInput(menu, input);
+
+            return handled;
         }
     }
 }

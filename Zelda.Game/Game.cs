@@ -17,7 +17,7 @@ namespace Zelda.Game
             _mainLoop = mainLoop;
         }
 
-        public bool NotifyInput(Input.Event inputEvent)
+        public bool NotifyInput(InputEvent inputEvent)
         {
             return true;
         }

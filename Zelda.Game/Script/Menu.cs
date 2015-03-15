@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Zelda.Game.Script
 {
-    public abstract class Menu
+    public abstract class Menu : IInputEventHandler
     {
         public event EventHandler Started;
         public event EventHandler Finished;
@@ -47,6 +47,16 @@ namespace Zelda.Game.Script
             OnFinished();
             if (Finished != null)
                 Finished(this, EventArgs.Empty);
+        }
+
+        public virtual bool OnKeyPressed(string key, bool shift, bool control, bool alt)
+        {
+            return false;
+        }
+
+        public virtual bool OnKeyReleased(string key)
+        {
+            return false;
         }
     }
 }

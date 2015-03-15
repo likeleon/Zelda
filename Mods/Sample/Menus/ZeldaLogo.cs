@@ -147,5 +147,29 @@ namespace Sample.Menus
                 return false;
             });
         }
+
+        public override bool OnKeyPressed(string key, bool shift, bool control, bool alt)
+        {
+            if (key == "escape")
+                Main.Exit();
+            else
+            {
+                if (_timer != null)
+                {
+                    _timer.Stop();
+                    _timer = null;
+
+                    if (_animationStep <= 1)
+                        Step2();
+                }
+                else if (_animationStep <= 0)
+                {
+                    Step1();
+                    Step2();
+                }
+            }
+
+            return true;
+        }
     }
 }

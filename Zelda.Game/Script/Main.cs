@@ -1,9 +1,7 @@
-﻿using System;
-using Zelda.Game.Engine;
-
+﻿
 namespace Zelda.Game.Script
 {
-    public abstract class Main
+    public abstract class Main : IInputEventHandler
     {
         private readonly MainLoop _mainLoop;
 
@@ -28,9 +26,19 @@ namespace Zelda.Game.Script
         {
         }
 
-        internal protected virtual bool OnInput(Input.Event inputEvent)
+        public virtual bool OnKeyPressed(string key, bool shift, bool control, bool alt)
         {
             return false;
+        }
+
+        public virtual bool OnKeyReleased(string key)
+        {
+            return false;
+        }
+
+        public static void Exit()
+        {
+            ScriptContext.MainLoop.Exiting = true;
         }
     }
 }
