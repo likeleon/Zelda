@@ -30,6 +30,7 @@ namespace Zelda.Game.Script
         {
             if (_scriptMain != null)
                 _scriptMain.OnFinished();
+            Main.Current = null;
 
             DestroyMenus();
             DestroyTimers();
@@ -55,8 +56,9 @@ namespace Zelda.Game.Script
                 throw new InvalidDataException("'Too many 'Main' based classes");
 
             Type mainType = mainTypes.First();
-            ConstructorInfo ctor = mainType.GetConstructor(new Type[] { typeof(MainLoop) });
-            _scriptMain = (Main)ctor.Invoke(new object[] { _mainLoop });
+            ConstructorInfo ctor = mainType.GetConstructor(Type.EmptyTypes);
+            _scriptMain = (Main)ctor.Invoke(null);
+            Main.Current = _scriptMain;
         }
 
         static bool OnInput(IInputEventHandler handler, InputEvent input)

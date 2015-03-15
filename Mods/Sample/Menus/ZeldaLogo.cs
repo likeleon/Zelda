@@ -151,7 +151,7 @@ namespace Sample.Menus
         public override bool OnKeyPressed(string key, bool shift, bool control, bool alt)
         {
             if (key == "escape")
-                Main.Exit();
+                Main.Current.Exit();
             else
             {
                 if (_timer != null)

@@ -6,14 +6,19 @@ using ScriptSurface = Zelda.Game.Script.Surface;
 
 namespace Zelda.Game
 {
-    public class MainLoop : IDisposable
+    class MainLoop : IDisposable
     {
         public bool Exiting { get; set; }
 
         Game _game;
-        internal Game Game
+        public Game Game
         {
             get { return _game; }
+        }
+
+        bool IsResetting
+        {
+            get { return _game != null && _nextGame == null; }
         }
 
         readonly Surface _rootSurface;
@@ -187,6 +192,14 @@ namespace Zelda.Game
         internal void SetGame(Game game)
         {
             _nextGame = game;
+        }
+
+        public void SetResetting()
+        {
+            if (_game != null)
+                _game.Stop();
+            
+            SetGame(null);
         }
     }
 }

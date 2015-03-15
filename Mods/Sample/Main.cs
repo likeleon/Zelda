@@ -7,11 +7,6 @@ namespace Sample
 {
     public class Main : Zelda.Game.Script.Main
     {
-        public Main(MainLoop mainLoop)
-            : base(mainLoop)
-        {
-        }
-
         protected override void OnStarted()
         {
             Console.WriteLine("This is a sample mod for Zelda.");
@@ -19,8 +14,8 @@ namespace Sample
             Language.LanguageCode = "en";
 
             ZeldaLogo zeldaLogo = new ZeldaLogo();
-            zeldaLogo.Finished += (o, e) => Console.WriteLine("Time to start gamme");
-            zeldaLogo.Start(this);
+            zeldaLogo.Finished += (o, e) => Reset();
+            Menu.Start(this, zeldaLogo);
         }
     }
 }

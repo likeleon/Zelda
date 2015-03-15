@@ -8,9 +8,9 @@ namespace Zelda.Game.Script
         public event EventHandler Started;
         public event EventHandler Finished;
 
-        public void Start(object context, bool onTop = true)
+        public static void Start(object context, Menu menu, bool onTop = true)
         {
-            ScriptContext.AddMenu(this, context, onTop);
+            ScriptContext.AddMenu(menu, context, onTop);
         }
 
         protected virtual void OnStarted()

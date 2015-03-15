@@ -3,11 +3,11 @@ namespace Zelda.Game.Script
 {
     public abstract class Main : IInputEventHandler
     {
-        private readonly MainLoop _mainLoop;
-
-        protected Main(MainLoop mainLoop)
+        static Main _current;
+        public static Main Current
         {
-            _mainLoop = mainLoop;
+            get { return _current; }
+            internal set { _current = value; }
         }
 
         internal protected virtual void OnStarted()
@@ -36,9 +36,14 @@ namespace Zelda.Game.Script
             return false;
         }
 
-        public static void Exit()
+        public void Exit()
         {
             ScriptContext.MainLoop.Exiting = true;
+        }
+
+        public void Reset()
+        {
+            ScriptContext.MainLoop.SetResetting();
         }
     }
 }
