@@ -11,6 +11,8 @@ namespace Zelda.Game
         public enum Key
         {
             SaveGameVersion,    // 이 세이브게임 파일의 포맷
+            StartingMap,        // 게임을 시작할 맵 아이디
+            StartingPoint,      // 시작 위치 이름
             CurrentLife,        // 현재 체력 포인트
             MaxLife,            // 최대 체력 포인트
         }
@@ -127,6 +129,27 @@ namespace Zelda.Game
                 result = savedValue.IntData;
             }
             return result;
+        }
+
+        public void SetString(Key key, string value)
+        {
+            _savedValues[key] = new SavedValue()
+            {
+                Type = SavedValue.Types.String,
+                StringData = value
+            };
+        }
+
+        public string GetString(Key key)
+        {
+            SavedValue savedValue;
+            if (_savedValues.TryGetValue(key, out savedValue))
+            {
+                if (savedValue.Type != SavedValue.Types.String)
+                    throw new InvalidOperationException("Value '{0}' is not a string".F(key));
+                return savedValue.StringData;
+            }
+            return String.Empty;
         }
     }
 }

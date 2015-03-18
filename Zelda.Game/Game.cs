@@ -1,5 +1,6 @@
 ﻿using Zelda.Game.Engine;
 using System;
+using System.Linq;
 
 namespace Zelda.Game
 {
@@ -11,6 +12,11 @@ namespace Zelda.Game
             get { return _mainLoop; }
         }
 
+        public Equipment Equipment
+        {
+            get { return _saveGame.Equipment; }
+        }
+
         readonly SaveGame _saveGame;
         bool _started;
 
@@ -20,6 +26,39 @@ namespace Zelda.Game
             _saveGame = saveGame;
 
             _saveGame.Game = this;
+            
+            // 게임 오버 이후에 재시작하는 경우에 대한 처리입니다
+            if (Equipment.Life <= 0)
+                Equipment.RestoreAllLife();
+
+            // 시작 맵을 시작합니다
+            string startingMapId = _saveGame.GetString(SaveGame.Key.StartingMap);
+            string startingDestinationName = _saveGame.GetString(SaveGame.Key.StartingPoint);
+
+            bool validMapSaved = false;
+            if (!String.IsNullOrEmpty(startingMapId))
+            {
+                if (CurrentMod.ResourceExists(ResourceType.Map, startingMapId))
+                    validMapSaved = true;
+                else
+                {
+                    // 더 이상 존재하지 않는 맵을 사용하려고 합니다. 
+                    // 개발 중에 나타날 수 있는 일로 에러를 보여주고 기본 맵을 사용합니다.
+                    throw new Exception("The savegame referes to a non-existing map: '{0}'".F(startingMapId));
+                }
+            }
+
+            if (!validMapSaved)
+            {
+                // 유효한 시작 맵이 없을 경우 리소스 목록에서 첫번째 맵을 사용합니다
+                var maps = CurrentMod.GetResources(ResourceType.Map);
+                if (maps.Count <= 0)
+                    throw new Exception("This quest has no map");
+                startingMapId = maps.First().Key;
+                startingDestinationName = String.Empty;
+            }
+
+            SetCurrentMap(startingMapId, startingDestinationName);
         }
 
         public bool NotifyInput(InputEvent inputEvent)
@@ -58,6 +97,11 @@ namespace Zelda.Game
 
         public void Draw(Surface dstSurface)
         {
+        }
+
+        public void SetCurrentMap(string mapId, string destinationName)
+        {
+            // TODO 맵 개념 추가
         }
     }
 }

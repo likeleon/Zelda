@@ -41,5 +41,10 @@ namespace Zelda.Game
         {
             _saveGame = saveGame;
         }
+
+        public void RestoreAllLife()
+        {
+            Life = MaxLife;
+        }
     }
 }
