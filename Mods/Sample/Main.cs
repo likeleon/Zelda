@@ -1,6 +1,6 @@
 ﻿using Sample.Menus;
+using Sample.Scripts;
 using System;
-using Zelda.Game;
 using Zelda.Game.Script;
 
 namespace Sample
@@ -14,7 +14,7 @@ namespace Sample
             Language.LanguageCode = "en";
 
             ZeldaLogo zeldaLogo = new ZeldaLogo();
-            zeldaLogo.Finished += (o, e) => Reset();
+            zeldaLogo.Finished += (o, e) => GameManager.StartGame();
             Menu.Start(this, zeldaLogo);
         }
     }

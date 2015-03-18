@@ -3,6 +3,7 @@ using Zelda.Game.Engine;
 using RawMovement = Zelda.Game.Movements.Movement;
 using RawStraightMovement = Zelda.Game.Movements.StraightMovement;
 using RawTargetMovement = Zelda.Game.Movements.TargetMovement;
+using RawGame = Zelda.Game.Game;
 
 namespace Zelda.Game.Script
 {
@@ -18,7 +19,7 @@ namespace Zelda.Game.Script
             Movement movement = null;
             if (type == MovementType.Target)
             {
-                Game game = ScriptContext.MainLoop.Game;
+                RawGame game = ScriptContext.MainLoop.Game;
                 if (game != null)
                     throw new NotImplementedException("If we are on a map, the default target should be the hero.");
                 else

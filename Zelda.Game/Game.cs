@@ -1,20 +1,25 @@
 ﻿using Zelda.Game.Engine;
+using System;
 
 namespace Zelda.Game
 {
     class Game
     {
-        private readonly MainLoop _mainLoop;
+        readonly MainLoop _mainLoop;
         public MainLoop MainLoop
         {
             get { return _mainLoop; }
         }
 
-        private bool _started;
+        readonly SaveGame _saveGame;
+        bool _started;
 
-        public Game(MainLoop mainLoop)
+        public Game(MainLoop mainLoop, SaveGame saveGame)
         {
             _mainLoop = mainLoop;
+            _saveGame = saveGame;
+
+            _saveGame.Game = this;
         }
 
         public bool NotifyInput(InputEvent inputEvent)
@@ -35,7 +40,14 @@ namespace Zelda.Game
             if (!_started)
                 return;
 
+            _saveGame.Game = null;
+
             _started = false;
+        }
+
+        public void Restart()
+        {
+            throw new NotImplementedException();
         }
 
         public void Update()
