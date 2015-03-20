@@ -77,11 +77,7 @@ namespace Zelda.Game.Engine
         public static Size ParseSize(string sizeString)
         {
             string[] words = sizeString.Split('x');
-            if (words.Length < 2)
-                throw new InvalidOperationException("sizeString does not contain two numbers");
-            if (words.Length > 2)
-                throw new InvalidOperationException("sizeString contains too many delimiters");
-
+            Debug.CheckAssertion(words.Length == 2, "sizeString does not contain two numbers");
             return new Size(Convert.ToInt32(words[0]), Convert.ToInt32(words[1]));
         }
 
@@ -94,8 +90,7 @@ namespace Zelda.Game.Engine
                 _wantedModSize.Width,
                 _wantedModSize.Height,
                 SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN | SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
-            if (_mainWindow == IntPtr.Zero)
-                throw new Exception("Cannot create the window: " + SDL.SDL_GetError());
+            Debug.CheckAssertion(_mainWindow != IntPtr.Zero, "Cannot create the window: " + SDL.SDL_GetError());
 
             _mainRenderer = SDL.SDL_CreateRenderer(_mainWindow, -1, (uint)(SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC));
             if (_mainRenderer == IntPtr.Zero)
@@ -104,8 +99,7 @@ namespace Zelda.Game.Engine
                 if (_mainRenderer == IntPtr.Zero)
                     _mainRenderer = SDL.SDL_CreateRenderer(_mainWindow, -1, (uint)(SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED));
             }
-            if (_mainRenderer == IntPtr.Zero)
-                throw new Exception("Cannot create the renderer: " + SDL.SDL_GetError());
+            Debug.CheckAssertion(_mainRenderer != IntPtr.Zero, "Cannot create the renderer: " + SDL.SDL_GetError());
 
             SDL.SDL_SetRenderDrawBlendMode(_mainRenderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
 
@@ -124,8 +118,7 @@ namespace Zelda.Game.Engine
                     }
                 }
             }
-            if (_pixelFormat == IntPtr.Zero)
-                throw new Exception("No caompatible pixel format");
+            Debug.CheckAssertion(_pixelFormat != IntPtr.Zero, "No caompatible pixel format");
 
             if ((rendererInfo.flags & (uint)SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED) != 0)
                 Console.WriteLine("2D acceleration: yes");
@@ -156,11 +149,12 @@ namespace Zelda.Game.Engine
 
         public static void SetModSizeRange(Size normalSize, Size minSize, Size maxSize)
         {
-            if (normalSize.Width < minSize.Width ||
-                normalSize.Height < minSize.Height ||
-                normalSize.Width > maxSize.Width ||
-                normalSize.Height > maxSize.Height)
-                throw new Exception("Invalid mod size range");
+            Debug.CheckAssertion(
+                normalSize.Width >= minSize.Width ||
+                normalSize.Height >= minSize.Height ||
+                normalSize.Width <= maxSize.Width ||
+                normalSize.Height <=  maxSize.Height,
+                "Invalid mod size range");
 
             _normalModSize = normalSize;
             _minModSize = minSize;
@@ -174,7 +168,7 @@ namespace Zelda.Game.Engine
                 string msg = "Cannot use mod size {0}x{1}".F(_wantedModSize.Width, _wantedModSize.Height);
                 msg += ": this mod only supports {0}x{1} to {2}x{3}".F(minSize.Width, minSize.Height, maxSize.Width, maxSize.Height);
                 msg += ". Using {0}x{1} instead.".F(normalSize.Width, normalSize.Height);
-                Log.Write("Graphics", msg);
+                Debug.Warning(msg);
                 _modSize = normalSize;
             }
             else

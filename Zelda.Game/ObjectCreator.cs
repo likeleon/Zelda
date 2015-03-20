@@ -10,8 +10,8 @@ namespace Zelda.Game
 {
     class ObjectCreator
     {
-        public static Action<string> MissingTypeAction =
-            s => { throw new InvalidOperationException("Cannot locate type: {0}".F(s)); };
+        public static Action<string> MissingTypeAction = 
+            s => { Debug.Die("Cannot locate type: {0}".F(s)); };
 
         readonly Cache<string, Type> _typeCache;
         readonly Cache<Type, ConstructorInfo> _ctorCache;
@@ -38,7 +38,7 @@ namespace Zelda.Game
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to load assembly '{0}': {1}".F(asmFile, ex.Message));
+                    Debug.Die("Failed to load assembly '{0}': {1}".F(asmFile, ex.Message));
                 }
 
                 _assemblies = asms.ToArray();
@@ -57,7 +57,7 @@ namespace Zelda.Game
             var flags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
             var ctors = type.GetConstructors(flags).Where(x => x.HasAttribute<UseCtorAttribute>());
             if (ctors.Count() > 1)
-                throw new InvalidOperationException("ObjectCreator: UseCtor on multiple constructors; invalid.");
+                Debug.Die("ObjectCreator: UseCtor on multiple constructors; invalid.");
             return ctors.FirstOrDefault();
         }
 
@@ -95,7 +95,7 @@ namespace Zelda.Game
             {
                 string key = p[i].Name;
                 if (!args.ContainsKey(key))
-                    throw new InvalidOperationException("ObjectCreator: key '{0}' not found".F(key));
+                    Debug.Die("ObjectCreator: key '{0}' not found".F(key));
                 a[i] = args[key];
             }
 

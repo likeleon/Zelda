@@ -64,7 +64,11 @@ namespace Zelda.Game.Script
 
         static void MenuOnDraw(Menu menu, Surface dstSurface)
         {
-            menu.OnDraw(dstSurface);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                menu.OnDraw(dstSurface);
+            });
+            MenusOnDraw(menu, dstSurface);  // 자식 메뉴들을 그려줍니다
         }
 
         public static bool IsStarted(Menu menu)

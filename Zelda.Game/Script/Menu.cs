@@ -10,7 +10,10 @@ namespace Zelda.Game.Script
 
         public static void Start(object context, Menu menu, bool onTop = true)
         {
-            ScriptContext.AddMenu(menu, context, onTop);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                ScriptContext.AddMenu(menu, context, onTop);
+            });
         }
 
         protected virtual void OnStarted()
@@ -27,26 +30,38 @@ namespace Zelda.Game.Script
 
         public bool IsStarted()
         {
-            return ScriptContext.IsStarted(this);
+            return ScriptTools.ExceptionBoundaryHandle<bool>(() =>
+            {
+                return ScriptContext.IsStarted(this);
+            });
         }
 
         public void Stop()
         {
-            ScriptContext.Stop(this);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                ScriptContext.Stop(this);
+            });
         }
 
         internal void NotifyStarted()
         {
-            OnStarted();
-            if (Started != null)
-                Started(this, EventArgs.Empty);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                OnStarted();
+                if (Started != null)
+                    Started(this, EventArgs.Empty);
+            });
         }
 
         internal void NotifyFinished()
         {
-            OnFinished();
-            if (Finished != null)
-                Finished(this, EventArgs.Empty);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                OnFinished();
+                if (Finished != null)
+                    Finished(this, EventArgs.Empty);
+            });
         }
 
         public virtual bool OnKeyPressed(string key, bool shift, bool control, bool alt)

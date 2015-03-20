@@ -69,8 +69,7 @@ namespace Zelda.Game
 
         void Load()
         {
-            if (_animations.Count > 0)
-                throw new Exception("Animation set already loaded");
+            Debug.CheckAssertion(_animations.Count <= 0, "Animation set already loaded");
 
             string fileName = "Sprites/" + _id + ".xml";
 
@@ -79,32 +78,32 @@ namespace Zelda.Game
                 SpriteAnimationSetData xmlData = stream.XmlDeserialize<SpriteAnimationSetData>();
                 foreach (SpriteAnimationSetData.Animation animation in xmlData.Animations)
                 {
-                    string animationName = CheckStringField(animation.Name, "Name");
-                    string srcImage = CheckStringField(animation.SrcImage, "SrcImage");
-                    uint frameDelay = (uint)OptIntField(animation.FrameDelay, 0);
-                    int frameToLoopOn = OptIntField(animation.FrameToLoopOn, -1);
+                    string animationName = animation.Name.CheckField("Name");
+                    string srcImage = animation.SrcImage.CheckField("SrcImage");
+                    uint frameDelay = (uint)animation.FrameDelay.OptField(0);
+                    int frameToLoopOn = animation.FrameToLoopOn.OptField(-1);
 
                     if (frameToLoopOn < -1)
-                        throw new Exception("Bad field 'FrameToLoopOn' (must be a positive number or -1)");
+                        Debug.Error("Bad field 'FrameToLoopOn' (must be a positive number or -1)");
 
                     SpriteAnimationDirection[] directions = new SpriteAnimationDirection[animation.Directions.Length];
                     for (int i = 0; i < animation.Directions.Length; ++i)
                     {
                         SpriteAnimationSetData.Direction direction = animation.Directions[i];
-                        int x = CheckIntField(direction.X, "X");
-                        int y = CheckIntField(direction.Y, "Y");
-                        int frameWidth = CheckIntField(direction.FrameWidth, "FrameWidth");
-                        int frameHeight = CheckIntField(direction.FrameHeight, "FrameHeight");
-                        int originX = OptIntField(direction.OriginX, 0);
-                        int originY = OptIntField(direction.OriginY, 0);
-                        int numFrames = OptIntField(direction.NumFrames, 1);
-                        int numColumns = OptIntField(direction.NumColumns, numFrames);
+                        int x = direction.X.CheckField("X");
+                        int y = direction.Y.CheckField("Y");
+                        int frameWidth = direction.FrameWidth.CheckField("FrameWidth");
+                        int frameHeight = direction.FrameHeight.CheckField("FrameHeight");
+                        int originX = direction.OriginX.OptField(0);
+                        int originY = direction.OriginY.OptField(0);
+                        int numFrames = direction.NumFrames.OptField(1);
+                        int numColumns = direction.NumColumns.OptField(numFrames);
 
                         if (numColumns < 1 || numColumns > numFrames)
-                            throw new Exception("Bad field 'NumColumns': must be between 1 and the number of frames");
+                            Debug.Error("Bad field 'NumColumns': must be between 1 and the number of frames");
 
                         if (frameToLoopOn >= numFrames)
-                            throw new Exception("Bad field 'FrameToLoopOn': exceeds the number of frames");
+                            Debug.Error("Bad field 'FrameToLoopOn': exceeds the number of frames");
 
                         int maxWidth = Math.Max(frameWidth, _maxSize.Width);
                         int maxHeight = Math.Max(frameHeight, _maxSize.Height);
@@ -136,7 +135,7 @@ namespace Zelda.Game
                     }
 
                     if (_animations.ContainsKey(animationName))
-                        throw new Exception("Duplicate animation '{0}' in sprite '{1}'".F(animationName, _id));
+                        Debug.Error("Duplicate animation '{0}' in sprite '{1}'".F(animationName, _id));
 
                     _animations.Add(animationName, new SpriteAnimation(srcImage, directions, frameDelay, frameToLoopOn));
 
@@ -147,30 +146,6 @@ namespace Zelda.Game
             }
         }
 
-        string CheckStringField(string value, string name)
-        {
-            if (value == null)
-                throw new Exception("Bad field '{0}' (non-null string expected)".F(name));
-            
-            return value;
-        }
-
-        int CheckIntField(int? value, string name)
-        {
-            if (!value.HasValue)
-                throw new Exception("Bad field '{0}' (non-null int expected)".F(name));
-
-            return value.Value;
-        }
-
-        int OptIntField(int? value, int defaultValue)
-        {
-            if (value.HasValue)
-                return value.Value;
-            else
-                return defaultValue;
-        }
-
         public bool HasAnimation(string animationName)
         {
             return _animations.ContainsKey(animationName);
@@ -178,8 +153,8 @@ namespace Zelda.Game
 
         public SpriteAnimation GetAnimation(string animationName)
         {
-            if (!HasAnimation(animationName))
-                throw new Exception("No animation '{0}' in animation set '{1}'".F(animationName, _id));
+            Debug.CheckAssertion(HasAnimation(animationName),
+                "No animation '{0}' in animation set '{1}'".F(animationName, _id));
 
             return _animations[animationName];
         }

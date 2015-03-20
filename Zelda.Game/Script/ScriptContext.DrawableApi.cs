@@ -11,38 +11,53 @@ namespace Zelda.Game.Script
 
         public static bool HasDrawable(RawDrawable drawable)
         {
-            return _drawables.Contains(drawable);
+            return ScriptTools.ExceptionBoundaryHandle<bool>(() =>
+            {
+                return _drawables.Contains(drawable);
+            });
         }
 
         public static void AddDrawable(RawDrawable drawable)
         {
-            if (HasDrawable(drawable))
-                throw new ArgumentException("This drawable object is already registered", "drawable");
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                if (HasDrawable(drawable))
+                    throw new ArgumentException("This drawable object is already registered", "drawable");
 
-            _drawables.Add(drawable);
+                _drawables.Add(drawable);
+            });
         }
 
 		public static void RemoveDrawable(RawDrawable drawable)
         {
-            if (!HasDrawable(drawable))
-                throw new ArgumentException("This drawable object was not created by Mod");
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                if (!HasDrawable(drawable))
+                    throw new ArgumentException("This drawable object was not created by Mod");
 
-            _drawables.Remove(drawable);
-            _drawablesToRemove.Add(drawable);
+                _drawables.Remove(drawable);
+                _drawablesToRemove.Add(drawable);
+            });
         }
 
 		static void UpdateDrawables()
         {
-            foreach (RawDrawable drawable in _drawables)
-                drawable.Update();
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                foreach (RawDrawable drawable in _drawables)
+                    drawable.Update();
 
-            _drawablesToRemove.Clear();
+                _drawablesToRemove.Clear();
+            });
         }
 
 		static void DestroyDrawables()
         {
-            _drawables.Clear();
-            _drawablesToRemove.Clear();
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                _drawables.Clear();
+                _drawablesToRemove.Clear();
+            });
         }
     }
 }

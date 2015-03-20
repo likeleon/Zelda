@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Arguments.cs" />
     <Compile Include="CurrentMod.cs" />
+    <Compile Include="Debug.cs" />
     <Compile Include="Engine\Color.cs" />
     <Compile Include="Engine\Drawable.cs" />
     <Compile Include="Engine\FileSystem.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Script\MovementType.cs" />
     <Compile Include="Script\ScriptContext.MainApi.cs" />
     <Compile Include="Script\ScriptContext.MovementApi.cs" />
+    <Compile Include="Script\ScriptTools.cs" />
     <Compile Include="Script\Sprite.cs" />
     <Compile Include="Script\Timer.cs" />
     <Compile Include="Sprite.cs" />
@@ -90,7 +92,6 @@
     <Compile Include="Exts.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Language.cs" />
-    <Compile Include="Log.cs" />
     <Compile Include="MainLoop.cs" />
     <Compile Include="ModProperties.cs" />
     <Compile Include="ModResources.cs" />

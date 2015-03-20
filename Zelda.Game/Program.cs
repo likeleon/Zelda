@@ -10,6 +10,11 @@ namespace Zelda.Game
         [STAThread]
         public static int Main(string[] args)
         {
+#if DEBUG
+            Debug.DieOnError = true;
+            Debug.ShowPopupOnDie = true;
+#endif
+
             if (Debugger.IsAttached)
                 return Run(args);
 
@@ -37,10 +42,8 @@ namespace Zelda.Game
 
         private static void FatalError(Exception e)
         {
-            Log.AddChannel("Exception", "Exception.log");
-
             string report = BuildExceptionReport(e).ToString();
-            Log.Write("Exception", "{0}", report);
+            File.WriteAllText("Exception.log", report);
             Console.Error.WriteLine(report);
         }
 

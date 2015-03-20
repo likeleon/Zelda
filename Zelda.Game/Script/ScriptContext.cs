@@ -23,13 +23,19 @@ namespace Zelda.Game.Script
             _objectCreator = new ObjectCreator(CurrentMod.Resources);
 
             CreateScriptMain();
-            _scriptMain.OnStarted();
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                _scriptMain.OnStarted();
+            });
         }
 
         public static void Exit()
         {
-            if (_scriptMain != null)
-                _scriptMain.OnFinished();
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                if (_scriptMain != null)
+                    _scriptMain.OnFinished();
+            });
             Main.Current = null;
 
             DestroyMenus();
@@ -43,17 +49,20 @@ namespace Zelda.Game.Script
             UpdateMenus();
             UpdateTimers();
 
-            _scriptMain.OnUpdate();
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                _scriptMain.OnUpdate();
+            });
         }
 
         static void CreateScriptMain()
         {
             var mainTypes = _objectCreator.GetTypesImplementing<Main>();
             if (mainTypes.Count() <= 0)
-                throw new InvalidDataException("'Main' based class not found");
+                Debug.Error("'Main' based class not found");
 
             if (mainTypes.Count() > 1)
-                throw new InvalidDataException("'Too many 'Main' based classes");
+                Debug.Error("'Too many 'Main' based classes");
 
             Type mainType = mainTypes.First();
             ConstructorInfo ctor = mainType.GetConstructor(Type.EmptyTypes);
@@ -76,17 +85,23 @@ namespace Zelda.Game.Script
 
         static bool OnKeyPressed(IInputEventHandler handler, InputEvent input)
         {
-            string keyName = InputEvent.GetKeyboardKeyName(input.KeyboardKey);
-            bool shift = input.IsWithShift;
-            bool control = input.IsWithControl;
-            bool alt = input.IsWithAlt;
-            return handler.OnKeyPressed(keyName, shift, control, alt);
+            return ScriptTools.ExceptionBoundaryHandle<bool>(() =>
+            {
+                string keyName = InputEvent.GetKeyboardKeyName(input.KeyboardKey);
+                bool shift = input.IsWithShift;
+                bool control = input.IsWithControl;
+                bool alt = input.IsWithAlt;
+                return handler.OnKeyPressed(keyName, shift, control, alt);
+            });
         }
 
         static bool OnKeyReleased(IInputEventHandler context, InputEvent input)
         {
-            string keyName = InputEvent.GetKeyboardKeyName(input.KeyboardKey);
-            return context.OnKeyReleased(keyName);
+            return ScriptTools.ExceptionBoundaryHandle<bool>(() =>
+            {
+                string keyName = InputEvent.GetKeyboardKeyName(input.KeyboardKey);
+                return context.OnKeyReleased(keyName);
+            });
         }
     }
 }

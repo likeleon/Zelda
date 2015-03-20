@@ -57,8 +57,7 @@ namespace Zelda.Game.Movements
             get { return _finishedCallback; }
             set
             {
-                if (ScriptMovement == null)
-                    throw new InvalidOperationException("Undefined ScriptMovement");
+                Debug.CheckAssertion(ScriptMovement != null, "Undefined ScriptMovement");
 
                 _finishedCallback = value;
             }

@@ -13,8 +13,20 @@ namespace Zelda.Game.Script
 
         public Point XY
         {
-            get { return _rawDrawable.XY; }
-            set { _rawDrawable.XY = value; }
+            get 
+            {
+                return ScriptTools.ExceptionBoundaryHandle<Point>(() =>
+                {
+                    return _rawDrawable.XY;
+                });
+            }
+            set 
+            {
+                ScriptTools.ExceptionBoundaryHandle(() =>
+                {
+                    _rawDrawable.XY = value;
+                });
+            }
         }
 
         internal Drawable(RawDrawable rawDrawable)
@@ -24,17 +36,26 @@ namespace Zelda.Game.Script
 
         public void Draw(Surface dstSurface)
         {
-            Draw(dstSurface, 0, 0);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                Draw(dstSurface, 0, 0);
+            });
         }
 
         public void Draw(Surface dstSurface, int x, int y)
         {
-            _rawDrawable.Draw(dstSurface.RawSurface, x, y);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                _rawDrawable.Draw(dstSurface.RawSurface, x, y);
+            });
         }
 
         public void StopMovement()
         {
-            _rawDrawable.StopMovement();
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                _rawDrawable.StopMovement();
+            });
         }
     }
 }

@@ -15,11 +15,10 @@ namespace Zelda.Game
 
         public SpriteAnimationDirection(Rectangle[] frames, Point origin)
         {
-            if (frames.Length <= 0)
-                throw new ArgumentException("Empty sprite direction", "frames");
-
             _frames = frames;
             _origin = origin;
+            
+            Debug.CheckAssertion(_frames != null && _frames.Length > 0, "Empty sprite direction");
         }
 
         public void Draw(Surface dstSurface, Point dstPosition, int currentFrame, Surface srcImage)
@@ -31,10 +30,8 @@ namespace Zelda.Game
         public Rectangle GetFrame(int frame)
         {
             if (frame < 0 || frame >= NumFrames)
-            {
-                string msg = "Invalid frame {0}: this direction has {1} frames".F(frame, NumFrames);
-                throw new ArgumentOutOfRangeException("frame", msg);
-            }
+                Debug.Die("Invalid frame {0}: this direction has {1} frames".F(frame, NumFrames));
+            
             return _frames[frame];
         }
     }

@@ -44,7 +44,7 @@ namespace Zelda.Game
                 {
                     // 더 이상 존재하지 않는 맵을 사용하려고 합니다. 
                     // 개발 중에 나타날 수 있는 일로 에러를 보여주고 기본 맵을 사용합니다.
-                    throw new Exception("The savegame referes to a non-existing map: '{0}'".F(startingMapId));
+                    Debug.Error("The savegame referes to a non-existing map: '{0}'".F(startingMapId));
                 }
             }
 
@@ -53,7 +53,8 @@ namespace Zelda.Game
                 // 유효한 시작 맵이 없을 경우 리소스 목록에서 첫번째 맵을 사용합니다
                 var maps = CurrentMod.GetResources(ResourceType.Map);
                 if (maps.Count <= 0)
-                    throw new Exception("This quest has no map");
+                    Debug.Die("This quest has no map");
+
                 startingMapId = maps.First().Key;
                 startingDestinationName = String.Empty;
             }

@@ -38,16 +38,15 @@ namespace Zelda.Game
             _loopOnFrame = loopOnframe;
 
             _srcImage = Surface.Create(imageFileName);
-            if (_srcImage == null)
-                throw new Exception("Cannot load image '{0}'".F(imageFileName));
+            Debug.CheckAssertion(_srcImage != null, "Cannot load image '{0}'".F(imageFileName));
         }
 
         public void Draw(Surface dstSurface, Point dstPosition, int currentDirection, int currentFrame)
         {
             if (currentDirection < 0 || currentDirection >= NumDirections)
             {
-                string msg = "Invalid sprite direction {0}: this sprite has {1} direction(s)".F(currentDirection, NumDirections);
-                throw new ArgumentOutOfRangeException("currentDirection", msg);
+                Debug.Die("Invalid sprite direction {0}: this sprite has {1} direction(s)"
+                    .F(currentDirection, NumDirections));
             }
 
             if (_srcImage == null)

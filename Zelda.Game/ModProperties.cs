@@ -68,7 +68,8 @@ namespace Zelda.Game
             }
             catch (Exception ex)
             {
-                throw new InvalidDataException("Failed to load Mod.xml: " + ex.Message);
+                Debug.Die("Failed to load Mod.xml: " + ex.Message);
+                return null;
             }
         }
     }

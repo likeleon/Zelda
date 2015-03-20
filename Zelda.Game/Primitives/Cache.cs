@@ -26,8 +26,8 @@ namespace Zelda.Game.Primitives
 
         public Cache(Func<T, U> loader, IEqualityComparer<T> c)
         {
-            if (loader == null)
-                throw new ArgumentNullException("loader");
+            Debug.CheckAssertion(loader != null, "loader should not be null");
+            
             _loader = loader;
             _cache = new Dictionary<T, U>(c);
         }

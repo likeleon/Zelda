@@ -72,7 +72,7 @@ namespace Zelda.Game
         }
 
         SpriteAnimation _currentAnimation;
-        uint nextFrameDate;        
+        uint nextFrameDate;
 
         public static void Initialize()
         {
@@ -99,8 +99,7 @@ namespace Zelda.Game
                 _allAnimationSets.Add(id, animationSet);
             }
 
-            if (animationSet == null)
-                throw new Exception("No animation set");
+            Debug.CheckAssertion(animationSet != null, "No animation set");
 
             return animationSet;
         }
@@ -149,8 +148,8 @@ namespace Zelda.Game
         {
             if (currentDirection < 0 || currentDirection >= NumDirections)
             {
-                string msg = "Invalid direction {0} for sprite '{1}' in animation {2}".F(currentDirection, AnimationSetId, _currentAnimationName);
-                throw new ArgumentOutOfRangeException("currentDirection", msg);
+                Debug.Die("Invalid direction {0} for sprite '{1}' in animation {2}"
+                    .F(currentDirection, AnimationSetId, _currentAnimationName));
             }
 
             if (currentDirection == _currentDirection)

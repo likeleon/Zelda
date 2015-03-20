@@ -16,23 +16,26 @@ namespace Zelda.Game.Script
 
         public static Movement Create(MovementType type)
         {
-            Movement movement = null;
-            if (type == MovementType.Target)
+            return ScriptTools.ExceptionBoundaryHandle<Movement>(() =>
             {
-                RawGame game = ScriptContext.MainLoop.Game;
-                if (game != null)
-                    throw new NotImplementedException("If we are on a map, the default target should be the hero.");
+                Movement movement = null;
+                if (type == MovementType.Target)
+                {
+                    RawGame game = ScriptContext.MainLoop.Game;
+                    if (game != null)
+                        throw new NotImplementedException("If we are on a map, the default target should be the hero.");
+                    else
+                        movement = new TargetMovement(new RawTargetMovement(new Point(0, 0), 32));
+                }
                 else
-                    movement = new TargetMovement(new RawTargetMovement(new Point(0, 0), 32));
-            }
-            else
-            {
-                string enumNames = String.Join(", ", Enum.GetNames(typeof(MovementType)));
-                throw new ArgumentOutOfRangeException("type", "should be one of: {0}".F(enumNames));
-            }
+                {
+                    string enumNames = String.Join(", ", Enum.GetNames(typeof(MovementType)));
+                    throw new ArgumentOutOfRangeException("type", "should be one of: {0}".F(enumNames));
+                }
 
-            movement._rawMovement.ScriptMovement = movement;
-            return movement;
+                movement._rawMovement.ScriptMovement = movement;
+                return movement;
+            });
         }
 
         internal Movement(RawMovement rawMovement)
@@ -42,18 +45,21 @@ namespace Zelda.Game.Script
 
         public void Start(object objectToMove, Action finishedCallback)
         {
-            Stop();
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                Stop();
 
-            if (objectToMove is Drawable)
-            {
-                Drawable drawable = objectToMove as Drawable;
-                drawable.RawDrawable.StartMovement(_rawMovement);
-            }
-            else
-            {
-                throw new ArgumentException("Point, Entity or Drawable", "objectToMove");
-            }
-            _rawMovement.FinishedCallback = finishedCallback;
+                if (objectToMove is Drawable)
+                {
+                    Drawable drawable = objectToMove as Drawable;
+                    drawable.RawDrawable.StartMovement(_rawMovement);
+                }
+                else
+                {
+                    throw new ArgumentException("Point, Entity or Drawable", "objectToMove");
+                }
+                _rawMovement.FinishedCallback = finishedCallback;
+            });
         }
 
         public void Stop()
@@ -63,9 +69,12 @@ namespace Zelda.Game.Script
 
         internal void NotifyPositionChanged(Point xy)
         {
-            OnPositionChanged(xy);
-            if (PositionChanged != null)
-                PositionChanged(this, xy);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                OnPositionChanged(xy);
+                if (PositionChanged != null)
+                    PositionChanged(this, xy);
+            });
         }
 
         public virtual void OnPositionChanged(Point xy)
@@ -74,9 +83,12 @@ namespace Zelda.Game.Script
 
         internal void NotifyMovementFinished()
         {
-            OnMovementFinished();
-            if (MovementFinished != null)
-                MovementFinished(this, EventArgs.Empty);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                OnMovementFinished();
+                if (MovementFinished != null)
+                    MovementFinished(this, EventArgs.Empty);
+            });
         }
 
         public virtual void OnMovementFinished()
@@ -107,12 +119,18 @@ namespace Zelda.Game.Script
 
         public void SetSpeed(int speed)
         {
-            _rawTargetMovement.SetMovingSpeed(speed);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                _rawTargetMovement.SetMovingSpeed(speed);
+            });
         }
 
         public void SetTarget(Point xy)
         {
-            _rawTargetMovement.SetTarget(xy);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                _rawTargetMovement.SetTarget(xy);
+            });
         }
     }
 }

@@ -7,26 +7,41 @@ namespace Zelda.Game.Script
     {
         public static string LanguageCode
         {
-            get { return LanguageInternal.LanguageCode; }
-            set { LanguageInternal.LanguageCode = value; }
+            get 
+            {
+                return ScriptTools.ExceptionBoundaryHandle<string>(() =>
+                {
+                    return LanguageInternal.LanguageCode;
+                });
+            }
+            set 
+            {
+                ScriptTools.ExceptionBoundaryHandle(() =>
+                {
+                    LanguageInternal.LanguageCode = value;
+                });
+            }
         }
 
         public static string GetLanguageName(string languageCode)
         {
-            if (languageCode != null)
+            return ScriptTools.ExceptionBoundaryHandle<string>(() =>
             {
-                if (!LanguageInternal.HasLanguage(languageCode))
-                    throw new Exception("No such language: '{0}'".F(languageCode));
-                
-                return LanguageInternal.GetLanguageName(languageCode);
-            }
-            else
-            {
-                if (LanguageInternal.LanguageCode == null)
-                    throw new Exception("No language is set");
+                if (languageCode != null)
+                {
+                    if (!LanguageInternal.HasLanguage(languageCode))
+                        throw new ArgumentException("No such language: '{0}'".F(languageCode), "languageCode");
 
-                return LanguageInternal.GetLanguageName(LanguageInternal.LanguageCode);
-            }
+                    return LanguageInternal.GetLanguageName(languageCode);
+                }
+                else
+                {
+                    if (LanguageInternal.LanguageCode == null)
+                        throw new ArgumentException("No language is set", "languageCode");
+
+                    return LanguageInternal.GetLanguageName(LanguageInternal.LanguageCode);
+                }
+            });
         }
     }
 }

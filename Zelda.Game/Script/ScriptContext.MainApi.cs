@@ -6,7 +6,10 @@ namespace Zelda.Game.Script
     {
         internal static void MainOnDraw(Surface dstSurface)
         {
-            _scriptMain.OnDraw(dstSurface);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                _scriptMain.OnDraw(dstSurface);
+            });
             MenusOnDraw(_scriptMain, dstSurface);
         }
 

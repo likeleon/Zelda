@@ -10,9 +10,8 @@ namespace Zelda.Game
             get { return _languageCode; }
             set
             {
-                if (!HasLanguage(value))
-                    throw new Exception("No such language: '{0}'".F(value));
-
+                Debug.CheckAssertion(HasLanguage(value), "No such language: '{0}'".F(value));
+                
                 _languageCode = value;
             }
         }

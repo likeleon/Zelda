@@ -47,8 +47,7 @@ namespace Zelda.Game.Engine
 
             public Texture(IntPtr internalTexture)
             {
-                if (internalTexture == IntPtr.Zero)
-                    throw new ArgumentNullException("internalTexture");
+                Debug.CheckAssertion(internalTexture != IntPtr.Zero, "interalTexture should not be IntPtr.Zero");
 
                 _internalTexture = internalTexture;
             }
@@ -106,7 +105,7 @@ namespace Zelda.Game.Engine
 
                     int error = SDL.SDL_SetSurfaceAlphaMod(_internalSurface, value);
                     if (error != 0)
-                        throw new InvalidOperationException(SDL.SDL_GetError());
+                        Debug.Error(SDL.SDL_GetError());
 
                     _isRendered = false;
                 }
@@ -177,16 +176,14 @@ namespace Zelda.Game.Engine
                 // TODO: 네이티브의 SDL_RWclose(rw)에 해당하는 구현 방법을 찾지 못했다. 메모리 릭 확인할 것.
             }
 
-            if (softwareSurface == IntPtr.Zero)
-                throw new Exception("Cannot load image '{0}'".F(prefixedFileName));
+            Debug.CheckAssertion(softwareSurface != IntPtr.Zero, "Cannot load image '{0}'".F(prefixedFileName));
 
             return softwareSurface;
         }
 
         Surface(int width, int height)
         {
-            if (width <= 0 || height <= 0)
-                throw new ArgumentOutOfRangeException("", "Attempt to create a surface with an empty size");
+            Debug.CheckAssertion(width > 0 && height > 0, "Attempt to create a surface with an empty size");
 
             _width = width;
             _height = height;
@@ -423,8 +420,7 @@ namespace Zelda.Game.Engine
         // 내부 표면을 소프트웨어 모드로 생성합니다
         void CreateSoftwareSurface()
         {
-            if (_internalSurface != IntPtr.Zero)
-                throw new InvalidOperationException("Software surface already exists");
+            Debug.CheckAssertion(_internalSurface == IntPtr.Zero, "Software surface already exists");
 
             SDL.SDL_PixelFormat format = Video.PixelFormat.ToSDLPixelFormat();
             _internalSurface = SDL.SDL_CreateRGBSurface(
@@ -439,15 +435,13 @@ namespace Zelda.Game.Engine
             SDL.SDL_SetSurfaceBlendMode(_internalSurface, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
             _isRendered = false;
 
-            if (_internalSurface == null)
-                throw new Exception("Failed to create software surface");
+            Debug.CheckAssertion(_internalSurface != IntPtr.Zero, "Failed to create software surface");
         }
 
         // 소프트웨어 표면을 32-bit 알파 채널의 픽셀 포맷으로 변경합니다
         void ConvertSoftwareSurface()
         {
-            if (_internalSurface == null)
-                throw new InvalidOperationException("Missing software surface to convert");
+            Debug.CheckAssertion(_internalSurface != IntPtr.Zero, "Missing software surface to convert");
 
             SDL.SDL_PixelFormat videoPixelFormat = Video.PixelFormat.ToSDLPixelFormat();
             SDL.SDL_PixelFormat surfacePixelFormat = _internalSurface.ToSDLSurface().format.ToSDLPixelFormat();
@@ -459,8 +453,7 @@ namespace Zelda.Game.Engine
                     _internalSurface, 
                     Video.PixelFormat, 
                     0);
-                if (convertedSurface == null)
-                    throw new Exception("Failed to convert software surface");
+                Debug.CheckAssertion(convertedSurface != IntPtr.Zero, "Failed to convert software surface");
 
                 _internalSurface = convertedSurface;
                 SDL.SDL_SetSurfaceAlphaMod(_internalSurface, opacity);  // alpha값 복구 
@@ -476,29 +469,31 @@ namespace Zelda.Game.Engine
         // 소프트웨어 표면으로부터 하드웨어 텍스쳐를 생성합니다
         void CreateTextureFromSurface()
         {
-            IntPtr renderer = Video.Renderer;
-            if (renderer == IntPtr.Zero)
-                throw new Exception("Missing software surface to create texture from");
+            IntPtr mainRenderer = Video.Renderer;
+            if (mainRenderer != IntPtr.Zero)
+            {
+                Debug.CheckAssertion(_internalSurface != IntPtr.Zero, "Missing software surface to create texture from");
 
-            // 성능의 이유로 SDL_UpdateTexture가 픽셀 포맷을 인자로 받아들이지 않기 때문에
-            // 소프트웨어 표면이 텍스쳐와 같은 포맷이어야 합니다
-            ConvertSoftwareSurface();
+                // 성능의 이유로 SDL_UpdateTexture가 픽셀 포맷을 인자로 받아들이지 않기 때문에
+                // 소프트웨어 표면이 텍스쳐와 같은 포맷이어야 합니다
+                ConvertSoftwareSurface();
 
-            IntPtr sdlTexture = SDL.SDL_CreateTexture(
-                renderer,
-                Video.PixelFormat.ToSDLPixelFormat().format,
-                (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_STATIC,
-                _internalSurface.ToSDLSurface().w,
-                _internalSurface.ToSDLSurface().h);
-            _internalTexture = new Texture(sdlTexture);
-            SDL.SDL_SetTextureBlendMode(_internalTexture.InternalTexture, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
+                IntPtr sdlTexture = SDL.SDL_CreateTexture(
+                    mainRenderer,
+                    Video.PixelFormat.ToSDLPixelFormat().format,
+                    (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_STATIC,
+                    _internalSurface.ToSDLSurface().w,
+                    _internalSurface.ToSDLSurface().h);
+                _internalTexture = new Texture(sdlTexture);
+                SDL.SDL_SetTextureBlendMode(_internalTexture.InternalTexture, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
 
-            // 소프트웨어 표면의 픽셀들을 GPU 텍스쳐로 복사합니다
-            SDL.SDL_UpdateTexture(_internalTexture.InternalTexture,
-                IntPtr.Zero,
-                _internalSurface.ToSDLSurface().pixels,
-                _internalSurface.ToSDLSurface().pitch);
-            SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out _internalOpacity);
+                // 소프트웨어 표면의 픽셀들을 GPU 텍스쳐로 복사합니다
+                SDL.SDL_UpdateTexture(_internalTexture.InternalTexture,
+                    IntPtr.Zero,
+                    _internalSurface.ToSDLSurface().pixels,
+                    _internalSurface.ToSDLSurface().pitch);
+                SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out _internalOpacity);
+            }
         }
 
         public void FillWithColor(Color color, Rectangle? where)

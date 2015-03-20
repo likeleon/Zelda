@@ -48,5 +48,29 @@ namespace Zelda.Game
             XmlSerializer serializer = new XmlSerializer(typeof(T));
             return (T)serializer.Deserialize(stream);
         }
+
+        public static string CheckField(this string value, string name)
+        {
+            if (value == null)
+                Debug.Error("Bad field '{0}' (non-null string expected)".F(name));
+
+            return value;
+        }
+
+        public static int CheckField(this int? value, string name)
+        {
+            if (!value.HasValue)
+                Debug.Error("Bad field '{0}' (non-null int expected)".F(name));
+
+            return value.Value;
+        }
+
+        public static int OptField(this int? value, int defaultValue)
+        {
+            if (value.HasValue)
+                return value.Value;
+            else
+                return defaultValue;
+        }
     }
 }

@@ -10,14 +10,23 @@ namespace Zelda.Game.Script
 
         public int Direction
         {
-            get { return _rawSprite.CurrentDirection; }
+            get 
+            {
+                return ScriptTools.ExceptionBoundaryHandle<int>(() =>
+                {
+                    return _rawSprite.CurrentDirection;
+                });
+            }
         }
 
         public static Sprite Create(string animationSetId)
         {
-            RawSprite rawSprite = new RawSprite(animationSetId);
-            ScriptContext.AddDrawable(rawSprite);
-            return new Sprite(rawSprite);
+            return ScriptTools.ExceptionBoundaryHandle<Sprite>(() =>
+            {
+                RawSprite rawSprite = new RawSprite(animationSetId);
+                ScriptContext.AddDrawable(rawSprite);
+                return new Sprite(rawSprite);
+            });
         }
 
         Sprite(RawSprite rawSprite)
@@ -28,23 +37,29 @@ namespace Zelda.Game.Script
 
         public void SetAnimation(string animationName)
         {
-            if (animationName == null)
-                throw new ArgumentNullException("animationName");
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                if (animationName == null)
+                    throw new ArgumentNullException("animationName");
 
-            _rawSprite.SetCurrentAnimation(animationName);
-            _rawSprite.RestartAnimation();
+                _rawSprite.SetCurrentAnimation(animationName);
+                _rawSprite.RestartAnimation();
+            });
         }
 
         public void SetDirection(int direction)
         {
-            if (direction < 0 || direction >= _rawSprite.NumDirections)
+            ScriptTools.ExceptionBoundaryHandle(() =>
             {
-                string msg = "Illegal direction {0} for sprite '{1}' in animation '{2}'"
-                    .F(direction, _rawSprite.AnimationSetId, _rawSprite.CurrentAnimation);
-                throw new ArgumentOutOfRangeException("direction", msg);
-            }
+                if (direction < 0 || direction >= _rawSprite.NumDirections)
+                {
+                    string msg = "Illegal direction {0} for sprite '{1}' in animation '{2}'"
+                        .F(direction, _rawSprite.AnimationSetId, _rawSprite.CurrentAnimation);
+                    throw new ArgumentOutOfRangeException("direction", msg);
+                }
 
-            _rawSprite.SetCurrentDirection(direction);
+                _rawSprite.SetCurrentDirection(direction);
+            });
         }
     }
 }

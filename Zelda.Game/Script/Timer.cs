@@ -10,15 +10,18 @@ namespace Zelda.Game.Script
         [CLSCompliant(false)]
         public static Timer Start(object context, uint delay, Func<bool> callback)
         {
-            object timerContext = context ?? ScriptContext.MainLoop.Game;
-            
-            RawTimer timer = new RawTimer(delay);
-            ScriptContext.AddTimer(timer, timerContext, callback.Invoke);
+            return ScriptTools.ExceptionBoundaryHandle<Timer>(() =>
+            {
+                object timerContext = context ?? ScriptContext.MainLoop.Game;
 
-            if (delay == 0)
-                ScriptContext.DoTimerCallback(timer);
+                RawTimer timer = new RawTimer(delay);
+                ScriptContext.AddTimer(timer, timerContext, callback.Invoke);
 
-            return new Timer(timer);
+                if (delay == 0)
+                    ScriptContext.DoTimerCallback(timer);
+
+                return new Timer(timer);
+            });
         }
 
         Timer(RawTimer rawTimer)
@@ -28,7 +31,10 @@ namespace Zelda.Game.Script
 
         public void Stop()
         {
-            ScriptContext.RemoveTimer(_rawTimer);
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                ScriptContext.RemoveTimer(_rawTimer);
+            });
         }
     }
 }

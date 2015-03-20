@@ -12,8 +12,7 @@ namespace Zelda.Game
             }
             set
             {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException("value", "Invalid life amount");
+                Debug.CheckAssertion(value >= 0, "Invalid life amount");
 
                 _saveGame.SetInteger(SaveGame.Key.MaxLife, value);
 

@@ -177,7 +177,7 @@ namespace Zelda.Game
         private void CheckVersionCompatibility(string zeldaRequiredVersion)
         {
             if (String.IsNullOrWhiteSpace(zeldaRequiredVersion))
-                throw new InvalidDataException("No Zelda version is specified in your Mod.xml file!");
+                Debug.Die("No Zelda version is specified in your Mod.xml file!");
 
             Version requiredVersion = Version.Parse(zeldaRequiredVersion);
             if (requiredVersion.Major != EngineSystem.ZeldaVersion.Major ||
@@ -185,7 +185,7 @@ namespace Zelda.Game
             {
                 string msg = "This mod is made for Zelda {0}.{1}".F(requiredVersion.Major, requiredVersion.Minor);
                 msg += ".x but you are running Zelda {0}".F(EngineSystem.ZeldaVersion.ToString());
-                throw new InvalidDataException(msg);
+                Debug.Die(msg);
             }
         }
 

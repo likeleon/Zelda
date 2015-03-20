@@ -63,13 +63,10 @@ namespace Zelda.Game
             _mainLoop = mainLoop;
             _fileName = fileName;
             _equipment = new Equipment(this);
-        }
 
-        public void Initialize()
-        {
             string modWriteDir = ModFiles.ModWriteDir;
-            if (String.IsNullOrWhiteSpace(modWriteDir))
-                throw new Exception("The mod write directory for savegames was not set in Mod.xml");
+            Debug.CheckAssertion(!String.IsNullOrWhiteSpace(modWriteDir), 
+                "The mod write directory for savegames was not set in Mod.xml");
 
             if (!ModFiles.DataFileExists(_fileName))
             {
@@ -104,8 +101,7 @@ namespace Zelda.Game
             }
             catch (Exception ex)
             {
-                string msg = "Failed to load savegame file '{0}': {1}".F(_fileName, ex.Message);
-                throw new InvalidDataException(msg, ex);
+                Debug.Die("Failed to load savegame file '{0}': {1}".F(_fileName, ex.Message));
             }
         }
 
@@ -124,8 +120,7 @@ namespace Zelda.Game
             SavedValue savedValue;
             if (_savedValues.TryGetValue(key, out savedValue))
             {
-                if (savedValue.Type != SavedValue.Types.Integer)
-                    throw new InvalidOperationException("Value '{0}' is not an integer".F(key));
+                Debug.CheckAssertion(savedValue.Type == SavedValue.Types.Integer, "Value '{0}' is not an integer".F(key));
                 result = savedValue.IntData;
             }
             return result;
@@ -145,8 +140,7 @@ namespace Zelda.Game
             SavedValue savedValue;
             if (_savedValues.TryGetValue(key, out savedValue))
             {
-                if (savedValue.Type != SavedValue.Types.String)
-                    throw new InvalidOperationException("Value '{0}' is not a string".F(key));
+                Debug.CheckAssertion(savedValue.Type != SavedValue.Types.String, "Value '{0}' is not a string".F(key));
                 return savedValue.StringData;
             }
             return String.Empty;

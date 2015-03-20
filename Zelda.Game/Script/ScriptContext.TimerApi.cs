@@ -62,7 +62,7 @@ namespace Zelda.Game.Script
             if (!_timers.ContainsKey(timer) || _timers[timer].Callback == null)
                 return;
 
-            bool repeat = _timers[timer].Callback.Invoke();
+            bool repeat = ScriptTools.ExceptionBoundaryHandle<bool>(_timers[timer].Callback.Invoke);
             if (repeat)
             {
                 timer.ExpirationDate += timer.InitialDuration;
