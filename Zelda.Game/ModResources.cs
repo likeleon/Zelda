@@ -54,8 +54,7 @@ namespace Zelda.Game
 
         protected override bool ImportFromStream(Stream stream)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(ProjectDB));
-            ProjectDB db = (ProjectDB)serializer.Deserialize(stream);
+            ProjectDB db = stream.XmlDeserialize<ProjectDB>();
             
             _assemblies = db.Assemblies.ToArray();
             

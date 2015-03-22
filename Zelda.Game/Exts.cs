@@ -72,5 +72,10 @@ namespace Zelda.Game
             else
                 return defaultValue;
         }
+
+        public static string OptField(this string value, string defaultValue)
+        {
+            return value ?? defaultValue;
+        }
     }
 }
