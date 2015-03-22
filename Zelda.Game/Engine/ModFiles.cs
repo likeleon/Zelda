@@ -56,8 +56,8 @@ namespace Zelda.Game.Engine
 
             Console.WriteLine("Opening mod '" + _modPath + "'");
 
-            string archiveModPath1 = _modPath + "/Data.zelda";
-            string archiveModPath2 = _modPath + "/Data.zelda.zip";
+            string archiveModPath1 = _modPath + "/data.zelda";
+            string archiveModPath2 = _modPath + "/data.zelda.zip";
 
             string baseDir = FileSystem.PHYSFS_getBaseDir();
             FileSystem.PHYSFS_addToSearchPath(_modPath, 1);
@@ -68,7 +68,7 @@ namespace Zelda.Game.Engine
             FileSystem.PHYSFS_addToSearchPath(baseDir + "/" + archiveModPath2, 1);
 
             // 모드가 존재하는지 확인
-            if (!DataFileExists("Mod.xml"))
+            if (!DataFileExists("mod.xml"))
             {
                 Console.Write("No mod was found in the directory '" + _modPath + "'.\n" +
                               "To specify your mod's path, run: " + (programName ?? "Zelda") + " path/to/mod\n");

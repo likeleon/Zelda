@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <AnimationSet>
   <Animation Name="subtitle">
-    <SrcImage>Menus/solarus_logo.png</SrcImage>
+    <SrcImage>menus/solarus_logo.png</SrcImage>
     <Directions>
       <Direction>
         <X>0</X>
@@ -13,7 +13,7 @@
     </Directions>
   </Animation>
   <Animation Name="sun">
-    <SrcImage>Menus/solarus_logo.png</SrcImage>
+    <SrcImage>menus/solarus_logo.png</SrcImage>
     <Directions>
       <Direction>
         <X>0</X>
@@ -32,7 +32,7 @@
     </Directions>
   </Animation>
   <Animation Name="sword">
-    <SrcImage>Menus/solarus_logo.png</SrcImage>
+    <SrcImage>menus/solarus_logo.png</SrcImage>
     <Directions>
       <Direction>
         <X>92</X>
@@ -45,7 +45,7 @@
     </Directions>
   </Animation>
   <Animation Name="title">
-    <SrcImage>Menus/solarus_logo.png</SrcImage>
+    <SrcImage>menus/solarus_logo.png</SrcImage>
     <Directions>
       <Direction>
         <X>0</X>

@@ -74,7 +74,7 @@ namespace Zelda.Game
         {
             // 맵 데이터 파일을 읽습니다.
             MapData data = new MapData();
-            string fileName = "Maps/" + _id + ".xml";
+            string fileName = "maps/" + _id + ".xml";
             bool success = data.ImportFromModFile(fileName);
 
             if (!success)

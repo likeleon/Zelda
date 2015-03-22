@@ -159,7 +159,7 @@ namespace Zelda.Game
         private void LoadModProperties()
         {
             // 모드 속성 파일을 읽습니다
-            string fileName = "Mod.xml";
+            string fileName = "mod.xml";
 
             ModProperties modProperties = ModProperties.ImportFrom(fileName);
 
@@ -177,7 +177,7 @@ namespace Zelda.Game
         private void CheckVersionCompatibility(string zeldaRequiredVersion)
         {
             if (String.IsNullOrWhiteSpace(zeldaRequiredVersion))
-                Debug.Die("No Zelda version is specified in your Mod.xml file!");
+                Debug.Die("No Zelda version is specified in your mod.xml file!");
 
             Version requiredVersion = Version.Parse(zeldaRequiredVersion);
             if (requiredVersion.Major != EngineSystem.ZeldaVersion.Major ||

@@ -155,12 +155,12 @@ namespace Zelda.Game.Engine
 
             if (baseDirectory == ImageDirectory.Sprites)
             {
-                prefix = "Sprites/";
+                prefix = "sprites/";
             }
             else if (baseDirectory == ImageDirectory.Language)
             {
                 languageSpecific = true;
-                prefix = "Images/";
+                prefix = "images/";
             }
             string prefixedFileName = prefix + fileName;
 

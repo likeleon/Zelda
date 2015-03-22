@@ -13,7 +13,7 @@ namespace Zelda.Game
         public static void Initialize()
         {
             _resources = new ModResources();
-            _resources.ImportFromModFile("ProjectDB.xml");
+            _resources.ImportFromModFile("project_db.xml");
         }
 
         public static void Quit()

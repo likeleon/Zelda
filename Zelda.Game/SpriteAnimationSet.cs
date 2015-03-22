@@ -71,7 +71,7 @@ namespace Zelda.Game
         {
             Debug.CheckAssertion(_animations.Count <= 0, "Animation set already loaded");
 
-            string fileName = "Sprites/" + _id + ".xml";
+            string fileName = "sprites/" + _id + ".xml";
 
             using (MemoryStream stream = ModFiles.DataFileRead(fileName))
             {

@@ -19,16 +19,16 @@ namespace Sample.Menus
         {
             _surface = Surface.Create(201, 48);
             
-            _title = Sprite.Create("Menus/solarus_logo");
+            _title = Sprite.Create("menus/solarus_logo");
             _title.SetAnimation("title");
 
-            _subtitle = Sprite.Create("Menus/solarus_logo");
+            _subtitle = Sprite.Create("menus/solarus_logo");
             _subtitle.SetAnimation("subtitle");
 
-            _sun = Sprite.Create("Menus/solarus_logo");
+            _sun = Sprite.Create("menus/solarus_logo");
             _sun.SetAnimation("sun");
 
-            _sword = Sprite.Create("Menus/solarus_logo");
+            _sword = Sprite.Create("menus/solarus_logo");
             _sword.SetAnimation("sword");
 
             _blackSquare = Surface.Create(48, 15);

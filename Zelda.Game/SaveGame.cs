@@ -66,7 +66,7 @@ namespace Zelda.Game
 
             string modWriteDir = ModFiles.ModWriteDir;
             Debug.CheckAssertion(!String.IsNullOrWhiteSpace(modWriteDir), 
-                "The mod write directory for savegames was not set in Mod.xml");
+                "The mod write directory for savegames was not set in mod.xml");
 
             if (!ModFiles.DataFileExists(_fileName))
             {

@@ -53,7 +53,7 @@ namespace Zelda.Game.Script
             return ScriptTools.ExceptionBoundaryHandle<bool>(() =>
             {
                 if (String.IsNullOrWhiteSpace(ModFiles.ModWriteDir))
-                    throw new InvalidOperationException("Cannot check savegame: no write directory was specified in Mod.xml");
+                    throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
 
                 return ModFiles.DataFileExists(fileName);
             });
@@ -64,7 +64,7 @@ namespace Zelda.Game.Script
             return ScriptTools.ExceptionBoundaryHandle<Game>(() =>
             {
                 if (String.IsNullOrWhiteSpace(ModFiles.ModWriteDir))
-                    throw new InvalidOperationException("Cannot check savegame: no write directory was specified in Mod.xml");
+                    throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
 
                 RawSaveGame rawSaveGame = new RawSaveGame(ScriptContext.MainLoop, fileName);
                 return new Game(rawSaveGame);
