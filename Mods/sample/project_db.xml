@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectDB>
+  <Assemblies>
+    <Assembly>Sample.dll</Assembly>
+  </Assemblies>
+  <Maps>
+    <Map Id="first_map" Description="First map" />
+  </Maps>
+  <Languages>
+    <Language Id="en" Description="English" />
+    <Language Id="kr" Description="Korean" />
+  </Languages>
+</ProjectDB>

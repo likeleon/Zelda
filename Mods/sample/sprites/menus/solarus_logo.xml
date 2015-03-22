@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnimationSet>
+  <Animation Name="subtitle">
+    <SrcImage>menus/solarus_logo.png</SrcImage>
+    <Directions>
+      <Direction>
+        <X>0</X>
+        <Y>32</Y>
+        <FrameWidth>201</FrameWidth>
+        <FrameHeight>13</FrameHeight>
+        <OriginY>-35</OriginY>
+      </Direction>
+    </Directions>
+  </Animation>
+  <Animation Name="sun">
+    <SrcImage>menus/solarus_logo.png</SrcImage>
+    <Directions>
+      <Direction>
+        <X>0</X>
+        <Y>45</Y>
+        <FrameWidth>46</FrameWidth>
+        <FrameHeight>46</FrameHeight>
+        <OriginX>-24</OriginX>
+      </Direction>
+      <Direction>
+        <X>46</X>
+        <Y>45</Y>
+        <FrameWidth>46</FrameWidth>
+        <FrameHeight>46</FrameHeight>
+        <OriginX>-24</OriginX>
+      </Direction>
+    </Directions>
+  </Animation>
+  <Animation Name="sword">
+    <SrcImage>menus/solarus_logo.png</SrcImage>
+    <Directions>
+      <Direction>
+        <X>92</X>
+        <Y>49</Y>
+        <FrameWidth>39</FrameWidth>
+        <FrameHeight>39</FrameHeight>
+        <OriginX>-21</OriginX>
+        <OriginY>-8</OriginY>
+      </Direction>
+    </Directions>
+  </Animation>
+  <Animation Name="title">
+    <SrcImage>menus/solarus_logo.png</SrcImage>
+    <Directions>
+      <Direction>
+        <X>0</X>
+        <Y>0</Y>
+        <FrameWidth>201</FrameWidth>
+        <FrameHeight>32</FrameHeight>
+        <OriginY>-1</OriginY>
+      </Direction>
+    </Directions>
+  </Animation>
+</AnimationSet>

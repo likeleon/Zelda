@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mod>
+  <ZeldaVersion>0.1</ZeldaVersion>
+  <WriteDir>Sample</WriteDir>
+  <TitleBar>Zelda - Sample Mod</TitleBar>
+</Mod>
