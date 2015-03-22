@@ -71,6 +71,7 @@
     <Compile Include="Engine\InputEvent.cs" />
     <Compile Include="Engine\Size.cs" />
     <Compile Include="Equipment.cs" />
+    <Compile Include="Map.cs" />
     <Compile Include="Movements\Movement.cs" />
     <Compile Include="Movements\StraightMovement.cs" />
     <Compile Include="Movements\TargetMovement.cs" />

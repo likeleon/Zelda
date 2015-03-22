@@ -17,6 +17,19 @@ namespace Zelda.Game
             get { return _saveGame.Equipment; }
         }
 
+        Map _currentMap;
+        public bool HasCurrentMap
+        {
+            get { return _currentMap != null; }
+        }
+        
+        public Map CurrentMap
+        {
+            get { return _currentMap; }
+        }
+
+        Map _nextMap;
+
         readonly SaveGame _saveGame;
         bool _started;
 
@@ -92,8 +105,22 @@ namespace Zelda.Game
 
         public void Update()
         {
+            UpdateTransitions();
+            
             if (!_started)
                 return;
+        }
+
+        private void UpdateTransitions()
+        {
+            if (_nextMap != null)
+            {
+                if (_currentMap == null)
+                {
+                    _currentMap = _nextMap;
+                    _nextMap = null;
+                }
+            }
         }
 
         public void Draw(Surface dstSurface)
@@ -102,7 +129,20 @@ namespace Zelda.Game
 
         public void SetCurrentMap(string mapId, string destinationName)
         {
-            // TODO 맵 개념 추가
+            // 다음 맵을 준비합니다
+            if (_currentMap == null || mapId != _currentMap.Id)
+            {
+                // 다른 맵입니다
+                _nextMap = new Map(mapId);
+                _nextMap.Load(this);
+            }
+            else
+            {
+                // 동일한 맵입니다
+                _nextMap = _currentMap;
+            }
+
+            _nextMap.DestinationName = destinationName;
         }
     }
 }
