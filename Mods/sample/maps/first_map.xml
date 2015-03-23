@@ -6,5 +6,6 @@
     <Width>320</Width>
     <Height>240</Height>
     <World>inside</World>
+    <Tileset>castle</Tileset>
   </Properties>
 </MapData>

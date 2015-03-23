@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Zelda.Game.Engine;
+using Zelda.Game.Entities;
 
 namespace Zelda.Game
 {
@@ -63,6 +60,18 @@ namespace Zelda.Game
             get { return _floor; }
         }
 
+        string _tilesetId;
+        public string TilesetId
+        {
+            get { return _tilesetId; }
+        }
+
+        Tileset _tileset;
+        public Tileset Tileset
+        {
+            get { return _tileset; }
+        }
+
         Game _game;
 
         public Map(string id)
@@ -87,6 +96,9 @@ namespace Zelda.Game
             _height8 = data.Size.Height / 8;
             _world = data.World;
             _floor = data.Floor;
+            _tilesetId = data.TilesetId;
+            _tileset = new Tileset(data.TilesetId);
+            _tileset.Load();
 
             _loaded = true;
         }

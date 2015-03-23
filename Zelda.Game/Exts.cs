@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
+using Zelda.Game.Engine;
 
 namespace Zelda.Game
 {
@@ -76,6 +77,15 @@ namespace Zelda.Game
         public static string OptField(this string value, string defaultValue)
         {
             return value ?? defaultValue;
+        }
+
+        public static Color CheckColor(this ColorXmlData value, string name)
+        {
+            int r = value.R.CheckField(name + ".R");
+            int g = value.G.CheckField(name + ".G");
+            int b = value.B.CheckField(name + ".B");
+            int a = value.A.OptField(255);
+            return new Color(r, g, b, a);
         }
     }
 }

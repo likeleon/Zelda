@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Serialization;
 
 namespace Zelda.Game.Engine
 {
@@ -124,5 +125,14 @@ namespace Zelda.Game.Engine
             get { return new Color(0, 255, 255); }
         }
         #endregion
+    }
+
+    [XmlRoot("Color")]
+    public class ColorXmlData
+    {
+        public int? R { get; set; }
+        public int? G { get; set; }
+        public int? B { get; set; }
+        public int? A { get; set; }
     }
 }

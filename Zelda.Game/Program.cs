@@ -12,7 +12,6 @@ namespace Zelda.Game
         {
 #if DEBUG
             Debug.DieOnError = true;
-            Debug.ShowPopupOnDie = true;
 #endif
 
             if (Debugger.IsAttached)
