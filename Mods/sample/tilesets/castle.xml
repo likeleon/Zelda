@@ -5,4 +5,20 @@
     <G>0</G>
     <B>0</B>
   </BackgroundColor>
+  <TilePattern Id="1">
+    <Ground>Traversable</Ground>
+    <DefaultLayer>Low</DefaultLayer>
+    <X>0</X>
+    <Y>0</Y>
+    <Width>48</Width>
+    <Height>32</Height>
+  </TilePattern>
+  <TilePattern Id="2">
+    <Ground>Traversable</Ground>
+    <DefaultLayer>Low</DefaultLayer>
+    <X>48</X>
+    <Y>0</Y>
+    <Width>48</Width>
+    <Height>32</Height>
+  </TilePattern>
 </Tileset>

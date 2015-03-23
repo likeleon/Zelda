@@ -32,21 +32,28 @@ namespace Zelda.Game
 
         protected override bool ImportFromStream(Stream stream)
         {
-            MapXmlData data = stream.XmlDeserialize<MapXmlData>();
-            int x = data.Properties.X.OptField(0);
-            int y = data.Properties.Y.OptField(0);
-            int width = data.Properties.Width.CheckField("Width");
-            int height = data.Properties.Height.CheckField("Height");
-            string world = data.Properties.World.OptField(String.Empty);
-            int floor = data.Properties.Floor.OptField(MapData.NoFloor);
-            string tilesetId = data.Properties.Tileset.CheckField("Tileset");
+            try
+            {
+                MapXmlData data = stream.XmlDeserialize<MapXmlData>();
+                int x = data.Properties.X.OptField(0);
+                int y = data.Properties.Y.OptField(0);
+                int width = data.Properties.Width.CheckField("Width");
+                int height = data.Properties.Height.CheckField("Height");
+                string world = data.Properties.World.OptField(String.Empty);
+                int floor = data.Properties.Floor.OptField(MapData.NoFloor);
+                string tilesetId = data.Properties.Tileset.CheckField("Tileset");
 
-            Location = new Point(x, y);
-            Size = new Size(width, height);
-            World = world;
-            Floor = floor;
-            TilesetId = tilesetId;
-           
+                Location = new Point(x, y);
+                Size = new Size(width, height);
+                World = world;
+                Floor = floor;
+                TilesetId = tilesetId;
+            }
+            catch (Exception ex)
+            {
+                Debug.Error("Failed to load map: {0}".F(ex.Message));
+                return false;
+            }
             return true;
         }
     }

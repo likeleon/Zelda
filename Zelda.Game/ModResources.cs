@@ -54,14 +54,21 @@ namespace Zelda.Game
 
         protected override bool ImportFromStream(Stream stream)
         {
-            ProjectDB db = stream.XmlDeserialize<ProjectDB>();
-            
-            _assemblies = db.Assemblies.ToArray();
-            
-            FillResourceMap(ResourceType.Map, db.Maps);
-            FillResourceMap(ResourceType.Sprite, db.Sprites);
-            FillResourceMap(ResourceType.Language, db.Languages);
-            
+            try
+            {
+                ProjectDB db = stream.XmlDeserialize<ProjectDB>();
+
+                _assemblies = db.Assemblies.ToArray();
+
+                FillResourceMap(ResourceType.Map, db.Maps);
+                FillResourceMap(ResourceType.Sprite, db.Sprites);
+                FillResourceMap(ResourceType.Language, db.Languages);
+            }
+            catch (Exception ex)
+            {
+                Debug.Error("Failed to load mod resource list 'project_db.xml': {0}".F(ex.Message));
+                return false;
+            }
             return true;
         }
 

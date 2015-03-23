@@ -53,7 +53,7 @@ namespace Zelda.Game
         public static string CheckField(this string value, string name)
         {
             if (value == null)
-                Debug.Error("Bad field '{0}' (non-null string expected)".F(name));
+                throw new Exception("Bad field '{0}' (non-null string expected)".F(name));
 
             return value;
         }
@@ -61,7 +61,7 @@ namespace Zelda.Game
         public static int CheckField(this int? value, string name)
         {
             if (!value.HasValue)
-                Debug.Error("Bad field '{0}' (non-null int expected)".F(name));
+                throw new Exception("Bad field '{0}' (non-null int expected)".F(name));
 
             return value.Value;
         }
@@ -86,6 +86,28 @@ namespace Zelda.Game
             int b = value.B.CheckField(name + ".B");
             int a = value.A.OptField(255);
             return new Color(r, g, b, a);
+        }
+
+        [CLSCompliant(false)]
+        public static T CheckField<T>(this T? value, string name) where T : struct, IConvertible
+        {
+            Debug.CheckAssertion(typeof(T).IsEnum, "T must be an enumerated type '{0}'".F(typeof(T).Name));
+
+            if (!value.HasValue)
+                throw new Exception("Bad field '{0}' (non-null enum '{1}' expected)".F(name, typeof(T).Name));
+
+            return value.Value;
+        }
+
+        [CLSCompliant(false)]
+        public static T OptField<T>(this T? value, string name, T defaultValue) where T : struct, IConvertible
+        {
+            Debug.CheckAssertion(typeof(T).IsEnum, "T must be an enumerated type");
+
+            if (value.HasValue)
+                return value.Value;
+            else
+                return defaultValue;
         }
     }
 }
