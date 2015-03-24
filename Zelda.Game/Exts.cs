@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
+using Zelda.Game.Entities;
 
 namespace Zelda.Game
 {
@@ -108,6 +109,39 @@ namespace Zelda.Game
                 return value.Value;
             else
                 return defaultValue;
+        }
+
+        public static bool IsGroundDiagonal(this Ground ground)
+        {
+            switch (ground)
+            {
+                case Ground.WallTopRight:
+                case Ground.WallTopLeft:
+                case Ground.WallBottomLeft:
+                case Ground.WallBottomRight:
+                case Ground.WallTopRightWater:
+                case Ground.WallTopLeftWater:
+                case Ground.WallBottomLeftWater:
+                case Ground.WallBottomRightWater:
+                    return true;
+
+                case Ground.Empty:
+                case Ground.Traversable:
+                case Ground.Wall:
+                case Ground.LowWall:
+                case Ground.DeepWater:
+                case Ground.ShallowWater:
+                case Ground.Grass:
+                case Ground.Hole:
+                case Ground.Ice:
+                case Ground.Ladder:
+                case Ground.Prickle:
+                case Ground.Lava:
+                    return false;
+
+                default:
+                    return false;
+            }
         }
     }
 }

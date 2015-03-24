@@ -21,6 +21,11 @@ namespace Zelda.Game.Engine
             get { return (_width == 0) || (_height == 0); }
         }
 
+        public bool IsSquare
+        {
+            get { return _width == _height; }
+        }
+
         public Size(int width, int height)
         {
             _width = width;

@@ -72,6 +72,10 @@
     <Compile Include="Engine\Size.cs" />
     <Compile Include="Entities\Ground.cs" />
     <Compile Include="Entities\Layer.cs" />
+    <Compile Include="Entities\ParallaxScrollingTilePattern.cs" />
+    <Compile Include="Entities\SelfScrollingTilePattern.cs" />
+    <Compile Include="Entities\SimpleTilePattern.cs" />
+    <Compile Include="Entities\TilePattern.cs" />
     <Compile Include="Entities\Tileset.cs" />
     <Compile Include="Entities\TilesetData.cs" />
     <Compile Include="Equipment.cs" />

@@ -1,4 +1,5 @@
-﻿using Zelda.Game.Engine;
+﻿using System.Collections.Generic;
+using Zelda.Game.Engine;
 
 namespace Zelda.Game.Entities
 {
@@ -33,6 +34,8 @@ namespace Zelda.Game.Entities
             get { return _tilesImage != null; }
         }
 
+        readonly Dictionary<string, TilePattern> _tilePatterns = new Dictionary<string, TilePattern>();
+
         public Tileset(string id)
         {
             _id = id;
@@ -47,6 +50,8 @@ namespace Zelda.Game.Entities
             if (success)
             {
                 _backgroundColor = data.BackgroundColor;
+                foreach (var pattern in data.Patterns)
+                    AddTilePattern(pattern.Key, pattern.Value);
             }
 
             // 타일셋 이미지들을 읽습니다
@@ -69,10 +74,64 @@ namespace Zelda.Game.Entities
 
         public void Unload()
         {
+            _tilePatterns.Clear();
             _tilesImage.Dispose();
             _tilesImage = null;
             _entitiesImage.Dispose();
             _entitiesImage = null;
+        }
+
+        private void AddTilePattern(string id, TilePatternData patternData)
+        {
+            TilePattern tilePattern = null;
+
+            Rectangle[] frames = patternData.Frames;
+            TileScrolling scrolling = patternData.Scrolling;
+            Ground ground = patternData.Ground;
+
+            if (frames.Length == 1)
+            {
+                Rectangle frame = frames[0];
+                switch (scrolling)
+                {
+                    case TileScrolling.None:
+                        tilePattern = new SimpleTilePattern(ground, frame.XY, frame.Size);
+                        break;
+
+                    case TileScrolling.Parallax:
+                        tilePattern = new ParallaxScrollingTilePattern(ground, frame.XY, frame.Size);
+                        break;
+
+                    case TileScrolling.Self:
+                        tilePattern = new SelfScrollingTilePattern(ground, frame.XY, frame.Size);
+                        break;
+                }
+            }
+            else
+            {
+                if (scrolling == TileScrolling.Self)
+                {
+                    Debug.Error("Multi-frame is not supported for self-scrolling tiles");
+                    return;
+                }
+
+                bool parallax = scrolling == TileScrolling.Parallax;
+                AnimatedTilePattern.AnimationSequence sequence = (frames.Length == 3) ?
+                    AnimatedTilePattern.AnimationSequence012 : AnimatedTilePattern.AnimationSequence0121;
+                tilePattern = new AnimatedTilePattern(
+                    ground,
+                    sequence,
+                    frames[0].Size,
+                    frames[0].X,
+                    frames[0].Y,
+                    frames[1].X,
+                    frames[1].Y,
+                    frames[2].X,
+                    frames[2].Y,
+                    parallax);
+            }
+
+            _tilePatterns.Add(id, tilePattern);
         }
     }
 }
