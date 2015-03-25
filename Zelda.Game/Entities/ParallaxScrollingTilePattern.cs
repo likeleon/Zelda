@@ -16,7 +16,7 @@ namespace Zelda.Game.Entities
         }
 
         // 타일이 1픽셀 이동하기 위해 필요로 하는 뷰포트 거리
-        static readonly int _ratio = 2;
+        public static readonly int Ratio = 2;
 
         public ParallaxScrollingTilePattern(Ground ground, Point xy, Size size)
             : base(ground, xy, size)
@@ -27,7 +27,7 @@ namespace Zelda.Game.Entities
         {
             Surface tilesetImage = tileset.TilesImage;
             Point dst = dstPosition;
-            dst += viewport / _ratio;
+            dst += viewport / Ratio;
             tilesetImage.DrawRegion(_positionInTileset, dstSurface, dst);
         }
     }

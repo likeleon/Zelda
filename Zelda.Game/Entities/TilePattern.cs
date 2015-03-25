@@ -90,7 +90,6 @@ namespace Zelda.Game.Entities
         public static void Update()
         {
             AnimatedTilePattern.Update();
-            TimeScrollingTilePattern.Update();
         }
     }
 }

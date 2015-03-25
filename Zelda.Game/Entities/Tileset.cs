@@ -117,17 +117,14 @@ namespace Zelda.Game.Entities
 
                 bool parallax = scrolling == TileScrolling.Parallax;
                 AnimatedTilePattern.AnimationSequence sequence = (frames.Length == 3) ?
-                    AnimatedTilePattern.AnimationSequence012 : AnimatedTilePattern.AnimationSequence0121;
+                    AnimatedTilePattern.AnimationSequence.Sequence012 : AnimatedTilePattern.AnimationSequence.Sequence0121;
                 tilePattern = new AnimatedTilePattern(
                     ground,
                     sequence,
                     frames[0].Size,
-                    frames[0].X,
-                    frames[0].Y,
-                    frames[1].X,
-                    frames[1].Y,
-                    frames[2].X,
-                    frames[2].Y,
+                    frames[0].XY,
+                    frames[1].XY,
+                    frames[2].XY,
                     parallax);
             }
 

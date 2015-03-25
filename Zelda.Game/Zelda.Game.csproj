@@ -70,6 +70,7 @@
     <Compile Include="Engine\Rectangle.cs" />
     <Compile Include="Engine\InputEvent.cs" />
     <Compile Include="Engine\Size.cs" />
+    <Compile Include="Entities\AnimatedTilePattern.cs" />
     <Compile Include="Entities\Ground.cs" />
     <Compile Include="Entities\Layer.cs" />
     <Compile Include="Entities\ParallaxScrollingTilePattern.cs" />
