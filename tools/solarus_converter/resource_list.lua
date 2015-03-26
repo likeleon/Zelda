@@ -34,7 +34,7 @@ function importer.check(quest_path)
 	end
 
 	local file = quest_path .. "project_db.dat"
-	local chunk, erro = loadfile(file)
+	local chunk, error = loadfile(file)
 	if chunk == nil then
 		report.fatal("Error in resource list file: " .. error)
 	else
