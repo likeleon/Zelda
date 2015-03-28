@@ -3,6 +3,7 @@
 local converter = {}
 
 local report = require("report")
+require("LuaXml")
 
 local function import_tileset(quest_path, tileset_id)
   print("Importing tileset '" .. tileset_id .. "'")
@@ -36,6 +37,22 @@ end
 
 local function export_tileset(quest_path, tileset_id, tileset)
   print("Exporting tileset '" .. tileset_id .. "'")
+
+  local root = xml.new("Tileset")
+
+  local background_color = root:append("BackgroundColor")
+  background_color:append("R")[1] = tileset.background_color[1]
+  background_color:append("G")[1] = tileset.background_color[2]
+  background_color:append("B")[1] = tileset.background_color[3]
+  if tileset.background_color[4] ~= nil then
+    background_color:append("A")[1] = tileset.background_color[4]
+  end
+
+  for id, pattern in ipairs(tileset.tile_patterns) do
+    local tile_pattern = root:append("TilePattern")
+    tile_pattern["Id"] = id
+  end
+  print(root)
 end
 
 local function import(quest_path, resources)
