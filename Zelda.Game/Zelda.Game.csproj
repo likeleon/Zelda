@@ -71,6 +71,9 @@
     <Compile Include="Engine\InputEvent.cs" />
     <Compile Include="Engine\Size.cs" />
     <Compile Include="Entities\AnimatedTilePattern.cs" />
+    <Compile Include="Entities\Destination.cs" />
+    <Compile Include="Entities\EntityType.cs" />
+    <Compile Include="Entities\EntityData.cs" />
     <Compile Include="Entities\Ground.cs" />
     <Compile Include="Entities\Layer.cs" />
     <Compile Include="Entities\ParallaxScrollingTilePattern.cs" />
@@ -79,6 +82,7 @@
     <Compile Include="Entities\TilePattern.cs" />
     <Compile Include="Entities\Tileset.cs" />
     <Compile Include="Entities\TilesetData.cs" />
+    <Compile Include="Entities\Tile.cs" />
     <Compile Include="Equipment.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapData.cs" />

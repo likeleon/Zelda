@@ -80,6 +80,14 @@ namespace Zelda.Game
             return value ?? defaultValue;
         }
 
+        public static bool OptField(this bool? value, bool defaultValue)
+        {
+            if (value.HasValue)
+                return value.Value;
+            else
+                return defaultValue;
+        }
+
         public static Color CheckColor(this ColorXmlData value, string name)
         {
             int r = value.R.CheckField(name + ".R");
@@ -137,6 +145,49 @@ namespace Zelda.Game
                 case Ground.Ladder:
                 case Ground.Prickle:
                 case Ground.Lava:
+                    return false;
+
+                default:
+                    return false;
+            }
+        }
+
+        public static bool CanBeStoredInMapFile(this EntityType type)
+        {
+            switch (type)
+            {
+                case EntityType.Tile:
+                case EntityType.Destination:
+                case EntityType.Teletransporter:
+                case EntityType.Pickable:
+                case EntityType.Destructible:
+                case EntityType.Chest:
+                case EntityType.Jumper:
+                case EntityType.Enemy:
+                case EntityType.Npc:
+                case EntityType.Block:
+                case EntityType.DynamicTile:
+                case EntityType.Switch:
+                case EntityType.Wall:
+                case EntityType.Sensor:
+                case EntityType.Crystal:
+                case EntityType.CrystalBlock:
+                case EntityType.ShopTreasure:
+                case EntityType.Stream:
+                case EntityType.Door:
+                case EntityType.Stairs:
+                case EntityType.Separator:
+                case EntityType.Custom:
+                    return true;
+
+                case EntityType.Hero:
+                case EntityType.CarriedItem:
+                case EntityType.Boomerang:
+                case EntityType.Explosion:
+                case EntityType.Arrow:
+                case EntityType.Bomb:
+                case EntityType.Fire:
+                case EntityType.Hookshot:
                     return false;
 
                 default:

@@ -55,9 +55,9 @@ namespace Zelda.Game.Engine
 
         public static bool operator !=(Color color1, Color color2)
         {
-            return ((color1._r != color2._r) &&
-                    (color1._g != color2._g) &&
-                    (color1._b != color2._b) &&
+            return ((color1._r != color2._r) ||
+                    (color1._g != color2._g) ||
+                    (color1._b != color2._b) ||
                     (color1._a != color2._a));
         }
 

@@ -8,4 +8,26 @@
     <World>inside</World>
     <Tileset>castle</Tileset>
   </Properties>
+  <Tile>
+    <Layer>Low</Layer>
+    <X>16</X>
+    <Y>32</Y>
+    <Width>288</Width>
+    <Height>160</Height>
+    <Pattern>3</Pattern>
+  </Tile>
+  <Tile>
+    <Layer>Low</Layer>
+    <X>224</X>
+    <Y>192</Y>
+    <Width>16</Width>
+    <Height>16</Height>
+    <Pattern>3</Pattern>
+  </Tile>
+  <Destination>
+    <Layer>Low</Layer>
+    <X>176</X>
+    <Y>189</Y>
+    <Direction>1</Direction>
+  </Destination>
 </MapData>

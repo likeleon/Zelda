@@ -1,33 +1,86 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
+using Zelda.Game.Entities;
 
 namespace Zelda.Game
 {
+    class EntityIndex
+    {
+        public Layer Layer { get; set; }
+        
+        public int Index { get; set; }
+
+        public bool IsValid
+        {
+            get { return Index != -1; }
+        }
+
+        public EntityIndex()
+        {
+            Layer = Layer.Low;
+            Index = -1;
+        }
+
+        public EntityIndex(Layer layer, int index)
+        {
+            Layer = layer;
+            Index = index;
+        }
+
+        public static bool operator ==(EntityIndex index1, EntityIndex index2)
+        {
+            return (index1.Layer == index2.Layer) &&
+                   (index2.Index == index2.Index);
+        }
+
+        public static bool operator !=(EntityIndex index1, EntityIndex index2)
+        {
+            return (index1.Layer != index2.Layer) ||
+                   (index2.Index != index2.Index);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is EntityIndex))
+                return false;
+
+            return (this == (EntityIndex)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+    }
+
     class MapData : XmlData
     {
-        [Description("맵의 크기, 픽셀 단위")]
+        // 맵의 크기, 픽셀 단위
         public Size Size { get; private set; }
 
-        [Description("맵의 월드")]
+        // 맵의 월드
         public string World { get; private set; }
 
-        [Description("월드 상에서의 이 맵의 좌측 최상단 좌표")]
+        // 월드 상에서의 이 맵의 좌측 최상단 좌표
         public Point Location { get; private set; }
 
-        [Description("층")]
         public int Floor { get; private set; }
 
-        [Description("타일 셋")]
         public string TilesetId { get; private set; }
 
         public static readonly int NoFloor = 9999;
 
+        readonly Dictionary<Layer, List<EntityData>> _entities = new Dictionary<Layer, List<EntityData>>();
+        readonly Dictionary<string, EntityIndex> _namedEntities = new Dictionary<string, EntityIndex>();
+
         public MapData()
         {
             World = String.Empty;
+            foreach (Layer layer in Enum.GetValues(typeof(Layer)))
+                _entities.Add(layer, new List<EntityData>());
         }
 
         protected override bool ImportFromStream(Stream stream)
@@ -48,6 +101,9 @@ namespace Zelda.Game
                 World = world;
                 Floor = floor;
                 TilesetId = tilesetId;
+
+                foreach (var entity in data.Entities)
+                    AddEntity(EntityData.CheckEntityData(entity));
             }
             catch (Exception ex)
             {
@@ -55,6 +111,32 @@ namespace Zelda.Game
                 return false;
             }
             return true;
+        }
+
+        EntityIndex AddEntity(EntityData entity)
+        {
+            Layer layer = entity.Layer;
+            EntityIndex index = new EntityIndex(layer, _entities[layer].Count);
+
+            if (!entity.Type.CanBeStoredInMapFile())
+                return new EntityIndex();
+
+            if (entity.HasName)
+            {
+                if (EntityExists(entity.Name))
+                    return new EntityIndex();   // 이름 중복
+
+                _namedEntities.Add(entity.Name, index);
+            }
+
+            _entities[layer].Add(entity);
+            
+            return index;
+        }
+
+        public bool EntityExists(string name)
+        {
+            return _namedEntities.ContainsKey(name);
         }
     }
 
@@ -73,5 +155,13 @@ namespace Zelda.Game
         }
 
         public PropertiesData Properties { get; set; }
+
+        [XmlChoiceIdentifier("EntityTypes")]
+        [XmlElement("Tile", typeof(TileXmlData))]
+        [XmlElement("Destination", typeof(DestinationXmlData))]
+        public EntityXmlData[] Entities { get; set; }
+
+        [XmlIgnore]
+        public EntityType[] EntityTypes;
     }
 }
