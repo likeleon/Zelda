@@ -1,6 +1,38 @@
 -- 퀘스트의 타일셋들을 XML로 변환합니다
 
 local converter = {}
+local ground_names = {
+  empty = "Empty",
+  traversable = "Traversable",
+  wall = "Wall",
+  low_wall = "LowWall",
+  wall_top_right = "WallTopRight",
+  wall_top_left = "WallTopLeft",
+  wall_bottom_left = "WallBottomLeft",
+  wall_bottom_right = "WallBottomRight",
+  wall_top_right_water = "WallTopRightWater",
+  wall_top_left_water = "WallTopLeftWater",
+  wall_bottom_left_water = "WallBottomLeftWater",
+  wall_bottom_right_water = "WallBottomRightWater",
+  deep_water = "DeepWater",
+  shallow_water = "ShallowWater",
+  grass = "Grass",
+  hole = "Hole",
+  ice = "Ice",
+  ladder = "Ladder",
+  prickles = "Prickles",
+  lava = "Lava"
+}
+
+local layer_names = {
+  "Low", "Intermediate", "Hight", "NumLayers"
+}
+
+local scrolling_names = {
+ [""] = "None",
+ ["parallax"] = "Parallax",
+ ["self"] = "Self"
+}
 
 local report = require("report")
 require("LuaXml")
@@ -40,19 +72,42 @@ local function export_tileset(quest_path, tileset_id, tileset)
 
   local root = xml.new("Tileset")
 
-  local background_color = root:append("BackgroundColor")
-  background_color:append("R")[1] = tileset.background_color[1]
-  background_color:append("G")[1] = tileset.background_color[2]
-  background_color:append("B")[1] = tileset.background_color[3]
+  local bgcolor_elem = root:append("BackgroundColor")
+  bgcolor_elem:append("R")[1] = tileset.background_color[1]
+  bgcolor_elem:append("G")[1] = tileset.background_color[2]
+  bgcolor_elem:append("B")[1] = tileset.background_color[3]
   if tileset.background_color[4] ~= nil then
-    background_color:append("A")[1] = tileset.background_color[4]
+    bgcolor_elem:append("A")[1] = tileset.background_color[4]
   end
 
   for id, pattern in ipairs(tileset.tile_patterns) do
-    local tile_pattern = root:append("TilePattern")
-    tile_pattern["Id"] = id
+    local pattern_elem = root:append("TilePattern")
+    pattern_elem["Id"] = id
+    pattern_elem:append("Ground")[1] = ground_names[pattern.ground]
+    pattern_elem:append("DefaultLayer")[1] = layer_names[pattern.default_layer + 1]
+    if pattern.scrolling ~= nil then
+      pattern_elem:append("Scrolling")[1] = scrolling_names[pattern.scrolling]
+    end
+    if type(pattern.x) == "table" then
+      for _, x in ipairs(pattern.x) do
+        pattern_elem:append("X")[1] = x
+      end
+    else
+      pattern_elem:append("X")[1] = pattern.x
+    end
+    if type(pattern.y) == "table" then
+      for _, y in ipairs(pattern.y) do
+        pattern_elem:append("Y")[1] = y
+      end
+    else
+      pattern_elem:append("Y")[1] = pattern.y
+    end
+    pattern_elem:append("Width")[1] = pattern.width;
+    pattern_elem:append("Height")[1] = pattern.width;
   end
-  print(root)
+
+  local file = quest_path .. "tilesets/" .. tileset_id .. ".xml"
+  xml.save(root, file)
 end
 
 local function import(quest_path, resources)
@@ -76,11 +131,6 @@ function converter.convert(quest_path, resources)
   local tilesets = import(quest_path, resources)
   for tileset_id, tileset in pairs(tilesets) do
     export_tileset(quest_path, tileset_id, tileset)
-    print("Tileset '" .. tileset_id .. "'")
-    print("background_color: " .. tileset.background_color[1] .. ", " .. tileset.background_color[2] .. ", " .. tileset.background_color[3])
-    for id, v in pairs(tileset.tile_patterns) do
-      print(id .. ": " .. v.ground .. ", " .. v.default_layer)
-    end
   end
 end
 
