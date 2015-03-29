@@ -103,7 +103,7 @@ local function export_tileset(quest_path, tileset_id, tileset)
       pattern_elem:append("Y")[1] = pattern.y
     end
     pattern_elem:append("Width")[1] = pattern.width;
-    pattern_elem:append("Height")[1] = pattern.width;
+    pattern_elem:append("Height")[1] = pattern.height;
   end
 
   local file = quest_path .. "tilesets/" .. tileset_id .. ".xml"
