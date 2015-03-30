@@ -73,14 +73,14 @@ namespace Zelda.Game
 
         public static readonly int NoFloor = 9999;
 
-        readonly Dictionary<Layer, List<EntityData>> _entities = new Dictionary<Layer, List<EntityData>>();
+        readonly List<EntityData>[] _entities = new List<EntityData>[Enum.GetValues(typeof(Layer)).Length];
         readonly Dictionary<string, EntityIndex> _namedEntities = new Dictionary<string, EntityIndex>();
 
         public MapData()
         {
             World = String.Empty;
             foreach (Layer layer in Enum.GetValues(typeof(Layer)))
-                _entities.Add(layer, new List<EntityData>());
+                _entities[(int)layer] = new List<EntityData>();
         }
 
         protected override bool ImportFromStream(Stream stream)
@@ -116,7 +116,7 @@ namespace Zelda.Game
         EntityIndex AddEntity(EntityData entity)
         {
             Layer layer = entity.Layer;
-            EntityIndex index = new EntityIndex(layer, _entities[layer].Count);
+            EntityIndex index = new EntityIndex(layer, _entities[(int)layer].Count);
 
             if (!entity.Type.CanBeStoredInMapFile())
                 return new EntityIndex();
@@ -129,7 +129,7 @@ namespace Zelda.Game
                 _namedEntities.Add(entity.Name, index);
             }
 
-            _entities[layer].Add(entity);
+            _entities[(int)layer].Add(entity);
             
             return index;
         }
@@ -137,6 +137,22 @@ namespace Zelda.Game
         public bool EntityExists(string name)
         {
             return _namedEntities.ContainsKey(name);
+        }
+        
+        public bool EntityExists(EntityIndex index)
+        {
+            return (index.Index >= 0) && (index.Index < GetNumEntities(index.Layer));
+        }
+
+        public int GetNumEntities(Layer layer)
+        {
+            return _entities[(int)layer].Count;
+        }
+
+        public EntityData GetEntity(EntityIndex index)
+        {
+            Debug.CheckAssertion(EntityExists(index), "Entity index out of range");
+            return _entities[(int)index.Layer][index.Index];
         }
     }
 

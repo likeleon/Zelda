@@ -1,6 +1,20 @@
-﻿
+﻿using Zelda.Game.Engine;
+
 namespace Zelda.Game.Entities
 {
+    class Tile : MapEntity
+    {
+        public override EntityType Type
+        {
+            get { return EntityType.Tile; }
+        }
+
+        public Tile(Layer layer, Point xy, Size size, Tileset tileset, string tilePatternId)
+            : base("", 0, layer, xy, size)
+        {
+        }
+    }
+
     class TileData : EntityData
     {
         public int Width { get; set; }

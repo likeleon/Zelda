@@ -130,5 +130,14 @@ namespace Zelda.Game.Entities
 
             _tilePatterns.Add(id, tilePattern);
         }
+
+        public TilePattern GetTilePattern(string id)
+        {
+            TilePattern pattern;
+            if (!_tilePatterns.TryGetValue(id, out pattern))
+                Debug.Die("No such tile pattern in tileset '{0}': {1}".F(Id, id));
+
+            return pattern;
+        }
     }
 }

@@ -76,6 +76,8 @@
     <Compile Include="Entities\EntityData.cs" />
     <Compile Include="Entities\Ground.cs" />
     <Compile Include="Entities\Layer.cs" />
+    <Compile Include="Entities\MapEntities.cs" />
+    <Compile Include="Entities\MapEntity.cs" />
     <Compile Include="Entities\ParallaxScrollingTilePattern.cs" />
     <Compile Include="Entities\SelfScrollingTilePattern.cs" />
     <Compile Include="Entities\SimpleTilePattern.cs" />
@@ -96,6 +98,7 @@
     <Compile Include="Script\Movement.cs" />
     <Compile Include="Script\MovementType.cs" />
     <Compile Include="Script\ScriptContext.MainApi.cs" />
+    <Compile Include="Script\ScriptContext.MapApi.cs" />
     <Compile Include="Script\ScriptContext.MovementApi.cs" />
     <Compile Include="Script\ScriptTools.cs" />
     <Compile Include="Script\Sprite.cs" />

@@ -5,7 +5,6 @@ namespace Zelda.Game.Entities
     {
         Low,
         Intermediate,
-        High,
-        NumLayers,
+        High
     }
 }

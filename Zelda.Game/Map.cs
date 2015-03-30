@@ -72,7 +72,17 @@ namespace Zelda.Game
             get { return _tileset; }
         }
 
+        MapEntities _entities;
+        public MapEntities Entities
+        {
+            get { return _entities; }
+        }
+
         Game _game;
+        public Game Game
+        {
+            get { return _game; }
+        }
 
         public Map(string id)
         {
@@ -81,6 +91,8 @@ namespace Zelda.Game
 
         public void Load(Game game)
         {
+            _entities = new MapEntities(game, this);
+
             // 맵 데이터 파일을 읽습니다.
             MapData data = new MapData();
             string fileName = "maps/" + _id + ".xml";
@@ -99,6 +111,8 @@ namespace Zelda.Game
             _tilesetId = data.TilesetId;
             _tileset = new Tileset(data.TilesetId);
             _tileset.Load();
+
+            _entities.Initialize(data);
 
             _loaded = true;
         }
