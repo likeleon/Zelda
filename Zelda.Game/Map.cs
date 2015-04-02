@@ -26,6 +26,11 @@ namespace Zelda.Game
             get { return _loaded; }
         }
 
+        public bool IsStarted
+        {
+            get { return false; }
+        }
+
         Rectangle _location;
         public Rectangle Location
         {

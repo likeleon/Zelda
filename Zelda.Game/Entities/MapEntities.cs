@@ -14,6 +14,7 @@ namespace Zelda.Game.Entities
         readonly Ground[,] _tilesGround;
         readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
         readonly NonAnimatedRegions[] _nonAnimatedRegions = new NonAnimatedRegions[Enum.GetValues(typeof(Layer)).Length];
+        readonly List<MapEntity> _allEntities = new List<MapEntity>();
 
         public MapEntities(Game game, Map map)
         {
@@ -46,7 +47,7 @@ namespace Zelda.Game.Entities
             }
             else
             {
-                throw new NotImplementedException("AddEntity with type: {0}".F(entity.Type));
+                _allEntities.Add(entity);
             }
 
             // TODO: 같은 이름의 엔티티가 이미 있다면 이름을 바꿔줍니다

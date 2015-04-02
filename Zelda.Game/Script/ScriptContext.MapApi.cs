@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 
@@ -6,17 +7,26 @@ namespace Zelda.Game.Script
 {
     static partial class ScriptContext
     {
+        static readonly Dictionary<EntityType, Func<Map, EntityData, MapEntity>> _entityCreationFunctions
+            = new Dictionary<EntityType, Func<Map, EntityData, MapEntity>>()
+        {
+            { EntityType.Destination, CreateDestination }
+        };
+
         internal static void CreateMapEntityFromData(Map map, EntityData entityData)
         {
-            switch (entityData.Type)
+            EntityType type = entityData.Type;
+            if (type == EntityType.Tile)
             {
-                case EntityType.Tile:
-                    CreateTile(map, entityData as TileData);
-                    break;
+                CreateTile(map, entityData as TileData);
+            }
+            else
+            {
+                Func<Map, EntityData, MapEntity> function = null;
+                if (!_entityCreationFunctions.TryGetValue(type, out function))
+                    Debug.Die("Missing entry creation function for type '{0}'".F(type));
 
-                default:
-                    Debug.Die("Missing entry creation function for type '{0}'".F(entityData.Type));
-                    break;
+                function(map, entityData);
             }
         }
 
@@ -26,7 +36,7 @@ namespace Zelda.Game.Script
             ScriptTools.ExceptionBoundaryHandle(() =>
             {
                 TilePattern pattern = map.Tileset.GetTilePattern(data.Pattern);
-                
+
                 Size size = EntityCreationCheckSize(data.Width, data.Height);
                 for (int y = data.XY.Y; y < data.XY.Y + size.Height; y += pattern.Height)
                 {
@@ -36,6 +46,24 @@ namespace Zelda.Game.Script
                         map.Entities.AddEntity(tile);
                     }
                 }
+            });
+        }
+
+        public static Destination CreateDestination(Map map, EntityData entityData)
+        {
+            return ScriptTools.ExceptionBoundaryHandle<Destination>(() =>
+            {
+                DestinationData data = entityData as DestinationData;
+                Destination destination = new Destination(
+                    data.Name,
+                    data.Layer,
+                    data.XY,
+                    data.Direction,
+                    data.Sprite,
+                    data.Default);
+                map.Entities.AddEntity(destination);
+
+                return (map.IsStarted) ? destination : null;
             });
         }
 
