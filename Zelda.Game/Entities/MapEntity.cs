@@ -34,14 +34,58 @@ namespace Zelda.Game.Entities
             get { return _groundBelow; }
         }
 
-        readonly int _direction;
         readonly Layer _layer;
-        readonly Rectangle _boundingBox;
+        public Layer Layer
+        {
+            get { return _layer; }
+        }
+
+        Rectangle _boundingBox;
+        public int Width
+        {
+            get { return _boundingBox.Width; }
+        }
+
+        public int Height
+        {
+            get { return _boundingBox.Height; }
+        }
+
+        Point _origin;
+        public Point Origin
+        {
+            get { return _origin; }
+            set 
+            {
+                _boundingBox = new Rectangle(_boundingBox.XY + (_origin - value), _boundingBox.Size);
+                _origin = value; 
+            }
+        }
+
+        public int X
+        {
+            get { return _boundingBox.X + _origin.X; }
+        }
+
+        public int Y
+        {
+            get { return _boundingBox.Y + _origin.Y; }
+        }
+
+        public Point XY
+        {
+            get { return new Point(X, Y); }
+        }
+
+        readonly int _direction;
         MainLoop _mainLoop;
         bool _initialized;
 
         protected MapEntity(string name, int direction, Layer layer, Point xy, Size size)
         {
+            Debug.CheckAssertion(size.Width % 8 == 0 && size.Height % 8 == 0,
+                "Invalid entity size: width and height must be multiple of 8");
+
             Name = name;
             _direction = direction;
             _layer = layer;

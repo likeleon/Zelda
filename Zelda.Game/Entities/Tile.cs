@@ -9,9 +9,23 @@ namespace Zelda.Game.Entities
             get { return EntityType.Tile; }
         }
 
+        readonly string _tilePatternId;
+        public string TilePatternId
+        {
+            get { return _tilePatternId; }
+        }
+
+        readonly TilePattern _tilePattern;
+        public TilePattern Pattern
+        {
+            get { return _tilePattern; }
+        }
+
         public Tile(Layer layer, Point xy, Size size, Tileset tileset, string tilePatternId)
             : base("", 0, layer, xy, size)
         {
+            _tilePatternId = tilePatternId;
+            _tilePattern = tileset.GetTilePattern(tilePatternId);
         }
     }
 

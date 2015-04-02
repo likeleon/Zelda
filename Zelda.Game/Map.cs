@@ -1,6 +1,7 @@
 ﻿using System;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
+using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
@@ -112,7 +113,19 @@ namespace Zelda.Game
             _tileset = new Tileset(data.TilesetId);
             _tileset.Load();
 
-            _entities.Initialize(data);
+            // 엔티티들을 생성합니다
+            foreach (Layer layer in Enum.GetValues(typeof(Layer)))
+            {
+                for (int i = 0; i < data.GetNumEntities(layer); ++i)
+                {
+                    EntityData entityData = data.GetEntity(new EntityIndex(layer, i));
+                    EntityType type = entityData.Type;
+                    if (!type.CanBeStoredInMapFile())
+                        Debug.Error("Illegal entity type in map file: " + type);
+
+                    ScriptContext.CreateMapEntityFromData(this, entityData);
+                }
+            }
 
             _loaded = true;
         }

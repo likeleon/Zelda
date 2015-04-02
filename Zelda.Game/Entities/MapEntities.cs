@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
@@ -9,45 +8,29 @@ namespace Zelda.Game.Entities
     {
         readonly Game _game;
         readonly Map _map;
-        int _mapWidth8;
-        int _mapHeight8;
-        int _tilesGridSize;
-        readonly List<Ground>[] _tilesGround = new List<Ground>[Enum.GetValues(typeof(Layer)).Length];
+        readonly int _mapWidth8;
+        readonly int _mapHeight8;
+        readonly int _tilesGridSize;
+        readonly Ground[,] _tilesGround;
         readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
+        readonly NonAnimatedRegions[] _nonAnimatedRegions = new NonAnimatedRegions[Enum.GetValues(typeof(Layer)).Length];
 
         public MapEntities(Game game, Map map)
         {
             _game = game;
             _map = map;
-
-            foreach (Layer layer in Enum.GetValues(typeof(Layer)))
-                _tilesGround[(int)layer] = new List<Ground>();
-        }
-
-        public void Initialize(MapData mapData)
-        {
             _mapWidth8 = _map.Width8;
             _mapHeight8 = _map.Height8;
             _tilesGridSize = _mapWidth8 * _mapHeight8;
-    
+
+            _tilesGround = new Ground[Enum.GetValues(typeof(Layer)).Length, _tilesGridSize];
             foreach (Layer layer in Enum.GetValues(typeof(Layer)))
             {
                 Ground initialGround = (layer == Layer.Low) ? Ground.Traversable : Ground.Empty;
                 for (int i = 0; i < _tilesGridSize; ++i)
-                    _tilesGround[(int)layer].Add(initialGround);
-            }
+                    _tilesGround[(int)layer, i] = initialGround;
 
-            foreach (Layer layer in Enum.GetValues(typeof(Layer)))
-            {
-                for (int i = 0; i < mapData.GetNumEntities(layer); ++i)
-                {
-                    EntityData entityData = mapData.GetEntity(new EntityIndex(layer, i));
-                    EntityType type = entityData.Type;
-                    if (!type.CanBeStoredInMapFile())
-                        Debug.Error("Illegal entity type in map file: " + type);
-                    
-                    ScriptContext.CreateMapEntityFromData(_map, entityData);
-                }
+                _nonAnimatedRegions[(int)layer] = new NonAnimatedRegions(_map, layer);
             }
         }
 
@@ -80,7 +63,132 @@ namespace Zelda.Game.Entities
 
         void AddTile(Tile tile)
         {
-            throw new NotImplementedException("AddTile");
+            Layer layer = tile.Layer;
+
+            // 타일을 맵에 추가합니다
+            _nonAnimatedRegions[(int)layer].AddTile(tile);
+
+            TilePattern pattern = tile.Pattern;
+            Debug.CheckAssertion(
+                tile.Width == pattern.Width &&
+                tile.Height == pattern.Height,
+                "Static tile size must match tile pattern size");
+
+            // Ground 리스트 갱신
+            Ground ground = pattern.Ground;
+
+            int tileX8 = tile.X / 8;
+            int tileY8 = tile.Y / 8;
+            int tileWidth8 = tile.Width / 8;
+            int tileHeight8 = tile.Height / 8;
+
+            int i = 0, j = 0;
+            Ground nonObstacleTriangle = Ground.Empty;
+
+            switch (ground)
+            {
+                // 8x8 모두 동일한 속성으로 채울 수 있는 타입들입니다
+                case Ground.Traversable:
+                case Ground.LowWall:
+                case Ground.ShallowWater:
+                case Ground.DeepWater:
+                case Ground.Grass:
+                case Ground.Hole:
+                case Ground.Ice:
+                case Ground.Lava:
+                case Ground.Prickle:
+                case Ground.Ladder:
+                case Ground.Wall:
+                    for (i = 0; i < tileHeight8; ++i)
+                        for (j = 0; j < tileWidth8; ++j)
+                            SetTileGround(layer, tileX8 + j, tileY8 + i, ground);
+                    break;
+
+                // 타일의 상단 우측이 장애물이라면 그 부분은 Wall, 
+                // 하단 좌측은 Traversable 혹은 DeepWater,
+                // 나머지 부분(대각선)은 WallTopRight가 됩니다
+                case Ground.WallTopRight:
+                case Ground.WallTopRightWater:
+                    nonObstacleTriangle = (ground == Ground.WallTopRight) ?
+                        Ground.Traversable : Ground.DeepWater;
+
+                    // 각 행의 각 8x8 영역들을 순회합니다
+                    for (i = 0; i < tileHeight8; ++i)
+                    {
+                        // 대각선의 8x8 영역들
+                        SetTileGround(layer, tileX8 + i, tileY8 + i, Ground.WallTopRight);
+
+                        // 행의 좌측
+                        for (j = 0; j < i; ++j)
+                            SetTileGround(layer, tileX8, tileY8 + i, nonObstacleTriangle);
+
+                        // 행의 우측
+                        for (j = i + 1; j < tileWidth8; ++j)
+                            SetTileGround(layer, tileX8 + j, tileY8 + i, Ground.Wall);
+                    }
+                    break;
+
+                case Ground.WallTopLeft:
+                case Ground.WallTopLeftWater:
+                    nonObstacleTriangle = (ground == Ground.WallTopLeft) ?
+                        Ground.Traversable : Ground.DeepWater;
+                    for (i = 0; i < tileHeight8; ++i)
+                    {
+                        for (j = tileWidth8 - i; j < tileWidth8; ++j)
+                            SetTileGround(layer, tileX8 + j, tileY8 + i, nonObstacleTriangle);
+
+                        for (j = 0; j < tileWidth8 - i - 1; ++j)
+                            SetTileGround(layer, tileX8 + j, tileY8 + i, Ground.Wall);
+
+                        SetTileGround(layer, tileX8 + j, tileY8 + i, Ground.WallTopLeft);
+                    }
+                    break;
+
+                case Ground.WallBottomLeft:
+                case Ground.WallBottomLeftWater:
+                    nonObstacleTriangle = (ground == Ground.WallBottomLeft) ?
+                        Ground.Traversable : Ground.DeepWater;
+                    for (i = 0; i < tileHeight8; ++i)
+                    {
+                        for (j = i + 1; j < tileWidth8; ++j)
+                            SetTileGround(layer, tileX8 + j, tileY8 + i, nonObstacleTriangle);
+
+                        for (j = 0; j < i; ++j)
+                            SetTileGround(layer, tileX8 + j, tileY8 + i, Ground.Wall);
+
+                        SetTileGround(layer, tileX8 + j, tileY8 + i, Ground.WallBottomLeft);
+                    }
+                    break;
+
+                case Ground.WallBottomRight:
+                case Ground.WallBottomRightWater:
+                    nonObstacleTriangle = (ground == Ground.WallBottomRight) ?
+                        Ground.Traversable : Ground.DeepWater;
+                    for (i = 0; i < tileHeight8; ++i)
+                    {
+                        SetTileGround(layer, tileX8 + tileWidth8 - i - 1, tileY8 + i, Ground.WallBottomRight);
+
+                        for (j = 0; j < tileWidth8 - i - 1; ++j)
+                            SetTileGround(layer, tileX8 + j, tileY8 + i, nonObstacleTriangle);
+
+                        for (j = tileWidth8 - i; j < tileWidth8; ++j)
+                            SetTileGround(layer, tileX8 + j, tileY8 + i, Ground.Wall);
+                    }
+                    break;
+
+                case Ground.Empty:
+                    // 기존 속성을 그대로 유지합니다
+                    break;
+            }
+        }
+
+        void SetTileGround(Layer layer, int x8, int y8, Ground ground)
+        {
+            if (x8 >= 0 && x8 < _mapWidth8 && y8 >= 0 && y8 < _mapHeight8)
+            {
+                int index = y8 * _mapWidth8 + x8;
+                _tilesGround[(int)layer, index] = ground;
+            }
         }
     }
 }
