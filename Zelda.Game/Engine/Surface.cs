@@ -496,7 +496,7 @@ namespace Zelda.Game.Engine
             }
         }
 
-        public void FillWithColor(Color color, Rectangle? where)
+        public void FillWithColor(Color color, Rectangle? where = null)
         {
             Rectangle fillwhere = where ?? new Rectangle(0, 0, _width, _height);
             Surface coloredSurface = Surface.Create(fillwhere.Size);

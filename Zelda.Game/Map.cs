@@ -1,7 +1,7 @@
 ﻿using System;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
-using Zelda.Game.Script;
+using ScriptContext = Zelda.Game.Script.ScriptContext;
 
 namespace Zelda.Game
 {
@@ -35,6 +35,16 @@ namespace Zelda.Game
         public Rectangle Location
         {
             get { return _location; }
+        }
+
+        public int Width
+        {
+            get { return _location.Width; }
+        }
+
+        public int Height
+        {
+            get { return _location.Height; }
         }
 
         int _width8;
@@ -90,6 +100,15 @@ namespace Zelda.Game
             get { return _game; }
         }
 
+        Surface _visibleSurface;
+        public Surface VisibleSurface
+        {
+            get { return _visibleSurface; }
+        }
+
+        Surface _backgroundSurface;
+        Surface _foregroundSurface;
+
         public Map(string id)
         {
             _id = id;
@@ -97,9 +116,39 @@ namespace Zelda.Game
 
         public void Load(Game game)
         {
+            _visibleSurface = Surface.Create(Video.ModSize);
+            _visibleSurface.SoftwareDestination = false;
+
+            _backgroundSurface = Surface.Create(Video.ModSize);
+            _backgroundSurface.SoftwareDestination = false;
+
             _entities = new MapEntities(game, this);
 
-            // 맵 데이터 파일을 읽습니다.
+            LoadMapData(game);
+
+            BuildBackgroundSurface();
+            BuildForegroundSurface();
+
+            _loaded = true;
+        }
+
+        public void Unload()
+        {
+            if (_loaded)
+            {
+                _tileset = null;
+                _visibleSurface = null;
+                _backgroundSurface = null;
+                _foregroundSurface = null;
+                _entities = null;
+
+                _loaded = false;
+            }
+        }
+
+        // 맵 데이터 파일을 읽습니다.
+        void LoadMapData(Game game)
+        {
             MapData data = new MapData();
             string fileName = "maps/" + _id + ".xml";
             bool success = data.ImportFromModFile(fileName);
@@ -131,8 +180,68 @@ namespace Zelda.Game
                     ScriptContext.CreateMapEntityFromData(this, entityData);
                 }
             }
+        }
 
-            _loaded = true;
+        void BuildBackgroundSurface()
+        {
+            if (_tileset != null)
+            {
+                _backgroundSurface.Clear();
+                _backgroundSurface.FillWithColor(_tileset.BackgroundColor);
+            }
+        }
+
+        void DrawBackground()
+        {
+            _backgroundSurface.Draw(_visibleSurface);
+        }
+
+        void BuildForegroundSurface()
+        {
+            _foregroundSurface = null;
+
+            int screenWidth = _visibleSurface.Width;
+            int screenHeight = VisibleSurface.Height;
+
+            // 맵이 스크린 크기에 비해 작다면, 맵 외부에 검정 바를 위치시킵니다
+            if (Width >= screenWidth && Height >= screenHeight)
+                return; // 해당 사항이 없습니다
+
+            _foregroundSurface = Surface.Create(_visibleSurface.Size);
+
+            if (Width < screenWidth)
+            {
+                int barWidth = (screenWidth - Width) / 2;
+                Rectangle dstPosition = new Rectangle(0, 0, barWidth, screenHeight);
+                _foregroundSurface.FillWithColor(Color.Black, dstPosition);
+                dstPosition = new Rectangle(barWidth + Width, 0, barWidth, screenHeight);
+                _foregroundSurface.FillWithColor(Color.Black, dstPosition);
+            }
+
+            if (Height < screenHeight)
+            {
+                int barHeight = (screenHeight - Height) / 2;
+                Rectangle dstPosition = new Rectangle(0, 0, screenWidth, barHeight);
+                _foregroundSurface.FillWithColor(Color.Black, dstPosition);
+                dstPosition = new Rectangle(0, barHeight + Height, screenWidth, barHeight);
+                _foregroundSurface.FillWithColor(Color.Black, dstPosition);
+            }
+        }
+
+        void DrawForeground()
+        {
+            if (_foregroundSurface != null)
+                _foregroundSurface.Draw(_visibleSurface);
+        }
+
+        public void Draw()
+        {
+            if (_loaded)
+            {
+                DrawBackground();
+                //_entities.Draw();
+                DrawForeground();
+            }
         }
     }
 }

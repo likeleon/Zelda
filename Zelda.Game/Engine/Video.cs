@@ -8,7 +8,7 @@ namespace Zelda.Game.Engine
     {
         static Size _modSize;
        
-        [Description("렌더링할 모드 표면 크기")]
+        // 렌더링할 모드 표면 크기
         public static Size ModSize
         {
             get { return _modSize; }

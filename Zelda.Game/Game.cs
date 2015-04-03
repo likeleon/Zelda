@@ -125,6 +125,14 @@ namespace Zelda.Game
 
         public void Draw(Surface dstSurface)
         {
+            if (_currentMap == null)
+                return; // 게임의 초기화가 완료되기 전입니다
+
+            if (_currentMap.IsLoaded)
+            {
+                _currentMap.Draw();
+                _currentMap.VisibleSurface.Draw(dstSurface);
+            }
         }
 
         public void SetCurrentMap(string mapId, string destinationName)
