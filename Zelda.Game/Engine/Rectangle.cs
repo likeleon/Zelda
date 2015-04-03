@@ -13,31 +13,45 @@ namespace Zelda.Game.Engine
         public int X
         {
             get { return _rect.x; }
+            set { _rect.x = value; }
         }
 
         public int Y
         {
             get { return _rect.y; }
+            set { _rect.y = value; }
         }
 
         public Point XY
         {
             get { return new Point(X, Y); }
+            set 
+            { 
+                X = value.X;
+                Y = value.Y;
+            }
         }
 
         public int Width
         {
             get { return _rect.w; }
+            set { _rect.w = value; }
         }
 
         public int Height
         {
             get { return _rect.h; }
+            set { _rect.h = value; }
         }
 
         public Size Size
         {
             get { return new Size(Width, Height); }
+            set
+            {
+                Width = value.Width;
+                Height = value.Height;
+            }
         }
 
         public Point Center
@@ -108,10 +122,10 @@ namespace Zelda.Game.Engine
             return overlap_x && overlap_y && !IsFlat && !other.IsFlat;
         }
 
-        public static Rectangle GetIntersection(Rectangle r1, Rectangle r2)
+        public Rectangle GetIntersection(Rectangle other)
         {
             Rectangle intersection;
-            SDL.SDL_bool intersects = SDL.SDL_IntersectRect(ref r1._rect, ref r2._rect, out intersection._rect);
+            SDL.SDL_bool intersects = SDL.SDL_IntersectRect(ref _rect, ref other._rect, out intersection._rect);
             if (intersects == SDL.SDL_bool.SDL_TRUE)
                 return intersection;
             else

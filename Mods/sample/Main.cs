@@ -1,4 +1,5 @@
-﻿using Sample.Scripts;
+﻿using Sample.Menus;
+using Sample.Scripts;
 using System;
 using Zelda.Game.Script;
 

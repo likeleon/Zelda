@@ -214,7 +214,7 @@ namespace Zelda.Game
                 int barWidth = (screenWidth - Width) / 2;
                 Rectangle dstPosition = new Rectangle(0, 0, barWidth, screenHeight);
                 _foregroundSurface.FillWithColor(Color.Black, dstPosition);
-                dstPosition = new Rectangle(barWidth + Width, 0, barWidth, screenHeight);
+                dstPosition.X = barWidth + Width;
                 _foregroundSurface.FillWithColor(Color.Black, dstPosition);
             }
 
@@ -223,7 +223,7 @@ namespace Zelda.Game
                 int barHeight = (screenHeight - Height) / 2;
                 Rectangle dstPosition = new Rectangle(0, 0, screenWidth, barHeight);
                 _foregroundSurface.FillWithColor(Color.Black, dstPosition);
-                dstPosition = new Rectangle(0, barHeight + Height, screenWidth, barHeight);
+                dstPosition.Y = barHeight + Height;
                 _foregroundSurface.FillWithColor(Color.Black, dstPosition);
             }
         }

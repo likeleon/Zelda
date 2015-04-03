@@ -57,7 +57,7 @@ namespace Zelda.Game.Entities
             get { return _origin; }
             set 
             {
-                _boundingBox = new Rectangle(_boundingBox.XY + (_origin - value), _boundingBox.Size);
+                _boundingBox.XY += (_origin - value);
                 _origin = value; 
             }
         }
