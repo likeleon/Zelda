@@ -87,6 +87,8 @@
     <Compile Include="Entities\TilesetData.cs" />
     <Compile Include="Entities\Tile.cs" />
     <Compile Include="Equipment.cs" />
+    <Compile Include="Script\ScriptException.cs" />
+    <Compile Include="ZeldaFatalException.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapData.cs" />
     <Compile Include="Movements\Movement.cs" />

@@ -68,15 +68,15 @@ namespace Zelda.Game.Entities
                     patternData.Scrolling = pattern.Scrolling.OptField<TileScrolling>("Scrolling", TileScrolling.None);
                     
                     int width = pattern.Width.CheckField("Width");
-                    int height = pattern.Width.CheckField("Height");
+                    int height = pattern.Height.CheckField("Height");
                     int numX = pattern.X.Length;
                     int numY = pattern.Y.Length;
                     if (numX != 1 && numX != 3 && numX != 4)
-                        throw new Exception("Invalid number of frames for x");
+                        ScriptTools.ArgError("Width", "Invalid number of frames for x");
                     if (numY != 1 && numY != 3 && numY != 4)
-                        throw new Exception("Invalid number of frames for y");
+                        ScriptTools.ArgError("Height", "Invalid number of frames for y");
                     if (numX != numY)
-                        throw new Exception("The length of x and y must match");
+                        ScriptTools.ArgError("", "The length of x and y must match");
 
                     Rectangle[] frames = new Rectangle[numX];
                     for (int i = 0; i < pattern.X.Length; ++i)
