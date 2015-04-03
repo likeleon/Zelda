@@ -4,46 +4,37 @@ namespace Zelda.Game.Engine
 {
     public struct Point
     {
-        readonly int _x;
-        public int X
-        {
-            get { return _x; }
-        }
-
-        readonly int _y;
-        public int Y
-        {
-            get { return _y; }
-        }
+        public int X;
+        public int Y;
 
         public Point(int x, int y)
         {
-            _x = x;
-            _y = y;
+            X = x;
+            Y = y;
         }
 
         public static Point operator +(Point point1, Point point2)
         {
-            return new Point(point1._x + point2._x, 
-                             point1._y + point2._y);
+            return new Point(point1.X + point2.X, 
+                             point1.Y + point2.Y);
         }
 
         public static Point operator -(Point point1, Point point2)
         {
-            return new Point(point1._x - point2._x,
-                             point1._y - point2._y);
+            return new Point(point1.X - point2.X,
+                             point1.Y - point2.Y);
         }
 
         public static Point operator *(Point point1, int factor)
         {
-            return new Point(point1._x * factor,
-                             point1._y * factor);
+            return new Point(point1.X * factor,
+                             point1.Y * factor);
         }
 
         public static Point operator /(Point point1, int divisor)
         {
-            return new Point(point1._x / divisor,
-                             point1._y / divisor);
+            return new Point(point1.X / divisor,
+                             point1.Y / divisor);
         }
 
         public static bool operator ==(Point point1, Point point2)
@@ -68,12 +59,12 @@ namespace Zelda.Game.Engine
 
         public override int GetHashCode()
         {
-            return _x ^ _y;
+            return X ^ Y;
         }
 
         public override string ToString()
         {
-            return "({0},{1})".F(_x, _y);
+            return "({0},{1})".F(X, Y);
         }
     }
 }

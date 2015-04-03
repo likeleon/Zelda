@@ -29,7 +29,7 @@ namespace Zelda.Game.Engine
 
         public void Draw(Surface dstSurface, Point dstPosition)
         {
-            RawDraw(dstSurface, new Point(dstPosition.X + XY.X, dstPosition.Y + XY.Y));
+            RawDraw(dstSurface, dstPosition + XY);
         }
 
         public void DrawRegion(Rectangle region, Surface dstSurface)
@@ -39,7 +39,7 @@ namespace Zelda.Game.Engine
 
         public void DrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
         {
-            RawDrawRegion(region, dstSurface, new Point(dstPosition.X + XY.X, dstPosition.Y + XY.Y));
+            RawDrawRegion(region, dstSurface, dstPosition + XY);
         }
 
         public abstract void RawDraw(Surface dstSurface, Point dstPosition);

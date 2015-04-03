@@ -4,32 +4,23 @@ namespace Zelda.Game.Engine
 {
     public struct Size
     {
-        readonly int _width;
-        public int Width
-        {
-            get { return _width; }
-        }
-
-        readonly int _height;
-        public int Height
-        {
-            get { return _height; }
-        }
+        public int Width;
+        public int Height;
 
         public bool IsFlat
         {
-            get { return (_width == 0) || (_height == 0); }
+            get { return (Width == 0) || (Height == 0); }
         }
 
         public bool IsSquare
         {
-            get { return _width == _height; }
+            get { return Width == Height; }
         }
 
         public Size(int width, int height)
         {
-            _width = width;
-            _height = height;
+            Width = width;
+            Height = height;
         }
 
         public static Size operator +(Size size1, Size size2)
@@ -78,12 +69,12 @@ namespace Zelda.Game.Engine
 
         public override int GetHashCode()
         {
-            return _width ^ _height;
+            return Width ^ Height;
         }
 
         public override string ToString()
         {
-            return "({0},{1})".F(_width, _height);
+            return "({0},{1})".F(Width, Height);
         }
     }
 }

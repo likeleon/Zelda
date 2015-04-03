@@ -73,13 +73,13 @@ namespace Zelda.Game.Entities
             {
                 if ((y <= dstSurface.Height && y + Height > 0) || !IsDrawnAtItsPosition)
                 {
-                    dst = new Point(dst.X, y);
+                    dst.Y = y;
 
                     for (int x = dstPosition.X; x < limitX; x += Width)
                     {
                         if ((x <= dstSurface.Width && x + Width > 0) || !IsDrawnAtItsPosition)
                         {
-                            dst = new Point(x, dst.Y);
+                            dst.X = x;
                             Draw(dstSurface, dst, tileset, viewport);
                         }
                     }
