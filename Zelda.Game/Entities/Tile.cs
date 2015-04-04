@@ -9,6 +9,11 @@ namespace Zelda.Game.Entities
             get { return EntityType.Tile; }
         }
 
+        public bool IsAnimated
+        {
+            get { return _tilePattern.IsAnimated; }
+        }
+
         readonly string _tilePatternId;
         public string TilePatternId
         {
@@ -27,6 +32,20 @@ namespace Zelda.Game.Entities
             _tilePatternId = tilePatternId;
             _tilePattern = tileset.GetTilePattern(tilePatternId);
         }
+
+        public void Draw(Surface dstSurface, Point viewport)
+        {
+            Rectangle dstPosition = new Rectangle(
+                TopLeftX - viewport.X,
+                TopLeftY - viewport.Y,
+                Width,
+                Height);
+            _tilePattern.FillSurface(
+                dstSurface,
+                dstPosition,
+                Map.Tileset,
+                viewport);
+        }
     }
 
     class TileData : EntityData
@@ -39,7 +58,7 @@ namespace Zelda.Game.Entities
             : base(EntityType.Tile, xmlData)
         {
             Width = xmlData.Width.CheckField("Width");
-            Height = xmlData.Width.CheckField("Height");
+            Height = xmlData.Height.CheckField("Height");
             Pattern = xmlData.Pattern.CheckField("Pattern");
         }
     }

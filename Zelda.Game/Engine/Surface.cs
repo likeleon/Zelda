@@ -318,6 +318,18 @@ namespace Zelda.Game.Engine
             }
         }
 
+        public void Clear(Rectangle where)
+        {
+            Debug.CheckAssertion(_softwareDestination, 
+                "Partial surface clear is only supported with software surfaces");
+
+            if (_internalSurface == null)
+                return;
+
+            SDL.SDL_FillRect(_internalSurface, ref where._rect, GetColorValue(Color.Transparent));
+            _isRendered = false;
+        }
+
         void ClearSubsurfaces()
         {
             _subsurfaces.Clear();

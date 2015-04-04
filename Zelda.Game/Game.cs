@@ -121,6 +121,12 @@ namespace Zelda.Game
                     _nextMap = null;
                 }
             }
+
+            if (_started && !_currentMap.IsStarted)
+            {
+                Debug.CheckAssertion(_currentMap.IsLoaded, "This map is not loaded");
+                _currentMap.Start();
+            }
         }
 
         public void Draw(Surface dstSurface)

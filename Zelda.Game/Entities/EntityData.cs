@@ -37,7 +37,7 @@ namespace Zelda.Game.Entities
             _type = type;
             Name = xmlData.Name.OptField("");
             Layer = xmlData.Layer.CheckField<Layer>("Layer");
-            XY = new Point(xmlData.X.CheckField("X"), xmlData.X.CheckField("Y"));
+            XY = new Point(xmlData.X.CheckField("X"), xmlData.Y.CheckField("Y"));
         }
     }
 

@@ -26,15 +26,15 @@ namespace Zelda.Game
             get { return _loaded; }
         }
 
-        public bool IsStarted
-        {
-            get { return false; }
-        }
-
         Rectangle _location;
         public Rectangle Location
         {
             get { return _location; }
+        }
+
+        public Size Size
+        {
+            get { return _location.Size; }
         }
 
         public int Width
@@ -106,12 +106,26 @@ namespace Zelda.Game
             get { return _visibleSurface; }
         }
 
+        readonly Rectangle _cameraPosition;
+        public Rectangle CameraPosition
+        {
+            get { return _cameraPosition; }
+        }
+
+        bool _started;
+        public bool IsStarted
+        {
+            get { return _started; }
+        }
+
         Surface _backgroundSurface;
         Surface _foregroundSurface;
 
         public Map(string id)
         {
             _id = id;
+
+            _cameraPosition = new Rectangle(new Point(), Video.ModSize);
         }
 
         public void Load(Game game)
@@ -121,8 +135,6 @@ namespace Zelda.Game
 
             _backgroundSurface = Surface.Create(Video.ModSize);
             _backgroundSurface.SoftwareDestination = false;
-
-            _entities = new MapEntities(game, this);
 
             LoadMapData(game);
 
@@ -166,6 +178,8 @@ namespace Zelda.Game
             _tilesetId = data.TilesetId;
             _tileset = new Tileset(data.TilesetId);
             _tileset.Load();
+
+            _entities = new MapEntities(game, this);
 
             // 엔티티들을 생성합니다
             for (int layer = 0; layer < (int)Layer.Count; ++layer)
@@ -242,6 +256,14 @@ namespace Zelda.Game
                 _entities.Draw();
                 DrawForeground();
             }
+        }
+
+        public void Start()
+        {
+            _started = true;
+            _visibleSurface.Opacity = 255;
+
+            _entities.NotifyMapStarted();
         }
     }
 }

@@ -41,6 +41,11 @@ namespace Zelda.Game.Entities
         }
 
         Rectangle _boundingBox;
+        public Rectangle BoundingBox
+        {
+            get { return _boundingBox; }
+        }
+
         public int Width
         {
             get { return _boundingBox.Width; }
@@ -49,6 +54,24 @@ namespace Zelda.Game.Entities
         public int Height
         {
             get { return _boundingBox.Height; }
+        }
+
+        public int TopLeftX
+        {
+            get { return _boundingBox.X; }
+            set { _boundingBox.X = value; }
+        }
+
+        public int TopLeftY
+        {
+            get { return _boundingBox.Y; }
+            set { _boundingBox.Y = value; }
+        }
+
+        public Point TopLeftXY
+        {
+            get { return new Point(TopLeftX, TopLeftY); }
+            set { TopLeftX = value.X; TopLeftY = value.Y; }
         }
 
         Point _origin;

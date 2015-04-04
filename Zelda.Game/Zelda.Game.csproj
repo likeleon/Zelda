@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arguments.cs" />
+    <Compile Include="Containers\Grid.cs" />
     <Compile Include="CurrentMod.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Engine\Color.cs" />
