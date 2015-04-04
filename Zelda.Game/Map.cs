@@ -168,11 +168,11 @@ namespace Zelda.Game
             _tileset.Load();
 
             // 엔티티들을 생성합니다
-            foreach (Layer layer in Enum.GetValues(typeof(Layer)))
+            for (int layer = 0; layer < (int)Layer.Count; ++layer)
             {
-                for (int i = 0; i < data.GetNumEntities(layer); ++i)
+                for (int i = 0; i < data.GetNumEntities((Layer)layer); ++i)
                 {
-                    EntityData entityData = data.GetEntity(new EntityIndex(layer, i));
+                    EntityData entityData = data.GetEntity(new EntityIndex((Layer)layer, i));
                     EntityType type = entityData.Type;
                     if (!type.CanBeStoredInMapFile())
                         Debug.Error("Illegal entity type in map file: " + type);

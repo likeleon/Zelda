@@ -13,7 +13,7 @@ namespace Zelda.Game.Entities
         readonly int _tilesGridSize;
         readonly Ground[,] _tilesGround;
         readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
-        readonly NonAnimatedRegions[] _nonAnimatedRegions = new NonAnimatedRegions[Enum.GetValues(typeof(Layer)).Length];
+        readonly NonAnimatedRegions[] _nonAnimatedRegions = new NonAnimatedRegions[(int)Layer.Count];
         readonly List<MapEntity> _allEntities = new List<MapEntity>();
 
         public MapEntities(Game game, Map map)
@@ -24,14 +24,14 @@ namespace Zelda.Game.Entities
             _mapHeight8 = _map.Height8;
             _tilesGridSize = _mapWidth8 * _mapHeight8;
 
-            _tilesGround = new Ground[Enum.GetValues(typeof(Layer)).Length, _tilesGridSize];
-            foreach (Layer layer in Enum.GetValues(typeof(Layer)))
+            _tilesGround = new Ground[(int)Layer.Count, _tilesGridSize];
+            for (int layer = 0; layer < (int)Layer.Count; ++layer)
             {
-                Ground initialGround = (layer == Layer.Low) ? Ground.Traversable : Ground.Empty;
+                Ground initialGround = ((Layer)layer == Layer.Low) ? Ground.Traversable : Ground.Empty;
                 for (int i = 0; i < _tilesGridSize; ++i)
-                    _tilesGround[(int)layer, i] = initialGround;
+                    _tilesGround[layer, i] = initialGround;
 
-                _nonAnimatedRegions[(int)layer] = new NonAnimatedRegions(_map, layer);
+                _nonAnimatedRegions[layer] = new NonAnimatedRegions(_map, (Layer)layer);
             }
         }
 
