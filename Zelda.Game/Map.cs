@@ -239,7 +239,7 @@ namespace Zelda.Game
             if (_loaded)
             {
                 DrawBackground();
-                //_entities.Draw();
+                _entities.Draw();
                 DrawForeground();
             }
         }

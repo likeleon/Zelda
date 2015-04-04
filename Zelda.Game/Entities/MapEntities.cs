@@ -14,6 +14,7 @@ namespace Zelda.Game.Entities
         readonly Ground[,] _tilesGround;
         readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
         readonly NonAnimatedRegions[] _nonAnimatedRegions = new NonAnimatedRegions[(int)Layer.Count];
+        readonly List<Tile>[] _tilesInAnimatedRegions = new List<Tile>[(int)Layer.Count];
         readonly List<MapEntity> _allEntities = new List<MapEntity>();
 
         public MapEntities(Game game, Map map)
@@ -189,6 +190,24 @@ namespace Zelda.Game.Entities
             {
                 int index = y8 * _mapWidth8 + x8;
                 _tilesGround[(int)layer, index] = ground;
+            }
+        }
+
+        // 맵의 모든 엔티티들에게 맵이 시작(활성화)되었음을 알립니다
+        public void NotifyMapStarted()
+        {
+            // 애니메이션되지 않는 타일들의 pre-drawing 데이터들을 구성합니다
+            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+                _nonAnimatedRegions[layer].Build(_tilesInAnimatedRegions[layer]);
+        }
+
+        public void Draw()
+        {
+            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+            {
+                // 에니메이션되는 타일을 포함하는 모든 영역들을 먼저 그립니다
+                foreach (Tile tile in _tilesInAnimatedRegions[layer])
+                    tile.DrawOnMap();
             }
         }
     }
