@@ -339,4 +339,10 @@
     <Height>16</Height>
     <Pattern>8</Pattern>
   </Tile>
+  <Destination>
+    <Layer>Low</Layer>
+    <X>176</X>
+    <Y>189</Y>
+    <Direction>1</Direction>
+  </Destination>
 </MapData>

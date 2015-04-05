@@ -15,6 +15,7 @@ local function import_map(quest_path, map_id)
   local map = {}
   map.properties = {}
   map.tiles = {}
+  map.destinations = {}
 
   local env = {}
   function env.properties(properties)
@@ -24,7 +25,7 @@ local function import_map(quest_path, map_id)
     map.tiles[#map.tiles + 1] = tile
   end
   function env.destination(destination)
-    -- TODO
+    map.destinations[#map.destinations + 1] = destination
   end
   function env.chest(chest)
     -- TODO
@@ -55,6 +56,15 @@ local function import_map(quest_path, map_id)
   return map
 end
 
+local function export_map_entity(entity, entity_elem)
+  if entity.name ~= nil then
+    entity_elem:append("Name")[1] = entity.name
+  end
+  entity_elem:append("Layer")[1] = layer_names[entity.layer + 1]
+  entity_elem:append("X")[1] = entity.x
+  entity_elem:append("Y")[1] = entity.y
+end
+
 local function export_map(quest_path, map_id, map)
   print("Exporting map '" .. map_id .. "'")
 
@@ -80,15 +90,22 @@ local function export_map(quest_path, map_id, map)
 
   for _, tile in ipairs(map.tiles) do
     local tile_elem = root:append("Tile")
-    if tile.name ~= nil then
-      tile_elem:append("Name")[1] = tile.name
-    end
-    tile_elem:append("Layer")[1] = layer_names[tile.layer + 1]
-    tile_elem:append("X")[1] = tile.x
-    tile_elem:append("Y")[1] = tile.y
+    export_map_entity(tile, tile_elem)
     tile_elem:append("Width")[1] = tile.width
     tile_elem:append("Height")[1] = tile.height
     tile_elem:append("Pattern")[1] = tile.pattern
+  end
+
+  for _, destination in ipairs(map.destinations) do
+    local destination_elem = root:append("Destination")
+    export_map_entity(destination, destination_elem)
+    destination_elem:append("Direction")[1] = destination.direction
+    if destination.sprite ~= nil then
+      destination_elem:append("Sprite")[1] = destination.sprite
+    end
+    if destination.default ~= nil then
+      destination_elem:append("Default")[1] = destination.default
+    end
   end
 
   local file = quest_path .. "maps/" .. map_id .. ".xml"
