@@ -33,6 +33,7 @@ namespace Zelda.Game.Entities
                     _tilesGround[layer, i] = initialGround;
 
                 _nonAnimatedRegions[layer] = new NonAnimatedRegions(_map, (Layer)layer);
+                _tilesInAnimatedRegions[layer] = new List<Tile>();
             }
         }
 

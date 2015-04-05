@@ -111,8 +111,6 @@ local function export_tileset(quest_path, tileset_id, tileset)
 end
 
 local function import(quest_path, resources)
-  print("Importing tilesets")
-
   local tileset_resource = resources.tileset
   local tilesets = {}
 

@@ -6,6 +6,9 @@
   <Maps>
     <Map Id="first_map" Description="First map" />
   </Maps>
+  <TileSets>
+    <Tileset Id="castle" Description="Castle" />
+  </TileSets>
   <Languages>
     <Language Id="en" Description="English" />
     <Language Id="kr" Description="Korean" />
