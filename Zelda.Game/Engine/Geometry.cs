@@ -42,5 +42,17 @@ namespace Zelda.Game.Engine
         {
             return GetDistance(point1.X, point1.Y, point2.X, point2.Y);
         }
+
+        public static int GetDistance2(int x1, int y1, int x2, int y2)
+        {
+            int dx = x2 - x1;
+            int dy = y2 - y1;
+            return dx * dx + dy * dy;
+        }
+
+        public static int GetDistance2(Point point1, Point point2)
+        {
+            return GetDistance2(point1.X, point1.Y, point2.X, point2.Y);
+        }
     }
 }

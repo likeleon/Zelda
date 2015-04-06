@@ -207,8 +207,8 @@ namespace Zelda.Game.Entities
             for (int layer = 0; layer < (int)Layer.Count; ++layer)
             {
                 // 에니메이션되는 타일을 포함하는 영역들을 먼저 그립니다
-                //foreach (Tile tile in _tilesInAnimatedRegions[layer])
-                //    tile.DrawOnMap();
+                foreach (Tile tile in _tilesInAnimatedRegions[layer])
+                    tile.DrawOnMap();
 
                 // 애니메이션되지 않는 타일들을 그립니다
                 _nonAnimatedRegions[layer].DrawOnMap();

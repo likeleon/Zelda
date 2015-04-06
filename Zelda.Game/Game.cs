@@ -109,6 +109,8 @@ namespace Zelda.Game
             
             if (!_started)
                 return;
+
+            _currentMap.Update();
         }
 
         private void UpdateTransitions()

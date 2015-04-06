@@ -265,5 +265,10 @@ namespace Zelda.Game
 
             _entities.NotifyMapStarted();
         }
+
+        public void Update()
+        {
+            TilePattern.Update();
+        }
     }
 }

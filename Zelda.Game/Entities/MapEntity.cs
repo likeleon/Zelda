@@ -1,5 +1,6 @@
-﻿
+﻿using System;
 using Zelda.Game.Engine;
+
 namespace Zelda.Game.Entities
 {
     abstract class MapEntity
@@ -100,6 +101,37 @@ namespace Zelda.Game.Entities
             get { return new Point(X, Y); }
         }
 
+        bool _isVisible = true;
+        public bool IsVisible
+        {
+            get { return _isVisible; }
+            set { _isVisible = value; }
+        }
+
+        public virtual bool IsDrawnAtItsPosition
+        {
+            get { return true; }
+        }
+
+        private static int DefaultOptimizationDistance = 400;
+        
+        int _optimizationDistance = DefaultOptimizationDistance;
+        public int OptimizationDistance
+        {
+            get { return _optimizationDistance; }
+            set
+            {
+                _optimizationDistance = value;
+                _optimizationDistance2 = value * value;
+            }
+        }
+
+        int _optimizationDistance2 = DefaultOptimizationDistance * DefaultOptimizationDistance;
+        public int OptimizationDistance2
+        {
+            get { return _optimizationDistance2; }
+        }
+
         readonly int _direction;
         MainLoop _mainLoop;
         bool _initialized;
@@ -148,6 +180,37 @@ namespace Zelda.Game.Entities
 
         public virtual void NotifyCreated()
         {
+        }
+
+        public virtual void DrawOnMap()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsDrawn()
+        {
+            bool far = (GetDistanceToCamera2() > _optimizationDistance2) && 
+                (_optimizationDistance > 0);
+            return IsVisible &&
+                (OverlapsCamera() || !far || !!IsDrawnAtItsPosition);
+        }
+
+        // 엔티티의 'origin' 지점과 맵 가시 영역의 중점사이의 거리의 제곱을 얻습니다
+        public int GetDistanceToCamera2()
+        {
+            return Geometry.GetDistance2(XY, Map.CameraPosition.Center);
+        }
+
+        // 엔티티의 바운딩 박스 혹은 스프라이트가 맵의 가시영역과 겹치는지를 확인합니다
+        public bool OverlapsCamera()
+        {
+            Rectangle cameraPosition = Map.CameraPosition;
+            if (_boundingBox.Overlaps(cameraPosition))
+                return true;
+
+            // TODO: 스프라이트와 겹치는지 확인
+
+            return false;
         }
     }
 }

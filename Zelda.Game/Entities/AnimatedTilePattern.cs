@@ -48,8 +48,8 @@ namespace Zelda.Game.Entities
             while (now >= _nextFrameDate)
             {
                 _frameCounter = (_frameCounter + 1) % 12;
-                _currentFrames[1] = _frames[(int)AnimationSequence.Sequence012, _frameCounter];
-                _currentFrames[2] = _frames[(int)AnimationSequence.Sequence0121, _frameCounter];
+                _currentFrames[1] = _frames[0, _frameCounter];
+                _currentFrames[2] = _frames[1, _frameCounter];
 
                 _nextFrameDate += _tileFrameInterval;  // 매 250밀리초마다 프레임을 변화시킵니다
             }

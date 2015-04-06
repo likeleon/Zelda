@@ -26,6 +26,11 @@ namespace Zelda.Game.Entities
             get { return _tilePattern; }
         }
 
+        public override bool IsDrawnAtItsPosition
+        {
+            get { return _tilePattern.IsDrawnAtItsPosition; }
+        }
+
         public Tile(Layer layer, Point xy, Size size, Tileset tileset, string tilePatternId)
             : base("", 0, layer, xy, size)
         {
@@ -45,6 +50,16 @@ namespace Zelda.Game.Entities
                 dstPosition,
                 Map.Tileset,
                 viewport);
+        }
+
+        public override void DrawOnMap()
+        {
+            if (!IsDrawn())
+                return;
+
+            // 애니메이션되지 않는 타일들은 맵 로딩 시점에 한번만 그려지는 것을 기억해야 합니다.
+            // 애니메이션되는 타일들만 이 함수가 호출됩니다
+            Draw(Map.VisibleSurface, Map.CameraPosition.XY);
         }
     }
 
