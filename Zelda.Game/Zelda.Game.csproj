@@ -89,6 +89,7 @@
     <Compile Include="Entities\Tile.cs" />
     <Compile Include="Equipment.cs" />
     <Compile Include="Script\ScriptException.cs" />
+    <Compile Include="SpriteData.cs" />
     <Compile Include="ZeldaFatalException.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapData.cs" />
