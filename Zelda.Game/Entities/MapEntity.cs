@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Zelda.Game.Engine;
+
 
 namespace Zelda.Game.Entities
 {
-    abstract class MapEntity
+    abstract class MapEntity : IDisposable
     {
         public abstract EntityType Type { get; }
 
@@ -132,9 +134,32 @@ namespace Zelda.Game.Entities
             get { return _optimizationDistance2; }
         }
 
+        readonly List<Sprite> _sprites = new List<Sprite>();
+        public IEnumerable<Sprite> Sprites
+        {
+            get { return _sprites; }
+        }
+
+        public bool HasSprite
+        {
+            get { return _sprites.Count > 0; }
+        }
+
+        public Sprite Sprite
+        {
+            get { return _sprites[0]; }
+        }
+
+        public Point DisplayedXP
+        {
+            get { return XY; }
+        }
+
         readonly int _direction;
+        readonly List<Sprite> _oldSprites = new List<Sprite>();
         MainLoop _mainLoop;
         bool _initialized;
+        bool _disposed;
 
         protected MapEntity(string name, int direction, Layer layer, Point xy, Size size)
         {
@@ -145,6 +170,27 @@ namespace Zelda.Game.Entities
             _direction = direction;
             _layer = layer;
             _boundingBox = new Rectangle(xy, size);
+        }
+
+        ~MapEntity()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            ClearSprites();
+            ClearOldSprites();
+            _disposed = true;
         }
 
         public void SetMap(Map map)
@@ -184,7 +230,11 @@ namespace Zelda.Game.Entities
 
         public virtual void DrawOnMap()
         {
-            throw new NotImplementedException();
+            if (!IsDrawn())
+                return;
+
+            foreach (Sprite sprite in _sprites)
+                _map.DrawSprite(sprite, DisplayedXP);
         }
 
         public bool IsDrawn()
@@ -211,6 +261,33 @@ namespace Zelda.Game.Entities
             // TODO: 스프라이트와 겹치는지 확인
 
             return false;
+        }
+
+        public Sprite CreateSprite(string animationSetId)
+        {
+            Sprite sprite = new Sprite(animationSetId);
+            _sprites.Add(sprite);
+            return sprite;
+        }
+
+        public void RemoveSprite(Sprite sprite)
+        {
+            if (_sprites.Contains(sprite))
+                _oldSprites.Add(sprite);
+            else
+                Debug.Die("This sprite does not belong to this entity");
+        }
+
+        public void ClearSprites()
+        {
+            _oldSprites.AddRange(_sprites);
+            _sprites.Clear();
+        }
+
+        private void ClearOldSprites()
+        {
+            _sprites.RemoveAll(_oldSprites.Contains);
+            _oldSprites.Clear();
         }
     }
 }

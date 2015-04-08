@@ -270,5 +270,15 @@ namespace Zelda.Game
         {
             TilePattern.Update();
         }
+
+        public void DrawSprite(Sprite sprite, Point xy)
+        {
+            DrawSprite(sprite, xy.X, xy.Y);
+        }
+
+        public void DrawSprite(Sprite sprite, int x, int y)
+        {
+            sprite.Draw(VisibleSurface, x - _cameraPosition.X, y - _cameraPosition.Y);
+        }
     }
 }

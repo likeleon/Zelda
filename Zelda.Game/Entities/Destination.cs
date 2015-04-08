@@ -11,6 +11,10 @@ namespace Zelda.Game.Entities
         }
 
         readonly bool _isDefaultDestination;
+        public bool IsDefaultDestination
+        {
+            get { return _isDefaultDestination; }
+        }
 
         public Destination(
             string name,
@@ -26,7 +30,7 @@ namespace Zelda.Game.Entities
             Origin = new Point(8, 13);
 
             if (!String.IsNullOrEmpty(spriteName))
-                throw new NotImplementedException("CreateSprite here with: " + spriteName);
+                CreateSprite(spriteName);
         }
     }
 
