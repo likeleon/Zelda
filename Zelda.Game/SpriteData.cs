@@ -141,7 +141,7 @@ namespace Zelda.Game
                     int frameToLoopOn = animation.FrameToLoopOn.OptField(-1);
 
                     if (frameToLoopOn < -1)
-                        ScriptTools.ArgError("FrameToLoopOn", "Bad field 'FrameToLoopOn' (must be a positive number or -1)");
+                        throw new InvalidDataException("Bad field 'FrameToLoopOn' (must be a positive number or -1");
 
                     List<SpriteAnimationDirectionData> directions = new List<SpriteAnimationDirectionData>();
                     foreach (var direction in animation.Directions)
@@ -156,10 +156,10 @@ namespace Zelda.Game
                         int numColumns = direction.NumColumns.OptField(numFrames);
 
                         if (numColumns < 1 || numColumns > numFrames)
-                            ScriptTools.ArgError("NumColumns", "Bad field 'NumColumns': must be between 1 and the number of frames");
+                            throw new InvalidDataException("Bad field 'NumColumns': must be between 1 and the number of frames");
 
                         if (frameToLoopOn >= numFrames)
-                            ScriptTools.ArgError("FrameToLoopOn", "Bad field 'FrameToLoopOn': exceeds the number of frames");
+                            throw new InvalidDataException("Bad field 'FrameToLoopOn': exceeds the number of frames");
 
                         directions.Add(new SpriteAnimationDirectionData(
                             new Point(x, y), 
@@ -170,7 +170,7 @@ namespace Zelda.Game
                     }
 
                     if (_animations.ContainsKey(animationName))
-                        Debug.Error("Duplicate animation '{0}'".F(animationName));
+                        throw new InvalidDataException("Duplicate animation '{0}'".F(animationName));
 
                     _animations.Add(animationName, new SpriteAnimationData(srcImage, directions, frameDelay, frameToLoopOn));
 
