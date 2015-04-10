@@ -1,6 +1,7 @@
 ﻿using Zelda.Game.Engine;
 using System;
 using System.Linq;
+using Zelda.Game.Entities;
 
 namespace Zelda.Game
 {
@@ -31,6 +32,17 @@ namespace Zelda.Game
         Map _nextMap;
 
         readonly SaveGame _saveGame;
+        public SaveGame SaveGame
+        {
+            get { return _saveGame; }
+        }
+
+        readonly Hero _hero;
+        public Hero Hero
+        {
+            get { return _hero; }
+        }
+
         bool _started;
 
         public Game(MainLoop mainLoop, SaveGame saveGame)
@@ -39,6 +51,8 @@ namespace Zelda.Game
             _saveGame = saveGame;
 
             _saveGame.Game = this;
+
+            _hero = new Hero(Equipment);
             
             // 게임 오버 이후에 재시작하는 경우에 대한 처리입니다
             if (Equipment.Life <= 0)

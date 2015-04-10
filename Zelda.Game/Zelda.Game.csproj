@@ -76,6 +76,7 @@
     <Compile Include="Entities\EntityType.cs" />
     <Compile Include="Entities\EntityData.cs" />
     <Compile Include="Entities\Ground.cs" />
+    <Compile Include="Entities\Hero.cs" />
     <Compile Include="Entities\Layer.cs" />
     <Compile Include="Entities\MapEntities.cs" />
     <Compile Include="Entities\MapEntity.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Entities\TilesetData.cs" />
     <Compile Include="Entities\Tile.cs" />
     <Compile Include="Equipment.cs" />
+    <Compile Include="Heroes\HeroSprites.cs" />
     <Compile Include="Script\ScriptException.cs" />
     <Compile Include="SpriteData.cs" />
     <Compile Include="ZeldaFatalException.cs" />
