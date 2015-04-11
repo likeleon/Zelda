@@ -138,9 +138,12 @@ namespace Zelda.Game
                 }
             }
 
+            Rectangle previousMapLocation = _currentMap.Location;
+
             if (_started && !_currentMap.IsStarted)
             {
                 Debug.CheckAssertion(_currentMap.IsLoaded, "This map is not loaded");
+                _hero.PlaceOnDestination(_currentMap, previousMapLocation);
                 _currentMap.Start();
             }
         }

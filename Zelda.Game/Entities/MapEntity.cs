@@ -31,16 +31,33 @@ namespace Zelda.Game.Entities
             }
         }
 
-        Ground _groundBelow;
-        public Ground GroundBelow
+        public virtual bool IsDrawnAtItsPosition
         {
-            get { return _groundBelow; }
+            get { return true; }
         }
 
+        public virtual bool CanBeDrawn
+        {
+            get { return true; }
+        }
+
+        private bool _drawnInYOrder;
+        public bool IsDrawnInYOrder
+        {
+            get { return _drawnInYOrder; }
+        }
+
+        #region 맵에서의 위치
         readonly Layer _layer;
         public Layer Layer
         {
             get { return _layer; }
+        }
+
+        Ground _groundBelow;
+        public Ground GroundBelow
+        {
+            get { return _groundBelow; }
         }
 
         Rectangle _boundingBox;
@@ -103,20 +120,8 @@ namespace Zelda.Game.Entities
             get { return new Point(X, Y); }
         }
 
-        bool _isVisible = true;
-        public bool IsVisible
-        {
-            get { return _isVisible; }
-            set { _isVisible = value; }
-        }
-
-        public virtual bool IsDrawnAtItsPosition
-        {
-            get { return true; }
-        }
-
         private static int DefaultOptimizationDistance = 400;
-        
+
         int _optimizationDistance = DefaultOptimizationDistance;
         public int OptimizationDistance
         {
@@ -134,6 +139,20 @@ namespace Zelda.Game.Entities
             get { return _optimizationDistance2; }
         }
 
+        public Point DisplayedXY
+        {
+            get { return XY; }
+        }
+        #endregion
+
+        #region 스프라이트
+        bool _isVisible = true;
+        public bool IsVisible
+        {
+            get { return _isVisible; }
+            set { _isVisible = value; }
+        }
+
         readonly List<Sprite> _sprites = new List<Sprite>();
         public IEnumerable<Sprite> Sprites
         {
@@ -149,11 +168,18 @@ namespace Zelda.Game.Entities
         {
             get { return _sprites[0]; }
         }
+        #endregion
 
-        public Point DisplayedXP
+        #region 게임 오브젝트 접근용 (편의성)
+        protected MapEntities Entities
         {
-            get { return XY; }
+            get
+            {
+                Debug.CheckAssertion(_map != null, "No map was set");
+                return _map.Entities;
+            }
         }
+        #endregion
 
         readonly int _direction;
         readonly List<Sprite> _oldSprites = new List<Sprite>();
@@ -234,7 +260,7 @@ namespace Zelda.Game.Entities
                 return;
 
             foreach (Sprite sprite in _sprites)
-                _map.DrawSprite(sprite, DisplayedXP);
+                _map.DrawSprite(sprite, DisplayedXY);
         }
 
         public bool IsDrawn()
@@ -288,6 +314,16 @@ namespace Zelda.Game.Entities
         {
             _sprites.RemoveAll(_oldSprites.Contains);
             _oldSprites.Clear();
+        }
+
+        public void SetDrawnInYOrder(bool drawnInYOrder)
+        {
+            if (drawnInYOrder != _drawnInYOrder)
+            {
+                _drawnInYOrder = drawnInYOrder;
+                if (IsOnMap)
+                    Entities.SetEntityDrawnInYOrder(this, drawnInYOrder);
+            }
         }
     }
 }

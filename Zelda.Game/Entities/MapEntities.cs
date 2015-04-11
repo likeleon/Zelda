@@ -15,7 +15,10 @@ namespace Zelda.Game.Entities
         readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
         readonly NonAnimatedRegions[] _nonAnimatedRegions = new NonAnimatedRegions[(int)Layer.Count];
         readonly List<Tile>[] _tilesInAnimatedRegions = new List<Tile>[(int)Layer.Count];
+        readonly Hero _hero;
         readonly List<MapEntity> _allEntities = new List<MapEntity>();
+        readonly List<MapEntity>[] _entitiesDrawnFirst = new List<MapEntity>[(int)Layer.Count];
+        readonly List<MapEntity>[] _entitiesDrawnYOrder = new List<MapEntity>[(int)Layer.Count];
 
         public MapEntities(Game game, Map map)
         {
@@ -24,6 +27,7 @@ namespace Zelda.Game.Entities
             _mapWidth8 = _map.Width8;
             _mapHeight8 = _map.Height8;
             _tilesGridSize = _mapWidth8 * _mapHeight8;
+            _hero = _game.Hero;
 
             _tilesGround = new Ground[(int)Layer.Count, _tilesGridSize];
             for (int layer = 0; layer < (int)Layer.Count; ++layer)
@@ -34,7 +38,13 @@ namespace Zelda.Game.Entities
 
                 _nonAnimatedRegions[layer] = new NonAnimatedRegions(_map, (Layer)layer);
                 _tilesInAnimatedRegions[layer] = new List<Tile>();
+                _entitiesDrawnFirst[layer] = new List<MapEntity>();
+                _entitiesDrawnYOrder[layer] = new List<MapEntity>();
             }
+
+            Layer heroLayer = _hero.Layer;
+            _entitiesDrawnYOrder[(int)heroLayer].Add(_hero);
+            _namedEntities[_hero.Name] = _hero;
         }
 
         public void AddEntity(MapEntity entity)
@@ -49,6 +59,14 @@ namespace Zelda.Game.Entities
             }
             else
             {
+                Layer layer = entity.Layer;
+
+                // 스프라이트 리스트를 갱신합니다
+                if (entity.IsDrawnInYOrder)
+                    _entitiesDrawnYOrder[(int)layer].Add(entity);
+                else if (entity.CanBeDrawn)
+                    _entitiesDrawnFirst[(int)layer].Add(entity);
+
                 _allEntities.Add(entity);
             }
 
@@ -212,6 +230,27 @@ namespace Zelda.Game.Entities
 
                 // 애니메이션되지 않는 타일들을 그립니다
                 _nonAnimatedRegions[layer].DrawOnMap();
+
+                foreach (MapEntity entity in _entitiesDrawnFirst[layer])
+                    entity.DrawOnMap();
+
+                foreach (MapEntity entity in _entitiesDrawnYOrder[layer])
+                    entity.DrawOnMap();
+            }
+        }
+
+        public void SetEntityDrawnInYOrder(MapEntity entity, bool drawnInYOrder)
+        {
+            int layer = (int)entity.Layer;
+            if (drawnInYOrder)
+            {
+                _entitiesDrawnFirst[layer].Remove(entity);
+                _entitiesDrawnYOrder[layer].Add(entity);
+            }
+            else
+            {
+                _entitiesDrawnYOrder[layer].Remove(entity);
+                _entitiesDrawnFirst[layer].Add(entity);
             }
         }
     }
