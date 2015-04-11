@@ -194,5 +194,11 @@ namespace Zelda.Game
                     return false;
             }
         }
+        
+        // length가 문자열보다 크면 가능한 만큼만 잘라냅니다 (c++ std::string::substr()과 동일)
+        public static string SafeSubstring(this string str, int startIndex, int length)
+        {
+            return str.Substring(startIndex, Math.Min(str.Length - startIndex, length));
+        }
     }
 }

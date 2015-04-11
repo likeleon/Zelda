@@ -13,15 +13,8 @@ namespace Zelda.Game
             get { return _id; }
         }
 
-        string _destinationName;
-        public string DestinationName
-        {
-            get { return _destinationName; }
-            set { _destinationName = value; }
-        }
-
         bool _loaded;
-        public bool IsLoaded
+        public bool IsLoaded                    
         {
             get { return _loaded; }
         }
@@ -127,6 +120,35 @@ namespace Zelda.Game
 
             _cameraPosition = new Rectangle(new Point(), Video.ModSize);
         }
+
+        #region 현재 도착 위치
+        string _destinationName;
+        public string DestinationName
+        {
+            get { return _destinationName; }
+            set { _destinationName = value; }
+        }
+
+        public Destination GetDestination()
+        {
+            if (_destinationName == "_same" || _destinationName.SafeSubstring(0, 5) == "_side")
+                return null;
+
+            Debug.CheckAssertion(IsLoaded, "This map is not loaded");
+
+            Destination destination = null;
+            if (!String.IsNullOrEmpty(_destinationName))
+            {
+                MapEntity entity = _entities.FindEntity(_destinationName);
+                if (entity == null || entity.Type != EntityType.Destination)
+                    Debug.Error("Map '{0}': No such destination: '{1}'".F(_id, _destinationName));
+                else
+                    destination = entity as Destination;
+            }
+
+            return destination ?? _entities.DefaultDestination;
+        }
+        #endregion
 
         public void Load(Game game)
         {
@@ -279,6 +301,16 @@ namespace Zelda.Game
         public void DrawSprite(Sprite sprite, int x, int y)
         {
             sprite.Draw(VisibleSurface, x - _cameraPosition.X, y - _cameraPosition.Y);
+        }
+
+        public int GetDestinationSide()
+        {
+            if (_destinationName.SafeSubstring(0, 5) == "_side")
+            {
+                int destinationSide = _destinationName[5] - '0';
+                return destinationSide;
+            }
+            return -1;
         }
     }
 }

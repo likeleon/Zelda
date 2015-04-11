@@ -15,8 +15,6 @@ namespace Zelda.Game.Entities
         readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
         readonly NonAnimatedRegions[] _nonAnimatedRegions = new NonAnimatedRegions[(int)Layer.Count];
         readonly List<Tile>[] _tilesInAnimatedRegions = new List<Tile>[(int)Layer.Count];
-        readonly Hero _hero;
-        readonly List<MapEntity> _allEntities = new List<MapEntity>();
         readonly List<MapEntity>[] _entitiesDrawnFirst = new List<MapEntity>[(int)Layer.Count];
         readonly List<MapEntity>[] _entitiesDrawnYOrder = new List<MapEntity>[(int)Layer.Count];
 
@@ -47,6 +45,35 @@ namespace Zelda.Game.Entities
             _namedEntities[_hero.Name] = _hero;
         }
 
+        #region 엔티티들
+        readonly Hero _hero;
+        public Hero Hero
+        {
+            get { return _hero; }
+        }
+
+        Destination _defaultDestination;
+        public Destination DefaultDestination
+        {
+            get { return _defaultDestination; }
+        }
+        
+        readonly List<MapEntity> _allEntities = new List<MapEntity>();
+        public IEnumerable<MapEntity> Entities
+        {
+            get { return _allEntities; }
+        }
+
+        public MapEntity FindEntity(string name)
+        {
+            MapEntity entity;
+            if (!_namedEntities.TryGetValue(name, out entity))
+                return null;
+
+            return entity;
+        }
+        #endregion
+
         public void AddEntity(MapEntity entity)
         {
             if (entity == null)
@@ -66,6 +93,21 @@ namespace Zelda.Game.Entities
                     _entitiesDrawnYOrder[(int)layer].Add(entity);
                 else if (entity.CanBeDrawn)
                     _entitiesDrawnFirst[(int)layer].Add(entity);
+
+                // 특수 타입별 엔티티 리스트를 갱신합니다
+                switch (entity.Type)
+                {
+                    case EntityType.Destination:
+                        {
+                            Destination destination = entity as Destination;
+                            if (_defaultDestination == null || destination.IsDefault)
+                                _defaultDestination = destination;
+                        }
+                        break;
+
+                    default: 
+                        break;
+                }
 
                 _allEntities.Add(entity);
             }

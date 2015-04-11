@@ -108,16 +108,19 @@ namespace Zelda.Game.Entities
         public int X
         {
             get { return _boundingBox.X + _origin.X; }
+            set { _boundingBox.X = value - _origin.X; }
         }
 
         public int Y
         {
             get { return _boundingBox.Y + _origin.Y; }
+            set { _boundingBox.Y = value - _origin.Y; }
         }
 
         public Point XY
         {
             get { return new Point(X, Y); }
+            set { X = value.X; Y = value.Y; }
         }
 
         private static int DefaultOptimizationDistance = 400;
@@ -142,6 +145,21 @@ namespace Zelda.Game.Entities
         public Point DisplayedXY
         {
             get { return XY; }
+        }
+        #endregion
+
+        #region 속성
+        int _direction;
+        public int Direction
+        {
+            get { return _direction; }
+            set
+            {
+                if (value != _direction)
+                {
+                    _direction = value;
+                }
+            }
         }
         #endregion
 
@@ -181,7 +199,6 @@ namespace Zelda.Game.Entities
         }
         #endregion
 
-        readonly int _direction;
         readonly List<Sprite> _oldSprites = new List<Sprite>();
         MainLoop _mainLoop;
         bool _initialized;

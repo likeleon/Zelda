@@ -11,7 +11,7 @@ namespace Zelda.Game.Entities
         }
 
         readonly bool _isDefaultDestination;
-        public bool IsDefaultDestination
+        public bool IsDefault
         {
             get { return _isDefaultDestination; }
         }
