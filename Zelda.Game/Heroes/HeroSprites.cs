@@ -1,4 +1,5 @@
-﻿using Zelda.Game.Entities;
+﻿using Zelda.Game.Engine;
+using Zelda.Game.Entities;
 
 namespace Zelda.Game.Heroes
 {
@@ -11,6 +12,11 @@ namespace Zelda.Game.Heroes
         {
             _hero = hero;
             _equipment = equipment;
+        }
+
+        public void DrawOnMap()
+        {
+            // TODO: 영웅 스프라이트 그리기
         }
     }
 }
