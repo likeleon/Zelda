@@ -6,15 +6,23 @@ using Zelda.Game.Engine;
 
 namespace Zelda.Game
 {
-    class SaveGame
+    class Savegame
     {
         public enum Key
         {
-            SaveGameVersion,    // 이 세이브게임 파일의 포맷
-            StartingMap,        // 게임을 시작할 맵 아이디
-            StartingPoint,      // 시작 위치 이름
-            CurrentLife,        // 현재 체력 포인트
-            MaxLife,            // 최대 체력 포인트
+            SaveGameVersion,        // 이 세이브게임 파일의 포맷
+            StartingMap,            // 게임을 시작할 맵 아이디
+            StartingPoint,          // 시작 위치 이름
+            CurrentLife,            // 현재 체력 포인트
+            MaxLife,                // 최대 체력 포인트
+            AbilityTunic,           // 저항 레벨
+            AbilitySword,           // 공격 레벨
+            AbilitySwordKnowledge,  // 스핀 공격 레벨
+            AbilityShield,         // 보호 레벨
+            AbilityLift,            // 들기 레벨
+            AbilitySwim,            // 수영 레벨
+            AbilityRun,             // 달리기 레벨
+            AbilityDetectWeakWalls, // 약한 벽 감지 레벨
         }
 
         public class SavedValue
@@ -58,7 +66,7 @@ namespace Zelda.Game
         readonly string _fileName;
         readonly Dictionary<Key, SavedValue> _savedValues = new Dictionary<Key,SavedValue>();
 
-        public SaveGame(MainLoop mainLoop, string fileName)
+        public Savegame(MainLoop mainLoop, string fileName)
         {
             _mainLoop = mainLoop;
             _fileName = fileName;
@@ -86,6 +94,7 @@ namespace Zelda.Game
 
             _equipment.MaxLife = 1;
             _equipment.Life = 1;
+            _equipment.SetAbility(Ability.Tunic, 1);    // 스프라이트 표현을 위해 필수적으로 필요합니다
         }
 
         private void ImportFromFile()

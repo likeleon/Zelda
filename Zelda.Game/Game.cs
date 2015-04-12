@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using Zelda.Game.Entities;
+using Key = Zelda.Game.Savegame.Key;
 
 namespace Zelda.Game
 {
@@ -31,8 +32,8 @@ namespace Zelda.Game
 
         Map _nextMap;
 
-        readonly SaveGame _saveGame;
-        public SaveGame SaveGame
+        readonly Savegame _saveGame;
+        public Savegame SaveGame
         {
             get { return _saveGame; }
         }
@@ -45,7 +46,7 @@ namespace Zelda.Game
 
         bool _started;
 
-        public Game(MainLoop mainLoop, SaveGame saveGame)
+        public Game(MainLoop mainLoop, Savegame saveGame)
         {
             _mainLoop = mainLoop;
             _saveGame = saveGame;
@@ -59,8 +60,8 @@ namespace Zelda.Game
                 Equipment.RestoreAllLife();
 
             // 시작 맵을 시작합니다
-            string startingMapId = _saveGame.GetString(SaveGame.Key.StartingMap);
-            string startingDestinationName = _saveGame.GetString(SaveGame.Key.StartingPoint);
+            string startingMapId = _saveGame.GetString(Key.StartingMap);
+            string startingDestinationName = _saveGame.GetString(Key.StartingPoint);
 
             bool validMapSaved = false;
             if (!String.IsNullOrEmpty(startingMapId))

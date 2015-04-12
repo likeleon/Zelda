@@ -8,13 +8,13 @@ namespace Zelda.Game
         {
             get
             {
-                return _saveGame.GetInteger(SaveGame.Key.MaxLife);
+                return _savegame.GetInteger(Savegame.Key.MaxLife);
             }
             set
             {
                 Debug.CheckAssertion(value >= 0, "Invalid life amount");
 
-                _saveGame.SetInteger(SaveGame.Key.MaxLife, value);
+                _savegame.SetInteger(Savegame.Key.MaxLife, value);
 
                 if (Life > MaxLife)
                     Life = MaxLife;
@@ -25,21 +25,83 @@ namespace Zelda.Game
         {
             get
             {
-                return _saveGame.GetInteger(SaveGame.Key.CurrentLife);
+                return _savegame.GetInteger(Savegame.Key.CurrentLife);
             }
             set
             {
                 int life = Math.Max(0, Math.Min(MaxLife, value));
-                _saveGame.SetInteger(SaveGame.Key.CurrentLife, life);
+                _savegame.SetInteger(Savegame.Key.CurrentLife, life);
             }
         }
 
-        readonly SaveGame _saveGame;
-
-        public Equipment(SaveGame saveGame)
+        public Equipment(Savegame saveGame)
         {
-            _saveGame = saveGame;
+            _savegame = saveGame;
         }
+
+        readonly Savegame _savegame;
+        public Savegame Savegame
+        {
+            get { return _savegame; }
+        }
+
+        public Game Game
+        {
+            get { return _savegame.Game; }
+        }
+
+        #region 기본 제공 능력들
+        public void SetAbility(Ability ability, int level)
+        {
+            _savegame.SetInteger(GetAbilitySavegameVariable(ability), level);
+
+            if (Game != null)
+            {
+                if (ability == Ability.Tunic ||
+                    ability == Ability.Sword ||
+                    ability == Ability.Shield)
+                {
+                    // 영웅 스프라이트가 이 능력들에 의해 영향을 받습니다
+                    Game.Hero.RebuildEquipment();
+                }
+            }
+        }
+
+        public int GetAbility(Ability ability)
+        {
+            return _savegame.GetInteger(GetAbilitySavegameVariable(ability));
+        }
+
+        Savegame.Key GetAbilitySavegameVariable(Ability ability)
+        {
+            switch (ability)
+            {
+                case Ability.Tunic:
+                    return Savegame.Key.AbilityTunic;
+
+                case Ability.Sword:
+                    return Savegame.Key.AbilitySword;
+
+                case Ability.Shield:
+                    return Savegame.Key.AbilityShield;
+
+                case Ability.Lift:
+                    return Savegame.Key.AbilityLift;
+
+                case Ability.Swim:
+                    return Savegame.Key.AbilitySwim;
+
+                case Ability.Run:
+                    return Savegame.Key.AbilityRun;
+
+                case Ability.DetectWeakWalls:
+                    return Savegame.Key.AbilityDetectWeakWalls;
+            }
+
+            Debug.Die("Invalid ability");
+            return (Savegame.Key)(-1);
+        }
+        #endregion
 
         public void RestoreAllLife()
         {

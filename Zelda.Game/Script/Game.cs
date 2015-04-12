@@ -1,6 +1,6 @@
 ﻿using System;
 using Zelda.Game.Engine;
-using RawSaveGame = Zelda.Game.SaveGame;
+using RawSaveGame = Zelda.Game.Savegame;
 using RawGame = Zelda.Game.Game;
 
 namespace Zelda.Game.Script

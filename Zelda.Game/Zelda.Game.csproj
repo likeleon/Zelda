@@ -58,6 +58,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ability.cs" />
     <Compile Include="Arguments.cs" />
     <Compile Include="Containers\Grid.cs" />
     <Compile Include="CurrentMod.cs" />
@@ -100,7 +101,7 @@
     <Compile Include="Movements\Movement.cs" />
     <Compile Include="Movements\StraightMovement.cs" />
     <Compile Include="Movements\TargetMovement.cs" />
-    <Compile Include="SaveGame.cs" />
+    <Compile Include="Savegame.cs" />
     <Compile Include="Script\Drawable.cs" />
     <Compile Include="Script\Game.cs" />
     <Compile Include="Script\IInputEventHandler.cs" />

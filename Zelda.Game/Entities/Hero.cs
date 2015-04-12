@@ -33,6 +33,11 @@ namespace Zelda.Game.Entities
         {
             get { return _sprites; }
         }
+
+        public void RebuildEquipment()
+        {
+            _sprites.RebuildEquipment();
+        }
         #endregion
 
         #region 상태
