@@ -132,8 +132,8 @@ namespace Zelda.Game
         {
             try
             {
-                SpriteAnimationSetXmlData xmlData = stream.XmlDeserialize<SpriteAnimationSetXmlData>();
-                foreach (SpriteAnimationSetXmlData.Animation animation in xmlData.Animations)
+                SpriteXmlData xmlData = stream.XmlDeserialize<SpriteXmlData>();
+                foreach (SpriteXmlData.Animation animation in xmlData.Animations)
                 {
                     string animationName = animation.Name.CheckField("Name");
                     string srcImage = animation.SrcImage.CheckField("SrcImage");
@@ -188,8 +188,8 @@ namespace Zelda.Game
         }
     }
 
-    [XmlRoot("AnimationSet")]
-    public class SpriteAnimationSetXmlData
+    [XmlRoot("Sprite")]
+    public class SpriteXmlData
     {
         public class AnimationDirection
         {
@@ -216,7 +216,7 @@ namespace Zelda.Game
             public int? FrameDelay { get; set; }
             public int? FrameToLoopOn { get; set; }
 
-            [XmlArrayItem("Direction")]
+            [XmlElement("Direction")]
             public AnimationDirection[] Directions { get; set; }
 
             public bool FrameDelaySpecified { get { return FrameDelay != null; } }
