@@ -99,9 +99,12 @@ namespace Zelda.Game.Entities
         #region 맵 변경
         public void SetMap(Map map, int initialDirection)
         {
-            base.SetMap(map);
+            if (initialDirection != -1)
+                _sprites.SetAnimationDirection(initialDirection);
 
             _state.SetMap(map);
+            
+            base.SetMap(map);
         }
 
         public void PlaceOnDestination(Map map, Rectangle previousMapLocation)

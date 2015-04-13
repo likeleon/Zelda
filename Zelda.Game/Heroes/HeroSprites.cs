@@ -77,7 +77,12 @@ namespace Zelda.Game.Heroes
 
         public void DrawOnMap()
         {
-            // TODO: 영웅 스프라이트 그리기
+            Map map = _hero.Map;
+
+            int x = _hero.DisplayedXY.X;
+            int y = _hero.DisplayedXY.Y;
+
+            map.DrawSprite(_tunicSprite, x, y);
         }
 
         public void SetAnimationDirection(int direction)
