@@ -41,6 +41,11 @@ namespace Zelda.Game
             Debug.CheckAssertion(_srcImage != null, "Cannot load image '{0}'".F(imageFileName));
         }
 
+        public void Dispose()
+        {
+            _srcImage.Dispose();
+        }
+
         public void Draw(Surface dstSurface, Point dstPosition, int currentDirection, int currentFrame)
         {
             if (currentDirection < 0 || currentDirection >= NumDirections)
@@ -55,9 +60,25 @@ namespace Zelda.Game
             _directions[currentDirection].Draw(dstSurface, dstPosition, currentFrame, _srcImage);
         }
 
-        public void Dispose()
+        public int GetNextFrame(int currentDirection, int currentFrame)
         {
-            _srcImage.Dispose();
+            if (currentDirection < 0 || currentDirection >= NumDirections)
+            {
+                string msg = "Invalid sprite direction '{0}': this sprite has {1} direction(s)"
+                    .F(currentDirection, NumDirections);
+                Debug.Die(msg);
+            }
+
+            int nextFrame = currentFrame + 1;
+
+            // 마지막 프레임이라면
+            if (nextFrame == _directions[currentDirection].NumFrames)
+            {
+                // 지정한 프레임에서 계속 루프를 돌게 하거나 루프가 없다면 -1을 사용하도록 합니다
+                nextFrame = _loopOnFrame;
+            }
+
+            return nextFrame;
         }
     }
 }

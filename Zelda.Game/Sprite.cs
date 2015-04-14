@@ -90,6 +90,52 @@ namespace Zelda.Game
             SetCurrentAnimation(_animationSet.DefaultAnimation);
         }
 
+        #region 갱신과 그리기
+        public override void Update()
+        {
+            base.Update();
+
+            _frameChanged = false;
+            uint now = EngineSystem.Now;
+
+            // 시간에 따라 프레임을 갱신해 줍니다
+            int nextFrame = 0;
+            while (!_finished && FrameDelay > 0 && now >= nextFrameDate)
+            {
+                // 다음 프레임을 얻습니다
+                nextFrame = GetNextFrame();
+
+                // 애니메이션이 끝났는지 확인합니다
+                if (nextFrame == -1)
+                {
+                    _finished = true;
+                }
+                else
+                {
+                    _currentFrame = nextFrame;
+                    nextFrameDate += _frameDelay;
+                }
+                FrameChanged = true;
+            }
+        }
+
+        int GetNextFrame()
+        {
+            return _currentAnimation.GetNextFrame(_currentDirection, _currentFrame);
+        }
+
+        public override void RawDraw(Surface dstSurface, Point dstPosition)
+        {
+            if (!IsAnimationFinished)
+                _currentAnimation.Draw(dstSurface, dstPosition, _currentDirection, _currentFrame);
+        }
+
+        public override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
         static SpriteAnimationSet GetAnimationSet(string id)
         {
             SpriteAnimationSet animationSet;
@@ -102,17 +148,6 @@ namespace Zelda.Game
             Debug.CheckAssertion(animationSet != null, "No animation set");
 
             return animationSet;
-        }
-
-        public override void RawDraw(Surface dstSurface, Point dstPosition)
-        {
-            if (!IsAnimationFinished)
-                _currentAnimation.Draw(dstSurface, dstPosition, _currentDirection, _currentFrame);
-        }
-
-        public override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
-        {
-            throw new NotImplementedException();
         }
 
         public void SetCurrentAnimation(string animationName)
