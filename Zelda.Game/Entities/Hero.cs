@@ -86,6 +86,14 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 게임 루프
+        public override void Update()
+        {
+            _sprites.Update();
+
+            // 상태는 이동과 스프라이트에 영향을 받기 때문에 이 시점에 업데이트를 수행합니다
+            UpdateState();
+        }
+
         public override void DrawOnMap()
         {
             if (!IsDrawn())

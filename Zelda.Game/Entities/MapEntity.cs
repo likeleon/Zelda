@@ -47,6 +47,43 @@ namespace Zelda.Game.Entities
             get { return _drawnInYOrder; }
         }
 
+        readonly List<Sprite> _oldSprites = new List<Sprite>();
+        MainLoop _mainLoop;
+        bool _initialized;
+        bool _disposed;
+
+        protected MapEntity(string name, int direction, Layer layer, Point xy, Size size)
+        {
+            Debug.CheckAssertion(size.Width % 8 == 0 && size.Height % 8 == 0,
+                "Invalid entity size: width and height must be multiple of 8");
+
+            Name = name;
+            _direction = direction;
+            _layer = layer;
+            _boundingBox = new Rectangle(xy, size);
+        }
+
+        ~MapEntity()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            ClearSprites();
+            ClearOldSprites();
+            _disposed = true;
+        }
+
         #region 맵에서의 위치
         readonly Layer _layer;
         public Layer Layer
@@ -98,10 +135,10 @@ namespace Zelda.Game.Entities
         public Point Origin
         {
             get { return _origin; }
-            set 
+            set
             {
                 _boundingBox.XY += (_origin - value);
-                _origin = value; 
+                _origin = value;
             }
         }
 
@@ -199,42 +236,27 @@ namespace Zelda.Game.Entities
         }
         #endregion
 
-        readonly List<Sprite> _oldSprites = new List<Sprite>();
-        MainLoop _mainLoop;
-        bool _initialized;
-        bool _disposed;
-
-        protected MapEntity(string name, int direction, Layer layer, Point xy, Size size)
+        #region 게임 루프
+        public virtual void Update()
         {
-            Debug.CheckAssertion(size.Width % 8 == 0 && size.Height % 8 == 0,
-                "Invalid entity size: width and height must be multiple of 8");
+            Debug.CheckAssertion(Type != EntityType.Tile, "Attempt to update a static tile");
 
-            Name = name;
-            _direction = direction;
-            _layer = layer;
-            _boundingBox = new Rectangle(xy, size);
+            // 스프라이트 업데이트
+            foreach (Sprite sprite in _sprites)
+                sprite.Update();
+
+            ClearOldSprites();
         }
 
-        ~MapEntity()
+        public virtual void DrawOnMap()
         {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        void Dispose(bool disposing)
-        {
-            if (_disposed)
+            if (!IsDrawn())
                 return;
 
-            ClearSprites();
-            ClearOldSprites();
-            _disposed = true;
+            foreach (Sprite sprite in _sprites)
+                _map.DrawSprite(sprite, DisplayedXY);
         }
+        #endregion
 
         public void SetMap(Map map)
         {
@@ -269,15 +291,6 @@ namespace Zelda.Game.Entities
 
         public virtual void NotifyCreated()
         {
-        }
-
-        public virtual void DrawOnMap()
-        {
-            if (!IsDrawn())
-                return;
-
-            foreach (Sprite sprite in _sprites)
-                _map.DrawSprite(sprite, DisplayedXY);
         }
 
         public bool IsDrawn()

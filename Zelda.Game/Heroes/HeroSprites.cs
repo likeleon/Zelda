@@ -91,5 +91,10 @@ namespace Zelda.Game.Heroes
 
             _tunicSprite.SetCurrentDirection(direction);
         }
+
+        public void Update()
+        {
+            _tunicSprite.Update();
+        }
     }
 }

@@ -74,6 +74,40 @@ namespace Zelda.Game.Entities
         }
         #endregion
 
+        #region 게임 루프
+        public void Update()
+        {
+            Debug.CheckAssertion(_map.IsStarted, "The map is not started");
+
+            _hero.Update();
+
+            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+                _entitiesDrawnYOrder[layer].Sort((a, b) => (b.TopLeftY + b.Height) - (a.TopLeftY + a.Height));
+
+            foreach (MapEntity entity in _allEntities)
+                entity.Update();
+        }
+
+        public void Draw()
+        {
+            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+            {
+                // 에니메이션되는 타일을 포함하는 영역들을 먼저 그립니다
+                foreach (Tile tile in _tilesInAnimatedRegions[layer])
+                    tile.DrawOnMap();
+
+                // 애니메이션되지 않는 타일들을 그립니다
+                _nonAnimatedRegions[layer].DrawOnMap();
+
+                foreach (MapEntity entity in _entitiesDrawnFirst[layer])
+                    entity.DrawOnMap();
+
+                foreach (MapEntity entity in _entitiesDrawnYOrder[layer])
+                    entity.DrawOnMap();
+            }
+        }
+        #endregion
+
         public void AddEntity(MapEntity entity)
         {
             if (entity == null)
@@ -260,25 +294,6 @@ namespace Zelda.Game.Entities
             // 애니메이션되지 않는 타일들의 pre-drawing 데이터들을 구성합니다
             for (int layer = 0; layer < (int)Layer.Count; ++layer)
                 _nonAnimatedRegions[layer].Build(_tilesInAnimatedRegions[layer]);
-        }
-
-        public void Draw()
-        {
-            for (int layer = 0; layer < (int)Layer.Count; ++layer)
-            {
-                // 에니메이션되는 타일을 포함하는 영역들을 먼저 그립니다
-                foreach (Tile tile in _tilesInAnimatedRegions[layer])
-                    tile.DrawOnMap();
-
-                // 애니메이션되지 않는 타일들을 그립니다
-                _nonAnimatedRegions[layer].DrawOnMap();
-
-                foreach (MapEntity entity in _entitiesDrawnFirst[layer])
-                    entity.DrawOnMap();
-
-                foreach (MapEntity entity in _entitiesDrawnYOrder[layer])
-                    entity.DrawOnMap();
-            }
         }
 
         public void SetEntityDrawnInYOrder(MapEntity entity, bool drawnInYOrder)

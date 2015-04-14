@@ -291,6 +291,8 @@ namespace Zelda.Game
         public void Update()
         {
             TilePattern.Update();
+
+            _entities.Update();
         }
 
         public void DrawSprite(Sprite sprite, Point xy)
