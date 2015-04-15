@@ -7,6 +7,18 @@ namespace Zelda.Game
 {
     class Sprite : Drawable
     {
+        #region 초기화
+        public static void Initialize()
+        {
+        }
+
+        public static void Quit()
+        {
+            _allAnimationSets.Clear();
+        }
+        #endregion
+
+        #region 애니메이션 셋
         static readonly Dictionary<string, SpriteAnimationSet> _allAnimationSets = new Dictionary<string, SpriteAnimationSet>();
 
         readonly string _animationSetId;    // 이 스프라이트의 애니메이션 셋 아이디
@@ -20,7 +32,9 @@ namespace Zelda.Game
         {
             get { return _animationSet; }
         }
+        #endregion
 
+        #region 애니메이션 상태
         bool _finished;
         public bool IsAnimationFinished
         {
@@ -74,21 +88,60 @@ namespace Zelda.Game
         SpriteAnimation _currentAnimation;
         uint nextFrameDate;
 
-        public static void Initialize()
+        public void SetCurrentAnimation(string animationName)
         {
+            if (animationName != _currentAnimationName || !IsAnimationStarted)
+            {
+                _currentAnimationName = animationName;
+                _currentAnimation = _animationSet.GetAnimation(animationName);
+                FrameDelay = _currentAnimation.FrameDelay;
+
+                SetCurrentFrame(0);
+            }
         }
 
-        public static void Quit()
+        public void SetCurrentFrame(int currentFrame)
         {
-            _allAnimationSets.Clear();
+            _finished = false;
+            nextFrameDate = EngineSystem.Now + FrameDelay;
+
+            if (currentFrame != _currentFrame)
+            {
+                _currentFrame = currentFrame;
+                FrameChanged = true;
+            }
         }
 
+        public void RestartAnimation()
+        {
+            SetCurrentFrame(0);
+        }
+
+        public void SetCurrentDirection(int currentDirection)
+        {
+            if (currentDirection < 0 || currentDirection >= NumDirections)
+            {
+                Debug.Die("Invalid direction {0} for sprite '{1}' in animation {2}"
+                    .F(currentDirection, AnimationSetId, _currentAnimationName));
+            }
+
+            if (currentDirection == _currentDirection)
+                return;
+
+            _currentDirection = currentDirection;
+
+            SetCurrentFrame(0);
+        }
+        #endregion
+
+        #region 생성과 소멸
         public Sprite(string id)
         {
             _animationSetId = id;
             _animationSet = GetAnimationSet(id);
             SetCurrentAnimation(_animationSet.DefaultAnimation);
         }
+        #endregion
 
         #region 갱신과 그리기
         public override void Update()
@@ -148,51 +201,6 @@ namespace Zelda.Game
             Debug.CheckAssertion(animationSet != null, "No animation set");
 
             return animationSet;
-        }
-
-        public void SetCurrentAnimation(string animationName)
-        {
-            if (animationName != _currentAnimationName || !IsAnimationStarted)
-            {
-                _currentAnimationName = animationName;
-                _currentAnimation = _animationSet.GetAnimation(animationName);
-                FrameDelay = _currentAnimation.FrameDelay;
-
-                SetCurrentFrame(0);
-            }
-        }
-
-        public void SetCurrentFrame(int currentFrame)
-        {
-            _finished = false;
-            nextFrameDate = EngineSystem.Now + FrameDelay;
-
-            if (currentFrame != _currentFrame)
-            {
-                _currentFrame = currentFrame;
-                FrameChanged = true;
-            }
-        }
-
-        public void RestartAnimation()
-        {
-            SetCurrentFrame(0);
-        }
-
-        public void SetCurrentDirection(int currentDirection)
-        {
-            if (currentDirection < 0 || currentDirection >= NumDirections)
-            {
-                Debug.Die("Invalid direction {0} for sprite '{1}' in animation {2}"
-                    .F(currentDirection, AnimationSetId, _currentAnimationName));
-            }
-
-            if (currentDirection == _currentDirection)
-                return;
-
-            _currentDirection = currentDirection;
-
-            SetCurrentFrame(0);
         }
     }
 }
