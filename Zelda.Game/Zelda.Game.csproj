@@ -90,6 +90,8 @@
     <Compile Include="Entities\TilesetData.cs" />
     <Compile Include="Entities\Tile.cs" />
     <Compile Include="Equipment.cs" />
+    <Compile Include="GameCommand.cs" />
+    <Compile Include="GameCommands.cs" />
     <Compile Include="Heroes\FreeState.cs" />
     <Compile Include="Heroes\HeroSprites.cs" />
     <Compile Include="Heroes\State.cs" />
