@@ -8,42 +8,6 @@ namespace Zelda.Game
 {
     class Game
     {
-        readonly MainLoop _mainLoop;
-        public MainLoop MainLoop
-        {
-            get { return _mainLoop; }
-        }
-
-        public Equipment Equipment
-        {
-            get { return _saveGame.Equipment; }
-        }
-
-        Map _currentMap;
-        public bool HasCurrentMap
-        {
-            get { return _currentMap != null; }
-        }
-        
-        public Map CurrentMap
-        {
-            get { return _currentMap; }
-        }
-
-        Map _nextMap;
-
-        readonly Savegame _saveGame;
-        public Savegame SaveGame
-        {
-            get { return _saveGame; }
-        }
-
-        readonly Hero _hero;
-        public Hero Hero
-        {
-            get { return _hero; }
-        }
-
         bool _started;
 
         public Game(MainLoop mainLoop, Savegame saveGame)
@@ -53,6 +17,8 @@ namespace Zelda.Game
 
             _saveGame.Game = this;
 
+            // 멤버 초기화
+            _commands = new GameCommands(this);
             _hero = new Hero(Equipment);
             
             // 게임 오버 이후에 재시작하는 경우에 대한 처리입니다
@@ -90,11 +56,6 @@ namespace Zelda.Game
             SetCurrentMap(startingMapId, startingDestinationName);
         }
 
-        public bool NotifyInput(InputEvent inputEvent)
-        {
-            return true;
-        }
-
         public void Start()
         {
             if (_started)
@@ -118,17 +79,103 @@ namespace Zelda.Game
             throw new NotImplementedException();
         }
 
+        #region 전역 객체들
+        readonly MainLoop _mainLoop;
+        public MainLoop MainLoop
+        {
+            get { return _mainLoop; }
+        }
+
+        public Equipment Equipment
+        {
+            get { return _saveGame.Equipment; }
+        }
+
+        readonly Savegame _saveGame;
+        public Savegame SaveGame
+        {
+            get { return _saveGame; }
+        }
+
+        readonly Hero _hero;
+        public Hero Hero
+        {
+            get { return _hero; }
+        }
+
+        readonly GameCommands _commands;
+        public GameCommands Commands
+        {
+            get { return _commands; }
+        }
+        #endregion
+
+        #region 메인 루프에 의해 호출되는 함수들
+        public bool NotifyInput(InputEvent inputEvent)
+        {
+            if (_currentMap != null && _currentMap.IsLoaded)
+                _commands.NotifyInput(inputEvent);
+            return true;
+        }
+
         public void Update()
         {
             UpdateTransitions();
-            
+
             if (!_started)
                 return;
 
             _currentMap.Update();
         }
 
-        private void UpdateTransitions()
+        public void Draw(Surface dstSurface)
+        {
+            if (_currentMap == null)
+                return; // 게임의 초기화가 완료되기 전입니다
+
+            if (_currentMap.IsLoaded)
+            {
+                _currentMap.Draw();
+                _currentMap.VisibleSurface.Draw(dstSurface);
+            }
+        }
+        #endregion
+
+        #region 맵
+        Map _currentMap;
+        public bool HasCurrentMap
+        {
+            get { return _currentMap != null; }
+        }
+
+        public Map CurrentMap
+        {
+            get { return _currentMap; }
+        }
+
+        Map _nextMap;
+
+        public void SetCurrentMap(string mapId, string destinationName)
+        {
+            // 다음 맵을 준비합니다
+            if (_currentMap == null || mapId != _currentMap.Id)
+            {
+                // 다른 맵입니다
+                _nextMap = new Map(mapId);
+                _nextMap.Load(this);
+            }
+            else
+            {
+                // 동일한 맵입니다
+                _nextMap = _currentMap;
+            }
+
+            _nextMap.DestinationName = destinationName;
+        }
+        #endregion
+
+        #region 갱신 함수들
+        void UpdateTransitions()
         {
             if (_nextMap != null)
             {
@@ -148,35 +195,6 @@ namespace Zelda.Game
                 _currentMap.Start();
             }
         }
-
-        public void Draw(Surface dstSurface)
-        {
-            if (_currentMap == null)
-                return; // 게임의 초기화가 완료되기 전입니다
-
-            if (_currentMap.IsLoaded)
-            {
-                _currentMap.Draw();
-                _currentMap.VisibleSurface.Draw(dstSurface);
-            }
-        }
-
-        public void SetCurrentMap(string mapId, string destinationName)
-        {
-            // 다음 맵을 준비합니다
-            if (_currentMap == null || mapId != _currentMap.Id)
-            {
-                // 다른 맵입니다
-                _nextMap = new Map(mapId);
-                _nextMap.Load(this);
-            }
-            else
-            {
-                // 동일한 맵입니다
-                _nextMap = _currentMap;
-            }
-
-            _nextMap.DestinationName = destinationName;
-        }
+        #endregion
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Zelda.Game.Heroes
 {
-    class FreeState : State
+    class FreeState : PlayerMovementState
     {
         public FreeState(Hero hero)
             : base(hero, "free")

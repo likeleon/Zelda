@@ -10,6 +10,9 @@ namespace Zelda.Game.Entities
         public Hero(Equipment equipment)
             : base("hero", 0, Layer.Low, new Point(), new Size(16, 16))
         {
+            _normalWalkingSpeed = 88;
+            _walkingSpeed = _normalWalkingSpeed;
+
             Origin = new Point(8, 13);
 
             // 스프라이트
@@ -42,6 +45,11 @@ namespace Zelda.Game.Entities
 
         #region 상태
         State _state;
+        internal State State
+        {
+            get { return _state; }
+        }
+
         public string StateName
         {
             get { return _state.Name; }
@@ -85,9 +93,38 @@ namespace Zelda.Game.Entities
         }
         #endregion
 
+        #region 이동
+        int _normalWalkingSpeed;
+        public int NormalWalkingSpeed
+        {
+            get { return _normalWalkingSpeed; }
+        }
+
+        public void SetNormalWalkingSpeed(int normalWalkingSpeed)
+        {
+            bool wasNormal = (_walkingSpeed == _normalWalkingSpeed);
+            _normalWalkingSpeed = normalWalkingSpeed;
+            if (wasNormal)
+                SetWalkingSpeed(normalWalkingSpeed);
+        }
+
+        int _walkingSpeed;
+        public int WalkingSpeed
+        {
+            get { return _walkingSpeed; }
+        }
+
+        public void SetWalkingSpeed(int walkingSpeed)
+        {
+            if (walkingSpeed != _walkingSpeed)
+                _walkingSpeed = walkingSpeed;
+        }
+        #endregion
+
         #region 게임 루프
         public override void Update()
         {
+            UpdateMovement();
             _sprites.Update();
 
             // 상태는 이동과 스프라이트에 영향을 받기 때문에 이 시점에 업데이트를 수행합니다
@@ -175,6 +212,16 @@ namespace Zelda.Game.Entities
                     }
                 }
             }
+        }
+        #endregion
+
+        #region 위치
+        void UpdateMovement()
+        {
+            if (Movement != null)
+                Movement.Update();
+
+            // TODO: ClearOldMovements() 누락
         }
         #endregion
     }

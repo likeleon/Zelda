@@ -13,6 +13,15 @@ namespace Zelda.Game
             SaveGameVersion,        // 이 세이브게임 파일의 포맷
             StartingMap,            // 게임을 시작할 맵 아이디
             StartingPoint,          // 시작 위치 이름
+            KeyboardAction,         // 액션 커맨드에 매핑된 키보드 키
+            KeyboardAttack,         // 공격 커맨드에 매핑된 키보드 키
+            KeyboardItem1,          // 아이템 1 커맨드에 매핑된 키보드 키
+            KeyboardItem2,          // 아이템 2 커맨드에 매핑된 키보드 키
+            KeyboardPause,          // 일시 정지 커맨드에 매핑된 키보드 키
+            KeyboardRight,          // 우 커맨드에 매핑된 키보드 키
+            KeyboardUp,             // 상 커맨드에 매핑된 키보드 키
+            KeyboardLeft,           // 좌 커맨드에 매핑된 키보드 키
+            KeyboardDown,           // 하 커맨드에 매핑된 키보드 키
             CurrentLife,            // 현재 체력 포인트
             MaxLife,                // 최대 체력 포인트
             AbilityTunic,           // 저항 레벨
@@ -88,16 +97,31 @@ namespace Zelda.Game
             }
         }
 
-        private void SetInitialValues()
+        void SetInitialValues()
         {
             SetInteger(Key.SaveGameVersion, SaveGameVersion);
+
+            SetDefaultKeyboardControls();
 
             _equipment.MaxLife = 1;
             _equipment.Life = 1;
             _equipment.SetAbility(Ability.Tunic, 1);    // 스프라이트 표현을 위해 필수적으로 필요합니다
         }
 
-        private void ImportFromFile()
+        void SetDefaultKeyboardControls()
+        {
+            SetString(Key.KeyboardAction, InputEvent.GetKeyboardKeyName(InputEvent.KeyboardKeys.KEY_SPACE));
+            SetString(Key.KeyboardAttack, InputEvent.GetKeyboardKeyName(InputEvent.KeyboardKeys.KEY_c));
+            SetString(Key.KeyboardItem1, InputEvent.GetKeyboardKeyName(InputEvent.KeyboardKeys.KEY_x));
+            SetString(Key.KeyboardItem2, InputEvent.GetKeyboardKeyName(InputEvent.KeyboardKeys.KEY_v));
+            SetString(Key.KeyboardPause, InputEvent.GetKeyboardKeyName(InputEvent.KeyboardKeys.KEY_d));
+            SetString(Key.KeyboardRight, InputEvent.GetKeyboardKeyName(InputEvent.KeyboardKeys.KEY_RIGHT));
+            SetString(Key.KeyboardUp, InputEvent.GetKeyboardKeyName(InputEvent.KeyboardKeys.KEY_UP));
+            SetString(Key.KeyboardLeft, InputEvent.GetKeyboardKeyName(InputEvent.KeyboardKeys.KEY_LEFT));
+            SetString(Key.KeyboardDown, InputEvent.GetKeyboardKeyName(InputEvent.KeyboardKeys.KEY_DOWN));
+        }
+
+        void ImportFromFile()
         {
             try
             {
@@ -149,7 +173,7 @@ namespace Zelda.Game
             SavedValue savedValue;
             if (_savedValues.TryGetValue(key, out savedValue))
             {
-                Debug.CheckAssertion(savedValue.Type != SavedValue.Types.String, "Value '{0}' is not a string".F(key));
+                Debug.CheckAssertion(savedValue.Type == SavedValue.Types.String, "Value '{0}' is not a string".F(key));
                 return savedValue.StringData;
             }
             return String.Empty;

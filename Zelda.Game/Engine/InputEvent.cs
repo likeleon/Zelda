@@ -212,8 +212,7 @@ namespace Zelda.Game.Engine
             }
         }
 
-        static readonly Dictionary<KeyboardKeys, string> KeyboardKeyNames
-            = new Dictionary<KeyboardKeys, string>()
+        static readonly Dictionary<KeyboardKeys, string> _keyboardKeyNames = new Dictionary<KeyboardKeys, string>()
         {
             { KeyboardKeys.KEY_NONE,              "" },
             { KeyboardKeys.KEY_BACKSPACE,         "backspace" },
@@ -369,7 +368,18 @@ namespace Zelda.Game.Engine
 
         public static string GetKeyboardKeyName(KeyboardKeys key)
         {
-            return KeyboardKeyNames[key];
+            return _keyboardKeyNames[key];
+        }
+
+        public static KeyboardKeys GetKeyboardKeyByName(string keyboardKeyName)
+        {
+            // TODO: 성능이 문제가 된다면 역참조 매핑을 만들어야 합니다.
+            foreach (var kv in _keyboardKeyNames)
+            {
+                if (kv.Value == keyboardKeyName)
+                    return kv.Key;
+            }
+            return KeyboardKeys.KEY_NONE;
         }
     }
 }

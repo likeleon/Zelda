@@ -1,66 +1,30 @@
 ﻿using System;
-using System.ComponentModel;
 using Zelda.Game.Engine;
+using Zelda.Game.Entities;
 
 namespace Zelda.Game.Movements
 {
     abstract class Movement
     {
-        Point _xy;
-        [Description("이 이동 객체에 의해 조종되는 오브젝트의 좌표")]
-        public Point XY
-        {
-            get
-            {
-                if (_drawable != null)
-                    return _drawable.XY;
+        #region 조종 오브젝트
+        MapEntity _entity;
 
-                return _xy; 
-            }
+        public MapEntity Entity
+        {
+            get { return _entity; }
         }
 
-        public int X
+        public void SetEntity(MapEntity entity)
         {
-            get { return XY.X; }
-        }
+            Debug.CheckAssertion(_drawable == null, "This movement is already assigned to a drawable");
 
-        public int Y
-        {
-            get { return XY.Y; }
-        }
-
-        public bool IsStopped
-        {
-            get { return !IsStarted; }
-        }
-
-        public virtual bool IsStarted
-        {
-            get { return false; }
-        }
-
-        public virtual bool IsFinished
-        {
-            get { return false; }
-        }
-
-        Script.Movement _scriptMovement;
-        public Script.Movement ScriptMovement
-        {
-            get { return _scriptMovement; }
-            set { _scriptMovement = value; }
-        }
-
-        Action _finishedCallback;
-        public Action FinishedCallback
-        {
-            get { return _finishedCallback; }
-            set
-            {
-                Debug.CheckAssertion(ScriptMovement != null, "Undefined ScriptMovement");
-
-                _finishedCallback = value;
-            }
+            _entity = entity;
+            if (_entity == null)
+                _xy = new Point(0, 0);
+            else
+                _xy = _entity.XY;
+            
+            NotifyObjectControlled();
         }
 
         Drawable _drawable;
@@ -68,50 +32,30 @@ namespace Zelda.Game.Movements
         {
             get { return _drawable; }
         }
-        
+
+        public void SetDrawable(Drawable drawable)
+        {
+
+            Debug.CheckAssertion(_entity == null, "This movement is already assigned to an entity");
+
+            _drawable = drawable;
+
+            if (drawable == null)
+                _xy = new Point(0, 0);
+            else
+                _xy = drawable.XY;
+
+            NotifyObjectControlled();
+        }
+
+        public virtual void NotifyObjectControlled()
+        {
+        }
+        #endregion
+
+        #region 갱신
         uint _lastMoveDate;     // 마지막으로 X나 Y방향으로 이동한 시각
         bool _finished;
-
-        public void SetXY(int x, int y)
-        {
-            SetXY(new Point(x, y));
-        }
-
-        public void SetXY(Point xy)
-        {
-            if (_drawable != null)
-                _drawable.XY = xy;
-
-            _xy = xy;
-
-            NotifyPositionChanged();
-            _lastMoveDate = EngineSystem.Now;
-        }
-
-        public virtual void Stop()
-        {
-        }
-
-        // X나 Y가 변경되었을 때 호출합니다
-        public virtual void NotifyPositionChanged()
-        {
-            if (_scriptMovement != null)
-                _scriptMovement.NotifyPositionChanged(XY);
-        }
-
-        // 이동이 끝났을 때 호출합니다
-        public virtual void NotifyMovementFinished()
-        {
-            if (_scriptMovement != null)
-            {
-                if (_finishedCallback != null)
-                {
-                    _finishedCallback.Invoke();
-                    _finishedCallback = null;
-                }
-                _scriptMovement.NotifyMovementFinished();
-            }
-        }
 
         public virtual void Update()
         {
@@ -124,6 +68,62 @@ namespace Zelda.Game.Movements
             {
                 _finished = false;
             }
+        }
+        #endregion
+
+        #region 위치
+        Point _xy;
+        public Point XY
+        {
+            get
+            {
+                if (_entity != null)
+                    return _entity.XY;
+
+                if (_drawable != null)
+                    return _drawable.XY;
+
+                return _xy; 
+            }
+        }
+
+        public int X
+        {
+            get { return XY.X; }
+        }
+
+        public void SetX(int x)
+        {
+            SetXY(x, Y);
+        }
+
+        public int Y
+        {
+            get { return XY.Y; }
+        }
+
+        public void SetY(int y)
+        {
+            SetXY(X, y);
+        }
+
+        public void SetXY(int x, int y)
+        {
+            SetXY(new Point(x, y));
+        }
+
+        public void SetXY(Point xy)
+        {
+            if (_entity != null)
+                _entity.XY = xy;
+
+            if (_drawable != null)
+                _drawable.XY = xy;
+
+            _xy = xy;
+
+            NotifyPositionChanged();
+            _lastMoveDate = EngineSystem.Now;
         }
 
         public void TranslateX(int dx)
@@ -146,20 +146,75 @@ namespace Zelda.Game.Movements
             TranslateXY(dxy.X, dxy.Y);
         }
 
-        public void SetDrawable(Drawable drawable)
+        // X나 Y가 변경되었을 때 호출합니다
+        public virtual void NotifyPositionChanged()
         {
-            _drawable = drawable;
-
-            if (drawable == null)
-                _xy = new Point(0, 0);
-            else
-                _xy = drawable.XY;
-            
-            NotifyObjectControlled();
+            if (_scriptMovement != null)
+                _scriptMovement.NotifyPositionChanged(XY);
         }
 
-        public virtual void NotifyObjectControlled()
+        // 이동이 끝났을 때 호출합니다
+        public virtual void NotifyMovementFinished()
+        {
+            if (_scriptMovement != null)
+            {
+                if (_finishedCallback != null)
+                {
+                    _finishedCallback.Invoke();
+                    _finishedCallback = null;
+                }
+                _scriptMovement.NotifyMovementFinished();
+            }
+        }
+        #endregion
+
+        #region 이동
+        public bool IsStopped
+        {
+            get { return !IsStarted; }
+        }
+
+        public virtual bool IsStarted
+        {
+            get { return false; }
+        }
+
+        public virtual void Stop()
         {
         }
+
+        public virtual bool IsFinished
+        {
+            get { return false; }
+        }
+        #endregion
+
+        #region 이동 오브젝트 표시
+        public virtual Point DisplayedXY
+        {
+            get { return XY; }
+        }
+        #endregion
+
+        #region 스크립트
+        Script.Movement _scriptMovement;
+        public Script.Movement ScriptMovement
+        {
+            get { return _scriptMovement; }
+            set { _scriptMovement = value; }
+        }
+
+        Action _finishedCallback;
+        public Action FinishedCallback
+        {
+            get { return _finishedCallback; }
+            set
+            {
+                Debug.CheckAssertion(ScriptMovement != null, "Undefined ScriptMovement");
+
+                _finishedCallback = value;
+            }
+        }
+        #endregion
     }
 }

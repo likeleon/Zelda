@@ -1,57 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Zelda.Game.Engine;
-
+using Zelda.Game.Movements;
 
 namespace Zelda.Game.Entities
 {
     abstract class MapEntity : IDisposable
     {
-        public abstract EntityType Type { get; }
-
-        public string Name { get; set; }
-
-        Map _map;
-        public Map Map
-        {
-            get { return _map; }
-        }
-
-        public bool IsOnMap
-        {
-            get { return _map != null; }
-        }
-
-        public Game Game
-        {
-            get
-            {
-                Debug.CheckAssertion(Map != null, "No map was set");
-                return _map.Game;
-            }
-        }
-
-        public virtual bool IsDrawnAtItsPosition
-        {
-            get { return true; }
-        }
-
-        public virtual bool CanBeDrawn
-        {
-            get { return true; }
-        }
-
-        private bool _drawnInYOrder;
-        public bool IsDrawnInYOrder
-        {
-            get { return _drawnInYOrder; }
-        }
-
-        readonly List<Sprite> _oldSprites = new List<Sprite>();
         MainLoop _mainLoop;
-        bool _initialized;
-        bool _disposed;
 
+        #region 생성과 소멸
         protected MapEntity(string name, int direction, Layer layer, Point xy, Size size)
         {
             Debug.CheckAssertion(size.Width % 8 == 0 && size.Height % 8 == 0,
@@ -62,6 +20,9 @@ namespace Zelda.Game.Entities
             _layer = layer;
             _boundingBox = new Rectangle(xy, size);
         }
+
+        bool _initialized;
+        bool _disposed;
 
         ~MapEntity()
         {
@@ -81,8 +42,110 @@ namespace Zelda.Game.Entities
 
             ClearSprites();
             ClearOldSprites();
+            ClearMovement();
+            ClearOldMovements();
             _disposed = true;
         }
+        #endregion
+
+        #region 타입
+        public abstract EntityType Type { get; }
+
+        public virtual bool IsDrawnAtItsPosition
+        {
+            get { return true; }
+        }
+
+        public virtual bool CanBeDrawn
+        {
+            get { return true; }
+        }
+
+        private bool _drawnInYOrder;
+        public bool IsDrawnInYOrder
+        {
+            get { return _drawnInYOrder; }
+        }
+
+        public bool IsDrawn()
+        {
+            bool far = (GetDistanceToCamera2() > _optimizationDistance2) &&
+                (_optimizationDistance > 0);
+            return IsVisible &&
+                (OverlapsCamera() || !far || !!IsDrawnAtItsPosition);
+        }
+
+        public void SetDrawnInYOrder(bool drawnInYOrder)
+        {
+            if (drawnInYOrder != _drawnInYOrder)
+            {
+                _drawnInYOrder = drawnInYOrder;
+                if (IsOnMap)
+                    Entities.SetEntityDrawnInYOrder(this, drawnInYOrder);
+            }
+        }
+        #endregion
+
+        #region 속성들
+        public string Name { get; set; }
+        #endregion
+
+        #region 맵에 추가
+        Map _map;
+        public Map Map
+        {
+            get { return _map; }
+        }
+
+        public void SetMap(Map map)
+        {
+            _mainLoop = map.Game.MainLoop;
+            _map = map;
+
+            _groundBelow = Ground.Empty;
+
+            if (!_initialized && _map.IsLoaded)
+            {
+                // 엔티티가 이미 실행중인 맵에 생성된 경우로, 초기화를 지금 바료 완료할 수 있습니다
+                FinishInitialization();
+            }
+        }
+
+        void FinishInitialization()
+        {
+            Debug.CheckAssertion(!_initialized, "Entity is already initialized");
+            Debug.CheckAssertion(IsOnMap, "Missing map");
+            Debug.CheckAssertion(Map.IsLoaded, "Map is not ready");
+
+            _initialized = true;
+
+            NotifyCreating();
+            //ScriptContext.EntityOnCreated(this);
+            NotifyCreated();
+        }
+
+        public bool IsOnMap
+        {
+            get { return _map != null; }
+        }
+
+        public Game Game
+        {
+            get
+            {
+                Debug.CheckAssertion(Map != null, "No map was set");
+                return _map.Game;
+            }
+        }
+
+        public virtual void NotifyCreating()
+        {
+        }
+
+        public virtual void NotifyCreated()
+        {
+        }
+        #endregion
 
         #region 맵에서의 위치
         readonly Layer _layer;
@@ -181,7 +244,13 @@ namespace Zelda.Game.Entities
 
         public Point DisplayedXY
         {
-            get { return XY; }
+            get
+            {
+                if (_movement == null)
+                    return XY;
+                
+                return _movement.DisplayedXY;
+            }
         }
         #endregion
 
@@ -223,6 +292,35 @@ namespace Zelda.Game.Entities
         {
             get { return _sprites[0]; }
         }
+
+        public Sprite CreateSprite(string animationSetId)
+        {
+            Sprite sprite = new Sprite(animationSetId);
+            _sprites.Add(sprite);
+            return sprite;
+        }
+
+        readonly List<Sprite> _oldSprites = new List<Sprite>();
+
+        public void RemoveSprite(Sprite sprite)
+        {
+            if (_sprites.Contains(sprite))
+                _oldSprites.Add(sprite);
+            else
+                Debug.Die("This sprite does not belong to this entity");
+        }
+
+        public void ClearSprites()
+        {
+            _oldSprites.AddRange(_sprites);
+            _sprites.Clear();
+        }
+
+        private void ClearOldSprites()
+        {
+            _sprites.RemoveAll(_oldSprites.Contains);
+            _oldSprites.Clear();
+        }
         #endregion
 
         #region 게임 오브젝트 접근용 (편의성)
@@ -244,8 +342,12 @@ namespace Zelda.Game.Entities
             // 스프라이트 업데이트
             foreach (Sprite sprite in _sprites)
                 sprite.Update();
-
             ClearOldSprites();
+
+            // 이동 업데이트
+            if (_movement != null)
+                _movement.Update();
+            ClearOldMovements();
         }
 
         public virtual void DrawOnMap()
@@ -258,49 +360,7 @@ namespace Zelda.Game.Entities
         }
         #endregion
 
-        public void SetMap(Map map)
-        {
-            _mainLoop = map.Game.MainLoop;
-            _map = map;
-
-            _groundBelow = Ground.Empty;
-
-            if (!_initialized && _map.IsLoaded)
-            {
-                // 엔티티가 이미 실행중인 맵에 생성된 경우로, 초기화를 지금 바료 완료할 수 있습니다
-                FinishInitialization();
-            }
-        }
-
-        private void FinishInitialization()
-        {
-            Debug.CheckAssertion(!_initialized, "Entity is already initialized");
-            Debug.CheckAssertion(IsOnMap, "Missing map");
-            Debug.CheckAssertion(Map.IsLoaded, "Map is not ready");
-
-            _initialized = true;
-
-            NotifyCreating();
-            //ScriptContext.EntityOnCreated(this);
-            NotifyCreated();
-        }
-
-        public virtual void NotifyCreating()
-        {
-        }
-
-        public virtual void NotifyCreated()
-        {
-        }
-
-        public bool IsDrawn()
-        {
-            bool far = (GetDistanceToCamera2() > _optimizationDistance2) && 
-                (_optimizationDistance > 0);
-            return IsVisible &&
-                (OverlapsCamera() || !far || !!IsDrawnAtItsPosition);
-        }
-
+        #region 기하
         // 엔티티의 'origin' 지점과 맵 가시 영역의 중점사이의 거리의 제곱을 얻습니다
         public int GetDistanceToCamera2()
         {
@@ -318,42 +378,41 @@ namespace Zelda.Game.Entities
 
             return false;
         }
+        #endregion
 
-        public Sprite CreateSprite(string animationSetId)
+        #region 이동
+        Movement _movement;
+        public Movement Movement
         {
-            Sprite sprite = new Sprite(animationSetId);
-            _sprites.Add(sprite);
-            return sprite;
+            get { return _movement; }
         }
 
-        public void RemoveSprite(Sprite sprite)
+        public void SetMovement(Movement movement)
         {
-            if (_sprites.Contains(sprite))
-                _oldSprites.Add(sprite);
-            else
-                Debug.Die("This sprite does not belong to this entity");
+            ClearMovement();
+            _movement = movement;
+
+            if (_movement != null)
+                _movement.SetEntity(this);
         }
 
-        public void ClearSprites()
-        {
-            _oldSprites.AddRange(_sprites);
-            _sprites.Clear();
-        }
+        readonly List<Movement> _oldMovements = new List<Movement>();
 
-        private void ClearOldSprites()
+        public void ClearMovement()
         {
-            _sprites.RemoveAll(_oldSprites.Contains);
-            _oldSprites.Clear();
-        }
-
-        public void SetDrawnInYOrder(bool drawnInYOrder)
-        {
-            if (drawnInYOrder != _drawnInYOrder)
+            if (_movement != null)
             {
-                _drawnInYOrder = drawnInYOrder;
-                if (IsOnMap)
-                    Entities.SetEntityDrawnInYOrder(this, drawnInYOrder);
+                _movement.SetEntity(null);
+                _movement.ScriptMovement = null;
+                _oldMovements.Add(_movement);
+                _movement = null;
             }
         }
+
+        void ClearOldMovements()
+        {
+            _oldMovements.Clear();
+        }
+        #endregion
     }
 }

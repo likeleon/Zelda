@@ -77,5 +77,10 @@ namespace Zelda.Game.Heroes
             get { return true; }
         }
         #endregion
+
+        protected bool IsCurrentState
+        {
+            get { return (_hero.State == this) && (!_hero.State.IsStopping); }
+        }
     }
 }

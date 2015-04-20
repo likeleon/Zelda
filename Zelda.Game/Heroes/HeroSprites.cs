@@ -96,5 +96,24 @@ namespace Zelda.Game.Heroes
         {
             _tunicSprite.Update();
         }
+
+        public void SetAnimationStoppedCommon()
+        {
+        }
+
+        public void SetAnimationStoppedNormal()
+        {
+            SetAnimationStoppedCommon();
+
+            if (_equipment.HasAbility(Ability.Shield))
+                throw new NotImplementedException();
+            else
+                SetTunicAnimation("stopped");
+        }
+
+        void SetTunicAnimation(string animation)
+        {
+            _tunicSprite.SetCurrentAnimation(animation);
+        }
     }
 }

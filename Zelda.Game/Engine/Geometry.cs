@@ -8,6 +8,16 @@ namespace Zelda.Game.Engine
         public static double TwoPI = 2.0 * PI;
         public static double PIOver2 = PI / 2.0;
 
+        public static int RadiansToDegrees(double radians)
+        {
+            return (int)(radians * 360.0 / TwoPI);
+        }
+
+        public static double DegreesToRadians(double degrees)
+        {
+            return degrees * TwoPI / 360.0;
+        }
+
         public static double GetAngle(int x1, int y1, int x2, int y2)
         {
             int dx = x2 - x1;

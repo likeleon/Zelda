@@ -51,6 +51,11 @@ namespace Zelda.Game
         }
 
         #region 기본 제공 능력들
+        public bool HasAbility(Ability ability, int level = 1)
+        {
+            return GetAbility(ability) >= level;
+        }
+
         public void SetAbility(Ability ability, int level)
         {
             _savegame.SetInteger(GetAbilitySavegameVariable(ability), level);
