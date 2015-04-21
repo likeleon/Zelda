@@ -22,7 +22,10 @@ namespace Zelda.Game.Movements
             if (_entity == null)
                 _xy = new Point(0, 0);
             else
+            {
                 _xy = _entity.XY;
+                NotifyMovementChanged();
+            }
             
             NotifyObjectControlled();
         }
@@ -43,7 +46,10 @@ namespace Zelda.Game.Movements
             if (drawable == null)
                 _xy = new Point(0, 0);
             else
+            {
                 _xy = drawable.XY;
+                NotifyMovementChanged();
+            }
 
             NotifyObjectControlled();
         }
@@ -151,6 +157,13 @@ namespace Zelda.Game.Movements
         {
             if (_scriptMovement != null)
                 _scriptMovement.NotifyPositionChanged(XY);
+        }
+
+        // 이동 특성(speed이나 angle등)이 변화했음을 알립니다
+        public virtual void NotifyMovementChanged()
+        {
+            if (_entity != null)
+                _entity.NotifyMovementChanged();
         }
 
         // 이동이 끝났을 때 호출합니다

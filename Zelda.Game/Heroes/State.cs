@@ -78,6 +78,17 @@ namespace Zelda.Game.Heroes
         }
         #endregion
 
+        #region 이동
+        public virtual int WantedMovementDirection8
+        {
+            get { return -1; }
+        }
+
+        public virtual void NotifyMovementChanged()
+        {
+        }
+        #endregion
+
         protected bool IsCurrentState
         {
             get { return (_hero.State == this) && (!_hero.State.IsStopping); }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Zelda.Game.Entities;
+﻿using Zelda.Game.Entities;
 using Zelda.Game.Movements;
 
 namespace Zelda.Game.Heroes
@@ -18,7 +13,7 @@ namespace Zelda.Game.Heroes
             get { return _playerMovement; }
         }
 
-        public virtual int WantedDirection8
+        public override int WantedMovementDirection8
         {
             get { return _playerMovement.WantedDirection8; }
         }
@@ -40,7 +35,7 @@ namespace Zelda.Game.Heroes
                 _playerMovement.ComputeMovement();
                 if (IsCurrentState)
                 {
-                    if (WantedDirection8 != -1)
+                    if (WantedMovementDirection8 != -1)
                         SetAnimationWalking();
                     else
                         SetAnimationStopped();
@@ -69,6 +64,18 @@ namespace Zelda.Game.Heroes
 
         public virtual void SetAnimationWalking()
         {
+        }
+
+        public override void NotifyMovementChanged()
+        {
+            // 이동에 변화가 있습니다. 스프라이트의 애니메이션을 갱신시킵니다.
+            bool movementWalking = (WantedMovementDirection8 != -1);
+            bool spritesWalking = Sprites.IsWalking;
+
+            if (movementWalking && !spritesWalking)
+                SetAnimationWalking();
+            else if (!movementWalking && spritesWalking)
+                SetAnimationStopped();
         }
     }
 }

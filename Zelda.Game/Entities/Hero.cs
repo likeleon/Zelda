@@ -119,6 +119,46 @@ namespace Zelda.Game.Entities
             if (walkingSpeed != _walkingSpeed)
                 _walkingSpeed = walkingSpeed;
         }
+
+        public int WantedMovementDirection8
+        {
+            get { return _state.WantedMovementDirection8; }
+        }
+
+        public override void NotifyMovementChanged()
+        {
+            int wantedDirection8 = WantedMovementDirection8;
+            if (wantedDirection8 != -1)
+            {
+                int oldAnimationDirection = _sprites.AnimationDirection;
+                int animationDirection = _sprites.GetAnimationDirection(wantedDirection8, GetRealMovementDirection8());
+
+                if (animationDirection != oldAnimationDirection &&
+                    animationDirection != -1)
+                {
+                    _sprites.SetAnimationDirection(animationDirection);
+                }
+            }
+
+            _state.NotifyMovementChanged();
+        }
+
+        // 장애물을 고려한 주인공의 실제 이동 방향을 반환합니다
+        public int GetRealMovementDirection8()
+        {
+            int result = 0;
+
+            int wantedDirection8 = WantedMovementDirection8;
+            if (wantedDirection8 == -1)
+                result = -1;
+            else
+            {
+                // TODO: 장애물 체크
+                result = wantedDirection8;
+            }
+
+            return result;
+        }
         #endregion
 
         #region 게임 루프

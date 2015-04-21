@@ -8,5 +8,15 @@ namespace Zelda.Game.Heroes
             : base(hero, "free")
         {
         }
+
+        public override void SetAnimationStopped()
+        {
+            Sprites.SetAnimationStoppedNormal();
+        }
+
+        public override void SetAnimationWalking()
+        {
+            Sprites.SetAnimationWalkingNormal();
+        }
     }
 }

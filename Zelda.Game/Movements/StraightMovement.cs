@@ -67,6 +67,8 @@ namespace Zelda.Game.Movements
             SetXSpeed(speed * Math.Cos(oldAngle));
             SetYSpeed(-speed * Math.Sin(oldAngle));
             _angle = oldAngle;
+        
+            NotifyMovementChanged();
         }
 
         public void SetXSpeed(double xSpeed)
@@ -100,6 +102,8 @@ namespace Zelda.Game.Movements
             _angle = Geometry.GetAngle(0, 0, (int)(xSpeed * 100), (int)(_ySpeed * 100));
             _initialXY = XY;
             _finished = false;
+
+            NotifyMovementChanged();
         }
 
         public void SetYSpeed(double ySpeed)
@@ -133,6 +137,8 @@ namespace Zelda.Game.Movements
             _angle = Geometry.GetAngle(0, 0, (int)(_xSpeed * 100), (int)(ySpeed * 100));
             _initialXY = XY;
             _finished = false;
+        
+            NotifyMovementChanged();
         }
 
         public void SetAngle(double angle)
@@ -144,6 +150,8 @@ namespace Zelda.Game.Movements
                 SetYSpeed(-speed * Math.Sin(angle));
             }
             _angle = angle;
+
+            NotifyMovementChanged();
         }
 
         public override void Stop()
@@ -154,6 +162,8 @@ namespace Zelda.Game.Movements
             _xMove = 0;
             _yMove = 0;
             _angle = oldAngle;
+
+            NotifyMovementChanged();
         }
 
         public override void Update()

@@ -62,6 +62,8 @@ namespace Zelda.Game.Movements
                 SetSpeed(_movingSpeed);
                 SetAngle(Geometry.DegreesToRadians(_direction8 * 45));
             }
+
+            NotifyMovementChanged();
         }
     }
 }
