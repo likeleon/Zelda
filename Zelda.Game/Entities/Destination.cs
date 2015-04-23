@@ -10,6 +10,11 @@ namespace Zelda.Game.Entities
             get { return EntityType.Destination; }
         }
 
+        public override bool CanBeObstacle
+        {
+            get { return false; }
+        }
+
         readonly bool _isDefaultDestination;
         public bool IsDefault
         {

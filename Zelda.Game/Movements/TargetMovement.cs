@@ -19,7 +19,8 @@ namespace Zelda.Game.Movements
 
         static readonly uint RecomputationDelay = 150;
 
-        public TargetMovement(Point target, int movingSpeed)
+        public TargetMovement(Point target, int movingSpeed, bool ignoreObstacles)
+            : base(ignoreObstacles)
         {
             _target = target;
             _signX = 0;

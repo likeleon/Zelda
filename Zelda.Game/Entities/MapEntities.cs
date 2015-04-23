@@ -38,9 +38,11 @@ namespace Zelda.Game.Entities
                 _tilesInAnimatedRegions[layer] = new List<Tile>();
                 _entitiesDrawnFirst[layer] = new List<MapEntity>();
                 _entitiesDrawnYOrder[layer] = new List<MapEntity>();
+                _obstacleEntities[layer] = new List<MapEntity>();
             }
 
             Layer heroLayer = _hero.Layer;
+            _obstacleEntities[(int)heroLayer].Add(_hero);
             _entitiesDrawnYOrder[(int)heroLayer].Add(_hero);
             _namedEntities[_hero.Name] = _hero;
         }
@@ -71,6 +73,17 @@ namespace Zelda.Game.Entities
                 return null;
 
             return entity;
+        }
+
+        public Ground GetTileGround(Layer layer, int x, int y)
+        {
+            return _tilesGround[(int)layer, (y >> 3) * _mapWidth8 + (x >> 3)];
+        }
+
+        readonly List<MapEntity>[] _obstacleEntities = new List<MapEntity>[(int)Layer.Count];
+        public IEnumerable<MapEntity> GetObstacleEntities(Layer layer)
+        {
+            return _obstacleEntities[(int)layer];
         }
         #endregion
 
@@ -121,6 +134,23 @@ namespace Zelda.Game.Entities
             else
             {
                 Layer layer = entity.Layer;
+
+                // 충돌 리스트를 갱신합니다
+                if (entity.CanBeObstacle)
+                {
+                    if (entity.HasLayerIndependentCollisions)
+                    {
+                        // 계단과 같은 것들은 레이어에 상관없이 항상 충돌을 처리합니다
+                        _obstacleEntities[(int)Layer.Low].Add(entity);
+                        _obstacleEntities[(int)Layer.Intermediate].Add(entity);
+                        _obstacleEntities[(int)Layer.High].Add(entity);
+                    }
+                    else
+                    {
+                        // 보통은 레이어 하나에서만 충돌이 필요합니다
+                        _obstacleEntities[(int)layer].Add(entity);
+                    }
+                }
 
                 // 스프라이트 리스트를 갱신합니다
                 if (entity.IsDrawnInYOrder)
@@ -217,7 +247,7 @@ namespace Zelda.Game.Entities
 
                         // 행의 좌측
                         for (j = 0; j < i; ++j)
-                            SetTileGround(layer, tileX8, tileY8 + i, nonObstacleTriangle);
+                            SetTileGround(layer, tileX8 + j, tileY8 + i, nonObstacleTriangle);
 
                         // 행의 우측
                         for (j = i + 1; j < tileWidth8; ++j)

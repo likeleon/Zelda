@@ -84,6 +84,11 @@ namespace Zelda.Game.Entities
                     Entities.SetEntityDrawnInYOrder(this, drawnInYOrder);
             }
         }
+
+        public virtual bool CanBeObstacle
+        {
+            get { return true; }
+        }
         #endregion
 
         #region 속성들
@@ -361,6 +366,11 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 기하
+        public bool Overlaps(Rectangle rectangle)
+        {
+            return _boundingBox.Overlaps(rectangle);
+        }
+
         // 엔티티의 'origin' 지점과 맵 가시 영역의 중점사이의 거리의 제곱을 얻습니다
         public int GetDistanceToCamera2()
         {
@@ -417,6 +427,58 @@ namespace Zelda.Game.Entities
         // 엔티티에게 이동 특성이 변했음을 알리기 위해 Movement 객체에 의해 호출됩니다.
         public virtual void NotifyMovementChanged()
         {
+        }
+        #endregion
+
+        #region 충돌
+        public virtual bool HasLayerIndependentCollisions
+        {
+            get { return false; }
+        }
+
+        public virtual bool IsLowWallObstacle
+        {
+            get { return true; }
+        }
+
+        public virtual bool IsShallowWaterObstacle
+        {
+            get { return IsDeepWaterObstacle; }
+        }
+
+        public virtual bool IsDeepWaterObstacle
+        {
+            get { return true; }
+        }
+
+        public virtual bool IsHoleObstacle
+        {
+            get { return true; }
+        }
+
+        public virtual bool IsLavaObstacle
+        {
+            get { return true; }
+        }
+
+        public virtual bool isPrickleObstacle
+        {
+            get { return true; }
+        }
+
+        public virtual bool IsLadderObstacle
+        {
+            get { return true; }
+        }
+
+        public virtual bool IsObstacleFor(MapEntity other)
+        {
+            return false;
+        }
+
+        public virtual bool IsObstacleFor(MapEntity other, Rectangle candidatePosition)
+        {
+            return IsObstacleFor(other);
         }
         #endregion
     }

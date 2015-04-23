@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SDL2;
+﻿using SDL2;
 
 namespace Zelda.Game.Engine
 {
@@ -16,10 +10,20 @@ namespace Zelda.Game.Engine
             set { _rect.x = value; }
         }
 
+        public void AddX(int dx)
+        {
+            X += dx;
+        }
+
         public int Y
         {
             get { return _rect.y; }
             set { _rect.y = value; }
+        }
+
+        public void AddY(int dy)
+        {
+            Y += dy;
         }
 
         public Point XY
@@ -30,6 +34,17 @@ namespace Zelda.Game.Engine
                 X = value.X;
                 Y = value.Y;
             }
+        }
+
+        public void AddXY(int dx, int dy)
+        {
+            AddX(dx);
+            AddY(dy);
+        }
+
+        public void AddXY(Point dxy)
+        {
+            AddXY(dxy.X, dxy.Y);
         }
 
         public int Width

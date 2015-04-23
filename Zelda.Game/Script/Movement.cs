@@ -25,7 +25,7 @@ namespace Zelda.Game.Script
                     if (game != null)
                         throw new NotImplementedException("If we are on a map, the default target should be the hero.");
                     else
-                        movement = new TargetMovement(new RawTargetMovement(new Point(0, 0), 32));
+                        movement = new TargetMovement(new RawTargetMovement(new Point(0, 0), 32, false));
                 }
                 else
                 {

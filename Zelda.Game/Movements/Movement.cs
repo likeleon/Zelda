@@ -6,6 +6,12 @@ namespace Zelda.Game.Movements
 {
     abstract class Movement
     {
+        protected Movement(bool ignoreObstacles)
+        {
+            _defaultIgnoreObstacles = ignoreObstacles;
+            _currentIgnoreObstacles = ignoreObstacles;
+        }
+
         #region 조종 오브젝트
         MapEntity _entity;
 
@@ -199,6 +205,57 @@ namespace Zelda.Game.Movements
         public virtual bool IsFinished
         {
             get { return false; }
+        }
+        #endregion
+
+        #region 충돌
+        bool _defaultIgnoreObstacles;
+        
+        bool _currentIgnoreObstacles;
+        public bool IgnoreObstacles
+        {
+            get { return _currentIgnoreObstacles; }
+            set { _currentIgnoreObstacles = value; }
+        }
+
+        public void SetDefaultIgnoreObstacles(bool ignoreObstacles)
+        {
+            _defaultIgnoreObstacles = ignoreObstacles;
+            _currentIgnoreObstacles = ignoreObstacles;
+        }
+        
+        public void RestoreDefaultIgnoreObstacles()
+        {
+            _currentIgnoreObstacles = _defaultIgnoreObstacles;
+        }
+
+        Rectangle _lastCollisionBoxOnObstacle = new Rectangle(-1, -1);
+        public Rectangle LastCollisionBoxOnObstacle
+        {
+            get { return _lastCollisionBoxOnObstacle; }
+        }
+
+        public bool TestCollisionWithObstacles(int dx, int dy)
+        {
+            if (_entity == null || _currentIgnoreObstacles)
+                return false;
+
+            Map map = _entity.Map;
+
+            Rectangle collisionBox = _entity.BoundingBox;
+            collisionBox.AddXY(dx, dy);
+
+            bool collision = map.TestCollisionWithObstacles(_entity.Layer, collisionBox, _entity);
+
+            if (collision)
+                _lastCollisionBoxOnObstacle = collisionBox;
+
+            return collision;
+        }
+
+        public bool TestCollisionWithObstacles(Point dxy)
+        {
+            return TestCollisionWithObstacles(dxy.X, dxy.Y);
         }
         #endregion
 
