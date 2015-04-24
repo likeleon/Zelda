@@ -86,9 +86,12 @@ namespace Zelda.Game.Movements
             Point dxy = _target - XY;
             if (dxy.X * _signX <= 0 && dxy.Y * _signY <= 0)
             {
-                SetXY(_target); // 매우 정확하게 이동하지 않을 가능성이 있기 때문에 명시적으로 설정
-                Stop();
-                _finished = true;
+                if (!TestCollisionWithObstacles(dxy))
+                {
+                    SetXY(_target); // 딱 맞게 이동하지 않을 가능성이 있기 때문에 명시적으로 설정
+                    Stop();
+                    _finished = true;
+                }
             }
 
             base.Update();

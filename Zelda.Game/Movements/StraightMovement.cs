@@ -261,16 +261,79 @@ namespace Zelda.Game.Movements
 
         protected void UpdateSmoothX()
         {
-            if (_xMove != 0)    // x 방향으로의 이동이 필요
+            if (_xMove == 0)
+                return;
+
+            uint nextMoveDateXIncrement = _xDelay;
+
+            if (!TestCollisionWithObstacles(_xMove, 0))
             {
-                // TODO: 기본적으로 _nextMoveDateX는 _xDelay만큼 증가하지만
-                // x 속도의 수정이 필요하다면 _nextMoveDateX를 수정합니다
-                uint nextMoveDateX = _xDelay;
-
-                TranslateX(_xMove); // 이동시킵니다
-
-                _nextMoveDateX += nextMoveDateX;
+                TranslateX(_xMove);
+                if (_yMove != 0 && TestCollisionWithObstacles(0, _yMove))
+                {
+                    // Y 이동이 무효하다면 X 이동으로 속력 전부를 줍니다
+                    nextMoveDateXIncrement = (uint)(1000.0 / GetSpeed());
+                }
             }
+            else
+            {
+                if (_yMove == 0)
+                {
+                    // X 이동이 불가능하고 Y 이동이 없는 경우 Y 방향으로 대각선 이동을 시도합니다
+                    if (!TestCollisionWithObstacles(_xMove, 1) &&
+                        (TestCollisionWithObstacles(0, -1) || TestCollisionWithObstacles(0, 1)))
+                    {
+                        TranslateXY(_xMove, 1);
+                        nextMoveDateXIncrement = (uint)(_xDelay * Geometry.Sqrt2);  // 속력 보정
+                    }
+                    else if (!TestCollisionWithObstacles(_xMove, -1) &&
+                             (TestCollisionWithObstacles(0, 1) || TestCollisionWithObstacles(0, -1)))
+                    {
+                        TranslateXY(_xMove, -1);
+                        nextMoveDateXIncrement = (uint)(_xDelay * Geometry.Sqrt2);
+                    }
+                    else
+                    {
+                        // 대각선 이동도 불가능합니다. 위/아래 8픽셀만큼 이동가능한 위치를 찾고, 해당 위치로 이동합니다
+                        bool moved = false;
+                        for (int i = 1; i <= 8 && !moved; ++i)
+                        {
+                            if (!TestCollisionWithObstacles(_xMove, i) && !TestCollisionWithObstacles(0, 1))
+                            {
+                                TranslateY(1);
+                                moved = true;
+                            }
+                            else if (!TestCollisionWithObstacles(_xMove, -i) && !TestCollisionWithObstacles(0, -1))
+                            {
+                                TranslateY(-1);
+                                moved = true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // X 이동은 불가능하지만 Y 이동량이 존재합니다
+                    if (!TestCollisionWithObstacles(0, _yMove))
+                    {
+                        // 불필요하게 기다리지 않고, Y 이동을 바로 수행합니다.
+                        UpdateY();
+                    }
+                    else
+                    {
+                        // X, Y 모두 이동이 불가능합니다
+                        // 매우 좁은 대각선 방향의 길에서 필요하므로 X와 Y 양쪽으로 한번에 이동하는 것을 시도해봅니다.
+                        // 이는 가능한 마지막 해결책이어야 하고, 센서를 스킵해서 지나갈 수 있기 때문에 X와 Y 각 방향으로 이동하는 것이 기본입니다.
+                        if (!TestCollisionWithObstacles(_xMove, _yMove))
+                        {
+                            TranslateXY(_xMove, _yMove);
+                            _nextMoveDateY += _yDelay;  // Y를 수정했기 때문에 Y 이동 갱신 시점을 업데이트해주어야 합니다.
+                        }
+                    }
+                }
+            }
+
+            _nextMoveDateX += nextMoveDateXIncrement;
         }
 
         protected void UpdateY()
@@ -280,16 +343,68 @@ namespace Zelda.Game.Movements
 
         protected void UpdateSmoothY()
         {
-            if (_yMove != 0)    // y 방향으로의 이동이 필요
+            if (_yMove == 0)
+                return;
+
+            uint nextMoveDateYIncrement = _yDelay;
+
+            if (!TestCollisionWithObstacles(0, _yMove))
             {
-                // TODO: 기본적으로 _nextMoveDateX는 _yDelay만큼 증가하지만
-                // y 속도의 수정이 필요하다면 _nextMoveDatey를 수정합니다
-                uint nextMoveDateY = _yDelay;
+                TranslateY(_yMove);
 
-                TranslateY(_yMove); // 이동시킵니다
-
-                _nextMoveDateY += nextMoveDateY;
+                if (_xMove != 0 && TestCollisionWithObstacles(_xMove, 0))
+                    nextMoveDateYIncrement = (uint)(1000.0 / GetSpeed());
             }
+            else
+            {
+                if (_xMove == 0)
+                {
+                    if (!TestCollisionWithObstacles(1, _yMove) &&
+                        (TestCollisionWithObstacles(-1, 0) || TestCollisionWithObstacles(1, 0)))
+                    {
+                        TranslateXY(1, _yMove);
+                        nextMoveDateYIncrement = (uint)(_yDelay * Geometry.Sqrt2);
+                    }
+                    else if (!TestCollisionWithObstacles(-1, _yMove) &&
+                             (TestCollisionWithObstacles(1, 0) || TestCollisionWithObstacles(-1, 0)))
+                    {
+                        TranslateXY(-1, _yMove);
+                        nextMoveDateYIncrement = (uint)(_yDelay * Geometry.Sqrt2);
+                    }
+                    else
+                    {
+                        bool moved = false;
+                        for (int i = 1; i <= 8 && !moved; ++i)
+                        {
+                            if (!TestCollisionWithObstacles(i, _yMove) && !TestCollisionWithObstacles(1, 0))
+                            {
+                                TranslateX(1);
+                                moved = true;
+                            }
+                            else if (!TestCollisionWithObstacles(-i, _yMove) && !TestCollisionWithObstacles(-1, 0))
+                            {
+                                TranslateX(-1);
+                                moved = true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (!TestCollisionWithObstacles(_xMove, 0))
+                        UpdateX();
+                    else
+                    {
+                        if (!TestCollisionWithObstacles(_xMove, _yMove))
+                        {
+                            TranslateXY(_xMove, _yMove);
+                            _nextMoveDateX += _xDelay;
+                        }
+                    }
+                }
+            }
+
+            _nextMoveDateY += nextMoveDateYIncrement;
         }
     }
 }

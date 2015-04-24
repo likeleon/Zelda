@@ -7,6 +7,8 @@ namespace Zelda.Game.Engine
         public static double PI = 3.14159265358979323846;
         public static double TwoPI = 2.0 * PI;
         public static double PIOver2 = PI / 2.0;
+        public static double PIOver4 = PI / 4.0;
+        public static double Sqrt2 = 1.41421356237309504880;
 
         public static int RadiansToDegrees(double radians)
         {
