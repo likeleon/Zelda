@@ -37,6 +37,7 @@ namespace Zelda.Game.Engine
             _initialTime = GetRealTime();
 
             ModFiles.Initialize(args);
+            Sound.Initialize(args);
             InputEvent.Initialize();
             Video.Initialize(args, ZeldaVersion.ToString());
             Sprite.Initialize();
@@ -45,6 +46,7 @@ namespace Zelda.Game.Engine
         public static void Quit()
         {
             InputEvent.Quit();
+            Sound.Quit();
             Sprite.Quit();
             Video.Quit();
             ModFiles.Quit();
@@ -55,6 +57,7 @@ namespace Zelda.Game.Engine
         public static void Update()
         {
             _ticks += TimeStep;
+            Sound.Update();
         }
 
         public static uint GetRealTime()

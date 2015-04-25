@@ -35,6 +35,12 @@ namespace Zelda.Game
             get { return _tileset; }
         }
 
+        string _musicId;
+        public string MusicId
+        {
+            get { return _musicId; }
+        }
+
         string _world;
         public bool HasWorld
         {
@@ -173,6 +179,7 @@ namespace Zelda.Game
             _location = new Rectangle(data.Location, data.Size);
             _width8 = data.Size.Width / 8;
             _height8 = data.Size.Height / 8;
+            _musicId = data.MusicId;
             _world = data.World;
             _floor = data.Floor;
             _tilesetId = data.TilesetId;
@@ -289,7 +296,7 @@ namespace Zelda.Game
         }
         #endregion
 
-        #region 주인공 존재
+        #region 시작
         bool _started;
         public bool IsStarted
         {
@@ -301,6 +308,7 @@ namespace Zelda.Game
             _started = true;
             _visibleSurface.Opacity = 255;
 
+            Music.Play(_musicId, true);
             _entities.NotifyMapStarted();
         }
         #endregion

@@ -133,7 +133,7 @@ namespace Zelda.Game.Engine
             FileSystem.PHYSFS_read(file, out buffer, 1, (uint)size);
             FileSystem.PHYSFS_close(file);
 
-            return new MemoryStream(buffer);
+            return new MemoryStream(buffer, 0, (int)size, false, true);
         }
         #endregion
 

@@ -68,10 +68,12 @@
     <Compile Include="Engine\FileSystem.cs" />
     <Compile Include="Engine\Geometry.cs" />
     <Compile Include="Engine\ModFiles.cs" />
+    <Compile Include="Engine\Music.cs" />
     <Compile Include="Engine\Point.cs" />
     <Compile Include="Engine\Rectangle.cs" />
     <Compile Include="Engine\InputEvent.cs" />
     <Compile Include="Engine\Size.cs" />
+    <Compile Include="Engine\Sound.cs" />
     <Compile Include="Entities\AnimatedTilePattern.cs" />
     <Compile Include="Entities\Destination.cs" />
     <Compile Include="Entities\EntityType.cs" />
@@ -176,9 +178,17 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Libraries\OpenAL-CS\OpenAL-CS.csproj">
+      <Project>{4ff0e874-adb4-4ae5-b059-dd6116c4a370}</Project>
+      <Name>OpenAL-CS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Libraries\SDL2-CS\SDL2-CS.csproj">
       <Project>{85480198-8711-4355-830e-72fd794ad3f6}</Project>
       <Name>SDL2-CS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\Vorbisfile-CS\Vorbisfile-CS.csproj">
+      <Project>{c976be87-e250-4120-9826-98b6c2cd7496}</Project>
+      <Name>Vorbisfile-CS</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -71,6 +71,9 @@ namespace Zelda.Game
 
         public string TilesetId { get; private set; }
 
+        public bool HasMusic { get { return MusicId != Music.None; } }
+        public string MusicId { get; private set; }
+
         public static readonly int NoFloor = 9999;
 
         readonly List<EntityData>[] _entities = new List<EntityData>[(int)Layer.Count];
@@ -88,19 +91,12 @@ namespace Zelda.Game
             try
             {
                 MapXmlData data = stream.XmlDeserialize<MapXmlData>();
-                int x = data.Properties.X.OptField(0);
-                int y = data.Properties.Y.OptField(0);
-                int width = data.Properties.Width.CheckField("Width");
-                int height = data.Properties.Height.CheckField("Height");
-                string world = data.Properties.World.OptField(String.Empty);
-                int floor = data.Properties.Floor.OptField(MapData.NoFloor);
-                string tilesetId = data.Properties.Tileset.CheckField("Tileset");
-
-                Location = new Point(x, y);
-                Size = new Size(width, height);
-                World = world;
-                Floor = floor;
-                TilesetId = tilesetId;
+                Location = new Point(data.Properties.X.OptField(0), data.Properties.Y.OptField(0));
+                Size = new Size(data.Properties.Width.CheckField("Width"), data.Properties.Height.CheckField("Height"));
+                World = data.Properties.World.OptField(String.Empty);
+                Floor = data.Properties.Floor.OptField(MapData.NoFloor);
+                TilesetId = data.Properties.Tileset.CheckField("Tileset");
+                MusicId = data.Properties.Music.OptField(Music.None);
 
                 foreach (var entity in data.Entities)
                     AddEntity(EntityData.CheckEntityData(entity));
@@ -168,6 +164,7 @@ namespace Zelda.Game
             public string World { get; set; }
             public int? Floor { get; set; }
             public string Tileset { get; set; }
+            public string Music { get; set; }
         }
 
         public PropertiesData Properties { get; set; }
