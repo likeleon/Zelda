@@ -7,6 +7,16 @@ namespace Zelda.Game.Script
 {
     public class Game
     {
+        readonly RawSaveGame _rawSaveGame;
+
+        Game(RawSaveGame rawSaveGame)
+        {
+            Debug.CheckAssertion(rawSaveGame != null, "rawSaveGame should not be null");
+
+            _rawSaveGame = rawSaveGame;
+        }
+
+        #region API
         public int Life
         {
             get 
@@ -46,7 +56,21 @@ namespace Zelda.Game.Script
             }
         }
 
-        readonly RawSaveGame _rawSaveGame;
+        public int GetAbility(Ability ability)
+        {
+            return ScriptTools.ExceptionBoundaryHandle<int>(() =>
+            {
+                return _rawSaveGame.Equipment.GetAbility(ability);
+            });
+        }
+
+        public void SetAbility(Ability ability, int level)
+        {
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                _rawSaveGame.Equipment.SetAbility(ability, level);
+            });
+        }
 
         public static bool Exists(string fileName)
         {
@@ -71,13 +95,6 @@ namespace Zelda.Game.Script
             });
         }
 
-        Game(RawSaveGame rawSaveGame)
-        {
-            Debug.CheckAssertion(rawSaveGame != null, "rawSaveGame should not be null");
-
-            _rawSaveGame = rawSaveGame;
-        }
-
         public void Start()
         {
             ScriptTools.ExceptionBoundaryHandle(() =>
@@ -100,5 +117,6 @@ namespace Zelda.Game.Script
                 }
             });
         }
+        #endregion
     }
 }

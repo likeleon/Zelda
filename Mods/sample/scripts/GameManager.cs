@@ -1,4 +1,5 @@
-﻿using Zelda.Game.Script;
+﻿using Zelda.Game;
+using Zelda.Game.Script;
 
 namespace Sample.Scripts
 {
@@ -12,6 +13,7 @@ namespace Sample.Scripts
             {
                 game.MaxLife = 12;
                 game.Life = game.MaxLife;
+                game.SetAbility(Ability.Lift, 2);
             }
             game.Start();
         }

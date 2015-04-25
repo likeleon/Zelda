@@ -1,7 +1,7 @@
 ﻿
 namespace Zelda.Game
 {
-    enum Ability
+    public enum Ability
     {
         Tunic,
         Sword,
