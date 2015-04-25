@@ -1,4 +1,4 @@
-#region License
+ï»¿#region License
 /* Vorbisfile# - C# Wrapper for Vorbisfile
  *
  * Copyright (c) 2013-2014 Ethan Lee.
@@ -207,7 +207,7 @@ public static class Vorbisfile
 
 	#endregion
 
-    #region ov_open_callbacks Áö¿ø Ãß°¡
+    #region ov_open_callbacks ì§€ì› ì¶”ê°€
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate uint ReadFunc(
         IntPtr ptr, // void*
