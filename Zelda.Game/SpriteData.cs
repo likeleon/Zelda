@@ -83,6 +83,11 @@ namespace Zelda.Game
             get { return _srcImage; }
         }
 
+        public bool SrcImageIsTileset
+        {
+            get { return _srcImage == "tileset"; }
+        }
+
         readonly uint _frameDelay;
         public uint FrameDelay
         {

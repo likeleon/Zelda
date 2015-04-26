@@ -75,8 +75,10 @@
     <Compile Include="Engine\Size.cs" />
     <Compile Include="Engine\Sound.cs" />
     <Compile Include="Entities\AnimatedTilePattern.cs" />
+    <Compile Include="Entities\CollisionMode.cs" />
     <Compile Include="Entities\Destination.cs" />
     <Compile Include="Entities\Destructible.cs" />
+    <Compile Include="Entities\Detector.cs" />
     <Compile Include="Entities\EntityType.cs" />
     <Compile Include="Entities\EntityData.cs" />
     <Compile Include="Entities\Ground.cs" />

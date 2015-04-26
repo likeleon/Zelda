@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Zelda.Game.Engine;
+using Zelda.Game.Entities;
 
 namespace Zelda.Game
 {
@@ -41,6 +42,12 @@ namespace Zelda.Game
                 foreach (var kvp in data.Animations)
                     AddAnimation(kvp.Key, kvp.Value);
             }
+        }
+
+        public void SetTileset(Tileset tileset)
+        {
+            foreach (SpriteAnimation animation in _animations.Values)
+                animation.SetTileset(tileset);
         }
 
         public bool HasAnimation(string animationName)

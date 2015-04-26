@@ -253,6 +253,21 @@ namespace Zelda.Game.Entities
                 }
             }
         }
+
+        public override void NotifyMapStarted()
+        {
+            base.NotifyMapStarted();
+            _sprites.NotifyMapStarted();
+
+            // 이 시점에 맵을 결정할 수 있게 됩니다. 상태에게 알려줍니다.
+            _state.SetMap(Map);
+        }
+
+        public override void NotifyTilesetChanged()
+        {
+            base.NotifyTilesetChanged();
+            _sprites.NotifyTilesetChanged();
+        }
         #endregion
 
         #region 위치

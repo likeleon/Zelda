@@ -11,13 +11,10 @@ namespace Zelda.Game.Entities
         readonly int _mapWidth8;
         readonly int _mapHeight8;
         readonly int _tilesGridSize;
-        readonly Ground[,] _tilesGround;
-        readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
         readonly NonAnimatedRegions[] _nonAnimatedRegions = new NonAnimatedRegions[(int)Layer.Count];
         readonly List<Tile>[] _tilesInAnimatedRegions = new List<Tile>[(int)Layer.Count];
-        readonly List<MapEntity>[] _entitiesDrawnFirst = new List<MapEntity>[(int)Layer.Count];
-        readonly List<MapEntity>[] _entitiesDrawnYOrder = new List<MapEntity>[(int)Layer.Count];
 
+        #region 생성
         public MapEntities(Game game, Map map)
         {
             _game = game;
@@ -46,6 +43,7 @@ namespace Zelda.Game.Entities
             _entitiesDrawnYOrder[(int)heroLayer].Add(_hero);
             _namedEntities[_hero.Name] = _hero;
         }
+        #endregion
 
         #region 엔티티들
         readonly Hero _hero;
@@ -75,6 +73,8 @@ namespace Zelda.Game.Entities
             return entity;
         }
 
+        readonly Ground[,] _tilesGround;
+
         public Ground GetTileGround(Layer layer, int x, int y)
         {
             return _tilesGround[(int)layer, (y >> 3) * _mapWidth8 + (x >> 3)];
@@ -87,39 +87,10 @@ namespace Zelda.Game.Entities
         }
         #endregion
 
-        #region 게임 루프
-        public void Update()
-        {
-            Debug.CheckAssertion(_map.IsStarted, "The map is not started");
-
-            _hero.Update();
-
-            for (int layer = 0; layer < (int)Layer.Count; ++layer)
-                _entitiesDrawnYOrder[layer].Sort((a, b) => (b.TopLeftY + b.Height) - (a.TopLeftY + a.Height));
-
-            foreach (MapEntity entity in _allEntities)
-                entity.Update();
-        }
-
-        public void Draw()
-        {
-            for (int layer = 0; layer < (int)Layer.Count; ++layer)
-            {
-                // 에니메이션되는 타일을 포함하는 영역들을 먼저 그립니다
-                foreach (Tile tile in _tilesInAnimatedRegions[layer])
-                    tile.DrawOnMap();
-
-                // 애니메이션되지 않는 타일들을 그립니다
-                _nonAnimatedRegions[layer].DrawOnMap();
-
-                foreach (MapEntity entity in _entitiesDrawnFirst[layer])
-                    entity.DrawOnMap();
-
-                foreach (MapEntity entity in _entitiesDrawnYOrder[layer])
-                    entity.DrawOnMap();
-            }
-        }
-        #endregion
+        #region 엔티티 관리
+        readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
+        readonly List<MapEntity>[] _entitiesDrawnFirst = new List<MapEntity>[(int)Layer.Count];
+        readonly List<MapEntity>[] _entitiesDrawnYOrder = new List<MapEntity>[(int)Layer.Count];
 
         public void AddEntity(MapEntity entity)
         {
@@ -169,7 +140,7 @@ namespace Zelda.Game.Entities
                         }
                         break;
 
-                    default: 
+                    default:
                         break;
                 }
 
@@ -187,7 +158,7 @@ namespace Zelda.Game.Entities
 
             entity.SetMap(_map);
         }
-
+        
         void AddTile(Tile tile)
         {
             Layer layer = tile.Layer;
@@ -308,7 +279,7 @@ namespace Zelda.Game.Entities
                     break;
             }
         }
-
+        
         void SetTileGround(Layer layer, int x8, int y8, Ground ground)
         {
             if (x8 >= 0 && x8 < _mapWidth8 && y8 >= 0 && y8 < _mapHeight8)
@@ -316,14 +287,6 @@ namespace Zelda.Game.Entities
                 int index = y8 * _mapWidth8 + x8;
                 _tilesGround[(int)layer, index] = ground;
             }
-        }
-
-        // 맵의 모든 엔티티들에게 맵이 시작(활성화)되었음을 알립니다
-        public void NotifyMapStarted()
-        {
-            // 애니메이션되지 않는 타일들의 pre-drawing 데이터들을 구성합니다
-            for (int layer = 0; layer < (int)Layer.Count; ++layer)
-                _nonAnimatedRegions[layer].Build(_tilesInAnimatedRegions[layer]);
         }
 
         public void SetEntityDrawnInYOrder(MapEntity entity, bool drawnInYOrder)
@@ -340,5 +303,69 @@ namespace Zelda.Game.Entities
                 _entitiesDrawnFirst[layer].Add(entity);
             }
         }
+        #endregion
+
+        #region 맵 이벤트들
+        // 맵의 모든 엔티티들에게 맵이 시작(활성화)되었음을 알립니다
+        public void NotifyMapStarted()
+        {
+            foreach (MapEntity entity in _allEntities)
+            {
+                entity.NotifyMapStarted();
+                entity.NotifyTilesetChanged();
+            }
+            _hero.NotifyMapStarted();
+            _hero.NotifyTilesetChanged();
+
+            // 애니메이션되지 않는 타일들의 pre-drawing 데이터들을 구성합니다
+            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+                _nonAnimatedRegions[layer].Build(_tilesInAnimatedRegions[layer]);
+        }
+
+        public void NotifyTilesetChanged()
+        {
+            // 최적화된 타일들을 다시그려줍니다
+            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+                _nonAnimatedRegions[layer].NotifyTilesetChanged();
+
+            foreach (MapEntity entity in _allEntities)
+                entity.NotifyTilesetChanged();
+            _hero.NotifyTilesetChanged();
+        }
+        #endregion
+
+        #region 게임 루프
+        public void Update()
+        {
+            Debug.CheckAssertion(_map.IsStarted, "The map is not started");
+
+            _hero.Update();
+
+            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+                _entitiesDrawnYOrder[layer].Sort((a, b) => (b.TopLeftY + b.Height) - (a.TopLeftY + a.Height));
+
+            foreach (MapEntity entity in _allEntities)
+                entity.Update();
+        }
+
+        public void Draw()
+        {
+            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+            {
+                // 에니메이션되는 타일을 포함하는 영역들을 먼저 그립니다
+                foreach (Tile tile in _tilesInAnimatedRegions[layer])
+                    tile.DrawOnMap();
+
+                // 애니메이션되지 않는 타일들을 그립니다
+                _nonAnimatedRegions[layer].DrawOnMap();
+
+                foreach (MapEntity entity in _entitiesDrawnFirst[layer])
+                    entity.DrawOnMap();
+
+                foreach (MapEntity entity in _entitiesDrawnYOrder[layer])
+                    entity.DrawOnMap();
+            }
+        }
+        #endregion
     }
 }

@@ -5,8 +5,8 @@ local importer = {}
 local report = require("report")
 
 local resource_type_names = {
-	"map",
-	"tileset",
+  "map",
+  "tileset",
   "music",
   "sprite",
   "sound",

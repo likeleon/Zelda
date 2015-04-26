@@ -115,6 +115,13 @@ namespace Zelda.Game.Entities
             return false;
         }
 
+        public void NotifyTilesetChanged()
+        {
+            for (int i = 0; i < _nonAnimatedTiles.NumCells; ++i)
+                _optimizedTilesSurfaces[i] = null;
+            // 필요한 시점에 다시 그려집니다
+        }
+
         public void DrawOnMap()
         {
             // 카메라와 겹치는 그리드 셀들을 체크합니다

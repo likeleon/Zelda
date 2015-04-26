@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Zelda.Game.Engine;
+﻿using Zelda.Game.Engine;
 
 namespace Zelda.Game.Entities
 {
-    class Destructible
+    class Destructible : Detector
     {
         #region 생성
         public Destructible(
@@ -17,12 +12,68 @@ namespace Zelda.Game.Entities
             string animationSetId,
             Treasure treasure,
             Ground modifiedGround)
+            : base((int)CollisionMode.None, name, layer, xy, new Size(16, 16))
         {
+            _modifiedGround = modifiedGround;
+            _animationSetId = animationSetId;
+            Treasure = treasure;
+            DamageOnEnemies = 1;
 
+            Origin = new Point(8, 13);
+            CreateSprite(_animationSetId);
+
+            UpdateCollisionModes();
         }
         #endregion
 
         #region MapEntity 재정의
+        public override EntityType Type
+        {
+            get { return EntityType.Destructible; }
+        }
+
+        readonly Ground _modifiedGround;
+        #endregion
+
+        #region Destructible 고유 특성들
+        readonly string _animationSetId;
+        public string AnimationSetId
+        {
+            get { return _animationSetId; }
+        }
+
+        int _weight;
+        public int Weight
+        {
+            get { return _weight; }
+            set 
+            { 
+                _weight = value;
+                UpdateCollisionModes();
+            }
+        }
+
+        bool _canBeCut;
+        public bool CanBeCut
+        {
+            get { return _canBeCut; }
+            set
+            {
+                _canBeCut = value;
+                UpdateCollisionModes();
+            }
+        }
+
+        public Treasure Treasure { get; set; }
+        public string DestructionSound { get; set; }
+        public bool CanExplode { get; set; }
+        public bool CanRegenerate { get; set; }
+        public int DamageOnEnemies { get; set; }
+
+        void UpdateCollisionModes()
+        {
+            // TODO
+        }
         #endregion
     }
 
@@ -38,7 +89,7 @@ namespace Zelda.Game.Entities
         public bool CanExplode { get; set; }
         public bool CanRegenerate { get; set; }
         public int DamageOnEnemies { get; set; }
-        public string Ground { get; set; }
+        public Ground Ground { get; set; }
 
         public DestructibleData(DestructibleXmlData xmlData)
             : base(EntityType.Destructible, xmlData)
@@ -53,7 +104,7 @@ namespace Zelda.Game.Entities
             CanExplode = xmlData.CanExplode.OptField(false);
             CanRegenerate = xmlData.CanRegenerate.OptField(false);
             DamageOnEnemies = xmlData.DamageOnEnemies.OptField(1);
-            Ground = xmlData.Ground.OptField("Wall");
+            Ground = xmlData.Ground.OptField("Ground", Ground.Wall);
         }
     }
 
@@ -69,6 +120,6 @@ namespace Zelda.Game.Entities
         public bool? CanExplode { get; set; }
         public bool? CanRegenerate { get; set; }
         public int? DamageOnEnemies { get; set; }
-        public string Ground { get; set; }
+        public Ground? Ground { get; set; }
     }
 }

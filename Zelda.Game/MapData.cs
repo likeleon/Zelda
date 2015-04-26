@@ -99,7 +99,7 @@ namespace Zelda.Game
                 MusicId = data.Properties.Music.OptField(Music.None);
 
                 foreach (var entity in data.Entities)
-                    AddEntity(EntityData.CheckEntityData(entity));
+                    AddEntity(EntityData.Create(entity));
             }
             catch (Exception ex)
             {

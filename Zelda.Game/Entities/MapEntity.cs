@@ -106,6 +106,8 @@ namespace Zelda.Game.Entities
         {
             _mainLoop = map.Game.MainLoop;
             _map = map;
+            if (Game.CurrentMap == map)
+                NotifyTilesetChanged();
 
             _groundBelow = Ground.Empty;
 
@@ -143,12 +145,24 @@ namespace Zelda.Game.Entities
             }
         }
 
+        public virtual void NotifyMapStarted()
+        {
+            if (!_initialized)
+                FinishInitialization();
+        }
+
         public virtual void NotifyCreating()
         {
         }
 
         public virtual void NotifyCreated()
         {
+        }
+
+        public virtual void NotifyTilesetChanged()
+        {
+            foreach (Sprite sprite in _sprites)
+                sprite.SetTileset(_map.Tileset);
         }
         #endregion
 

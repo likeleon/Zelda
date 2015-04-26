@@ -7,7 +7,6 @@ namespace Zelda.Game
         readonly string _itemName;
         readonly int _variant;
         readonly string _savegameVariable;
-        Sprite _sprite;
 
         public Treasure(Game game, string itemName, int variant, string savegameVariable)
         {

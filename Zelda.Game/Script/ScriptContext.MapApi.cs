@@ -10,7 +10,8 @@ namespace Zelda.Game.Script
         static readonly Dictionary<EntityType, Func<Map, EntityData, MapEntity>> _entityCreationFunctions
             = new Dictionary<EntityType, Func<Map, EntityData, MapEntity>>()
         {
-            { EntityType.Destination, CreateDestination }
+            { EntityType.Destination, CreateDestination },
+            { EntityType.Destructible, CreateDestructible }
         };
 
         internal static void CreateMapEntityFromData(Map map, EntityData entityData)
@@ -64,6 +65,34 @@ namespace Zelda.Game.Script
                 map.Entities.AddEntity(destination);
 
                 return (map.IsStarted) ? destination : null;
+            });
+        }
+
+        public static Destructible CreateDestructible(Map map, EntityData entityData)
+        {
+            return ScriptTools.ExceptionBoundaryHandle<Destructible>(() =>
+            {
+                DestructibleData data = entityData as DestructibleData;
+                Destructible destructible = new Destructible(
+                    data.Name,
+                    data.Layer,
+                    data.XY,
+                    data.Sprite,
+                    new Treasure(
+                        map.Game, 
+                        data.TreasureName, 
+                        data.TreasureVariant, 
+                        data.TreasureSavegameVariable),
+                    data.Ground);
+                destructible.DestructionSound = data.DestructionSound;
+                destructible.Weight = data.Weight;
+                destructible.CanBeCut = data.CanBeCut;
+                destructible.CanExplode = data.CanExplode;
+                destructible.CanRegenerate = data.CanRegenerate;
+                destructible.DamageOnEnemies = data.DamageOnEnemies;
+                map.Entities.AddEntity(destructible);
+
+                return (map.IsStarted) ? destructible : null;
             });
         }
 

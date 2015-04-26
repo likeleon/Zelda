@@ -90,6 +90,15 @@ namespace Zelda.Game.Heroes
             _tunicSprite.Update();
         }
 
+        public void NotifyMapStarted()
+        {
+            NotifyTilesetChanged();
+        }
+
+        public void NotifyTilesetChanged()
+        {
+        }
+
         #region 애니메이션
         public int AnimationDirection
         {

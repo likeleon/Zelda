@@ -1,5 +1,6 @@
 ﻿using System;
 using Zelda.Game.Engine;
+using Zelda.Game.Entities;
 
 namespace Zelda.Game
 {
@@ -23,7 +24,8 @@ namespace Zelda.Game
             get { return _directions.Length; }
         }
 
-        readonly Surface _srcImage;
+        Surface _srcImage;
+        readonly bool _srcImageIsTileset;
         readonly int _loopOnFrame;
         readonly SpriteAnimationDirection[] _directions;
 
@@ -33,12 +35,16 @@ namespace Zelda.Game
             uint frameDelay,
             int loopOnframe)
         {
+            _srcImageIsTileset = imageFileName == "tileset";
             _frameDelay = frameDelay;
             _directions = directions;
             _loopOnFrame = loopOnframe;
 
-            _srcImage = Surface.Create(imageFileName);
-            Debug.CheckAssertion(_srcImage != null, "Cannot load image '{0}'".F(imageFileName));
+            if (!_srcImageIsTileset)
+            {
+                _srcImage = Surface.Create(imageFileName);
+                Debug.CheckAssertion(_srcImage != null, "Cannot load image '{0}'".F(imageFileName));
+            }
         }
 
         public void Dispose()
@@ -46,16 +52,24 @@ namespace Zelda.Game
             _srcImage.Dispose();
         }
 
+        public void SetTileset(Tileset tileset)
+        {
+            if (!_srcImageIsTileset)
+                return;
+
+            _srcImage = tileset.EntitiesImage;
+        }
+
         public void Draw(Surface dstSurface, Point dstPosition, int currentDirection, int currentFrame)
         {
+            if (_srcImage == null)
+                return;
+
             if (currentDirection < 0 || currentDirection >= NumDirections)
             {
                 Debug.Die("Invalid sprite direction {0}: this sprite has {1} direction(s)"
                     .F(currentDirection, NumDirections));
             }
-
-            if (_srcImage == null)
-                return;
 
             _directions[currentDirection].Draw(dstSurface, dstPosition, currentFrame, _srcImage);
         }

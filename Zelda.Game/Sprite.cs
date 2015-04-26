@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Zelda.Game.Engine;
+using Zelda.Game.Entities;
 
 namespace Zelda.Game
 {
@@ -140,6 +141,11 @@ namespace Zelda.Game
             _animationSetId = id;
             _animationSet = GetAnimationSet(id);
             SetCurrentAnimation(_animationSet.DefaultAnimation);
+        }
+
+        public void SetTileset(Tileset tileset)
+        {
+            _animationSet.SetTileset(tileset);
         }
         #endregion
 

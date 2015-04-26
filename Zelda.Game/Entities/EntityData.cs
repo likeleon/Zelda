@@ -22,12 +22,14 @@ namespace Zelda.Game.Entities
         
         public Point XY { get; set; }
 
-        public static EntityData CheckEntityData(EntityXmlData xmlData)
+        public static EntityData Create(EntityXmlData xmlData)
         {
             if (xmlData is TileXmlData)
                 return new TileData(xmlData as TileXmlData);
             else if (xmlData is DestinationXmlData)
                 return new DestinationData(xmlData as DestinationXmlData);
+            else if (xmlData is DestructibleXmlData)
+                return new DestructibleData(xmlData as DestructibleXmlData);
             else
                 throw new Exception("Unknown entity type");
         }
