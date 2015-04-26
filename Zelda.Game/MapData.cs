@@ -172,6 +172,7 @@ namespace Zelda.Game
         [XmlChoiceIdentifier("EntityTypes")]
         [XmlElement("Tile", typeof(TileXmlData))]
         [XmlElement("Destination", typeof(DestinationXmlData))]
+        [XmlElement("Destructible", typeof(DestructibleXmlData))]
         public EntityXmlData[] Entities { get; set; }
 
         [XmlIgnore]

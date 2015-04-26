@@ -16,6 +16,7 @@ local function import_map(quest_path, map_id)
   map.properties = {}
   map.tiles = {}
   map.destinations = {}
+  map.destructibles = {}
 
   local env = {}
   function env.properties(properties)
@@ -31,7 +32,7 @@ local function import_map(quest_path, map_id)
     -- TODO
   end
   function env.destructible(destructible)
-    -- TODO
+    map.destructibles[#map.destructibles + 1] = destructible
   end
   function env.npc(npc)
     -- TODO
@@ -106,6 +107,42 @@ local function export_map(quest_path, map_id, map)
     if destination.default ~= nil then
       destination_elem:append("Default")[1] = destination.default
     end
+  end
+
+  for _, destructible in ipairs(map.destructibles) do
+	local destructible_elem = root:append("Destructible")
+	export_map_entity(destructible, destructible_elem)
+	if destructible.treasure_name ~= nil then
+	  destructible_elem:append("TreasureName")[1] = destructible.treasure_name
+	end
+	if destructible.treasure_variant ~= nil then
+	  destructible_elem:append("TreasureVariant")[1] = destructible.treasure_variant
+	end
+	if destructible.treasure_savegame_variable ~= nil then
+	  destructible_elem:append("TreasureSavegameVariable")[1] = destructible.treasure_savegame_variable
+	end
+	destructible_elem:append("Sprite")[1] = destructible.sprite
+	if destructible.destruction_sound ~= nil then
+	  destructible_elem:append("DestructionSound")[1] = destructible.destruction_sound
+	end
+	if destructible.weight ~= nil then
+	  destructible_elem:append("Weight")[1] = destructible.weight
+	end
+	if destructible.can_be_cut ~= nil then
+	  destructible_elem:append("CanBeCut")[1] = destructible.can_be_cut
+	end
+	if destructible.can_explode ~= nil then
+	  destructible_elem:append("CanExplode")[1] = destructible.can_explode
+	end
+	if destructible.can_regenerate ~= nil then
+	  destructible_elem:append("CanRegenerate")[1] = destructible.can_regenerate
+	end
+	if destructible.damage_on_enemies ~= nil then
+	  destructible_elem:append("DamageOnEnemies")[1] = destructible.damage_on_enemies
+	end
+	if destructible.ground ~= nil then
+	  destructible_elem:append("Ground")[1] = destructible.ground
+	end
   end
 
   local file = quest_path .. "maps/" .. map_id .. ".xml"

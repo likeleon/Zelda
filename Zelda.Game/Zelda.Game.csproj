@@ -76,6 +76,7 @@
     <Compile Include="Engine\Sound.cs" />
     <Compile Include="Entities\AnimatedTilePattern.cs" />
     <Compile Include="Entities\Destination.cs" />
+    <Compile Include="Entities\Destructible.cs" />
     <Compile Include="Entities\EntityType.cs" />
     <Compile Include="Entities\EntityData.cs" />
     <Compile Include="Entities\Ground.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Movements\PlayerMovement.cs" />
     <Compile Include="Script\ScriptException.cs" />
     <Compile Include="SpriteData.cs" />
+    <Compile Include="Treasure.cs" />
     <Compile Include="ZeldaFatalException.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapData.cs" />
