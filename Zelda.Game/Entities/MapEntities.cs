@@ -335,6 +335,14 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 게임 루프
+        public void SetSuspended(bool suspended)
+        {
+            _hero.SetSuspended(suspended);
+
+            foreach (MapEntity entity in _allEntities)
+                entity.SetSuspended(suspended);
+        }
+
         public void Update()
         {
             Debug.CheckAssertion(_map.IsStarted, "The map is not started");

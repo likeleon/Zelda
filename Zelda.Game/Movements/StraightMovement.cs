@@ -21,59 +21,62 @@ namespace Zelda.Game.Movements
 
         public override void Update()
         {
-            uint now = EngineSystem.Now;
-
-            bool xMoveNow = _xMove != 0 && now >= _nextMoveDateX;
-            bool yMoveNow = _yMove != 0 && now >= _nextMoveDateY;
-
-            while (xMoveNow || yMoveNow)
+            if (!IsSuspended)
             {
-                Point oldXY = XY;
+                uint now = EngineSystem.Now;
 
-                if (xMoveNow)
+                bool xMoveNow = _xMove != 0 && now >= _nextMoveDateX;
+                bool yMoveNow = _yMove != 0 && now >= _nextMoveDateY;
+
+                while (xMoveNow || yMoveNow)
                 {
-                    if (yMoveNow)
+                    Point oldXY = XY;
+
+                    if (xMoveNow)
                     {
-                        // x와 y 모두 이동시켜야 합니다
-                        if (_nextMoveDateX <= _nextMoveDateY)
+                        if (yMoveNow)
                         {
-                            // x를 먼저 이동시킵니다
-                            UpdateX();
-                            if (now >= _nextMoveDateY)
+                            // x와 y 모두 이동시켜야 합니다
+                            if (_nextMoveDateX <= _nextMoveDateY)
+                            {
+                                // x를 먼저 이동시킵니다
+                                UpdateX();
+                                if (now >= _nextMoveDateY)
+                                    UpdateY();
+                            }
+                            else
+                            {
+                                // y를 먼저 이동시킵니다
                                 UpdateY();
+                                if (now >= _nextMoveDateX)
+                                    UpdateX();
+                            }
                         }
                         else
                         {
-                            // y를 먼저 이동시킵니다
-                            UpdateY();
-                            if (now >= _nextMoveDateX)
-                                UpdateX();
+                            UpdateX();
                         }
                     }
                     else
                     {
-                        UpdateX();
+                        UpdateY();
                     }
-                }
-                else
-                {
-                    UpdateY();
-                }
 
-                now = EngineSystem.Now;
+                    now = EngineSystem.Now;
 
-                if (!_finished && _maxDistance != 0 && Geometry.GetDistance(_initialXY, XY) >= _maxDistance)
-                {
-                    SetFinished();
-                }
-                else
-                {
-                    xMoveNow = _xMove != 0 && now >= _nextMoveDateX;
-                    yMoveNow = _yMove != 0 && now >= _nextMoveDateY;
+                    if (!_finished && _maxDistance != 0 && Geometry.GetDistance(_initialXY, XY) >= _maxDistance)
+                    {
+                        SetFinished();
+                    }
+                    else
+                    {
+                        xMoveNow = _xMove != 0 && now >= _nextMoveDateX;
+                        yMoveNow = _yMove != 0 && now >= _nextMoveDateY;
+                    }
                 }
             }
 
-            // Movement 클래스가 종료를 알 수 있도록 마지막에 호출해줘야합니다
+            // 기반 클래스가 이동의 끝을 알 수 있도록 함수의 마지막인 여기서 호출해줍니다
             base.Update();
         }
 
@@ -81,6 +84,21 @@ namespace Zelda.Game.Movements
         {
             base.NotifyObjectControlled();
             _initialXY = XY;
+        }
+
+        public override void SetSuspended(bool suspended)
+        {
+            base.SetSuspended(suspended);
+
+            if (!suspended)
+            {
+                if (WhenSuspended != 0)
+                {
+                    uint diff = EngineSystem.Now - WhenSuspended;
+                    _nextMoveDateX += diff;
+                    _nextMoveDateY += diff;
+                }
+            }
         }
 
         #region 스피드 벡터
@@ -246,12 +264,24 @@ namespace Zelda.Game.Movements
 
         protected void SetNextMoveDateX(uint nextMoveDateX)
         {
-            _nextMoveDateX = nextMoveDateX;
+            if (IsSuspended)
+            {
+                uint delay = nextMoveDateX - EngineSystem.Now;
+                _nextMoveDateX = WhenSuspended + delay;
+            }
+            else
+                _nextMoveDateX = nextMoveDateX;
         }
 
         protected void SetNextMoveDateY(uint nextMoveDateY)
         {
-            _nextMoveDateY = nextMoveDateY;
+            if (IsSuspended)
+            {
+                uint delay = nextMoveDateY - EngineSystem.Now;
+                _nextMoveDateY = WhenSuspended + delay;
+            }
+            else
+                _nextMoveDateY = nextMoveDateY;
         }
 
         protected void UpdateX()

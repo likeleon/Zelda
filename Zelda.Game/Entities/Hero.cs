@@ -179,6 +179,14 @@ namespace Zelda.Game.Entities
             if (_state.IsHeroVisible)
                 _state.DrawOnMap();
         }
+
+        public override void SetSuspended(bool suspended)
+        {
+            base.SetSuspended(suspended);
+
+            _sprites.SetSuspended(suspended);
+            _state.SetSuspended(suspended);
+        }
         #endregion
 
         #region 맵 변경

@@ -354,6 +354,32 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 게임 루프
+        bool _suspended;
+        public bool IsSuspended
+        {
+            get { return _suspended; }
+        }
+
+        uint _whenSuspended;
+        protected uint WhenSuspended
+        {
+            get { return _whenSuspended; }
+        }
+
+        public virtual void SetSuspended(bool suspended)
+        {
+            _suspended = suspended;
+
+            if (suspended)
+                _whenSuspended = EngineSystem.Now;
+
+            foreach (Sprite sprite in _sprites)
+                sprite.SetSuspended(suspended);
+
+            if (_movement != null)
+                _movement.SetSuspended(suspended);
+        }
+
         public virtual void Update()
         {
             Debug.CheckAssertion(Type != EntityType.Tile, "Attempt to update a static tile");
@@ -417,7 +443,12 @@ namespace Zelda.Game.Entities
             _movement = movement;
 
             if (_movement != null)
+            {
                 _movement.SetEntity(this);
+
+                if (movement.IsSuspended != _suspended)
+                    movement.SetSuspended(_suspended);
+            }
         }
 
         readonly List<Movement> _oldMovements = new List<Movement>();

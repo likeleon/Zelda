@@ -290,9 +290,29 @@ namespace Zelda.Game
 
         public void Update()
         {
-            TilePattern.Update();
+            CheckSuspended();
 
+            TilePattern.Update();
             _entities.Update();
+        }
+
+        bool _suspended;
+        public bool IsSuspended
+        {
+            get { return _suspended; }
+        }
+
+        public void CheckSuspended()
+        {
+            bool gameSuspended = _game.IsSuspended;
+            if (_suspended != gameSuspended)
+                SetSuspended(gameSuspended);
+        }
+
+        void SetSuspended(bool suspended)
+        {
+            _suspended = suspended;
+            _entities.SetSuspended(suspended);
         }
         #endregion
 

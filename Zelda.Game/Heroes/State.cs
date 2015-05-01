@@ -1,4 +1,5 @@
-﻿using Zelda.Game.Entities;
+﻿using Zelda.Game.Engine;
+using Zelda.Game.Entities;
 
 namespace Zelda.Game.Heroes
 {
@@ -25,6 +26,7 @@ namespace Zelda.Game.Heroes
 
         public virtual void Start(State previousState)
         {
+            SetSuspended(Hero.IsSuspended);
         }
 
         public virtual void Stop(State nextState)
@@ -42,6 +44,24 @@ namespace Zelda.Game.Heroes
         public virtual void DrawOnMap()
         {
             Sprites.DrawOnMap();
+        }
+
+        uint _whenSuspended;
+        public uint WhenSuspended
+        {
+            get { return _whenSuspended; }
+        }
+
+        bool _suspended;
+        public virtual void SetSuspended(bool suspended)
+        {
+            if (suspended == _suspended)
+                return;
+
+            _suspended = suspended;
+
+            if (suspended)
+                _whenSuspended = EngineSystem.Now;
         }
         #endregion
 

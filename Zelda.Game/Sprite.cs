@@ -87,7 +87,7 @@ namespace Zelda.Game
         }
 
         SpriteAnimation _currentAnimation;
-        uint nextFrameDate;
+        uint _nextFrameDate;
 
         public void SetCurrentAnimation(string animationName)
         {
@@ -104,7 +104,7 @@ namespace Zelda.Game
         public void SetCurrentFrame(int currentFrame)
         {
             _finished = false;
-            nextFrameDate = EngineSystem.Now + FrameDelay;
+            _nextFrameDate = EngineSystem.Now + FrameDelay;
 
             if (currentFrame != _currentFrame)
             {
@@ -133,6 +133,21 @@ namespace Zelda.Game
 
             SetCurrentFrame(0);
         }
+
+        public override void SetSuspended(bool suspended)
+        {
+            if (suspended == IsSuspended)
+                return;
+
+            base.SetSuspended(suspended);
+
+            // 복귀라면 _nextFrameDate를 다시 계산해줍니다
+            if (!suspended)
+            {
+                uint now = EngineSystem.Now;
+                _nextFrameDate = now + FrameDelay;
+            }
+        }
         #endregion
 
         #region 생성과 소멸
@@ -154,12 +169,18 @@ namespace Zelda.Game
         {
             base.Update();
 
+            if (IsSuspended)
+                return;
+
             _frameChanged = false;
             uint now = EngineSystem.Now;
 
             // 시간에 따라 프레임을 갱신해 줍니다
             int nextFrame = 0;
-            while (!_finished && FrameDelay > 0 && now >= nextFrameDate)
+            while (!_finished && 
+                   !IsSuspended && 
+                   FrameDelay > 0 && 
+                   now >= _nextFrameDate)
             {
                 // 다음 프레임을 얻습니다
                 nextFrame = GetNextFrame();
@@ -172,7 +193,7 @@ namespace Zelda.Game
                 else
                 {
                     _currentFrame = nextFrame;
-                    nextFrameDate += _frameDelay;
+                    _nextFrameDate += _frameDelay;
                 }
                 FrameChanged = true;
             }

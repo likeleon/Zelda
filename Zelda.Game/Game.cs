@@ -141,6 +141,69 @@ namespace Zelda.Game
         }
         #endregion
 
+        #region 현재 게임 상태
+        bool _paused;
+        public bool IsPaused
+        {
+            get { return _paused; }
+        }
+
+        public bool IsSuspended
+        {
+            get
+            {
+                return _currentMap == null ||
+                       IsPaused;
+            }
+        }
+        #endregion
+        
+        #region 일시 정지
+        public bool CanPause
+        {
+            get
+            {
+                return !IsSuspended &&
+                       Equipment.Life > 0;  // 게임 오버 처리가 시작되려고 할 때에는 일시 정지를 허용하면 안 됩니다
+            }
+        }
+
+        public bool CanUnpause
+        {
+            get
+            {
+                return IsPaused;
+            }
+        }
+
+        public void SetPaused(bool paused)
+        {
+            if (_paused == paused)
+                return;
+
+            _paused = paused;
+        }
+        #endregion
+
+        #region 게임 컨트롤
+        public void NotifyCommandPressed(GameCommand command)
+        {
+            if (command == GameCommand.Pause)
+            {
+                if (IsPaused)
+                {
+                    if (CanUnpause)
+                        SetPaused(false);
+                }
+                else
+                {
+                    if (CanPause)
+                        SetPaused(true);
+                }
+            }
+        }
+        #endregion
+
         #region 맵
         Map _currentMap;
         public bool HasCurrentMap

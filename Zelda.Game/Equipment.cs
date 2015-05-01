@@ -50,6 +50,23 @@ namespace Zelda.Game
             get { return _savegame.Game; }
         }
 
+        public void Update()
+        {
+            Game game = _savegame.Game;
+            if (game == null)
+                return;
+
+            bool gameSuspended = game.IsSuspended;
+            if (_suspended != gameSuspended)
+                SetSuspended(gameSuspended);
+        }
+
+        bool _suspended;
+        public void SetSuspended(bool suspended)
+        {
+            _suspended = suspended;
+        }
+
         #region 기본 제공 능력들
         public bool HasAbility(Ability ability, int level = 1)
         {

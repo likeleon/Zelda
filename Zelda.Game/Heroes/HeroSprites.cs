@@ -85,6 +85,11 @@ namespace Zelda.Game.Heroes
             map.DrawSprite(_tunicSprite, x, y);
         }
 
+        public void SetSuspended(bool suspended)
+        {
+            _tunicSprite.SetSuspended(suspended);
+        }
+
         public void Update()
         {
             _tunicSprite.Update();

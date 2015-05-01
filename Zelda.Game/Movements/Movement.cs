@@ -81,6 +81,29 @@ namespace Zelda.Game.Movements
                 _finished = false;
             }
         }
+
+        bool _suspended;
+        public bool IsSuspended
+        {
+            get { return _suspended; }
+        }
+
+        uint _whenSuspended;
+        protected uint WhenSuspended
+        {
+            get { return _whenSuspended; }
+        }
+
+        public virtual void SetSuspended(bool suspended)
+        {
+            if (suspended == _suspended)
+                return;
+
+            _suspended = suspended;
+
+            if (suspended)
+                _whenSuspended = EngineSystem.Now;
+        }
         #endregion
 
         #region 위치

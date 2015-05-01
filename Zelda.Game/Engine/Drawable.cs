@@ -60,11 +60,30 @@ namespace Zelda.Game.Engine
             StopMovement();
             _movement = movement;
             movement.SetDrawable(this);
+
+            movement.SetSuspended(IsSuspended);
         }
 
         public void StopMovement()
         {
             _movement = null;
+        }
+
+        bool _suspended;
+        public bool IsSuspended
+        {
+            get { return _suspended; }
+        }
+
+        public virtual void SetSuspended(bool suspended)
+        {
+            if (_suspended == suspended)
+                return;
+
+            _suspended = suspended;
+
+            if (_movement != null)
+                _movement.SetSuspended(suspended);
         }
     }
 }

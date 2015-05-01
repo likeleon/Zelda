@@ -144,6 +144,7 @@ namespace Zelda.Game
         void GameCommandPressed(GameCommand command)
         {
             _commandsPressed.Add(command);
+            _game.NotifyCommandPressed(command);
         }
 
         void GameCommandReleased(GameCommand command)
