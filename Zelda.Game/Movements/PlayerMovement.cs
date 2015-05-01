@@ -28,7 +28,7 @@ namespace Zelda.Game.Movements
         {
             base.Update();
 
-            if (!IsSuspended)
+            if (IsSuspended)
                 return;
 
             MapEntity entity = Entity;

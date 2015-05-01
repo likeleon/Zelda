@@ -20,6 +20,7 @@ namespace Zelda.Game
             // 멤버 초기화
             _commands = new GameCommands(this);
             _hero = new Hero(Equipment);
+            UpdateCommandsEffects();
             
             // 게임 오버 이후에 재시작하는 경우에 대한 처리입니다
             if (Equipment.Life <= 0)
@@ -108,6 +109,12 @@ namespace Zelda.Game
         {
             get { return _commands; }
         }
+
+        readonly CommandsEffects _commandsEffects = new CommandsEffects();
+        public CommandsEffects CommandsEffects
+        {
+            get { return _commandsEffects; }
+        }
         #endregion
 
         #region 메인 루프에 의해 호출되는 함수들
@@ -126,6 +133,9 @@ namespace Zelda.Game
                 return;
 
             _currentMap.Update();
+
+            Equipment.Update();
+            UpdateCommandsEffects();
         }
 
         public void Draw(Surface dstSurface)
@@ -182,6 +192,15 @@ namespace Zelda.Game
                 return;
 
             _paused = paused;
+            if (paused)
+            {
+                _commandsEffects.SaveActionCommandEffect();
+                _commandsEffects.ActionCommandEffect = ActionCommandEffect.None;
+            }
+            else
+            {
+                _commandsEffects.RestoreActionCommandEffect();
+            }
         }
         #endregion
 
@@ -238,6 +257,10 @@ namespace Zelda.Game
         #endregion
 
         #region 갱신 함수들
+        void UpdateCommandsEffects()
+        {
+        }
+
         void UpdateTransitions()
         {
             if (_nextMap != null)
