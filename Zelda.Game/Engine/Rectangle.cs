@@ -120,6 +120,11 @@ namespace Zelda.Game.Engine
                    (y < Y + Height);
         }
 
+        public bool Contains(Point point)
+        {
+            return Contains(point.X, point.Y);
+        }
+
         public bool Overlaps(Rectangle other)
         {
             int x1 = X;

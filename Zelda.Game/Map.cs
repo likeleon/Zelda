@@ -542,5 +542,25 @@ namespace Zelda.Game
             return _entities.GetTileGround(layer, x, y);
         }
         #endregion
+
+        #region 디텍터들과의 충돌 (이동 후에 체크)
+        public void CheckCollisionWithDetectors(MapEntity entity)
+        {
+            if (_suspended)
+                return;
+
+            foreach (Detector detector in _entities.Detectors)
+                detector.CheckCollision(entity);
+        }
+
+        public void CheckCollisionWithDetectors(MapEntity entity, Sprite sprite)
+        {
+            if (_suspended)
+                return;
+
+            foreach (Detector detector in _entities.Detectors)
+                detector.CheckCollision(entity, sprite);
+        }
+        #endregion
     }
 }

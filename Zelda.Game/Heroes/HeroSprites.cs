@@ -1,4 +1,5 @@
 ﻿using System;
+using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 
 namespace Zelda.Game.Heroes
@@ -79,10 +80,8 @@ namespace Zelda.Game.Heroes
         {
             Map map = _hero.Map;
 
-            int x = _hero.DisplayedXY.X;
-            int y = _hero.DisplayedXY.Y;
-
-            map.DrawSprite(_tunicSprite, x, y);
+            Point xy = _hero.GetDisplayedXY();
+            map.DrawSprite(_tunicSprite, xy.X, xy.Y);
         }
 
         public void SetSuspended(bool suspended)
@@ -93,6 +92,8 @@ namespace Zelda.Game.Heroes
         public void Update()
         {
             _tunicSprite.Update();
+
+            _hero.CheckCollisionWithDetectors(_tunicSprite);
         }
 
         public void NotifyMapStarted()

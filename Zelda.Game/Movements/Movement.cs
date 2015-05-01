@@ -283,9 +283,14 @@ namespace Zelda.Game.Movements
         #endregion
 
         #region 이동 오브젝트 표시
-        public virtual Point DisplayedXY
+        public virtual int GetDisplayedDirection4()
         {
-            get { return XY; }
+            return 3;   // 기본으로 아래 방향
+        }
+
+        public virtual Point GetDisplayedXY()
+        {
+            return XY;
         }
         #endregion
 

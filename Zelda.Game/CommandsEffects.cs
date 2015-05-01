@@ -32,10 +32,6 @@ namespace Zelda.Game
 
     class CommandsEffects
     {
-        public CommandsEffects()
-        {
-        }
-
         #region 액션
         ActionCommandEffect _actionCommandEffect = ActionCommandEffect.None;
         public ActionCommandEffect ActionCommandEffect

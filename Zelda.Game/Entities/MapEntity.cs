@@ -89,6 +89,11 @@ namespace Zelda.Game.Entities
         {
             get { return true; }
         }
+
+        public virtual bool IsDetector
+        {
+            get { return false; }
+        }
         #endregion
 
         #region 속성들
@@ -261,15 +266,60 @@ namespace Zelda.Game.Entities
             get { return _optimizationDistance2; }
         }
 
-        public Point DisplayedXY
+        public Point GetDisplayedXY()
         {
-            get
+            if (_movement == null)
+                return XY;
+
+            return _movement.GetDisplayedXY();
+        }
+
+        // 엔티티가 바라보는 위치 좌표를 반환합니다.
+        // 스프라이트가 있다면 스프라이트의 방향에 기반한 위치입니다.
+        // 스프라이트가 없거나 스프라이트가 4방향이 아니라면 이동을 고려한 위치입니다.
+        // 이동도 없다면, 북쪽을 바라보는 것으로 가정합니다.
+        public virtual Point GetFacingPoint()
+        {
+            int direction4 = 1; // 기본으로 북쪽
+            if (HasSprite && Sprite.NumDirections == 4)
+                direction4 = Sprite.CurrentDirection;
+            else if (Movement != null)
+                direction4 = Movement.GetDisplayedDirection4();
+
+            return GetTouchingPoint(direction4);
+        }
+
+        public Point GetTouchingPoint(int direction)
+        {
+            Point touchingPoint = CenterPoint;
+            switch (direction)
             {
-                if (_movement == null)
-                    return XY;
-                
-                return _movement.DisplayedXY;
+                case 0: // 우
+                    touchingPoint.X += Width / 2;
+                    break;
+
+                case 1: // 상
+                    touchingPoint.Y += -Height / 2 - 1;
+                    break;
+
+                case 2: // 좌
+                    touchingPoint.X += -Width / 2 - 1;
+                    break;
+
+                case 3: // 하
+                    touchingPoint.Y += Height / 2;
+                    break;
+
+                default:
+                    Debug.Die("Invalid direction for MapEntity::GetTouchingPoint()");
+                    break;
             }
+            return touchingPoint;
+        }
+
+        public Point CenterPoint
+        {
+            get { return BoundingBox.Center; }
         }
         #endregion
 
@@ -351,6 +401,16 @@ namespace Zelda.Game.Entities
                 return _map.Entities;
             }
         }
+
+        protected CommandsEffects CommandsEffects
+        {
+            get { return Game.CommandsEffects; }
+        }
+
+        protected Equipment Equipment
+        {
+            get { return Game.Equipment; }
+        }
         #endregion
 
         #region 게임 루프
@@ -401,7 +461,7 @@ namespace Zelda.Game.Entities
                 return;
 
             foreach (Sprite sprite in _sprites)
-                _map.DrawSprite(sprite, DisplayedXY);
+                _map.DrawSprite(sprite, GetDisplayedXY());
         }
         #endregion
 
@@ -427,6 +487,11 @@ namespace Zelda.Game.Entities
             // TODO: 스프라이트와 겹치는지 확인
 
             return false;
+        }
+
+        public bool IsFacingPointIn(Rectangle rectangle)
+        {
+            return rectangle.Contains(GetFacingPoint());
         }
         #endregion
 
@@ -473,12 +538,53 @@ namespace Zelda.Game.Entities
         public virtual void NotifyMovementChanged()
         {
         }
+
+        Detector _facingEntity;
+        public Detector FacingEntity
+        {
+            get { return _facingEntity; }
+            set
+            {
+                _facingEntity = value;
+                NotifyFacingEntityChanged(value);
+            }
+        }
+
+        public virtual void NotifyFacingEntityChanged(Detector facingEntity)
+        {
+        }
         #endregion
 
         #region 충돌
         public virtual bool HasLayerIndependentCollisions
         {
             get { return false; }
+        }
+
+        public void CheckCollisionWithDetectors()
+        {
+            if (!IsOnMap)
+                return; // 초기화 중입니다
+
+            if (GetDistanceToCamera2() > _optimizationDistance2 &&
+                _optimizationDistance > 0)
+                return; // 가시 영역으로부터 멀리 떨어진 엔티티들은 체크하지 않습니다
+
+            // 간단한 충돌 검사
+            _map.CheckCollisionWithDetectors(this);
+        }
+
+        public void CheckCollisionWithDetectors(Sprite sprite)
+        {
+            if (GetDistanceToCamera2() > _optimizationDistance2 &&
+                _optimizationDistance > 0)
+                return;
+
+            _map.CheckCollisionWithDetectors(this, sprite);
+        }
+
+        public virtual void NotifyCollisionWithDestructible(Destructible destructible, CollisionMode collisionMode)
+        {
         }
 
         public virtual bool IsLowWallObstacle

@@ -169,6 +169,9 @@ namespace Zelda.Game.Entities
 
             // 상태는 이동과 스프라이트에 영향을 받기 때문에 이 시점에 업데이트를 수행합니다
             UpdateState();
+
+            if (!IsSuspended)
+                CheckCollisionWithDetectors();
         }
 
         public override void DrawOnMap()
@@ -279,12 +282,28 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 위치
+        public override void NotifyFacingEntityChanged(Detector facingEntity)
+        {
+            if (facingEntity == null &&
+                CommandsEffects.IsActionCommandActingOnFacingEntity)
+            {
+                CommandsEffects.ActionCommandEffect = ActionCommandEffect.None;
+            }
+        }
+
         void UpdateMovement()
         {
             if (Movement != null)
                 Movement.Update();
 
             // TODO: ClearOldMovements() 누락
+        }
+        #endregion
+
+        #region 충돌
+        public override void NotifyCollisionWithDestructible(Destructible destructible, CollisionMode collisionMode)
+        {
+            destructible.NotifyCollisionWithHero(this, collisionMode);
         }
         #endregion
     }

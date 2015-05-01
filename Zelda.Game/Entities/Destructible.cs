@@ -33,6 +33,10 @@ namespace Zelda.Game.Entities
         }
 
         readonly Ground _modifiedGround;
+        public Ground ModifiedGround
+        {
+            get { return _modifiedGround; }
+        }
         #endregion
 
         #region 상태
@@ -47,6 +51,23 @@ namespace Zelda.Game.Entities
         {
             return _modifiedGround == Ground.Wall &&
                    other.IsDestructibleObstacle(this);
+        }
+
+        public override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        {
+            entityOverlapping.NotifyCollisionWithDestructible(this, collisionMode);
+        }
+
+        public void NotifyCollisionWithHero(Hero hero, CollisionMode collisionMode)
+        {
+            if (Weight != -1 &&
+                CommandsEffects.ActionCommandEffect == ActionCommandEffect.None)
+            {
+                if (Equipment.HasAbility(Ability.Lift, Weight))
+                    CommandsEffects.ActionCommandEffect = ActionCommandEffect.Lift;
+                else
+                    CommandsEffects.ActionCommandEffect = ActionCommandEffect.Look;
+            }
         }
         #endregion
 
@@ -87,7 +108,10 @@ namespace Zelda.Game.Entities
 
         void UpdateCollisionModes()
         {
-            // TODO
+            SetCollisionModes(CollisionMode.None);
+
+            if (ModifiedGround == Ground.Wall)
+                AddCollisionMode(CollisionMode.Facing);
         }
         #endregion
     }

@@ -85,6 +85,12 @@ namespace Zelda.Game.Entities
         {
             return _obstacleEntities[(int)layer];
         }
+
+        readonly List<Detector> _detectors = new List<Detector>();
+        public IEnumerable<Detector> Detectors
+        {
+            get { return _detectors; }
+        }
         #endregion
 
         #region 엔티티 관리
@@ -105,6 +111,10 @@ namespace Zelda.Game.Entities
             else
             {
                 Layer layer = entity.Layer;
+
+                // 디텍터 리스트를 갱신합니다
+                if (entity.IsDetector)
+                    _detectors.Add(entity as Detector);
 
                 // 충돌 리스트를 갱신합니다
                 if (entity.CanBeObstacle)
