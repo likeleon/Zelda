@@ -26,13 +26,28 @@ namespace Zelda.Game.Entities
         }
         #endregion
 
-        #region MapEntity 재정의
+        #region MapEntity 속성 재정의
         public override EntityType Type
         {
             get { return EntityType.Destructible; }
         }
 
         readonly Ground _modifiedGround;
+        #endregion
+
+        #region 상태
+        public bool IsWaitingForRegeneration
+        {
+            get {  return false; }
+        }
+        #endregion
+
+        #region 충돌
+        public override bool IsObstacleFor(MapEntity other)
+        {
+            return _modifiedGround == Ground.Wall &&
+                   other.IsDestructibleObstacle(this);
+        }
         #endregion
 
         #region Destructible 고유 특성들

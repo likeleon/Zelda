@@ -494,6 +494,11 @@ namespace Zelda.Game.Entities
         {
             return IsObstacleFor(other);
         }
+
+        public virtual bool IsDestructibleObstacle(Destructible destructible)
+        {
+            return !destructible.IsWaitingForRegeneration;
+        }
         #endregion
     }
 }
