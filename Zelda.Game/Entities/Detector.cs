@@ -28,6 +28,14 @@ namespace Zelda.Game.Entities
         }
         #endregion
 
+        #region 위치
+        public override void NotifyPositionChanged()
+        {
+            Map.CheckCollisionFromDetector(this);
+            base.NotifyPositionChanged();
+        }
+        #endregion
+
         #region 충돌 함수들
         public void CheckCollision(MapEntity entity)
         {

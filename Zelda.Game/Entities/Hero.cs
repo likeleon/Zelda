@@ -84,6 +84,9 @@ namespace Zelda.Game.Entities
             
             _state = newState;
             _state.Start(oldState); // 여기서 상태를 다시 바꿀 수도 있습니다
+
+            if (_state == newState) // 다시 상태가 바뀐게 아니라면
+                CheckPosition();
         }
 
         void UpdateState()
@@ -141,6 +144,7 @@ namespace Zelda.Game.Entities
             }
 
             _state.NotifyMovementChanged();
+            CheckPosition();
         }
 
         // 장애물을 고려한 주인공의 실제 이동 방향을 반환합니다
@@ -158,6 +162,13 @@ namespace Zelda.Game.Entities
             }
 
             return result;
+        }
+
+        public override void NotifyPositionChanged()
+        {
+            CheckPosition();
+            _state.NotifyPositionChanged();
+
         }
         #endregion
 
@@ -261,6 +272,8 @@ namespace Zelda.Game.Entities
                         SetMap(map, destination.Direction);
                         XY = destination.XY;
                     }
+
+                    CheckPosition();    // 예를 들면 수영 중인 상태로 시작하기 위해서 필요합니다
                 }
             }
         }
@@ -301,6 +314,15 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 충돌
+        public void CheckPosition()
+        {
+            if (!IsOnMap)
+                return;
+
+            FacingEntity = null;
+            CheckCollisionWithDetectors();
+        }
+
         public override void NotifyCollisionWithDestructible(Destructible destructible, CollisionMode collisionMode)
         {
             destructible.NotifyCollisionWithHero(this, collisionMode);

@@ -9,6 +9,13 @@ namespace Zelda.Game.Heroes
         {
         }
 
+        public override void Stop(State nextState)
+        {
+            base.Stop(nextState);
+
+            CommandsEffects.ActionCommandEffect = ActionCommandEffect.None;
+        }
+
         public override void SetAnimationStopped()
         {
             Sprites.SetAnimationStoppedNormal();

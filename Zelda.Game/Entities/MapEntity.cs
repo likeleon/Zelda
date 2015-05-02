@@ -534,6 +534,11 @@ namespace Zelda.Game.Entities
             _oldMovements.Clear();
         }
 
+        public virtual void NotifyPositionChanged()
+        {
+            CheckCollisionWithDetectors();
+        }
+
         // 엔티티에게 이동 특성이 변했음을 알리기 위해 Movement 객체에 의해 호출됩니다.
         public virtual void NotifyMovementChanged()
         {

@@ -82,6 +82,16 @@ namespace Zelda.Game.Heroes
         {
             get { return _map; }
         }
+
+        protected Game Game
+        {
+            get { return _map.Game; }
+        }
+
+        protected CommandsEffects CommandsEffects
+        {
+            get { return Game.CommandsEffects; }
+        }
         #endregion
 
         #region 게임
@@ -105,6 +115,10 @@ namespace Zelda.Game.Heroes
         }
 
         public virtual void NotifyMovementChanged()
+        {
+        }
+
+        public virtual void NotifyPositionChanged()
         {
         }
         #endregion

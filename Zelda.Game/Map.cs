@@ -561,6 +561,19 @@ namespace Zelda.Game
             foreach (Detector detector in _entities.Detectors)
                 detector.CheckCollision(entity, sprite);
         }
+
+        public void CheckCollisionFromDetector(Detector detector)
+        {
+            if (_suspended)
+                return;
+
+            detector.CheckCollision(Entities.Hero);
+
+            foreach (MapEntity entity in _entities.Entities)
+            {
+                detector.CheckCollision(entity);
+            }
+        }
         #endregion
     }
 }
