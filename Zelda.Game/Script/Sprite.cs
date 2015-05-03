@@ -8,11 +8,11 @@ namespace Zelda.Game.Script
     {
         readonly RawSprite _rawSprite;
 
-        public int Direction
+        public Direction4 Direction
         {
             get 
             {
-                return ScriptTools.ExceptionBoundaryHandle<int>(() =>
+                return ScriptTools.ExceptionBoundaryHandle<Direction4>(() =>
                 {
                     return _rawSprite.CurrentDirection;
                 });
@@ -47,11 +47,11 @@ namespace Zelda.Game.Script
             });
         }
 
-        public void SetDirection(int direction)
+        public void SetDirection(Direction4 direction)
         {
             ScriptTools.ExceptionBoundaryHandle(() =>
             {
-                if (direction < 0 || direction >= _rawSprite.NumDirections)
+                if (direction < 0 || (int)direction >= _rawSprite.NumDirections)
                 {
                     string msg = "Illegal direction {0} for sprite '{1}' in animation '{2}'"
                         .F(direction, _rawSprite.AnimationSetId, _rawSprite.CurrentAnimation);

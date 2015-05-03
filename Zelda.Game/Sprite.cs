@@ -67,8 +67,8 @@ namespace Zelda.Game
             set { _frameChanged = value; }
         }
 
-        int _currentDirection;
-        public int CurrentDirection
+        Direction4 _currentDirection;
+        public Direction4 CurrentDirection
         {
             get { return _currentDirection; }
         }
@@ -118,9 +118,9 @@ namespace Zelda.Game
             SetCurrentFrame(0);
         }
 
-        public void SetCurrentDirection(int currentDirection)
+        public void SetCurrentDirection(Direction4 currentDirection)
         {
-            if (currentDirection < 0 || currentDirection >= NumDirections)
+            if (currentDirection < 0 || (int)currentDirection >= NumDirections)
             {
                 Debug.Die("Invalid direction {0} for sprite '{1}' in animation {2}"
                     .F(currentDirection, AnimationSetId, _currentAnimationName));

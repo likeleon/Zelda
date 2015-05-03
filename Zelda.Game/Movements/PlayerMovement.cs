@@ -10,9 +10,9 @@ namespace Zelda.Game.Movements
         {
             get { return _movingSpeed; }
         }
-        
-        int _direction8;
-        public int WantedDirection8
+
+        Direction8 _direction8;
+        public Direction8 WantedDirection8
         {
             get { return _direction8; }
         }
@@ -21,7 +21,7 @@ namespace Zelda.Game.Movements
             : base(false)
         {
             _movingSpeed = movingSpeed;
-            _direction8 = -1;
+            _direction8 = Direction8.None;
         }
 
         public override void Update()
@@ -35,17 +35,17 @@ namespace Zelda.Game.Movements
             if (entity == null || !entity.IsOnMap)
                 return;
 
-            if (IsStopped && _direction8 != -1)
+            if (IsStopped && _direction8 != Direction8.None)
             {
                 // Hero.ResetMovement()등에 의해 이동이 멈춘 경우
-                _direction8 = -1;
+                _direction8 = Direction8.None;
                 ComputeMovement();
             }
             else
             {
                 // 의도한 방향이 변경되었는지 확인합니다
                 GameCommands commands = Entity.Game.Commands;
-                int wantedDirection8 = commands.GetWantedDirection8();
+                Direction8 wantedDirection8 = commands.GetWantedDirection8();
                 if (wantedDirection8 != _direction8)
                 {
                     _direction8 = wantedDirection8;
@@ -56,7 +56,7 @@ namespace Zelda.Game.Movements
 
         public void ComputeMovement()
         {
-            if (_direction8 == -1)
+            if (_direction8 == Direction8.None)
             {
                 // 이동 없음
                 Stop();
@@ -64,7 +64,7 @@ namespace Zelda.Game.Movements
             else
             {
                 SetSpeed(_movingSpeed);
-                SetAngle(Geometry.DegreesToRadians(_direction8 * 45));
+                SetAngle(Geometry.DegreesToRadians((int)_direction8 * 45));
             }
 
             NotifyMovementChanged();

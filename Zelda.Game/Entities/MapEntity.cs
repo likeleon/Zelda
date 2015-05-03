@@ -10,7 +10,7 @@ namespace Zelda.Game.Entities
         MainLoop _mainLoop;
 
         #region 생성과 소멸
-        protected MapEntity(string name, int direction, Layer layer, Point xy, Size size)
+        protected MapEntity(string name, Direction4 direction, Layer layer, Point xy, Size size)
         {
             Debug.CheckAssertion(size.Width % 8 == 0 && size.Height % 8 == 0,
                 "Invalid entity size: width and height must be multiple of 8");
@@ -280,7 +280,7 @@ namespace Zelda.Game.Entities
         // 이동도 없다면, 북쪽을 바라보는 것으로 가정합니다.
         public virtual Point GetFacingPoint()
         {
-            int direction4 = 1; // 기본으로 북쪽
+            Direction4 direction4 = Direction4.Up; // 기본으로 북쪽
             if (HasSprite && Sprite.NumDirections == 4)
                 direction4 = Sprite.CurrentDirection;
             else if (Movement != null)
@@ -289,24 +289,24 @@ namespace Zelda.Game.Entities
             return GetTouchingPoint(direction4);
         }
 
-        public Point GetTouchingPoint(int direction)
+        public Point GetTouchingPoint(Direction4 direction)
         {
             Point touchingPoint = CenterPoint;
             switch (direction)
             {
-                case 0: // 우
+                case Direction4.Right:
                     touchingPoint.X += Width / 2;
                     break;
 
-                case 1: // 상
+                case Direction4.Up:
                     touchingPoint.Y += -Height / 2 - 1;
                     break;
 
-                case 2: // 좌
+                case Direction4.Left:
                     touchingPoint.X += -Width / 2 - 1;
                     break;
 
-                case 3: // 하
+                case Direction4.Down:
                     touchingPoint.Y += Height / 2;
                     break;
 
@@ -324,8 +324,8 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 속성
-        int _direction;
-        public int Direction
+        Direction4 _direction;
+        public Direction4 Direction
         {
             get { return _direction; }
             set

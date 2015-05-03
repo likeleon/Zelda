@@ -286,9 +286,9 @@ namespace Zelda.Game.Movements
         #endregion
 
         #region 이동 오브젝트 표시
-        public virtual int GetDisplayedDirection4()
+        public virtual Direction4 GetDisplayedDirection4()
         {
-            return 3;   // 기본으로 아래 방향
+            return Direction4.Down;   // 기본으로 아래 방향
         }
 
         public virtual Point GetDisplayedXY()

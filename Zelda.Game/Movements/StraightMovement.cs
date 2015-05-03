@@ -230,10 +230,10 @@ namespace Zelda.Game.Movements
             NotifyMovementChanged();
         }
 
-        public override int GetDisplayedDirection4()
+        public override Direction4 GetDisplayedDirection4()
         {
             int direction = (Geometry.RadiansToDegrees(_angle) + 45 + 360) / 90;
-            return direction % 4;
+            return (Direction4)(direction % 4);
         }
         #endregion
 

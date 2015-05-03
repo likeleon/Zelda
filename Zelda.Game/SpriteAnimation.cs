@@ -60,23 +60,23 @@ namespace Zelda.Game
             _srcImage = tileset.EntitiesImage;
         }
 
-        public void Draw(Surface dstSurface, Point dstPosition, int currentDirection, int currentFrame)
+        public void Draw(Surface dstSurface, Point dstPosition, Direction4 currentDirection, int currentFrame)
         {
             if (_srcImage == null)
                 return;
 
-            if (currentDirection < 0 || currentDirection >= NumDirections)
+            if (currentDirection < 0 || (int)currentDirection >= NumDirections)
             {
                 Debug.Die("Invalid sprite direction {0}: this sprite has {1} direction(s)"
                     .F(currentDirection, NumDirections));
             }
 
-            _directions[currentDirection].Draw(dstSurface, dstPosition, currentFrame, _srcImage);
+            _directions[(int)currentDirection].Draw(dstSurface, dstPosition, currentFrame, _srcImage);
         }
 
-        public int GetNextFrame(int currentDirection, int currentFrame)
+        public int GetNextFrame(Direction4 currentDirection, int currentFrame)
         {
-            if (currentDirection < 0 || currentDirection >= NumDirections)
+            if (currentDirection < 0 || (int)currentDirection >= NumDirections)
             {
                 string msg = "Invalid sprite direction '{0}': this sprite has {1} direction(s)"
                     .F(currentDirection, NumDirections);
@@ -86,7 +86,7 @@ namespace Zelda.Game
             int nextFrame = currentFrame + 1;
 
             // 마지막 프레임이라면
-            if (nextFrame == _directions[currentDirection].NumFrames)
+            if (nextFrame == _directions[(int)currentDirection].NumFrames)
             {
                 // 지정한 프레임에서 계속 루프를 돌게 하거나 루프가 없다면 -1을 사용하도록 합니다
                 nextFrame = _loopOnFrame;

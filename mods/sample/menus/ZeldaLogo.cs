@@ -1,4 +1,5 @@
 ﻿using System;
+using Zelda.Game;
 using Zelda.Game.Engine;
 using Zelda.Game.Script;
 
@@ -120,7 +121,7 @@ namespace Sample.Menus
         {
             _animationStep = 1;
             
-            _sun.SetDirection(1);
+            _sun.SetDirection(Direction4.Up);
             _sun.StopMovement();
             _sun.XY = new Point(0, -33);
 

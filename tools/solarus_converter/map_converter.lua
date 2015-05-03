@@ -6,6 +6,10 @@ local layer_names = {
   "Low", "Intermediate", "Hight", "NumLayers"
 }
 
+local direction_names = {
+  "Right", "Up", "Left", "Down"
+}
+
 local report = require("report")
 require("LuaXml")
 
@@ -100,7 +104,7 @@ local function export_map(quest_path, map_id, map)
   for _, destination in ipairs(map.destinations) do
     local destination_elem = root:append("Destination")
     export_map_entity(destination, destination_elem)
-    destination_elem:append("Direction")[1] = destination.direction
+    destination_elem:append("Direction")[1] = direction_names[destination.direction + 1]
     if destination.sprite ~= nil then
       destination_elem:append("Sprite")[1] = destination.sprite
     end

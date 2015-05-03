@@ -109,9 +109,9 @@ namespace Zelda.Game.Heroes
         #endregion
 
         #region 이동
-        public virtual int WantedMovementDirection8
+        public virtual Direction8 WantedMovementDirection8
         {
-            get { return -1; }
+            get { return Direction8.None; }
         }
 
         public virtual void NotifyMovementChanged()

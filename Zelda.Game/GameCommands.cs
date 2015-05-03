@@ -19,24 +19,24 @@ namespace Zelda.Game
             0x0008
         };
 
-        static readonly int[] _masksToDirection8 = new int[]
+        static readonly Direction8[] _masksToDirection8 = new Direction8[]
         {
-            -1, // none: stop
-             0, // right
-             2, // up
-             1, // right + up
-             4, // left
-            -1, // left + right: stop
-             3, // left + up
-            -1, // left + right + up: stop
-             6, // down
-             7, // down + right
-            -1, // down + up: stop
-            -1, // down + right + up: stop
-             5, // down + left
-            -1, // down + left + right: stop
-            -1, // down + left + up: stop
-            -1, // down + left + right + up: stop
+            Direction8.None,        // none: stop
+            Direction8.Right,       // right
+            Direction8.Up,          // up
+            Direction8.RightUp,     // right + up
+            Direction8.Left,        // left
+            Direction8.None,        // left + right: stop
+            Direction8.LeftUp,      // left + up
+            Direction8.None,        // left + right + up: stop
+            Direction8.Down,        // down
+            Direction8.RightDown,   // down + right
+            Direction8.None,        // down + up: stop
+            Direction8.None,        // down + right + up: stop
+            Direction8.LeftDown,    // down + left
+            Direction8.None,        // down + left + right: stop
+            Direction8.None,        // down + left + up: stop
+            Direction8.None,        // down + left + right + up: stop
         };
 
         public GameCommands(Game game)
@@ -91,7 +91,7 @@ namespace Zelda.Game
                 KeyboardKeyReleased(inputEvent.KeyboardKey);
         }
 
-        public int GetWantedDirection8()
+        public Direction8 GetWantedDirection8()
         {
             ushort directionMask = 0x0000;
             if (IsCommandPressed(GameCommand.Right))

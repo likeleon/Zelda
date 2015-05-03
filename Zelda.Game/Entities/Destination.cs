@@ -25,7 +25,7 @@ namespace Zelda.Game.Entities
             string name,
             Layer layer,
             Point xy,
-            int heroDirection,
+            Direction4 heroDirection,
             string spriteName,
             bool isDefault)
             : base(name, heroDirection, layer, xy, new Size(16, 16))
@@ -41,7 +41,7 @@ namespace Zelda.Game.Entities
 
     class DestinationData : EntityData
     {
-        public int Direction { get; set; }
+        public Direction4 Direction { get; set; }
         public string Sprite { get; set; }
         public bool Default { get; set; }
 
@@ -56,7 +56,7 @@ namespace Zelda.Game.Entities
 
     public class DestinationXmlData : EntityXmlData
     {
-        public int? Direction { get; set; }
+        public Direction4? Direction { get; set; }
         public string Sprite { get; set; }
         public bool? Default { get; set; }
     }

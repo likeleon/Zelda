@@ -38,7 +38,7 @@ namespace Zelda.Game.Heroes
             _tunicSpriteId = spriteId;
 
             string animation = null;
-            int direction = -1;
+            Direction4 direction = Direction4.None;
             if (_tunicSprite != null)
             {
                 animation = _tunicSprite.CurrentAnimation;
@@ -61,7 +61,7 @@ namespace Zelda.Game.Heroes
         // 게임 시작 시점과 영웅 장비가 교체된 직후에 호출되어야 합니다.
         public void RebuildEquipment()
         {
-            int animationDirection = -1;
+            Direction4 animationDirection = Direction4.None;
             if (_tunicSprite != null)
             {
                 // 방향 저장
@@ -72,7 +72,7 @@ namespace Zelda.Game.Heroes
             SetTunicSpriteId(GetDefaultTunicSpriteId());
 
             // 방향 복구
-            if (animationDirection != -1)
+            if (animationDirection != Direction4.None)
                 SetAnimationDirection(animationDirection);
         }
 
@@ -106,53 +106,53 @@ namespace Zelda.Game.Heroes
         }
 
         #region 애니메이션
-        public int AnimationDirection
+        public Direction4 AnimationDirection
         {
             get { return _tunicSprite.CurrentDirection; }
         }
 
-        static readonly int[,] _animationDirections = new int[,]
+        static readonly Direction4[,] _animationDirections = new Direction4[,]
         {
-            { 0, -1 },    // right
-            { 0,  1 },    // right-up: right or up
-            { 1, -1 },    // up
-            { 2,  1 },    // left-up: left or up
-            { 2, -1 },    // left
-            { 2,  3 },    // left-down: left or down
-            { 3, -1 },    // down
-            { 0,  3 }     // right-down: right or down
+            { Direction4.Right, Direction4.None },   // right
+            { Direction4.Right, Direction4.Up  },   // right-up: right or up
+            { Direction4.Up,   Direction4.None },   // up
+            { Direction4.Left,  Direction4.Up  },   // left-up: left or up
+            { Direction4.Left,  Direction4.None },   // left
+            { Direction4.Left,  Direction4.Down },   // left-down: left or down
+            { Direction4.Down,  Direction4.None },   // down
+            { Direction4.Right, Direction4.Down }    // right-down: right or down
         };
 
-        public int GetAnimationDirection(int keysDirection, int realMovementDirection)
+        public Direction4 GetAnimationDirection(Direction8 keysDirection, Direction8 realMovementDirection)
         {
-            int result = 0;
-            if (keysDirection == -1)
+            Direction4 result = Direction4.None;
+            if (keysDirection == Direction8.None)
             {
                 // 유효하지 않은 방향키 조합인 경우: 스프라이트 방향 변경 없음
-                result = -1;
+                result = Direction4.None;
             }
-            else if (keysDirection % 2 == 0)
+            else if ((int)keysDirection % 2 == 0)
             {
                 // 네 방향 중 한 방향만 입력한 경우: 해당 방향을 스프라이트에게 부여
-                result = keysDirection / 2;
+                result = (Direction4)((int)keysDirection / 2);
             }
             // 이동이 대각선 방향인 경우: 두 방향 중 하나를 선택해야 합니다
-            else if (_animationDirections[realMovementDirection, 1] == AnimationDirection)
+            else if (_animationDirections[(int)realMovementDirection, 1] == AnimationDirection)
             {
                 // 이미 스프라이트 방향이라면 두 번째 방향을 선택합니다
-                result = _animationDirections[realMovementDirection, 1];
+                result = _animationDirections[(int)realMovementDirection, 1];
             }
             else
             {
                 // 그렇지 않다면 첫 번째 방향을 선택합니다
-                result = _animationDirections[realMovementDirection, 0];
+                result = _animationDirections[(int)realMovementDirection, 0];
             }
             return result;
         }
 
-        public void SetAnimationDirection(int direction)
+        public void SetAnimationDirection(Direction4 direction)
         {
-            Debug.CheckAssertion(direction >= 0 && direction < 4, "Invalid direction for SetAnimationDirection");
+            Debug.CheckAssertion(direction >= 0 && (int)direction < 4, "Invalid direction for SetAnimationDirection");
 
             _tunicSprite.SetCurrentDirection(direction);
         }

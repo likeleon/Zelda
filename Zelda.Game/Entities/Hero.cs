@@ -123,21 +123,21 @@ namespace Zelda.Game.Entities
                 _walkingSpeed = walkingSpeed;
         }
 
-        public int WantedMovementDirection8
+        public Direction8 WantedMovementDirection8
         {
             get { return _state.WantedMovementDirection8; }
         }
 
         public override void NotifyMovementChanged()
         {
-            int wantedDirection8 = WantedMovementDirection8;
-            if (wantedDirection8 != -1)
+            Direction8 wantedDirection8 = WantedMovementDirection8;
+            if (wantedDirection8 != Direction8.None)
             {
-                int oldAnimationDirection = _sprites.AnimationDirection;
-                int animationDirection = _sprites.GetAnimationDirection(wantedDirection8, GetRealMovementDirection8());
+                Direction4 oldAnimationDirection = _sprites.AnimationDirection;
+                Direction4 animationDirection = _sprites.GetAnimationDirection(wantedDirection8, GetRealMovementDirection8());
 
                 if (animationDirection != oldAnimationDirection &&
-                    animationDirection != -1)
+                    animationDirection != Direction4.None)
                 {
                     _sprites.SetAnimationDirection(animationDirection);
                 }
@@ -148,13 +148,13 @@ namespace Zelda.Game.Entities
         }
 
         // 장애물을 고려한 주인공의 실제 이동 방향을 반환합니다
-        public int GetRealMovementDirection8()
+        public Direction8 GetRealMovementDirection8()
         {
-            int result = 0;
+            Direction8 result = 0;
 
-            int wantedDirection8 = WantedMovementDirection8;
-            if (wantedDirection8 == -1)
-                result = -1;
+            Direction8 wantedDirection8 = WantedMovementDirection8;
+            if (wantedDirection8 == Direction8.None)
+                result = Direction8.None;
             else
             {
                 // TODO: 장애물 체크
@@ -204,9 +204,9 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 맵 변경
-        public void SetMap(Map map, int initialDirection)
+        public void SetMap(Map map, Direction4 initialDirection)
         {
-            if (initialDirection != -1)
+            if (initialDirection != Direction4.None)
                 _sprites.SetAnimationDirection(initialDirection);
 
             _state.SetMap(map);
@@ -228,7 +228,7 @@ namespace Zelda.Game.Entities
 
                 if (side != -1)
                 {
-                    SetMap(map, -1);
+                    SetMap(map, Direction4.None);
 
                     switch (side)
                     {
@@ -264,7 +264,7 @@ namespace Zelda.Game.Entities
                     {
                         // 개발 도중에 이 경우가 발생할 수 있습니다. 맵의 좌측 최상단에 위치시킵니다
                         Debug.Error("No valid destination on map '{0}'. Placing the hero at (0,0) instead.".F(map.Id));
-                        SetMap(map, 3);
+                        SetMap(map, Direction4.Down);
                         TopLeftXY = new Point(0, 0);
                     }
                     else

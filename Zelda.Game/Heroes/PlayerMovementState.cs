@@ -13,7 +13,7 @@ namespace Zelda.Game.Heroes
             get { return _playerMovement; }
         }
 
-        public override int WantedMovementDirection8
+        public override Direction8 WantedMovementDirection8
         {
             get { return _playerMovement.WantedDirection8; }
         }
@@ -35,7 +35,7 @@ namespace Zelda.Game.Heroes
                 _playerMovement.ComputeMovement();
                 if (IsCurrentState)
                 {
-                    if (WantedMovementDirection8 != -1)
+                    if (WantedMovementDirection8 != Direction8.None)
                         SetAnimationWalking();
                     else
                         SetAnimationStopped();
@@ -69,7 +69,7 @@ namespace Zelda.Game.Heroes
         public override void NotifyMovementChanged()
         {
             // 이동에 변화가 있습니다. 스프라이트의 애니메이션을 갱신시킵니다.
-            bool movementWalking = (WantedMovementDirection8 != -1);
+            bool movementWalking = (WantedMovementDirection8 != Direction8.None);
             bool spritesWalking = Sprites.IsWalking;
 
             if (movementWalking && !spritesWalking)
