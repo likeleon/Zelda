@@ -94,6 +94,11 @@ namespace Zelda.Game.Entities
             _state.Update();
             _oldStates.Clear();
         }
+
+        public void StartLifting(CarriedItem itemToLift)
+        {
+            SetState(new LiftingState(this, itemToLift));
+        }
         #endregion
 
         #region 이동
@@ -225,6 +230,11 @@ namespace Zelda.Game.Entities
 
             _sprites.SetSuspended(suspended);
             _state.SetSuspended(suspended);
+        }
+
+        public void NotifyCommandPressed(GameCommand command)
+        {
+            _state.NotifyCommandPressed(command);
         }
         #endregion
 

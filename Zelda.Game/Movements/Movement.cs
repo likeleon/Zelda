@@ -187,14 +187,14 @@ namespace Zelda.Game.Movements
             if (_scriptMovement != null)
                 _scriptMovement.NotifyPositionChanged(XY);
 
-            if (_entity != null)
+            if (_entity != null && !_entity.IsBeingRemoved)
                 _entity.NotifyPositionChanged();
         }
 
         // 이동 특성(speed이나 angle등)이 변화했음을 알립니다
         public virtual void NotifyMovementChanged()
         {
-            if (_entity != null)
+            if (_entity != null && !_entity.IsBeingRemoved)
                 _entity.NotifyMovementChanged();
         }
 

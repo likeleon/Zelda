@@ -70,6 +70,9 @@ namespace Zelda.Game.Entities
             if (!_namedEntities.TryGetValue(name, out entity))
                 return null;
 
+            if (entity.IsBeingRemoved)
+                return null;
+
             return entity;
         }
 
@@ -299,6 +302,57 @@ namespace Zelda.Game.Entities
             }
         }
 
+        readonly List<MapEntity> _entitiesToRemove = new List<MapEntity>();
+
+        public void RemoveEntity(MapEntity entity)
+        {
+            if (entity.IsBeingRemoved)
+                return;
+
+            _entitiesToRemove.Add(entity);
+            entity.NotifyBeingRemoved();
+        }
+
+        void RemoveMarkedEntities()
+        {
+            foreach (MapEntity entity in _entitiesToRemove)
+            {
+                Layer layer = entity.Layer;
+
+                if (entity.CanBeObstacle)
+                {
+                    if (entity.HasLayerIndependentCollisions)
+                    {
+                        for (int i = 0; i < (int)Layer.Count; ++i)
+                            _obstacleEntities[i].Remove(entity);
+                    }
+                    else
+                        _obstacleEntities[(int)layer].Remove(entity);
+                }
+
+                if (entity.IsDetector)
+                    _detectors.Remove(entity as Detector);
+
+                if (entity.IsDrawnInYOrder)
+                    _entitiesDrawnYOrder[(int)layer].Remove(entity);
+                else if (entity.CanBeDrawn)
+                    _entitiesDrawnFirst[(int)layer].Remove(entity);
+
+                _allEntities.Remove(entity);
+                if (!String.IsNullOrEmpty(entity.Name))
+                    _namedEntities.Remove(entity.Name);
+
+                NotifyEntityRemoved(entity);
+            }
+            _entitiesToRemove.Clear();
+        }
+
+        void NotifyEntityRemoved(MapEntity entity)
+        {
+            if (!entity.IsBeingRemoved)
+                entity.NotifyBeingRemoved();
+        }
+
         public void SetEntityDrawnInYOrder(MapEntity entity, bool drawnInYOrder)
         {
             int layer = (int)entity.Layer;
@@ -363,7 +417,12 @@ namespace Zelda.Game.Entities
                 _entitiesDrawnYOrder[layer].Sort((a, b) => (b.TopLeftY + b.Height) - (a.TopLeftY + a.Height));
 
             foreach (MapEntity entity in _allEntities)
-                entity.Update();
+            {
+                if (!entity.IsBeingRemoved)
+                    entity.Update();
+            }
+
+            RemoveMarkedEntities();
         }
 
         public void Draw()

@@ -550,7 +550,10 @@ namespace Zelda.Game
                 return;
 
             foreach (Detector detector in _entities.Detectors)
-                detector.CheckCollision(entity);
+            {
+                if (!detector.IsBeingRemoved)
+                    detector.CheckCollision(entity);
+            }
         }
 
         public void CheckCollisionWithDetectors(MapEntity entity, Sprite sprite)
@@ -559,7 +562,10 @@ namespace Zelda.Game
                 return;
 
             foreach (Detector detector in _entities.Detectors)
-                detector.CheckCollision(entity, sprite);
+            {
+                if (!detector.IsBeingRemoved)
+                    detector.CheckCollision(entity, sprite);
+            }
         }
 
         public void CheckCollisionFromDetector(Detector detector)
@@ -571,7 +577,8 @@ namespace Zelda.Game
 
             foreach (MapEntity entity in _entities.Entities)
             {
-                detector.CheckCollision(entity);
+                if (!entity.IsBeingRemoved)
+                    detector.CheckCollision(entity);
             }
         }
         #endregion

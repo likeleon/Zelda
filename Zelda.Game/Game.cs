@@ -70,6 +70,12 @@ namespace Zelda.Game
             if (!_started)
                 return;
 
+            if (_currentMap != null)
+            {
+                if (_hero.IsOnMap)
+                    _hero.NotifyBeingRemoved();
+            }
+
             _saveGame.Game = null;
 
             _started = false;
@@ -220,6 +226,8 @@ namespace Zelda.Game
                         SetPaused(true);
                 }
             }
+            else if (!IsSuspended)
+                _hero.NotifyCommandPressed(command);
         }
         #endregion
 

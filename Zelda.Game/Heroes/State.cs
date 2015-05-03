@@ -15,6 +15,7 @@ namespace Zelda.Game.Heroes
         {
             _hero = hero;
             _name = stateName;
+            _map = hero.Map;
         }
 
         #region 생성과 소멸
@@ -62,6 +63,23 @@ namespace Zelda.Game.Heroes
 
             if (suspended)
                 _whenSuspended = EngineSystem.Now;
+        }
+
+        public void NotifyCommandPressed(GameCommand command)
+        {
+            switch (command)
+            {
+                case GameCommand.Action:
+                    NotifyActionCommandPressed();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        public virtual void NotifyActionCommandPressed()
+        {
         }
         #endregion
 

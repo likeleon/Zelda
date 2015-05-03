@@ -1,4 +1,5 @@
-﻿using Zelda.Game.Engine;
+﻿using System;
+using Zelda.Game.Engine;
 
 namespace Zelda.Game.Entities
 {
@@ -68,6 +69,40 @@ namespace Zelda.Game.Entities
                 else
                     CommandsEffects.ActionCommandEffect = ActionCommandEffect.Look;
             }
+        }
+
+        public override bool NotifyActionCommandPressed()
+        {
+            ActionCommandEffect effect = CommandsEffects.ActionCommandEffect;
+            
+            if ((effect != ActionCommandEffect.Lift && effect != ActionCommandEffect.Look) ||
+                Weight == -1)
+                return false;
+
+            if (Equipment.HasAbility(Ability.Lift, Weight))
+            {
+                uint explosionDate = 0;
+                Hero.StartLifting(new CarriedItem(
+                    Hero,
+                    this,
+                    AnimationSetId,
+                    DestructionSound,
+                    DamageOnEnemies,
+                    explosionDate));
+
+                // TODO: 사운드 처리
+
+                if (!CanRegenerate)
+                    RemoveFromMap();
+                else
+                    throw new NotImplementedException();
+            }
+            else
+            {
+                // TODO: Grab 처리
+            }
+
+            return true;
         }
         #endregion
 

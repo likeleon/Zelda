@@ -20,6 +20,16 @@ namespace Zelda.Game.Entities
             get { return true; }
         }
 
+        #region 파괴
+        public override void NotifyBeingRemoved()
+        {
+            base.NotifyBeingRemoved();
+
+            if (Hero.FacingEntity == this)
+                Hero.FacingEntity = null;
+        }
+        #endregion
+
         #region 속성
         public virtual bool LayerIndependentCollisions
         {
@@ -62,9 +72,14 @@ namespace Zelda.Game.Entities
                 throw new NotImplementedException();
             }
         }
+
+        public virtual bool NotifyActionCommandPressed()
+        {
+            return false;
+        }
         #endregion
 
-        #region Proptected - Detector 특성들
+        #region Protected - Detector 특성들
         protected bool HasCollisionMode(CollisionMode collisionMode)
         {
             return (_collisionModes & collisionMode) != 0;

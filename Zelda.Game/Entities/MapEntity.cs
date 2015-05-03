@@ -46,6 +46,18 @@ namespace Zelda.Game.Entities
             ClearOldMovements();
             _disposed = true;
         }
+
+        public void RemoveFromMap()
+        {
+            Map.Entities.RemoveEntity(this);
+        }
+
+        public bool IsBeingRemoved { get; private set; }
+
+        public virtual void NotifyBeingRemoved()
+        {
+            IsBeingRemoved = true;
+        }
         #endregion
 
         #region 타입
@@ -411,6 +423,11 @@ namespace Zelda.Game.Entities
         {
             get { return Game.Equipment; }
         }
+
+        protected Hero Hero
+        {
+            get { return Entities.Hero; }
+        }
         #endregion
 
         #region 게임 루프
@@ -443,6 +460,9 @@ namespace Zelda.Game.Entities
         public virtual void Update()
         {
             Debug.CheckAssertion(Type != EntityType.Tile, "Attempt to update a static tile");
+
+            if (_facingEntity != null && _facingEntity.IsBeingRemoved)
+                FacingEntity = null;
 
             // 스프라이트 업데이트
             foreach (Sprite sprite in _sprites)

@@ -25,5 +25,16 @@ namespace Zelda.Game.Heroes
         {
             Sprites.SetAnimationWalkingNormal();
         }
+
+        public override void NotifyActionCommandPressed()
+        {
+            Detector facingEntity = Hero.FacingEntity;
+            if (facingEntity != null)
+            {
+                if (CommandsEffects.ActionCommandEffect == ActionCommandEffect.None ||
+                    CommandsEffects.IsActionCommandActingOnFacingEntity)
+                    facingEntity.NotifyActionCommandPressed();
+            }
+        }
     }
 }

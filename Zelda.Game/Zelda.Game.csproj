@@ -77,6 +77,7 @@
     <Compile Include="Engine\Size.cs" />
     <Compile Include="Engine\Sound.cs" />
     <Compile Include="Entities\AnimatedTilePattern.cs" />
+    <Compile Include="Entities\CarriedItem.cs" />
     <Compile Include="Entities\CollisionMode.cs" />
     <Compile Include="Entities\Destination.cs" />
     <Compile Include="Entities\Destructible.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="GameCommands.cs" />
     <Compile Include="Heroes\FreeState.cs" />
     <Compile Include="Heroes\HeroSprites.cs" />
+    <Compile Include="Heroes\LiftingState.cs" />
     <Compile Include="Heroes\PlayerMovementState.cs" />
     <Compile Include="Heroes\State.cs" />
     <Compile Include="Movements\PlayerMovement.cs" />
