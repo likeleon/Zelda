@@ -1,4 +1,5 @@
 ﻿using Zelda.Game.Engine;
+using Zelda.Game.Movements;
 
 namespace Zelda.Game.Entities
 {
@@ -10,6 +11,14 @@ namespace Zelda.Game.Entities
             Destroy,
             Keep
         }
+
+        readonly static string[] _liftingTrajectories =
+        {
+            "0 0  0 0  -3 -3  -5 -3  -5 -2",
+            "0 0  0 0  0 -1  0 -1  0 0",
+            "0 0  0 0  3 -3  5 -3  5 -2",
+            "0 0  0 0  0 -10  0 -12  0 0",
+        };
 
         public CarriedItem(
             Hero hero,
@@ -32,8 +41,10 @@ namespace Zelda.Game.Entities
             Size = originalEntity.Size;
             SetDrawnInYOrder(true);
 
+            PixelMovement movement = new PixelMovement(_liftingTrajectories[(int)direction], 100, false, true);
             CreateSprite(animationSetId);
             Sprite.SetCurrentAnimation("stopped");
+            SetMovement(movement);
         }
 
         public override EntityType Type

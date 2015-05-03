@@ -105,6 +105,7 @@
     <Compile Include="Heroes\LiftingState.cs" />
     <Compile Include="Heroes\PlayerMovementState.cs" />
     <Compile Include="Heroes\State.cs" />
+    <Compile Include="Movements\PixelMovement.cs" />
     <Compile Include="Movements\PlayerMovement.cs" />
     <Compile Include="Script\ScriptException.cs" />
     <Compile Include="SpriteData.cs" />
