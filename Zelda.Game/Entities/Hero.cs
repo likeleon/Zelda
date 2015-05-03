@@ -157,8 +157,33 @@ namespace Zelda.Game.Entities
                 result = Direction8.None;
             else
             {
-                // TODO: 장애물 체크
-                result = wantedDirection8;
+                Rectangle collisionBox = BoundingBox;
+
+                Point xyMove = DirectionToXyMove(wantedDirection8);
+                collisionBox.AddXY(xyMove);
+                if (!Map.TestCollisionWithObstacles(Layer, collisionBox, this))
+                    result = wantedDirection8;
+                else
+                {
+                    // 원하는 방향으로 갈 수 없다면 가까운 두 방향 중 하나로 이동할 수 있는지 확인합니다
+                    Direction8 alternativeDirection8 = (Direction8)(((int)wantedDirection8 + 1) % 8);
+                    collisionBox = BoundingBox;
+                    xyMove = DirectionToXyMove(alternativeDirection8);
+                    collisionBox.AddXY(xyMove);
+                    if (!Map.TestCollisionWithObstacles(Layer, collisionBox, this))
+                        result = alternativeDirection8;
+                    else
+                    {
+                        alternativeDirection8 = (Direction8)(((int)wantedDirection8 - 1) % 8);
+                        collisionBox = BoundingBox;
+                        xyMove = DirectionToXyMove(alternativeDirection8);
+                        collisionBox.AddXY(xyMove);
+                        if (!Map.TestCollisionWithObstacles(Layer, collisionBox, this))
+                            result = alternativeDirection8;
+                        else
+                            result = wantedDirection8;  // 이동을 원하지만 이동할 수 없고 슬라이딩은 불가
+                    }
+                }
             }
 
             return result;

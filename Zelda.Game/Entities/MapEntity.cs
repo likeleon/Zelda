@@ -558,6 +558,23 @@ namespace Zelda.Game.Entities
         public virtual void NotifyFacingEntityChanged(Detector facingEntity)
         {
         }
+
+        static readonly Point[] _directionsToXyMoves = new Point[]
+        {
+            new Point( 1,  0),
+            new Point( 1, -1),
+            new Point( 0, -1),
+            new Point(-1, -1),
+            new Point(-1,  0),
+            new Point(-1,  1),
+            new Point( 0,  1),
+            new Point( 1,  1),
+        };
+
+        public static Point DirectionToXyMove(Direction8 direction8)
+        {
+            return _directionsToXyMoves[(int)direction8];
+        }
         #endregion
 
         #region 충돌
