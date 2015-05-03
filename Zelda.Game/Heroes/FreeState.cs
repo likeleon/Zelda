@@ -36,5 +36,10 @@ namespace Zelda.Game.Heroes
                     facingEntity.NotifyActionCommandPressed();
             }
         }
+
+        public override CarriedItem.Behavior PreviousCarriedItemBehavior
+        {
+            get { return CarriedItem.Behavior.Destroy; }
+        }
     }
 }

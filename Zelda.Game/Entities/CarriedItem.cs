@@ -21,6 +21,19 @@ namespace Zelda.Game.Entities
             : base("", Direction4.Right, hero.Layer, new Point(0, 0), new Size(0, 0))
         {
             _hero = hero;
+            IsBeingLifted = true;
+
+            Direction4 direction = hero.AnimationDirection;
+            if ((int)direction % 2 == 0)
+                XY = new Point(originalEntity.X, hero.Y);
+            else
+                XY = new Point(hero.X, originalEntity.Y);
+            Origin = originalEntity.Origin;
+            Size = originalEntity.Size;
+            SetDrawnInYOrder(true);
+
+            CreateSprite(animationSetId);
+            Sprite.SetCurrentAnimation("stopped");
         }
 
         public override EntityType Type
@@ -35,6 +48,10 @@ namespace Zelda.Game.Entities
 
         #region 게임 데이터
         readonly Hero _hero;
+        #endregion
+
+        #region 상태
+        public bool IsBeingLifted { get; private set; }
         #endregion
     }
 }

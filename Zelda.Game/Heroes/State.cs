@@ -54,6 +54,11 @@ namespace Zelda.Game.Heroes
         }
 
         bool _suspended;
+        public bool IsSuspended
+        {
+            get { return _suspended; }
+        }
+
         public virtual void SetSuspended(bool suspended)
         {
             if (suspended == _suspended)
@@ -84,6 +89,11 @@ namespace Zelda.Game.Heroes
         #endregion
 
         #region 게임 오브젝트 접근
+        protected MapEntities Entities
+        {
+            get { return _map.Entities; }
+        }
+
         readonly Hero _hero;
         protected Hero Hero
         {
@@ -145,5 +155,12 @@ namespace Zelda.Game.Heroes
         {
             get { return (_hero.State == this) && (!_hero.State.IsStopping); }
         }
+
+        #region 상태별
+        public virtual CarriedItem.Behavior PreviousCarriedItemBehavior
+        {
+            get { return CarriedItem.Behavior.Throw; }
+        }
+        #endregion
     }
 }

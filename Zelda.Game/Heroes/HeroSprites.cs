@@ -82,6 +82,9 @@ namespace Zelda.Game.Heroes
 
             Point xy = _hero.GetDisplayedXY();
             map.DrawSprite(_tunicSprite, xy.X, xy.Y);
+
+            if (LiftedItem != null)
+                LiftedItem.DrawOnMap();
         }
 
         public void SetSuspended(bool suspended)
@@ -94,6 +97,9 @@ namespace Zelda.Game.Heroes
             _tunicSprite.Update();
 
             _hero.CheckCollisionWithDetectors(_tunicSprite);
+
+            if (LiftedItem != null && _walking)
+                LiftedItem.Sprite.SetCurrentFrame(_tunicSprite.CurrentFrame % 3);
         }
 
         public void NotifyMapStarted()
@@ -103,6 +109,8 @@ namespace Zelda.Game.Heroes
 
         public void NotifyTilesetChanged()
         {
+            if (LiftedItem != null)
+                LiftedItem.NotifyTilesetChanged();
         }
 
         #region 애니메이션
@@ -186,6 +194,11 @@ namespace Zelda.Game.Heroes
                 SetTunicAnimation("walking");
         }
 
+        public void SetAnimationLifting()
+        {
+            SetTunicAnimation("lifting");
+        }
+
         void SetTunicAnimation(string animation)
         {
             _tunicSprite.SetCurrentAnimation(animation);
@@ -200,5 +213,7 @@ namespace Zelda.Game.Heroes
             get { return _walking; }
         }
         #endregion
+
+        public CarriedItem LiftedItem { get; set; }
     }
 }

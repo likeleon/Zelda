@@ -4,7 +4,7 @@ namespace Zelda.Game.Heroes
 {
     class LiftingState : State
     {
-        readonly CarriedItem _liftedItem;
+        CarriedItem _liftedItem;
 
         public LiftingState(Hero hero, CarriedItem liftedItem)
             : base(hero, "lifting")
@@ -20,6 +20,8 @@ namespace Zelda.Game.Heroes
             _liftedItem.SetMap(Map);
 
             CommandsEffects.ActionCommandEffect = ActionCommandEffect.Throw;
+            Sprites.SetAnimationLifting();
+            Sprites.LiftedItem = _liftedItem;
             Hero.FacingEntity = null;
         }
 
@@ -29,7 +31,19 @@ namespace Zelda.Game.Heroes
 
             if (_liftedItem != null)
             {
-                // TODO: CarriedItem 처리
+                Sprites.LiftedItem = null;
+
+                switch (nextState.PreviousCarriedItemBehavior)
+                {
+                    case CarriedItem.Behavior.Throw:
+                        ThrowItem();
+                        break;
+
+                    case CarriedItem.Behavior.Destroy:
+                    case CarriedItem.Behavior.Keep:
+                        _liftedItem = null;
+                        break;
+                }
 
                 CommandsEffects.ActionCommandEffect = ActionCommandEffect.None;
             }
@@ -40,6 +54,28 @@ namespace Zelda.Game.Heroes
             base.Update();
 
             _liftedItem.Update();
+
+            if (!IsSuspended && !_liftedItem.IsBeingLifted)
+            {
+                CarriedItem carriedItem = _liftedItem;
+                _liftedItem = null;
+                //Hero.SetState(new CarryingState(Hero, carriedItem));
+            }
+        }
+
+        public override void SetSuspended(bool suspended)
+        {
+            base.SetSuspended(suspended);
+
+            if (_liftedItem != null)
+                _liftedItem.SetSuspended(suspended);
+        }
+
+        void ThrowItem()
+        {
+            //_liftedItem.ThrowItem(Sprites.AnimationDirection);
+            Entities.AddEntity(_liftedItem);
+            _liftedItem = null;
         }
     }
 }

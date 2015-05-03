@@ -212,6 +212,17 @@ namespace Zelda.Game.Entities
             get { return _boundingBox.Height; }
         }
 
+        public Size Size
+        {
+            get { return _boundingBox.Size; }
+            set
+            {
+                Debug.CheckAssertion(value.Width % 8 == 0 && value.Height % 8 == 0,
+                    "Invalid entity size: width and height must be multiple of 8");
+                _boundingBox.Size = value;
+            }
+        }
+
         public int TopLeftX
         {
             get { return _boundingBox.X; }

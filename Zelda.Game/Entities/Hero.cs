@@ -37,6 +37,11 @@ namespace Zelda.Game.Entities
             get { return _sprites; }
         }
 
+        public Direction4 AnimationDirection
+        {
+            get { return _sprites.AnimationDirection; }
+        }
+
         public void RebuildEquipment()
         {
             _sprites.RebuildEquipment();
@@ -57,7 +62,7 @@ namespace Zelda.Game.Entities
 
         readonly List<State> _oldStates = new List<State>();
 
-        void SetState(State newState)
+        internal void SetState(State newState)
         {
             // 이전 상태를 정지시킵니다
             State oldState = _state;
