@@ -90,7 +90,7 @@ namespace Zelda.Game.Entities
                     DamageOnEnemies,
                     explosionDate));
 
-                // TODO: 사운드 처리
+                Sound.Play("lift");
 
                 if (!CanRegenerate)
                     RemoveFromMap();

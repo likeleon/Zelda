@@ -176,10 +176,7 @@ namespace Zelda.Game.Engine
 
                     int error = Vorbisfile.ov_open_callback(GCHandle.ToIntPtr(_oggMemHandle), out _oggFile, IntPtr.Zero, 0, Sound.OggCallbacks);
                     if (error != 0)
-                    {
-                        string msg = "Cannot load music file '{0}' from memory: error {1}".F(_fileName, error);
-                        Debug.Error(msg);
-                    }
+                        Debug.Error("Cannot load music file '{0}' from memory: error {1}".F(_fileName, error));
                     else
                     {
                         for (int i = 0; i < _nbBuffers; ++i)

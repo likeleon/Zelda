@@ -73,7 +73,7 @@ namespace Zelda.Game.Heroes
 
         void ThrowItem()
         {
-            //_liftedItem.ThrowItem(Sprites.AnimationDirection);
+            _liftedItem.ThrowItem(Sprites.AnimationDirection);
             Entities.AddEntity(_liftedItem);
             _liftedItem = null;
         }

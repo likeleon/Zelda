@@ -165,7 +165,7 @@ namespace Zelda.Game.Entities
                         result = alternativeDirection8;
                     else
                     {
-                        alternativeDirection8 = (Direction8)(((int)wantedDirection8 - 1) % 8);
+                        alternativeDirection8 = (Direction8)(((int)wantedDirection8 + 7) % 8);
                         collisionBox = BoundingBox;
                         xyMove = DirectionToXyMove(alternativeDirection8);
                         collisionBox.AddXY(xyMove);

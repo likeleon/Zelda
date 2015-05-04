@@ -1,4 +1,5 @@
-﻿using Zelda.Game.Engine;
+﻿using System;
+using Zelda.Game.Engine;
 using Zelda.Game.Movements;
 
 namespace Zelda.Game.Entities
@@ -20,6 +21,8 @@ namespace Zelda.Game.Entities
             "0 0  0 0  0 -10  0 -12  0 0",
         };
 
+        readonly string _destructionSoundId;
+
         public CarriedItem(
             Hero hero,
             MapEntity originalEntity,
@@ -30,6 +33,7 @@ namespace Zelda.Game.Entities
             : base("", Direction4.Right, hero.Layer, new Point(0, 0), new Size(0, 0))
         {
             _hero = hero;
+            _destructionSoundId = destructionSoundId;
             IsBeingLifted = true;
 
             Direction4 direction = hero.AnimationDirection;
@@ -83,6 +87,8 @@ namespace Zelda.Game.Entities
             IsBeingLifted = false;
             IsBeingThrown = true;
 
+            Sound.Play("throw");
+
             Sprite.SetCurrentAnimation("stopped");
 
             Y = _hero.Y;
@@ -122,11 +128,13 @@ namespace Zelda.Game.Entities
                     break;
 
                 case Ground.Hole:
+                    Sound.Play("jump");
                     RemoveFromMap();
                     break;
 
                 case Ground.DeepWater:
                 case Ground.Lava:
+                    Sound.Play("walk_on_water");
                     RemoveFromMap();
                     break;
 
@@ -148,6 +156,9 @@ namespace Zelda.Game.Entities
             }
 
             Movement.Stop();
+
+            if (!String.IsNullOrEmpty(_destructionSoundId))
+                Sound.Play(_destructionSoundId);
 
             if (Sprite.HasAnimation("destroy"))
                 Sprite.SetCurrentAnimation("destroy");
