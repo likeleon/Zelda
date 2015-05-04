@@ -180,6 +180,15 @@ namespace Zelda.Game.Heroes
                 SetTunicAnimation("stopped");
         }
 
+        public void SetAnimationStoppedCarrying()
+        {
+            SetAnimationStoppedCommon();
+            SetTunicAnimation("carrying_stopped");
+
+            if (LiftedItem != null)
+                LiftedItem.SetAnimationStopped();
+        }
+
         public void SetAnimationWalkingCommon()
         {
             _walking = true;
@@ -192,6 +201,15 @@ namespace Zelda.Game.Heroes
                 throw new NotImplementedException();
             else
                 SetTunicAnimation("walking");
+        }
+
+        public void SetAnimationWalkingCarrying()
+        {
+            SetAnimationWalkingCommon();
+            SetTunicAnimation("carrying_walking");
+
+            if (LiftedItem != null)
+                LiftedItem.SetAnimationWalking();
         }
 
         public void SetAnimationLifting()

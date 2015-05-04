@@ -59,7 +59,7 @@ namespace Zelda.Game.Heroes
             {
                 CarriedItem carriedItem = _liftedItem;
                 _liftedItem = null;
-                //Hero.SetState(new CarryingState(Hero, carriedItem));
+                Hero.SetState(new CarryingState(Hero, carriedItem));
             }
         }
 

@@ -64,5 +64,33 @@ namespace Zelda.Game.Entities
         #region 상태
         public bool IsBeingLifted { get; private set; }
         #endregion
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (IsSuspended)
+                return;
+
+            if (IsBeingLifted && Movement.IsFinished)
+            {
+                IsBeingLifted = false;
+
+                ClearMovement();
+                SetMovement(new FollowMovement(_hero, 0, -18, true));
+            }
+        }
+
+        public void SetAnimationStopped()
+        {
+            if (!IsBeingLifted)
+                Sprite.SetCurrentAnimation("stopped");
+        }
+
+        public void SetAnimationWalking()
+        {
+            if (!IsBeingLifted)
+                Sprite.SetCurrentAnimation("walking");
+        }
     }
 }
