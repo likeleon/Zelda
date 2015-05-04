@@ -367,6 +367,32 @@ namespace Zelda.Game.Entities
                 _entitiesDrawnFirst[layer].Add(entity);
             }
         }
+
+        public void SetEntityLayer(MapEntity entity, Layer layer)
+        {
+            Layer oldLayer = entity.Layer;
+            if (layer == oldLayer)
+                return;
+
+            if (entity.CanBeObstacle && !entity.HasLayerIndependentCollisions)
+            {
+                _obstacleEntities[(int)oldLayer].Remove(entity);
+                _obstacleEntities[(int)layer].Add(entity);
+            }
+
+            if (entity.IsDrawnInYOrder)
+            {
+                _entitiesDrawnYOrder[(int)oldLayer].Remove(entity);
+                _entitiesDrawnYOrder[(int)layer].Add(entity);
+            }
+            else if (entity.CanBeDrawn)
+            {
+                _entitiesDrawnFirst[(int)oldLayer].Remove(entity);
+                _entitiesDrawnFirst[(int)layer].Add(entity);
+            }
+
+            entity.SetLayer(layer);
+        }
         #endregion
 
         #region 맵 이벤트들

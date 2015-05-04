@@ -89,6 +89,9 @@ namespace Zelda.Game.Heroes
 
         void ThrowItem()
         {
+            _carriedItem.ThrowItem(Sprites.AnimationDirection);
+            Entities.AddEntity(_carriedItem);
+            _carriedItem = null;
         }
 
         public override void SetAnimationStopped()
@@ -109,6 +112,14 @@ namespace Zelda.Game.Heroes
         public override CarriedItem.Behavior PreviousCarriedItemBehavior
         {
             get { return CarriedItem.Behavior.Keep; }
+        }
+
+        public override void NotifyLayerChanged()
+        {
+            base.NotifyLayerChanged();
+
+            if (_carriedItem != null)
+                _carriedItem.SetLayer(Hero.Layer);
         }
     }
 }

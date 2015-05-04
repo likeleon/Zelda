@@ -14,9 +14,10 @@ namespace Zelda.Game.Movements
         int _yMove;             // y축으로의 다음 이동량 (0, 1, -1)
         Point _initialXY;       // 초기 위치 (속도나 방향이 변할 때 리셋)
 
-        public StraightMovement(bool ignoreObstacles)
+        public StraightMovement(bool ignoreObstacles, bool smooth)
             : base(ignoreObstacles)
         {
+            IsSmooth = smooth;
         }
 
         public override void Update()
@@ -235,6 +236,8 @@ namespace Zelda.Game.Movements
             int direction = (Geometry.RadiansToDegrees(_angle) + 45 + 360) / 90;
             return (Direction4)(direction % 4);
         }
+
+        public bool IsSmooth { get; set; }
         #endregion
 
         #region 이동
@@ -292,7 +295,10 @@ namespace Zelda.Game.Movements
 
         protected void UpdateX()
         {
-            UpdateSmoothX();
+            if (IsSmooth)
+                UpdateSmoothX();
+            else
+                UpdateNonSmoothX();
         }
 
         protected void UpdateSmoothX()
@@ -372,9 +378,25 @@ namespace Zelda.Game.Movements
             _nextMoveDateX += nextMoveDateXIncrement;
         }
 
+        protected void UpdateNonSmoothX()
+        {
+            if (_xMove == 0)
+                return;
+
+            if (!TestCollisionWithObstacles(_xMove, _yMove))
+                TranslateX(_xMove);
+            else
+                Stop();
+            
+            _nextMoveDateX += _xDelay;
+        }
+
         protected void UpdateY()
         {
-            UpdateSmoothY();
+            if (IsSmooth)
+                UpdateSmoothY();
+            else
+                UpdateNonSmoothY();
         }
 
         protected void UpdateSmoothY()
@@ -441,6 +463,18 @@ namespace Zelda.Game.Movements
             }
 
             _nextMoveDateY += nextMoveDateYIncrement;
+        }
+
+        protected void UpdateNonSmoothY()
+        {
+            if (_yMove == 0)
+                return;
+
+            if (!TestCollisionWithObstacles(_xMove, _yMove))
+                TranslateY(_yMove);
+            else
+                Stop();
+            _nextMoveDateY += _yDelay;
         }
     }
 }

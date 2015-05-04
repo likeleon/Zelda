@@ -18,7 +18,7 @@ namespace Zelda.Game.Movements
         }
 
         public PlayerMovement(int movingSpeed)
-            : base(false)
+            : base(false, true)
         {
             _movingSpeed = movingSpeed;
             _direction8 = Direction8.None;

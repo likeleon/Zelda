@@ -149,6 +149,10 @@ namespace Zelda.Game.Heroes
         public virtual void NotifyPositionChanged()
         {
         }
+
+        public virtual void NotifyLayerChanged()
+        {
+        }
         #endregion
 
         protected bool IsCurrentState

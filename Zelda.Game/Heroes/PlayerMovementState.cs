@@ -77,5 +77,10 @@ namespace Zelda.Game.Heroes
             else if (!movementWalking && spritesWalking)
                 SetAnimationStopped();
         }
+
+        public override void NotifyLayerChanged()
+        {
+            Hero.UpdateMovement();
+        }
     }
 }

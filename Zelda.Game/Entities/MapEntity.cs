@@ -184,10 +184,16 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 맵에서의 위치
-        readonly Layer _layer;
+        Layer _layer;
         public Layer Layer
         {
             get { return _layer; }
+        }
+
+        public void SetLayer(Layer layer)
+        {
+            _layer = layer;
+            NotifyLayerChanged();
         }
 
         Ground _groundBelow;
@@ -573,6 +579,12 @@ namespace Zelda.Game.Entities
         // 엔티티에게 이동 특성이 변했음을 알리기 위해 Movement 객체에 의해 호출됩니다.
         public virtual void NotifyMovementChanged()
         {
+        }
+
+        public virtual void NotifyLayerChanged()
+        {
+            if (IsOnMap)
+                CheckCollisionWithDetectors();
         }
 
         Detector _facingEntity;

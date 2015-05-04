@@ -138,25 +138,6 @@ namespace Zelda.Game.Entities
             get { return _state.WantedMovementDirection8; }
         }
 
-        public override void NotifyMovementChanged()
-        {
-            Direction8 wantedDirection8 = WantedMovementDirection8;
-            if (wantedDirection8 != Direction8.None)
-            {
-                Direction4 oldAnimationDirection = _sprites.AnimationDirection;
-                Direction4 animationDirection = _sprites.GetAnimationDirection(wantedDirection8, GetRealMovementDirection8());
-
-                if (animationDirection != oldAnimationDirection &&
-                    animationDirection != Direction4.None)
-                {
-                    _sprites.SetAnimationDirection(animationDirection);
-                }
-            }
-
-            _state.NotifyMovementChanged();
-            CheckPosition();
-        }
-
         // 장애물을 고려한 주인공의 실제 이동 방향을 반환합니다
         public Direction8 GetRealMovementDirection8()
         {
@@ -199,11 +180,35 @@ namespace Zelda.Game.Entities
             return result;
         }
 
+        public override void NotifyMovementChanged()
+        {
+            Direction8 wantedDirection8 = WantedMovementDirection8;
+            if (wantedDirection8 != Direction8.None)
+            {
+                Direction4 oldAnimationDirection = _sprites.AnimationDirection;
+                Direction4 animationDirection = _sprites.GetAnimationDirection(wantedDirection8, GetRealMovementDirection8());
+
+                if (animationDirection != oldAnimationDirection &&
+                    animationDirection != Direction4.None)
+                {
+                    _sprites.SetAnimationDirection(animationDirection);
+                }
+            }
+
+            _state.NotifyMovementChanged();
+            CheckPosition();
+        }
+
         public override void NotifyPositionChanged()
         {
             CheckPosition();
             _state.NotifyPositionChanged();
 
+        }
+
+        public override void NotifyLayerChanged()
+        {
+            _state.NotifyLayerChanged();
         }
         #endregion
 
@@ -344,7 +349,7 @@ namespace Zelda.Game.Entities
             }
         }
 
-        void UpdateMovement()
+        internal void UpdateMovement()
         {
             if (Movement != null)
                 Movement.Update();

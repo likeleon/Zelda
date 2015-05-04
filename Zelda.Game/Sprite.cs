@@ -101,6 +101,11 @@ namespace Zelda.Game
             }
         }
 
+        public bool HasAnimation(string animationName)
+        {
+            return _animationSet.HasAnimation(animationName);
+        }
+
         public void SetCurrentFrame(int currentFrame)
         {
             _finished = false;

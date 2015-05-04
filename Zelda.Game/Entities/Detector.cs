@@ -44,6 +44,13 @@ namespace Zelda.Game.Entities
             Map.CheckCollisionFromDetector(this);
             base.NotifyPositionChanged();
         }
+
+        public override void NotifyLayerChanged()
+        {
+            Map.CheckCollisionFromDetector(this);
+            
+            base.NotifyLayerChanged();
+        }
         #endregion
 
         #region 충돌 함수들

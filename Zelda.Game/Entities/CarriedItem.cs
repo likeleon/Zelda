@@ -63,6 +63,7 @@ namespace Zelda.Game.Entities
 
         #region 상태
         public bool IsBeingLifted { get; private set; }
+        public bool IsBeingThrown { get; private set; }
         #endregion
 
         public override void Update()
@@ -79,18 +80,141 @@ namespace Zelda.Game.Entities
                 ClearMovement();
                 SetMovement(new FollowMovement(_hero, 0, -18, true));
             }
+
+            if (IsBeingThrown)
+            {
+                if (IsBroken)
+                    RemoveFromMap();
+                else if (Movement.IsStopped || _yIncrement >= 7)
+                    BreakItemOnGround();
+                else
+                {
+                    uint now = EngineSystem.Now;
+                    while (now >= _nextDownDate)
+                    {
+                        _nextDownDate += 40;
+                        _itemHeight -= _yIncrement;
+                        ++_yIncrement;
+                    }
+                }
+            }
         }
 
         public void SetAnimationStopped()
         {
-            if (!IsBeingLifted)
+            if (!IsBeingLifted && !IsBeingThrown)
                 Sprite.SetCurrentAnimation("stopped");
         }
 
         public void SetAnimationWalking()
         {
-            if (!IsBeingLifted)
+            if (!IsBeingLifted && !IsBeingThrown)
                 Sprite.SetCurrentAnimation("walking");
+        }
+
+        Direction4 _throwingDirection = Direction4.Right;
+        int _yIncrement;
+        uint _nextDownDate;
+        int _itemHeight;
+
+        public void ThrowItem(Direction4 direction)
+        {
+            _throwingDirection = direction;
+            IsBeingLifted = false;
+            IsBeingThrown = true;
+
+            Sprite.SetCurrentAnimation("stopped");
+
+            Y = _hero.Y;
+            StraightMovement movement = new StraightMovement(false, false);
+            movement.SetSpeed(200);
+            movement.SetAngle(Geometry.DegreesToRadians((int)direction * 90));
+            ClearMovement();
+            SetMovement(movement);
+
+            _yIncrement = -2;
+            _nextDownDate = EngineSystem.Now + 40;
+            _itemHeight = 18;
+        }
+
+        bool _isBreaking;
+        public bool IsBroken
+        {
+            get { return _isBreaking && Sprite.IsAnimationFinished; }
+        }
+
+        void BreakItemOnGround()
+        {
+            Movement.Stop();
+
+            switch (GroundBelow)
+            {
+                case Ground.Empty:
+                    if (Layer == Layer.Low)
+                        BreakItem();
+                    else
+                    {
+                        Entities.SetEntityLayer(this, (Layer)((int)Layer - 1));
+                        BreakItemOnGround();
+                    }
+                    break;
+                
+                case Ground.Hole:
+                    RemoveFromMap();
+                    break;
+                
+                case Ground.DeepWater:
+                case Ground.Lava:
+                    RemoveFromMap();
+                    break;
+
+                default:
+                    BreakItem();
+                    break;
+            }
+
+            IsBeingLifted = false;
+            _isBreaking = true;
+        }
+
+        void BreakItem()
+        {
+            if (IsBeingThrown && _throwingDirection != Direction4.Down)
+            {
+                // 실제 그려지는 위치에서 파괴합니다
+                Y = Y - _itemHeight;
+            }
+
+            Movement.Stop();
+
+            if (Sprite.HasAnimation("destroy"))
+                Sprite.SetCurrentAnimation("destroy");
+
+            IsBeingThrown = false;
+            _isBreaking = true;
+        }
+
+        public override void DrawOnMap()
+        {
+            if (!IsDrawn())
+                return;
+
+            if (!IsBeingThrown)
+                base.DrawOnMap();
+            else
+                Map.DrawSprite(Sprite, X, Y - _itemHeight);
+        }
+
+        public override void SetSuspended(bool suspended)
+        {
+            base.SetSuspended(suspended);
+
+            if (!suspended && WhenSuspended != 0)
+            {
+                uint diff = EngineSystem.Now - WhenSuspended;
+                if (IsBeingThrown)
+                    _nextDownDate += diff;
+            }
         }
     }
 }
