@@ -445,6 +445,11 @@ namespace Zelda.Game.Entities
         {
             get { return Entities.Hero; }
         }
+
+        protected Savegame Savegame
+        {
+            get { return Game.SaveGame; }
+        }
         #endregion
 
         #region 게임 루프
@@ -649,6 +654,10 @@ namespace Zelda.Game.Entities
         }
 
         public virtual void NotifyCollisionWithDestructible(Destructible destructible, CollisionMode collisionMode)
+        {
+        }
+
+        public virtual void NotifyCollisionWithChest(Chest chest)
         {
         }
 

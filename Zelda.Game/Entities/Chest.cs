@@ -1,4 +1,5 @@
-﻿using Zelda.Game.Engine;
+﻿using System;
+using Zelda.Game.Engine;
 
 namespace Zelda.Game.Entities
 {
@@ -12,6 +13,8 @@ namespace Zelda.Game.Entities
     class Chest : Detector
     {        
         readonly Treasure _treasure;
+        bool _treasureGiven;
+        uint _treasureDate;
         
         public Chest(
             string name, 
@@ -23,6 +26,7 @@ namespace Zelda.Game.Entities
         {
             _treasure = treasure;
             _open = treasure.IsFound;
+            _treasureGiven = _open;
             OpeningMethod = ChestOpeningMethod.ByInteraction;
 
             Sprite sprite = CreateSprite(spriteName);
@@ -53,6 +57,86 @@ namespace Zelda.Game.Entities
         public override bool IsObstacleFor(MapEntity other)
         {
             return true;
+        }
+
+        public override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        {
+            if (!IsSuspended)
+                entityOverlapping.NotifyCollisionWithChest(this);
+        }
+
+        public override bool NotifyActionCommandPressed()
+        {
+            if (!Hero.IsFree ||
+                CommandsEffects.ActionCommandEffect == ActionCommandEffect.None)
+                return false;
+
+            if (CanOpen())
+            {
+                Sound.Play("chest_open");
+                SetOpen(true);
+                _treasureDate = EngineSystem.Now + 300;
+
+                CommandsEffects.ActionCommandEffect = ActionCommandEffect.None;
+                //Hero.StartFreezed();
+            }
+
+            return true;
+        }
+
+        public bool CanOpen()
+        {
+            switch (OpeningMethod)
+            {
+                case ChestOpeningMethod.ByInteraction:
+                    return true;
+
+                case ChestOpeningMethod.ByInteractionIfSavegameVariable:
+                {
+                    string requiredSavegameVariable = OpeningCondition;
+                    if (string.IsNullOrEmpty(requiredSavegameVariable))
+                        return false;
+
+                    if (Savegame.IsBoolean(requiredSavegameVariable))
+                        return Savegame.GetBoolean(requiredSavegameVariable);
+                    else if (Savegame.IsInteger(requiredSavegameVariable))
+                        return Savegame.GetInteger(requiredSavegameVariable) > 0;
+                    else if (Savegame.IsString(requiredSavegameVariable))
+                        return !String.IsNullOrEmpty(Savegame.GetString(requiredSavegameVariable));
+
+                    return false;
+                }
+
+                case ChestOpeningMethod.ByInteractionIfItem:
+                {
+                    string requiredItemName = OpeningCondition;
+                    if (String.IsNullOrEmpty(requiredItemName))
+                        return false;
+
+                    EquipmentItem item = Equipment.GetItem(requiredItemName);
+                    return item.IsSaved &&
+                           item.Variant > 0 &&
+                           (!item.HasAmount || item.Amount > 0);
+                }
+                    
+                default:
+                    return false;
+            }
+        }
+
+        public void SetOpen(bool open)
+        {
+            if (open == _open)
+                return;
+
+            _open = open;
+            if (open)
+                Sprite.SetCurrentAnimation("open");
+            else
+            {
+                Sprite.SetCurrentAnimation("closed");
+                _treasureGiven = false;
+            }
         }
     }
 

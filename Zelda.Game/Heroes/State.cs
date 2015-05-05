@@ -161,6 +161,11 @@ namespace Zelda.Game.Heroes
         }
 
         #region 상태별
+        public virtual bool IsFree
+        {
+            get { return false; }
+        }
+
         public virtual CarriedItem CarriedItem
         {
             get { return null; }

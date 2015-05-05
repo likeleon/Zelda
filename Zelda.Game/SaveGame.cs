@@ -156,20 +156,39 @@ namespace Zelda.Game
 
         readonly Dictionary<string, SavedValue> _savedValues = new Dictionary<string, SavedValue>();
         
-        public void SetInteger(Key key, int value)
+        bool TypeIs(string key, SavedValue.Types type)
         {
-            _savedValues[key.ToString()] = new SavedValue()
+            SavedValue value;
+            if (!_savedValues.TryGetValue(key, out value))
+                return false;
+
+            return (value.Type == type);
+        }
+
+        public bool IsInteger(string key)
+        {
+            return TypeIs(key, SavedValue.Types.Integer);
+        }
+
+        public void SetInteger(string key, int value)
+        {
+            _savedValues[key] = new SavedValue()
             {
                 Type = SavedValue.Types.Integer,
                 IntData = value
             };
         }
 
-        public int GetInteger(Key key)
+        public void SetInteger(Key key, int value)
+        {
+            SetInteger(key.ToString(), value);
+        }
+
+        public int GetInteger(string key)
         {
             int result = 0;
             SavedValue savedValue;
-            if (_savedValues.TryGetValue(key.ToString(), out savedValue))
+            if (_savedValues.TryGetValue(key, out savedValue))
             {
                 Debug.CheckAssertion(savedValue.Type == SavedValue.Types.Integer, "Value '{0}' is not an integer".F(key));
                 result = savedValue.IntData;
@@ -177,24 +196,49 @@ namespace Zelda.Game
             return result;
         }
 
-        public void SetString(Key key, string value)
+        public int GetInteger(Key key)
         {
-            _savedValues[key.ToString()] = new SavedValue()
+            return GetInteger(key.ToString());
+        }
+
+        public bool IsString(string key)
+        {
+            return TypeIs(key, SavedValue.Types.String);
+        }
+
+        public void SetString(string key, string value)
+        {
+            _savedValues[key] = new SavedValue()
             {
                 Type = SavedValue.Types.String,
                 StringData = value
             };
         }
 
-        public string GetString(Key key)
+        public void SetString(Key key, string value)
+        {
+            SetString(key.ToString(), value);
+        }
+
+        public string GetString(string key)
         {
             SavedValue savedValue;
-            if (_savedValues.TryGetValue(key.ToString(), out savedValue))
+            if (_savedValues.TryGetValue(key, out savedValue))
             {
                 Debug.CheckAssertion(savedValue.Type == SavedValue.Types.String, "Value '{0}' is not a string".F(key));
                 return savedValue.StringData;
             }
             return String.Empty;
+        }
+
+        public string GetString(Key key)
+        {
+            return GetString(key.ToString());
+        }
+
+        public bool IsBoolean(string key)
+        {
+            return TypeIs(key, SavedValue.Types.Boolean);
         }
 
         public void SetBoolean(string key, bool value)
@@ -206,15 +250,25 @@ namespace Zelda.Game
             };
         }
 
+        public void SetBoolean(Key key, bool value)
+        {
+            SetBoolean(key.ToString(), value);
+        }
+
         public bool GetBoolean(string key)
         {
             SavedValue savedValue;
-            if (_savedValues.TryGetValue(key.ToString(), out savedValue))
+            if (_savedValues.TryGetValue(key, out savedValue))
             {
                 Debug.CheckAssertion(savedValue.Type == SavedValue.Types.Boolean, "Value '{0}' is not a boolean".F(key));
                 return (savedValue.IntData != 0);
             }
             return false;
+        }
+
+        public bool GetBoolean(Key key)
+        {
+            return GetBoolean(key.ToString());
         }
         #endregion
     }

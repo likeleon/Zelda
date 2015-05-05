@@ -41,5 +41,10 @@ namespace Zelda.Game.Heroes
         {
             get { return CarriedItem.Behavior.Destroy; }
         }
+
+        public override bool IsFree
+        {
+            get { return true; }
+        }
     }
 }

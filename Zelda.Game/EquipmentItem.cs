@@ -8,7 +8,7 @@ namespace Zelda.Game
         {
             _equipment = equipment;
             Name = String.Empty;
-            SaveGameVariable = String.Empty;
+            SavegameVariable = String.Empty;
         }
 
         readonly Equipment _equipment;
@@ -32,10 +32,35 @@ namespace Zelda.Game
 
         public bool IsSaved
         {
-            get { return !String.IsNullOrEmpty(SaveGameVariable); }
+            get { return !String.IsNullOrEmpty(SavegameVariable); }
         }
 
-        public string SaveGameVariable { get; set; }
+        public string SavegameVariable { get; set; }
+        public string AmountSavegameVariable { get; set; }
+        public bool HasAmount
+        {
+            get { return !String.IsNullOrEmpty(AmountSavegameVariable); }
+        }
+        #endregion
+
+        #region 현재 상태
+        public int Variant
+        {
+            get
+            {
+                Debug.CheckAssertion(IsSaved, "The item '{0}' is not saved".F(Name));
+                return Savegame.GetInteger(SavegameVariable);
+            }
+        }
+
+        public int Amount
+        {
+            get
+            {
+                Debug.CheckAssertion(HasAmount, "The item '{0}' has no amount".F(Name));
+                return Savegame.GetInteger(AmountSavegameVariable);
+            }
+        }
         #endregion
     }
 }

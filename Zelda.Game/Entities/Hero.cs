@@ -60,6 +60,11 @@ namespace Zelda.Game.Entities
             get { return _state.Name; }
         }
 
+        public bool IsFree
+        {
+            get { return _state.IsFree; }
+        }
+
         readonly List<State> _oldStates = new List<State>();
 
         internal void SetState(State newState)
@@ -210,6 +215,14 @@ namespace Zelda.Game.Entities
         {
             _state.NotifyLayerChanged();
         }
+
+        internal void UpdateMovement()
+        {
+            if (Movement != null)
+                Movement.Update();
+
+            // TODO: ClearOldMovements() 누락
+        }
         #endregion
 
         #region 게임 루프
@@ -349,15 +362,12 @@ namespace Zelda.Game.Entities
             }
         }
 
-        internal void UpdateMovement()
+        public bool IsFacingDirection4(Direction4 direction4)
         {
-            if (Movement != null)
-                Movement.Update();
-
-            // TODO: ClearOldMovements() 누락
+            return AnimationDirection == direction4;
         }
         #endregion
-
+        
         #region 충돌
         public void CheckPosition()
         {
@@ -371,6 +381,17 @@ namespace Zelda.Game.Entities
         public override void NotifyCollisionWithDestructible(Destructible destructible, CollisionMode collisionMode)
         {
             destructible.NotifyCollisionWithHero(this, collisionMode);
+        }
+
+        public override void NotifyCollisionWithChest(Chest chest)
+        {
+ 	         if (CommandsEffects.ActionCommandEffect == ActionCommandEffect.None &&
+                 IsFree &&
+                 IsFacingDirection4(Direction4.Up) &&
+                 !chest.IsOpen)
+             {
+                 CommandsEffects.ActionCommandEffect = ActionCommandEffect.Open;
+             }
         }
         #endregion
     }
