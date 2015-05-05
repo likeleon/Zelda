@@ -10,6 +10,12 @@ local direction_names = {
   "Right", "Up", "Left", "Down"
 }
 
+local chest_opening_method_names = {
+ ["interaction"] = "ByInteraction",
+ ["interaction_if_savegame_variable"] = "ByInteractionIfSavegameVariable",
+ ["interaction_if_item"] = "ByInteractionIfItem"
+}
+
 local report = require("report")
 require("LuaXml")
 
@@ -21,6 +27,7 @@ local function import_map(quest_path, map_id)
   map.tiles = {}
   map.destinations = {}
   map.destructibles = {}
+  map.chests = {}
 
   local env = {}
   function env.properties(properties)
@@ -32,11 +39,11 @@ local function import_map(quest_path, map_id)
   function env.destination(destination)
     map.destinations[#map.destinations + 1] = destination
   end
-  function env.chest(chest)
-    -- TODO
-  end
   function env.destructible(destructible)
     map.destructibles[#map.destructibles + 1] = destructible
+  end
+  function env.chest(chest)
+    map.chests[#map.chests + 1] = chest
   end
   function env.npc(npc)
     -- TODO
@@ -114,39 +121,66 @@ local function export_map(quest_path, map_id, map)
   end
 
   for _, destructible in ipairs(map.destructibles) do
-	local destructible_elem = root:append("Destructible")
-	export_map_entity(destructible, destructible_elem)
-	if destructible.treasure_name ~= nil then
-	  destructible_elem:append("TreasureName")[1] = destructible.treasure_name
-	end
-	if destructible.treasure_variant ~= nil then
-	  destructible_elem:append("TreasureVariant")[1] = destructible.treasure_variant
-	end
-	if destructible.treasure_savegame_variable ~= nil then
-	  destructible_elem:append("TreasureSavegameVariable")[1] = destructible.treasure_savegame_variable
-	end
-	destructible_elem:append("Sprite")[1] = destructible.sprite
-	if destructible.destruction_sound ~= nil then
-	  destructible_elem:append("DestructionSound")[1] = destructible.destruction_sound
-	end
-	if destructible.weight ~= nil then
-	  destructible_elem:append("Weight")[1] = destructible.weight
-	end
-	if destructible.can_be_cut ~= nil then
-	  destructible_elem:append("CanBeCut")[1] = destructible.can_be_cut
-	end
-	if destructible.can_explode ~= nil then
-	  destructible_elem:append("CanExplode")[1] = destructible.can_explode
-	end
-	if destructible.can_regenerate ~= nil then
-	  destructible_elem:append("CanRegenerate")[1] = destructible.can_regenerate
-	end
-	if destructible.damage_on_enemies ~= nil then
-	  destructible_elem:append("DamageOnEnemies")[1] = destructible.damage_on_enemies
-	end
-	if destructible.ground ~= nil then
-	  destructible_elem:append("Ground")[1] = destructible.ground
-	end
+    local destructible_elem = root:append("Destructible")
+    export_map_entity(destructible, destructible_elem)
+    if destructible.treasure_name ~= nil then
+      destructible_elem:append("TreasureName")[1] = destructible.treasure_name
+    end
+    if destructible.treasure_variant ~= nil then
+      destructible_elem:append("TreasureVariant")[1] = destructible.treasure_variant
+    end
+    if destructible.treasure_savegame_variable ~= nil then
+      destructible_elem:append("TreasureSavegameVariable")[1] = destructible.treasure_savegame_variable
+    end
+    destructible_elem:append("Sprite")[1] = destructible.sprite
+    if destructible.destruction_sound ~= nil then
+      destructible_elem:append("DestructionSound")[1] = destructible.destruction_sound
+    end
+    if destructible.weight ~= nil then
+      destructible_elem:append("Weight")[1] = destructible.weight
+    end
+    if destructible.can_be_cut ~= nil then
+      destructible_elem:append("CanBeCut")[1] = destructible.can_be_cut
+    end
+    if destructible.can_explode ~= nil then
+      destructible_elem:append("CanExplode")[1] = destructible.can_explode
+    end
+    if destructible.can_regenerate ~= nil then
+      destructible_elem:append("CanRegenerate")[1] = destructible.can_regenerate
+    end
+    if destructible.damage_on_enemies ~= nil then
+      destructible_elem:append("DamageOnEnemies")[1] = destructible.damage_on_enemies
+    end
+    if destructible.ground ~= nil then
+      destructible_elem:append("Ground")[1] = destructible.ground
+    end
+  end
+
+  for _, chest in ipairs(map.chests) do
+    local chest_elem = root:append("Chest")
+    export_map_entity(chest, chest_elem)
+    if chest.treasure_name ~= nil then
+      chest_elem:append("TreasureName")[1] = chest.treasure_name
+    end
+    if chest.treasure_variant ~= nil then
+      chest_elem:append("TreasureVariant")[1] = chest.treasure_variant
+    end
+    if chest.treasure_savegame_variable ~= nil then
+      chest_elem:append("TreasureSavegameVariable")[1] = chest.treasure_savegame_variable
+    end
+    chest_elem:append("Sprite")[1] = chest.sprite
+    if chest.opening_method ~= nil then
+      chest_elem:append("OpeningMethod")[1] = chest_opening_method_names[chest.opening_method]
+    end
+    if chest.opening_condition ~= nil then
+      chest_elem:append("OpeningCondition")[1] = chest.opening_condition
+    end
+    if chest.opening_condition_consumed ~= nil then
+      chest_elem:append("OpeningConditionConsumed")[1] = chest.opening_condition_consumed
+    end
+    if chest.cannot_open_dialog ~= nil then
+      chest_elem:append("CannotOpenDialog")[1] = chest.cannot_open_dialog
+    end
   end
 
   local file = quest_path .. "maps/" .. map_id .. ".xml"

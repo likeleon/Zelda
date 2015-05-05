@@ -30,6 +30,8 @@ namespace Zelda.Game.Entities
                 return new DestinationData(xmlData as DestinationXmlData);
             else if (xmlData is DestructibleXmlData)
                 return new DestructibleData(xmlData as DestructibleXmlData);
+            else if (xmlData is ChestXmlData)
+                return new ChestData(xmlData as ChestXmlData);
             else
                 throw new Exception("Unknown entity type");
         }

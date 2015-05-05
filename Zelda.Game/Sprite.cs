@@ -169,6 +169,13 @@ namespace Zelda.Game
         }
         #endregion
 
+        #region 크기와 중심점
+        public Size MaxSize
+        {
+            get { return _animationSet.MaxSize; }
+        }
+        #endregion
+
         #region 갱신과 그리기
         public override void Update()
         {

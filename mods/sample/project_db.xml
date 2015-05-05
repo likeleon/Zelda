@@ -9,6 +9,9 @@
   <TileSets>
     <Tileset Id="castle" Description="Castle" />
   </TileSets>
+  <Items>
+    <Item Id="bomb" Description="Bomb" />
+  </Items>
   <Languages>
     <Language Id="en" Description="English" />
     <Language Id="kr" Description="Korean" />

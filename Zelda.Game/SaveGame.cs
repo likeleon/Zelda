@@ -34,55 +34,26 @@ namespace Zelda.Game
             AbilityDetectWeakWalls, // 약한 벽 감지 레벨
         }
 
-        public class SavedValue
-        {
-            public enum Types
-            {
-                String,
-                Integer,
-                Boolean
-            }
-
-            public Types Type { get; set; }
-            public string StringData { get; set; }
-            public int IntData { get; set; }
-        }
-
         [XmlRoot("SaveData")]
         public class SaveData
         {
             [XmlElement("SavedValue")]
-            public Dictionary<Key, SavedValue> SavedValues { get; set; }
+            public Dictionary<string, SavedValue> SavedValues { get; set; }
         }
 
         static readonly int SaveGameVersion = 2;
 
+        #region 파일 상태
         bool _empty = true;
         public bool IsEmpty
         {
             get { return _empty; }
         }
 
-        readonly Equipment _equipment;
-        public Equipment Equipment
+        public void Initialize()
         {
-            get { return _equipment; }
-        }
-
-        public Game Game { get; set; }
-
-        readonly MainLoop _mainLoop;
-        readonly string _fileName;
-        readonly Dictionary<Key, SavedValue> _savedValues = new Dictionary<Key,SavedValue>();
-
-        public Savegame(MainLoop mainLoop, string fileName)
-        {
-            _mainLoop = mainLoop;
-            _fileName = fileName;
-            _equipment = new Equipment(this);
-
             string modWriteDir = ModFiles.ModWriteDir;
-            Debug.CheckAssertion(!String.IsNullOrWhiteSpace(modWriteDir), 
+            Debug.CheckAssertion(!String.IsNullOrWhiteSpace(modWriteDir),
                 "The mod write directory for savegames was not set in mod.xml");
 
             if (!ModFiles.DataFileExists(_fileName))
@@ -95,7 +66,37 @@ namespace Zelda.Game
                 _empty = false;
                 ImportFromFile();
             }
+
+            Equipment.LoadItems();
         }
+        
+        readonly string _fileName;
+        public string FileName
+        {
+            get { return _fileName; }
+        }
+        #endregion
+
+        #region 세이브되지 않는 데이터
+        readonly Equipment _equipment;
+        public Equipment Equipment
+        {
+            get { return _equipment; }
+        }
+
+        public Game Game { get; set; }
+
+        readonly MainLoop _mainLoop;
+        #endregion
+
+        #region 생성
+        public Savegame(MainLoop mainLoop, string fileName)
+        {
+            _mainLoop = mainLoop;
+            _fileName = fileName;
+            _equipment = new Equipment(this);
+        }
+        #endregion
 
         void SetInitialValues()
         {
@@ -138,9 +139,26 @@ namespace Zelda.Game
             }
         }
 
+        #region 데이터
+        public class SavedValue
+        {
+            public enum Types
+            {
+                String,
+                Integer,
+                Boolean
+            }
+
+            public Types Type { get; set; }
+            public string StringData { get; set; }
+            public int IntData { get; set; }
+        }
+
+        readonly Dictionary<string, SavedValue> _savedValues = new Dictionary<string, SavedValue>();
+        
         public void SetInteger(Key key, int value)
         {
-            _savedValues[key] = new SavedValue()
+            _savedValues[key.ToString()] = new SavedValue()
             {
                 Type = SavedValue.Types.Integer,
                 IntData = value
@@ -151,7 +169,7 @@ namespace Zelda.Game
         {
             int result = 0;
             SavedValue savedValue;
-            if (_savedValues.TryGetValue(key, out savedValue))
+            if (_savedValues.TryGetValue(key.ToString(), out savedValue))
             {
                 Debug.CheckAssertion(savedValue.Type == SavedValue.Types.Integer, "Value '{0}' is not an integer".F(key));
                 result = savedValue.IntData;
@@ -161,7 +179,7 @@ namespace Zelda.Game
 
         public void SetString(Key key, string value)
         {
-            _savedValues[key] = new SavedValue()
+            _savedValues[key.ToString()] = new SavedValue()
             {
                 Type = SavedValue.Types.String,
                 StringData = value
@@ -171,12 +189,33 @@ namespace Zelda.Game
         public string GetString(Key key)
         {
             SavedValue savedValue;
-            if (_savedValues.TryGetValue(key, out savedValue))
+            if (_savedValues.TryGetValue(key.ToString(), out savedValue))
             {
                 Debug.CheckAssertion(savedValue.Type == SavedValue.Types.String, "Value '{0}' is not a string".F(key));
                 return savedValue.StringData;
             }
             return String.Empty;
         }
+
+        public void SetBoolean(string key, bool value)
+        {
+            _savedValues[key] = new SavedValue()
+            {
+                Type = SavedValue.Types.Boolean,
+                IntData = value ? 1 : 0
+            };
+        }
+
+        public bool GetBoolean(string key)
+        {
+            SavedValue savedValue;
+            if (_savedValues.TryGetValue(key.ToString(), out savedValue))
+            {
+                Debug.CheckAssertion(savedValue.Type == SavedValue.Types.Boolean, "Value '{0}' is not a boolean".F(key));
+                return (savedValue.IntData != 0);
+            }
+            return false;
+        }
+        #endregion
     }
 }

@@ -78,6 +78,7 @@
     <Compile Include="Engine\Sound.cs" />
     <Compile Include="Entities\AnimatedTilePattern.cs" />
     <Compile Include="Entities\CarriedItem.cs" />
+    <Compile Include="Entities\Chest.cs" />
     <Compile Include="Entities\CollisionMode.cs" />
     <Compile Include="Entities\Destination.cs" />
     <Compile Include="Entities\Destructible.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Entities\TilesetData.cs" />
     <Compile Include="Entities\Tile.cs" />
     <Compile Include="Equipment.cs" />
+    <Compile Include="EquipmentItem.cs" />
     <Compile Include="GameCommand.cs" />
     <Compile Include="GameCommands.cs" />
     <Compile Include="Heroes\CarryingState.cs" />

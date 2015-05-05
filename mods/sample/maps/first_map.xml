@@ -396,4 +396,11 @@
     <Weight>1</Weight>
     <DamageOnEnemies>2</DamageOnEnemies>
   </Destructible>
+  <Chest>
+    <Layer>Low</Layer>
+    <X>288</X>
+    <Y>45</Y>
+    <TreasureName>bomb</TreasureName>
+    <Sprite>entities/chest</Sprite>
+  </Chest>
 </MapData>

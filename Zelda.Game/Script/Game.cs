@@ -91,6 +91,7 @@ namespace Zelda.Game.Script
                     throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
 
                 RawSaveGame rawSaveGame = new RawSaveGame(ScriptContext.MainLoop, fileName);
+                rawSaveGame.Initialize();
                 return new Game(rawSaveGame);
             });
         }

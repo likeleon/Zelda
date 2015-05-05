@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace Zelda.Game
 {
     class Treasure
@@ -14,6 +15,16 @@ namespace Zelda.Game
             _itemName = itemName;
             _variant = variant;
             _savegameVariable = savegameVariable;
+        }
+
+        public bool IsSaved
+        {
+            get { return !String.IsNullOrEmpty(_savegameVariable); }
+        }
+
+        public bool IsFound
+        {
+            get { return IsSaved && _game.SaveGame.GetBoolean(_savegameVariable); }
         }
     }
 }

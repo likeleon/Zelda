@@ -1,9 +1,48 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Zelda.Game
 {
     class Equipment
     {
+        #region 생성
+        public Equipment(Savegame saveGame)
+        {
+            _savegame = saveGame;
+        }
+        #endregion
+
+        #region 기본
+        readonly Savegame _savegame;
+        public Savegame Savegame
+        {
+            get { return _savegame; }
+        }
+
+        public Game Game
+        {
+            get { return _savegame.Game; }
+        }
+
+        public void Update()
+        {
+            Game game = _savegame.Game;
+            if (game == null)
+                return;
+
+            bool gameSuspended = game.IsSuspended;
+            if (_suspended != gameSuspended)
+                SetSuspended(gameSuspended);
+        }
+
+        bool _suspended;
+        public void SetSuspended(bool suspended)
+        {
+            _suspended = suspended;
+        }
+        #endregion
+
+        #region 생명
         public int MaxLife
         {
             get
@@ -33,39 +72,39 @@ namespace Zelda.Game
                 _savegame.SetInteger(Savegame.Key.CurrentLife, life);
             }
         }
-
-        public Equipment(Savegame saveGame)
+        
+        public void RestoreAllLife()
         {
-            _savegame = saveGame;
+            Life = MaxLife;
+        }
+        #endregion
+
+        #region 장비 아이템들
+        readonly Dictionary<string, EquipmentItem> _items = new Dictionary<string, EquipmentItem>();
+
+        public void LoadItems()
+        {
+            // project_db.xml에 정의된 각 장비 아이템들을 생성합니다
+            foreach (var kvp in CurrentMod.GetResources(ResourceType.Item))
+            {
+                string itemId = kvp.Key;
+                EquipmentItem item = new EquipmentItem(this);
+                item.Name = itemId;
+                _items[itemId] = item;
+            }
         }
 
-        readonly Savegame _savegame;
-        public Savegame Savegame
+        public bool ItemExists(string itemName)
         {
-            get { return _savegame; }
+            return _items.ContainsKey(itemName);
         }
 
-        public Game Game
+        public EquipmentItem GetItem(string itemName)
         {
-            get { return _savegame.Game; }
+            Debug.CheckAssertion(ItemExists(itemName), "No such item: '{0}'".F(itemName));
+            return _items[itemName];
         }
-
-        public void Update()
-        {
-            Game game = _savegame.Game;
-            if (game == null)
-                return;
-
-            bool gameSuspended = game.IsSuspended;
-            if (_suspended != gameSuspended)
-                SetSuspended(gameSuspended);
-        }
-
-        bool _suspended;
-        public void SetSuspended(bool suspended)
-        {
-            _suspended = suspended;
-        }
+        #endregion
 
         #region 기본 제공 능력들
         public bool HasAbility(Ability ability, int level = 1)
@@ -124,10 +163,5 @@ namespace Zelda.Game
             return (Savegame.Key)(-1);
         }
         #endregion
-
-        public void RestoreAllLife()
-        {
-            Life = MaxLife;
-        }
     }
 }

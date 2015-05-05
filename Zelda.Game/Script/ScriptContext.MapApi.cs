@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 
@@ -11,7 +12,8 @@ namespace Zelda.Game.Script
             = new Dictionary<EntityType, Func<Map, EntityData, MapEntity>>()
         {
             { EntityType.Destination, CreateDestination },
-            { EntityType.Destructible, CreateDestructible }
+            { EntityType.Destructible, CreateDestructible },
+            { EntityType.Chest, CreateChest }
         };
 
         internal static void CreateMapEntityFromData(Map map, EntityData entityData)
@@ -93,6 +95,48 @@ namespace Zelda.Game.Script
                 map.Entities.AddEntity(destructible);
 
                 return (map.IsStarted) ? destructible : null;
+            });
+        }
+
+        public static Chest CreateChest(Map map, EntityData entityData)
+        {
+            return ScriptTools.ExceptionBoundaryHandle<Chest>(() =>
+            {
+                ChestData data = entityData as ChestData;
+                Zelda.Game.Game game = map.Game;
+                if (data.OpeningMethod == ChestOpeningMethod.ByInteractionIfItem)
+                {
+                    if (!String.IsNullOrEmpty(data.OpeningCondition) ||
+                        !game.Equipment.ItemExists(data.OpeningCondition))
+                    {
+                        string msg = "Bad field 'OpeningCondition' (no such equipement item: '{0}'".F(data.OpeningCondition);
+                        throw new InvalidDataException(msg);
+                    }
+                    EquipmentItem item = game.Equipment.GetItem(data.OpeningCondition);
+                    if (!item.IsSaved)
+                    {
+                        string msg = "Bad field 'OpeneingCondition' (equipment item '{0}' is not saved".F(data.OpeningCondition);
+                        throw new InvalidDataException();
+                    }
+                }
+
+                Chest chest = new Chest(
+                    data.Name,
+                    data.Layer,
+                    data.XY,
+                    data.Sprite,
+                    new Treasure(
+                        game,
+                        data.TreasureName,
+                        data.TreasureVariant,
+                        data.TreasureSavegameVariable));
+                chest.OpeningMethod = data.OpeningMethod;
+                chest.OpeningCondition = data.OpeningCondition;
+                chest.OpeningConditionConsumed = data.OpeningConditionConsumed;
+                chest.CannotOpenDialogId = data.CannotOpenDialog;
+                map.Entities.AddEntity(chest);
+
+                return (map.IsStarted) ? chest : null;
             });
         }
 
