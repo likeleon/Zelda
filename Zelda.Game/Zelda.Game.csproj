@@ -104,10 +104,12 @@
     <Compile Include="GameCommands.cs" />
     <Compile Include="Heroes\CarryingState.cs" />
     <Compile Include="Heroes\FreeState.cs" />
+    <Compile Include="Heroes\FreezedState.cs" />
     <Compile Include="Heroes\HeroSprites.cs" />
     <Compile Include="Heroes\LiftingState.cs" />
     <Compile Include="Heroes\PlayerMovementState.cs" />
     <Compile Include="Heroes\State.cs" />
+    <Compile Include="Heroes\TreasureState.cs" />
     <Compile Include="Movements\FollowMovement.cs" />
     <Compile Include="Movements\PixelMovement.cs" />
     <Compile Include="Movements\PlayerMovement.cs" />

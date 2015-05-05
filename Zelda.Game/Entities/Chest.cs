@@ -78,10 +78,43 @@ namespace Zelda.Game.Entities
                 _treasureDate = EngineSystem.Now + 300;
 
                 CommandsEffects.ActionCommandEffect = ActionCommandEffect.None;
-                //Hero.StartFreezed();
+                Hero.StartFreezed();
             }
 
             return true;
+        }
+
+        public override void Update()
+        {
+            if (IsOpen && !IsSuspended)
+            {
+                if (!_treasureGiven && _treasureDate != 0 && EngineSystem.Now >= _treasureDate)
+                {
+                    _treasureDate = 0;
+                    _treasure.EnsureObtainable();
+                    if (!_treasure.IsEmpty)
+                    {
+                        // 플레이어에게 보물을 줍니다
+                        Hero.StartTreasure(_treasure);
+                        _treasureGiven = true;
+                    }
+                    else
+                    {
+                        // 빈 보물 상자
+                        if (_treasure.IsSaved)
+                        {
+                            // 보물이 찾아진 것으로 표시합니다
+                            Savegame.SetBoolean(_treasure.SavegameVariable, true);
+                        }
+
+                        _treasureGiven = true;
+
+                        Hero.StartFree();
+                    }
+                }
+            }
+
+            base.Update();
         }
 
         public bool CanOpen()

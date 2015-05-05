@@ -9,6 +9,7 @@ namespace Zelda.Game
             _equipment = equipment;
             Name = String.Empty;
             SavegameVariable = String.Empty;
+            IsObtainable = true;
         }
 
         readonly Equipment _equipment;
@@ -41,6 +42,8 @@ namespace Zelda.Game
         {
             get { return !String.IsNullOrEmpty(AmountSavegameVariable); }
         }
+
+        public bool IsObtainable { get; set; }
         #endregion
 
         #region 현재 상태

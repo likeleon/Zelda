@@ -27,6 +27,9 @@ namespace Zelda.Game
 
             [XmlArrayItem("Sprite")]
             public Resource[] Sprites { get; set; }
+
+            [XmlArrayItem("Item")]
+            public Resource[] Items { get; set; }
             
             [XmlArrayItem("Language")]
             public Resource[] Languages { get; set; }
@@ -62,6 +65,7 @@ namespace Zelda.Game
 
                 FillResourceMap(ResourceType.Map, db.Maps);
                 FillResourceMap(ResourceType.Sprite, db.Sprites);
+                FillResourceMap(ResourceType.Item, db.Items);
                 FillResourceMap(ResourceType.Language, db.Languages);
             }
             catch (Exception ex)
@@ -78,9 +82,7 @@ namespace Zelda.Game
                 return;
 
             foreach (ProjectDB.Resource resource in resources)
-            {
                 _resourceMaps[resourceType].Add(resource.Id, resource.Description);
-            }
         }
 
         public void Clear()

@@ -105,9 +105,24 @@ namespace Zelda.Game.Entities
             _oldStates.Clear();
         }
 
+        public void StartFree()
+        {
+            SetState(new FreeState(this));
+        }
+
+        public void StartFreezed()
+        {
+            SetState(new FreezedState(this));
+        }
+
         public void StartLifting(CarriedItem itemToLift)
         {
             SetState(new LiftingState(this, itemToLift));
+        }
+
+        public void StartTreasure(Treasure treasure)
+        {
+            SetState(new TreasureState(this, treasure));
         }
         #endregion
 
