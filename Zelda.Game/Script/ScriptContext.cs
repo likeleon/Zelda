@@ -17,6 +17,7 @@ namespace Zelda.Game.Script
         static ObjectCreator _objectCreator;
         static Main _scriptMain;
 
+        #region 메인 루프
         public static void Initialize(MainLoop mainLoop)
         {
             _mainLoop = mainLoop;
@@ -69,7 +70,9 @@ namespace Zelda.Game.Script
             _scriptMain = (Main)ctor.Invoke(null);
             Main.Current = _scriptMain;
         }
+        #endregion
 
+        #region 이벤트들
         static bool OnInput(IInputEventHandler handler, InputEvent input)
         {
             bool handled = false;
@@ -103,5 +106,6 @@ namespace Zelda.Game.Script
                 return context.OnKeyReleased(keyName);
             });
         }
+        #endregion
     }
 }

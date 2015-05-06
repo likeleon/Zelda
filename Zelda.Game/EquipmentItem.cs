@@ -10,6 +10,7 @@ namespace Zelda.Game
             Name = String.Empty;
             SavegameVariable = String.Empty;
             IsObtainable = true;
+            SoundWhenBrandished = "treasure";
         }
 
         readonly Equipment _equipment;
@@ -44,6 +45,8 @@ namespace Zelda.Game
         }
 
         public bool IsObtainable { get; set; }
+
+        public string SoundWhenBrandished { get; set; }
         #endregion
 
         #region 현재 상태
@@ -54,6 +57,13 @@ namespace Zelda.Game
                 Debug.CheckAssertion(IsSaved, "The item '{0}' is not saved".F(Name));
                 return Savegame.GetInteger(SavegameVariable);
             }
+        }
+
+        public void SetVariant(int variant)
+        {
+            Debug.CheckAssertion(IsSaved, "The item '{0}' is not saved".F(Name));
+
+            Savegame.SetInteger(SavegameVariable, variant);
         }
 
         public int Amount

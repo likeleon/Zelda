@@ -165,6 +165,18 @@ namespace Zelda.Game.Heroes
             _tunicSprite.SetCurrentDirection(direction);
         }
 
+        Direction4 _animationDirectionSaved = Direction4.None;
+
+        public void SaveAnimationDirection()
+        {
+            _animationDirectionSaved = AnimationDirection;
+        }
+
+        public void RestoreAnimationDirection()
+        {
+            SetAnimationDirection(_animationDirectionSaved);
+        }
+
         public void SetAnimationStoppedCommon()
         {
             _walking = false;
@@ -215,6 +227,12 @@ namespace Zelda.Game.Heroes
         public void SetAnimationLifting()
         {
             SetTunicAnimation("lifting");
+        }
+
+        public void SetAnimationBrandish()
+        {
+            SetTunicAnimation("brandish");
+            _tunicSprite.SetCurrentDirection(Direction4.Up);
         }
 
         void SetTunicAnimation(string animation)
