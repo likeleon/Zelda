@@ -166,6 +166,11 @@ namespace Zelda.Game.Heroes
             get { return false; }
         }
 
+        public virtual bool IsBrandishingTreasure
+        {
+            get { return false; }
+        }
+
         public virtual CarriedItem CarriedItem
         {
             get { return null; }

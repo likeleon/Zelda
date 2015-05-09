@@ -8,12 +8,14 @@ namespace Zelda.Game
         public static string LanguageCode
         {
             get { return _languageCode; }
-            set
-            {
-                Debug.CheckAssertion(HasLanguage(value), "No such language: '{0}'".F(value));
-                
-                _languageCode = value;
-            }
+        }
+
+        public static void SetLanguage(string languageCode)
+        {
+            Debug.CheckAssertion(HasLanguage(languageCode), "No such language: '{0}'".F(languageCode));
+
+            _languageCode = languageCode;
+            DialogResource.Initialize();
         }
 
         public static bool HasLanguage(string languageCode)

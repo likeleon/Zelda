@@ -29,7 +29,7 @@ namespace Zelda.Game.Heroes
 
             _treasure.GiveToPlayer();
 
-            // TODO: ScriptContext.NotifyHeroBrandishTreasure(_treasure);
+            ScriptContext.NotifyHeroBrandishTreasure(_treasure);
         }
 
         public override void Stop(State nextState)
@@ -55,6 +55,11 @@ namespace Zelda.Game.Heroes
         public override CarriedItem.Behavior PreviousCarriedItemBehavior
         {
             get { return CarriedItem.Behavior.Destroy; }
+        }
+
+        public override bool IsBrandishingTreasure
+        {
+            get { return true; }
         }
     }
 }

@@ -14,13 +14,14 @@ namespace Zelda.Game.Script
                     return LanguageInternal.LanguageCode;
                 });
             }
-            set 
+        }
+
+        public static void SetLanguage(string languageCode)
+        {
+            ScriptTools.ExceptionBoundaryHandle(() =>
             {
-                ScriptTools.ExceptionBoundaryHandle(() =>
-                {
-                    LanguageInternal.LanguageCode = value;
-                });
-            }
+                LanguageInternal.SetLanguage(languageCode);
+            });
         }
 
         public static string GetLanguageName(string languageCode)

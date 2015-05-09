@@ -85,6 +85,7 @@ namespace Zelda.Game.Engine
             _zeldaWriteDir = null;
             _modWriteDir = null;
 
+            DialogResource.Quit();
             FileSystem.PHYSFS_deinit();
         }
 

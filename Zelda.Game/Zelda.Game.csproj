@@ -64,6 +64,9 @@
     <Compile Include="Containers\Grid.cs" />
     <Compile Include="CurrentMod.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="Dialog.cs" />
+    <Compile Include="DialogBoxSystem.cs" />
+    <Compile Include="DialogResource.cs" />
     <Compile Include="Directions.cs" />
     <Compile Include="Engine\Color.cs" />
     <Compile Include="Engine\Drawable.cs" />
@@ -113,6 +116,7 @@
     <Compile Include="Movements\FollowMovement.cs" />
     <Compile Include="Movements\PixelMovement.cs" />
     <Compile Include="Movements\PlayerMovement.cs" />
+    <Compile Include="Script\ScriptContext.EntityApi.cs" />
     <Compile Include="Script\ScriptException.cs" />
     <Compile Include="SpriteData.cs" />
     <Compile Include="Treasure.cs" />

@@ -11,7 +11,7 @@ namespace Sample
         {
             Console.WriteLine("This is a sample mod for Zelda.");
 
-            Language.LanguageCode = "en";
+            Language.SetLanguage("en");
 
 #if DEBUG
             GameManager.StartGame();

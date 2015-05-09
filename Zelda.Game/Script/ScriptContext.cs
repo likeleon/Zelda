@@ -70,6 +70,12 @@ namespace Zelda.Game.Script
             _scriptMain = (Main)ctor.Invoke(null);
             Main.Current = _scriptMain;
         }
+
+        internal static void NotifyDialogFinished(Zelda.Game.Game game, Dialog dialog, Action callback)
+        {
+            if (callback != null)
+                callback();
+        }
         #endregion
 
         #region 이벤트들

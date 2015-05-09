@@ -60,6 +60,11 @@ namespace Zelda.Game.Entities
             get { return _state.Name; }
         }
 
+        public bool IsBrandishingTreasure
+        {
+            get { return _state.IsBrandishingTreasure; }
+        }
+
         public bool IsFree
         {
             get { return _state.IsFree; }

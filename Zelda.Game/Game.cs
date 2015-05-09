@@ -14,6 +14,7 @@ namespace Zelda.Game
         {
             _mainLoop = mainLoop;
             _saveGame = saveGame;
+            _dialogBox = new DialogBoxSystem(this);
 
             _saveGame.Game = this;
 
@@ -164,6 +165,11 @@ namespace Zelda.Game
             get { return _paused; }
         }
 
+        public bool IsDialogEnabled
+        {
+            get { return _dialogBox.IsEnabled; }
+        }
+
         public bool IsSuspended
         {
             get
@@ -210,9 +216,32 @@ namespace Zelda.Game
         }
         #endregion
 
+        #region 다이얼로그
+        readonly DialogBoxSystem _dialogBox;
+
+        public void StartDialog(string dialogId, Action callback)
+        {
+            if (!DialogResource.Exists(dialogId))
+                Debug.Error("No such dialog: '{0}'".F(dialogId));
+            else
+                _dialogBox.Open(dialogId, callback);
+        }
+
+        public void StopDialog()
+        {
+            _dialogBox.Close();
+        }
+        #endregion
+
         #region 게임 컨트롤
         public void NotifyCommandPressed(GameCommand command)
         {
+            if (IsDialogEnabled)
+            {
+                if (_dialogBox.NotifyCommandPressed(command))
+                    return;
+            }
+
             if (command == GameCommand.Pause)
             {
                 if (IsPaused)
