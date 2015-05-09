@@ -2,21 +2,17 @@
 <Dialogs>
   <Dialog>
     <Id>_treasure.bomb.1</Id>
-    <Text>
-You found some Bombs!
+    <Text>You found some Bombs!
 Press X to drop a bomb
-and blow everything up!
-    </Text>
+and blow everything up!</Text>
   </Dialog>
   <Dialog>
     <Id>welcome_sign</Id>
-    <Text>
-Hello player!
+    <Text>Hello player!
 Welcome to the Zelda
 sample quest.
 There is not much to
 play yet, but any help
-is very appreciated!
-    </Text>
+is very appreciated!</Text>
   </Dialog>
 </Dialogs>

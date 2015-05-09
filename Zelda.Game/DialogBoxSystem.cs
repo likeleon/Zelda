@@ -96,7 +96,10 @@ namespace Zelda.Game
             Debug.CheckAssertion(_builtIn, "This dialog box is not the built-in one");
 
             if (!HasMoreLines)
+            {
                 Close();
+                return;
+            }
 
             CommandsEffects commandsEffects = _game.CommandsEffects;
             commandsEffects.ActionCommandEffect = ActionCommandEffect.Next;
