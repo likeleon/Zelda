@@ -97,6 +97,7 @@
     <Compile Include="Entities\MapEntities.cs" />
     <Compile Include="Entities\MapEntity.cs" />
     <Compile Include="Entities\NonAnimatedRegions.cs" />
+    <Compile Include="Entities\Npc.cs" />
     <Compile Include="Entities\ParallaxScrollingTilePattern.cs" />
     <Compile Include="Entities\SelfScrollingTilePattern.cs" />
     <Compile Include="Entities\SimpleTilePattern.cs" />

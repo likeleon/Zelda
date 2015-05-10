@@ -13,7 +13,8 @@ namespace Zelda.Game.Script
         {
             { EntityType.Destination, CreateDestination },
             { EntityType.Destructible, CreateDestructible },
-            { EntityType.Chest, CreateChest }
+            { EntityType.Chest, CreateChest },
+            { EntityType.Npc, CreateNpc }
         };
 
         internal static void CreateMapEntityFromData(Map map, EntityData entityData)
@@ -137,6 +138,26 @@ namespace Zelda.Game.Script
                 map.Entities.AddEntity(chest);
 
                 return (map.IsStarted) ? chest : null;
+            });
+        }
+        
+        public static Npc CreateNpc(Map map, EntityData entityData)
+        {
+            return ScriptTools.ExceptionBoundaryHandle<Npc>(() =>
+            {
+                NpcData data = entityData as NpcData;
+                Npc npc = new Npc(
+                    map.Game,
+                    data.Name,
+                    data.Layer,
+                    data.XY,
+                    data.Subtype,
+                    data.Sprite,
+                    data.Direction,
+                    data.Behavior);
+                map.Entities.AddEntity(npc);
+
+                return (map.IsStarted) ? npc : null;
             });
         }
 

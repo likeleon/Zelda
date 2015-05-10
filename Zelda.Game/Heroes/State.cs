@@ -146,6 +146,10 @@ namespace Zelda.Game.Heroes
         {
         }
 
+        public virtual void NotifyMovementFinished()
+        {
+        }
+
         public virtual void NotifyPositionChanged()
         {
         }

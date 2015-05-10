@@ -210,6 +210,9 @@ namespace Zelda.Game.Movements
                 }
                 _scriptMovement.NotifyMovementFinished();
             }
+
+            if (_entity != null & !_entity.IsBeingRemoved)
+                _entity.NotifyMovementFinished();
         }
         #endregion
 

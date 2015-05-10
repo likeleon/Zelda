@@ -64,6 +64,11 @@ namespace Zelda.Game.Entities
             get { return false; }
         }
 
+        public override bool IsNpcObstacle(Npc npc)
+        {
+            return npc.IsSolid;
+        }
+
         #region 게임 데이터
         readonly Hero _hero;
         #endregion

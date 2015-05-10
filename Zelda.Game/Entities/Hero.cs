@@ -224,6 +224,11 @@ namespace Zelda.Game.Entities
             CheckPosition();
         }
 
+        public override void NotifyMovementFinished()
+        {
+            _state.NotifyMovementFinished();
+        }
+
         public override void NotifyPositionChanged()
         {
             CheckPosition();

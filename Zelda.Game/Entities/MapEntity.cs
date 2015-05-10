@@ -47,6 +47,11 @@ namespace Zelda.Game.Entities
         #region 타입
         public abstract EntityType Type { get; }
 
+        public bool IsHero
+        {
+            get { return Type == EntityType.Hero; }
+        }
+
         public virtual bool IsDrawnAtItsPosition
         {
             get { return true; }
@@ -570,6 +575,10 @@ namespace Zelda.Game.Entities
         {
         }
 
+        public virtual void NotifyMovementFinished()
+        {
+        }
+
         public virtual void NotifyLayerChanged()
         {
             if (IsOnMap)
@@ -693,6 +702,11 @@ namespace Zelda.Game.Entities
         public virtual bool IsDestructibleObstacle(Destructible destructible)
         {
             return !destructible.IsWaitingForRegeneration;
+        }
+
+        public virtual bool IsNpcObstacle(Npc npc)
+        {
+            return true;
         }
         #endregion
     }

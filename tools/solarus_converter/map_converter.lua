@@ -16,6 +16,10 @@ local chest_opening_method_names = {
  ["interaction_if_item"] = "ByInteractionIfItem"
 }
 
+local npc_subtype_names = {
+  "GeneralizedNpc", "UsualNpc"
+}
+
 local report = require("report")
 require("LuaXml")
 
@@ -28,6 +32,7 @@ local function import_map(quest_path, map_id)
   map.destinations = {}
   map.destructibles = {}
   map.chests = {}
+  map.npcs = {}
 
   local env = {}
   function env.properties(properties)
@@ -46,7 +51,7 @@ local function import_map(quest_path, map_id)
     map.chests[#map.chests + 1] = chest
   end
   function env.npc(npc)
-    -- TODO
+    map.npcs[#map.npcs + 1] = npc
   end
   function env.block(block)
     -- TODO
@@ -180,6 +185,19 @@ local function export_map(quest_path, map_id, map)
     end
     if chest.cannot_open_dialog ~= nil then
       chest_elem:append("CannotOpenDialog")[1] = chest.cannot_open_dialog
+    end
+  end
+
+  for _, npc in ipairs(map.npcs) do
+    local npc_elem = root:append("Npc")
+    export_map_entity(npc, npc_elem)
+    npc_elem:append("Direction")[1] = direction_names[npc.direction + 1]
+    npc_elem:append("Subtype")[1] = npc_subtype_names[npc.subtype + 1]
+    if npc.sprite ~= nil then
+      npc_elem:append("Sprite")[1] = npc.sprite
+    end
+    if npc.behavior ~= nil then
+      npc_elem:append("Behavior")[1] = npc.behavior
     end
   end
 

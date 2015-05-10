@@ -174,6 +174,7 @@ namespace Zelda.Game
         [XmlElement("Destination", typeof(DestinationXmlData))]
         [XmlElement("Destructible", typeof(DestructibleXmlData))]
         [XmlElement("Chest", typeof(ChestXmlData))]
+        [XmlElement("Npc", typeof(NpcXmlData))]
         public EntityXmlData[] Entities { get; set; }
 
         [XmlIgnore]

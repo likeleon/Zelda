@@ -403,4 +403,13 @@
     <TreasureName>bomb</TreasureName>
     <Sprite>entities/chest</Sprite>
   </Chest>
+  <Npc>
+    <Layer>Low</Layer>
+    <X>144</X>
+    <Y>165</Y>
+    <Direction>Down</Direction>
+    <Subtype>GeneralizedNpc</Subtype>
+    <Sprite>entities/sign</Sprite>
+    <Behavior>dialog#welcome_sign</Behavior>
+  </Npc>
 </MapData>

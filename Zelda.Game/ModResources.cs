@@ -36,6 +36,8 @@ namespace Zelda.Game
 
             [XmlArrayItem("Font")]
             public Resource[] Fonts { get; set; }
+
+            // TODO XmlChoiceIdentifierAttribute 사용
         }
 
         public class ResourceMap : Dictionary<string, string>
