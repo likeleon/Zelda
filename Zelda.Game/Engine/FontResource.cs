@@ -36,7 +36,12 @@ namespace Zelda.Game.Engine
             public byte[] Buffer { get; set; }
             
             public Surface BitmapFont { get; set; }
-            public Dictionary<int, OutlineFontReader> OutlineFonts { get; set; }
+            public Dictionary<int, OutlineFontReader> OutlineFonts { get; private set; }
+
+            public FontFile()
+            {
+                OutlineFonts = new Dictionary<int, OutlineFontReader>();
+            }
         }
 
         static bool _fontsLoaded;
