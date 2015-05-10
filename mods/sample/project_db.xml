@@ -16,4 +16,8 @@
     <Language Id="en" Description="English" />
     <Language Id="kr" Description="Korean" />
   </Languages>
+  <Fonts>
+    <Font Id="8_bit" Description="8_bit" />
+    <Font Id="minecraftia" Description="minecraftia" />
+  </Fonts>
 </ProjectDB>

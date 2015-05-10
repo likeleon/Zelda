@@ -40,6 +40,7 @@ namespace Zelda.Game.Engine
             Sound.Initialize(args);
             InputEvent.Initialize();
             Video.Initialize(args, ZeldaVersion.ToString());
+            FontResource.Initialize();
             Sprite.Initialize();
         }
 
@@ -48,6 +49,7 @@ namespace Zelda.Game.Engine
             InputEvent.Quit();
             Sound.Quit();
             Sprite.Quit();
+            FontResource.Quit();
             Video.Quit();
             ModFiles.Quit();
 

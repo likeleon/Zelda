@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Zelda.Game.Engine;
-using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
@@ -26,14 +25,22 @@ namespace Zelda.Game
 
         Dialog _dialog;
         Action _callback;
+
+        #region 내장 다이얼로그 박스용
+        static readonly int _numVisibleLines = 3;
+
         bool _builtIn;
         readonly Queue<string> _remainingLines = new Queue<string>();
+        readonly TextSurface[] _lineSurfaces = new TextSurface[_numVisibleLines];
         Point _textPosition;
-        static readonly int _numVisibleLines = 3;
+        #endregion
 
         public DialogBoxSystem(Game game)
         {
             _game = game;
+
+            for (int i = 0; i < _numVisibleLines; ++i)
+                _lineSurfaces[i] = new TextSurface(0, 0, TextHorizontalAlignment.Left, TextVerticalAlignment.Bottom);
         }
 
         public void Open(string dialogId, Action callback)
@@ -88,7 +95,7 @@ namespace Zelda.Game
             CommandsEffects commandsEffects = _game.CommandsEffects;
             commandsEffects.RestoreActionCommandEffect();
 
-            ScriptContext.NotifyDialogFinished(_game, _dialog, callback);
+            Script.ScriptContext.NotifyDialogFinished(_game, _dialog, callback);
         }
 
         void ShowMoreLines()
@@ -110,12 +117,16 @@ namespace Zelda.Game
             for (int i = 0; i < _numVisibleLines; ++i)
             {
                 textY += 16;
+                _lineSurfaces[i].SetPosition(textX, textY);
+                _lineSurfaces[i].SetTextColor(Color.White);
 
                 if (HasMoreLines)
                 {
-                    Console.WriteLine("Dialog line {0}: {1}".F(i, _remainingLines.Peek()));
+                    _lineSurfaces[i].SetText(_remainingLines.Peek());
                     _remainingLines.Dequeue();
                 }
+                else
+                    _lineSurfaces[i].SetText(String.Empty);
             }
         }
 
@@ -136,6 +147,15 @@ namespace Zelda.Game
                 ShowMoreLines();
 
             return true;
+        }
+
+        public void Draw(Surface dstSurface)
+        {
+            if (!_builtIn)
+                return;
+
+            foreach (TextSurface lineSurface in _lineSurfaces)
+                lineSurface.Draw(dstSurface);
         }
     }
 }

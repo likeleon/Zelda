@@ -154,6 +154,9 @@ namespace Zelda.Game
             {
                 _currentMap.Draw();
                 _currentMap.VisibleSurface.Draw(dstSurface);
+
+                if (IsDialogEnabled)
+                    _dialogBox.Draw(dstSurface);
             }
         }
         #endregion

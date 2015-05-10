@@ -68,9 +68,11 @@
     <Compile Include="DialogBoxSystem.cs" />
     <Compile Include="DialogResource.cs" />
     <Compile Include="Directions.cs" />
+    <Compile Include="DisposableObject.cs" />
     <Compile Include="Engine\Color.cs" />
     <Compile Include="Engine\Drawable.cs" />
     <Compile Include="Engine\FileSystem.cs" />
+    <Compile Include="Engine\FontResource.cs" />
     <Compile Include="Engine\Geometry.cs" />
     <Compile Include="Engine\ModFiles.cs" />
     <Compile Include="Engine\Music.cs" />
@@ -79,6 +81,7 @@
     <Compile Include="Engine\InputEvent.cs" />
     <Compile Include="Engine\Size.cs" />
     <Compile Include="Engine\Sound.cs" />
+    <Compile Include="Engine\TextSurface.cs" />
     <Compile Include="Entities\AnimatedTilePattern.cs" />
     <Compile Include="Entities\CarriedItem.cs" />
     <Compile Include="Entities\Chest.cs" />

@@ -34,6 +34,8 @@ namespace Zelda.Game
             [XmlArrayItem("Language")]
             public Resource[] Languages { get; set; }
 
+            [XmlArrayItem("Font")]
+            public Resource[] Fonts { get; set; }
         }
 
         public class ResourceMap : Dictionary<string, string>
@@ -67,6 +69,7 @@ namespace Zelda.Game
                 FillResourceMap(ResourceType.Sprite, db.Sprites);
                 FillResourceMap(ResourceType.Item, db.Items);
                 FillResourceMap(ResourceType.Language, db.Languages);
+                FillResourceMap(ResourceType.Font, db.Fonts);
             }
             catch (Exception ex)
             {

@@ -181,7 +181,7 @@ namespace Zelda.Game.Engine
             return softwareSurface;
         }
 
-        Surface(int width, int height)
+        public Surface(int width, int height)
         {
             Debug.CheckAssertion(width > 0 && height > 0, "Attempt to create a surface with an empty size");
 
@@ -189,7 +189,7 @@ namespace Zelda.Game.Engine
             _height = height;
         }
 
-        Surface(IntPtr internalSurface)
+        public Surface(IntPtr internalSurface)
         {
             _internalSurface = internalSurface;
             _width = _internalSurface.ToSDLSurface().w;
