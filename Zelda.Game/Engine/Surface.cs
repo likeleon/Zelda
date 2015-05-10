@@ -35,15 +35,13 @@ namespace Zelda.Game.Engine
             }
         }
 
-        class Texture : IDisposable
+        class Texture : DisposableObject
         {
             readonly IntPtr _internalTexture;
             public IntPtr InternalTexture
             {
                 get { return _internalTexture; }
             }
-
-            bool _disposed;
 
             public Texture(IntPtr internalTexture)
             {
@@ -52,24 +50,9 @@ namespace Zelda.Game.Engine
                 _internalTexture = internalTexture;
             }
 
-            ~Texture()
+            protected override void OnDispose(bool disposing)
             {
-                Dispose(false);
-            }
-
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            void Dispose(bool disposing)
-            {
-                if (_disposed)
-                    return;
-
                 SDL.SDL_DestroyTexture(_internalTexture);
-                _disposed = true;
             }
         }
 

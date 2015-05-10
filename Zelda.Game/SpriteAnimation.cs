@@ -6,7 +6,7 @@ namespace Zelda.Game
 {
     // 애니메이션의 스프라이트 시퀀스를 저장힙니다
     // 각 시퀀스는 이 애니메이션에서의 스프라이트 방향입니다
-    class SpriteAnimation : IDisposable
+    class SpriteAnimation : DisposableObject
     {
         readonly uint _frameDelay;
         public uint FrameDelay
@@ -47,7 +47,7 @@ namespace Zelda.Game
             }
         }
 
-        public void Dispose()
+        protected override void OnDispose(bool disposing)
         {
             _srcImage.Dispose();
         }

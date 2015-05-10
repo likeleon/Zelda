@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace Zelda.Game.Engine
 {
-    class Sound : IDisposable
+    class Sound : DisposableObject
     {
         [StructLayout(LayoutKind.Sequential)]
         public class SoundFromMemory
@@ -162,24 +162,8 @@ namespace Zelda.Game.Engine
             _id = soundId;
         }
 
-        bool _disposed;
-
-        ~Sound()
+        protected override void OnDispose(bool disposing)
         {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
             if (IsInitialized && _buffer != AL10.AL_NONE)
             {
                 foreach (uint source in _sources)
@@ -191,7 +175,6 @@ namespace Zelda.Game.Engine
                 }
                 AL10.alDeleteBuffers((IntPtr)1, ref _buffer);
                 _currentSounds.Remove(this);
-                _disposed = true;
             }
         }
 

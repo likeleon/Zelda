@@ -5,7 +5,7 @@ using Zelda.Game.Movements;
 
 namespace Zelda.Game.Entities
 {
-    abstract class MapEntity : IDisposable
+    abstract class MapEntity : DisposableObject
     {
         MainLoop _mainLoop;
 
@@ -22,29 +22,13 @@ namespace Zelda.Game.Entities
         }
 
         bool _initialized;
-        bool _disposed;
 
-        ~MapEntity()
+        protected override void OnDispose(bool disposing)
         {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
             ClearSprites();
             ClearOldSprites();
             ClearMovement();
             ClearOldMovements();
-            _disposed = true;
         }
 
         public void RemoveFromMap()

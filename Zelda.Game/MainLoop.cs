@@ -6,7 +6,7 @@ using ScriptSurface = Zelda.Game.Script.Surface;
 
 namespace Zelda.Game
 {
-    class MainLoop : IDisposable
+    class MainLoop : DisposableObject
     {
         public bool Exiting { get; set; }
 
@@ -43,7 +43,7 @@ namespace Zelda.Game
             Video.ShowWindow();
         }
 
-        public void Dispose()
+        protected override void OnDispose(bool disposing)
         {
             if (_game != null)
                 _game.Stop();
