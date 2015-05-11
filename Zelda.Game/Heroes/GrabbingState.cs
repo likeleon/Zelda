@@ -23,7 +23,7 @@ namespace Zelda.Game.Heroes
             Direction8 wantedDirection8 = Commands.GetWantedDirection8();
             Direction8 spriteDirection8 = Sprites.AnimationDirection8;
 
-            if (Commands.IsCommandPressed(GameCommand.Action))
+            if (!Commands.IsCommandPressed(GameCommand.Action))
                 Hero.SetState(new FreeState(Hero));
             //else if (wantedDirection8 == spriteDirection8)
             //    Hero.SetState(new PushingState(Hero));
