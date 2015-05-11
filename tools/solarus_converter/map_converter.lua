@@ -7,7 +7,7 @@ local layer_names = {
 }
 
 local direction_names = {
-  "Right", "Up", "Left", "Down"
+  [0] = "None", "Right", "Up", "Left", "Down"
 }
 
 local chest_opening_method_names = {
@@ -33,6 +33,7 @@ local function import_map(quest_path, map_id)
   map.destructibles = {}
   map.chests = {}
   map.npcs = {}
+  map.blocks = {}
 
   local env = {}
   function env.properties(properties)
@@ -54,7 +55,7 @@ local function import_map(quest_path, map_id)
     map.npcs[#map.npcs + 1] = npc
   end
   function env.block(block)
-    -- TODO
+    map.blocks[#map.blocks + 1] = block
   end
 
   local file = quest_path .. "maps/" .. map_id .. ".dat"
@@ -199,6 +200,18 @@ local function export_map(quest_path, map_id, map)
     if npc.behavior ~= nil then
       npc_elem:append("Behavior")[1] = npc.behavior
     end
+  end
+
+  for _, block in ipairs(map.blocks) do
+    local block_elem = root:append("Block")
+    export_map_entity(block, block_elem)
+    if block.direction ~= nil then
+      block_elem:append("Direction")[1] = direction_names[block.direction + 1]
+    end
+    block_elem:append("Sprite")[1] = block.sprite
+    block_elem:append("Pushable")[1] = block.pushable
+    block_elem:append("Pullable")[1] = block.pullable
+    block_elem:append("MaximumMoves")[1] = block.maximum_moves
   end
 
   local file = quest_path .. "maps/" .. map_id .. ".xml"

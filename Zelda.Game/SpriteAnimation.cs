@@ -94,5 +94,12 @@ namespace Zelda.Game
 
             return nextFrame;
         }
+
+        public SpriteAnimationDirection GetDirection(Direction4 direction)
+        {
+            Debug.CheckAssertion(direction >= 0 && (int)direction < NumDirections,
+                "Invalid spriite direction");
+            return _directions[(int)direction];
+        }
     }
 }

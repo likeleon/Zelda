@@ -65,6 +65,11 @@ namespace Zelda.Game.Entities
             get { return _state.IsBrandishingTreasure; }
         }
 
+        public bool IsGrabbingOrPulling
+        {
+            get { return _state.IsGrabbingOrPulling; }
+        }
+
         public bool IsFree
         {
             get { return _state.IsFree; }
@@ -118,6 +123,11 @@ namespace Zelda.Game.Entities
         public void StartFreezed()
         {
             SetState(new FreezedState(this));
+        }
+
+        public void StartGrabbing()
+        {
+            SetState(new GrabbingState(this));
         }
 
         public void StartLifting(CarriedItem itemToLift)
@@ -394,6 +404,16 @@ namespace Zelda.Game.Entities
         #endregion
         
         #region 충돌
+        public override bool IsObstacleFor(MapEntity other)
+        {
+            return other.IsHeroObstacle(this);
+        }
+
+        public override bool IsBlockObstacle(Block block)
+        {
+            return block.IsHeroObstacle(this);
+        }
+
         public void CheckPosition()
         {
             if (!IsOnMap)
@@ -417,6 +437,12 @@ namespace Zelda.Game.Entities
              {
                  CommandsEffects.ActionCommandEffect = ActionCommandEffect.Open;
              }
+        }
+
+        public override void NotifyCollisionWithBlock(Block block)
+        {
+            if (CommandsEffects.ActionCommandEffect == ActionCommandEffect.None && IsFree)
+                CommandsEffects.ActionCommandEffect = ActionCommandEffect.Grab;
         }
         #endregion
     }

@@ -170,6 +170,10 @@ namespace Zelda.Game
         #endregion
 
         #region 크기와 중심점
+        public Size Size
+        {
+            get { return _currentAnimation.GetDirection(_currentDirection).Size; }
+        }
         public Size MaxSize
         {
             get { return _animationSet.MaxSize; }

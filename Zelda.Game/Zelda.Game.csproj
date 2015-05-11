@@ -83,6 +83,7 @@
     <Compile Include="Engine\Sound.cs" />
     <Compile Include="Engine\TextSurface.cs" />
     <Compile Include="Entities\AnimatedTilePattern.cs" />
+    <Compile Include="Entities\Block.cs" />
     <Compile Include="Entities\CarriedItem.cs" />
     <Compile Include="Entities\Chest.cs" />
     <Compile Include="Entities\CollisionMode.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Heroes\CarryingState.cs" />
     <Compile Include="Heroes\FreeState.cs" />
     <Compile Include="Heroes\FreezedState.cs" />
+    <Compile Include="Heroes\GrabbingState.cs" />
     <Compile Include="Heroes\HeroSprites.cs" />
     <Compile Include="Heroes\LiftingState.cs" />
     <Compile Include="Heroes\PlayerMovementState.cs" />

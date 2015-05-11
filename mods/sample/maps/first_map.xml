@@ -412,4 +412,14 @@
     <Sprite>entities/sign</Sprite>
     <Behavior>dialog#welcome_sign</Behavior>
   </Npc>
+  <Block>
+    <Layer>Low</Layer>
+    <X>64</X>
+    <Y>173</Y>
+    <Direction>None</Direction>
+    <Sprite>entities/block</Sprite>
+    <Pushable>true</Pushable>
+    <Pullable>true</Pullable>
+    <MaximumMoves>2</MaximumMoves>
+  </Block>
 </MapData>

@@ -654,6 +654,10 @@ namespace Zelda.Game.Entities
         {
         }
 
+        public virtual void NotifyCollisionWithBlock(Block block)
+        {
+        }
+
         public virtual bool IsLowWallObstacle
         {
             get { return true; }
@@ -705,6 +709,16 @@ namespace Zelda.Game.Entities
         }
 
         public virtual bool IsNpcObstacle(Npc npc)
+        {
+            return true;
+        }
+
+        public virtual bool IsHeroObstacle(Hero hero)
+        {
+            return false;
+        }
+
+        public virtual bool IsBlockObstacle(Block block)
         {
             return true;
         }

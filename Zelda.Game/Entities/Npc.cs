@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Zelda.Game.Engine;
 
 namespace Zelda.Game.Entities
@@ -97,6 +93,11 @@ namespace Zelda.Game.Entities
         public override bool IsNpcObstacle(Npc npc)
         {
             return (_subtype != NpcSubtype.UsualNpc || npc._subtype != NpcSubtype.UsualNpc);
+        }
+
+        public override bool IsHeroObstacle(Hero hero)
+        {
+            return true;
         }
 
         public override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)

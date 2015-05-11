@@ -14,7 +14,8 @@ namespace Zelda.Game.Script
             { EntityType.Destination, CreateDestination },
             { EntityType.Destructible, CreateDestructible },
             { EntityType.Chest, CreateChest },
-            { EntityType.Npc, CreateNpc }
+            { EntityType.Npc, CreateNpc },
+            { EntityType.Block, CreateBlock }
         };
 
         internal static void CreateMapEntityFromData(Map map, EntityData entityData)
@@ -158,6 +159,30 @@ namespace Zelda.Game.Script
                 map.Entities.AddEntity(npc);
 
                 return (map.IsStarted) ? npc : null;
+            });
+        }
+
+        public static Block CreateBlock(Map map, EntityData entityData)
+        {
+            return ScriptTools.ExceptionBoundaryHandle<Block>(() =>
+            {
+                BlockData data = entityData as BlockData;
+
+                if (data.MaximumMoves < 0 || data.MaximumMoves > 2)
+                    throw new InvalidDataException("Invalid MaximumMoves: {0}".F(data.MaximumMoves));
+
+                Block block = new Block(
+                    data.Name,
+                    data.Layer,
+                    data.XY,
+                    data.Direction,
+                    data.Sprite,
+                    data.Pushable,
+                    data.Pullable,
+                    data.MaximumMoves);
+                map.Entities.AddEntity(block);
+
+                return (map.IsStarted) ? block : null;
             });
         }
 

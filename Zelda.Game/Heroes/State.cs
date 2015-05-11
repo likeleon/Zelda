@@ -120,6 +120,11 @@ namespace Zelda.Game.Heroes
         {
             get { return Game.CommandsEffects; }
         }
+
+        public GameCommands Commands
+        {
+            get { return Game.Commands; }
+        }
         #endregion
 
         #region 게임
@@ -171,6 +176,11 @@ namespace Zelda.Game.Heroes
         }
 
         public virtual bool IsBrandishingTreasure
+        {
+            get { return false; }
+        }
+
+        public virtual bool IsGrabbingOrPulling
         {
             get { return false; }
         }

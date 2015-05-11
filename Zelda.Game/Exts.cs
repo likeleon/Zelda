@@ -80,6 +80,14 @@ namespace Zelda.Game
             return value ?? defaultValue;
         }
 
+        public static bool CheckField(this bool? value, string name)
+        {
+            if (!value.HasValue)
+                throw new Exception("Bad field '{0}' (boolean expected)".F(name));
+
+            return value.Value;
+        }
+
         public static bool OptField(this bool? value, bool defaultValue)
         {
             if (value.HasValue)

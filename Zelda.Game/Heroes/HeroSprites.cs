@@ -118,6 +118,11 @@ namespace Zelda.Game.Heroes
         {
             get { return _tunicSprite.CurrentDirection; }
         }
+        
+        public Direction8 AnimationDirection8
+        {
+            get { return (Direction8)((int)AnimationDirection * 2); }
+        }
 
         static readonly Direction4[,] _animationDirections = new Direction4[,]
         {
@@ -222,6 +227,11 @@ namespace Zelda.Game.Heroes
 
             if (LiftedItem != null)
                 LiftedItem.SetAnimationWalking();
+        }
+
+        public void SetAnimationGrabbing()
+        {
+            SetTunicAnimation("grabbing");
         }
 
         public void SetAnimationLifting()
