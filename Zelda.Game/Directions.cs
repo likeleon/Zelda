@@ -11,7 +11,7 @@ namespace Zelda.Game
         Down  =  3
     }
 
-    enum Direction8
+    public enum Direction8
     {
         None        = -1,
         Right       =  0,

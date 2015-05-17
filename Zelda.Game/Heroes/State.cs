@@ -185,6 +185,15 @@ namespace Zelda.Game.Heroes
             get { return false; }
         }
 
+        public virtual bool IsMovingGrabbedEntity
+        {
+            get { return false; }
+        }
+
+        public virtual void NotifyGrabbedEntityCollision()
+        {
+        }
+
         public virtual CarriedItem CarriedItem
         {
             get { return null; }
@@ -193,6 +202,43 @@ namespace Zelda.Game.Heroes
         public virtual CarriedItem.Behavior PreviousCarriedItemBehavior
         {
             get { return CarriedItem.Behavior.Throw; }
+        }
+        #endregion
+
+        #region 장애물 & 충돌
+        public virtual bool AreCollisionsIgnored
+        {
+            get { return false; }
+        }
+
+        public virtual bool IsShallowWaterObstacle
+        {
+            get { return false; }
+        }
+
+        public virtual bool IsDeepWaterObstacle
+        {
+            get { return false; }
+        }
+
+        public virtual bool IsHoleObstacle
+        {
+            get { return false; }
+        }
+
+        public virtual bool IsLavaObstacle
+        {
+            get { return false; }
+        }
+
+        public virtual bool IsPrickleObstacle
+        {
+            get { return false; }
+        }
+
+        public virtual bool IsLadderObstacle
+        {
+            get { return false; }
         }
         #endregion
     }

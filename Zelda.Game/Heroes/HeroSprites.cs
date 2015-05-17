@@ -121,7 +121,7 @@ namespace Zelda.Game.Heroes
         
         public Direction8 AnimationDirection8
         {
-            get { return (Direction8)((int)AnimationDirection * 2); }
+            get { return AnimationDirection.ToDirection8(); }
         }
 
         static readonly Direction4[,] _animationDirections = new Direction4[,]
@@ -232,6 +232,16 @@ namespace Zelda.Game.Heroes
         public void SetAnimationGrabbing()
         {
             SetTunicAnimation("grabbing");
+        }
+
+        public void SetAnimationPulling()
+        {
+            SetTunicAnimation("pulling");
+        }
+
+        public void SetAnimationPushing()
+        {
+            SetTunicAnimation("pushing");
         }
 
         public void SetAnimationLifting()

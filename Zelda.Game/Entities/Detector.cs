@@ -79,10 +79,21 @@ namespace Zelda.Game.Entities
                 throw new NotImplementedException();
             }
         }
+        #endregion
 
+        #region 기타
         public virtual bool NotifyActionCommandPressed()
         {
             return false;
+        }
+
+        public virtual bool StartMovementByHero()
+        {
+            return false;
+        }
+        
+        public virtual void StopMovementByHero()
+        {
         }
         #endregion
 

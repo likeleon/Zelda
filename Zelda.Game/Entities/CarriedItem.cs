@@ -64,11 +64,6 @@ namespace Zelda.Game.Entities
             get { return false; }
         }
 
-        public override bool IsNpcObstacle(Npc npc)
-        {
-            return npc.IsSolid;
-        }
-
         #region 게임 데이터
         readonly Hero _hero;
         #endregion
@@ -250,5 +245,37 @@ namespace Zelda.Game.Entities
                     _nextDownDate += diff;
             }
         }
+
+        #region 장애물 & 충돌
+        public override bool IsDeepWaterObstacle
+        {
+            get { return false; }
+        }
+
+        public override bool IsHoleObstacle
+        {
+            get { return false; }
+        }
+
+        public override bool IsLavaObstacle
+        {
+            get { return false; }
+        }
+
+        public override bool IsPrickleObstacle
+        {
+            get { return false; }
+        }
+
+        public override bool IsLadderObstacle
+        {
+            get { return false; }
+        }
+
+        public override bool IsNpcObstacle(Npc npc)
+        {
+            return npc.IsSolid;
+        }
+        #endregion
     }
 }

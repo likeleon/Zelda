@@ -1,5 +1,6 @@
 ﻿
 using Zelda.Game.Engine;
+using Zelda.Game.Movements;
 namespace Zelda.Game.Entities
 {
     class Block : Detector
@@ -51,6 +52,7 @@ namespace Zelda.Game.Entities
         uint _whenCanMove;
         Point _lastPosition;
         Point _initialPosition;
+        bool _soundPlayed;
         static uint _movingDelay = 500;
 
         public override EntityType Type
@@ -98,6 +100,66 @@ namespace Zelda.Game.Entities
                 return true;
             }
             return false;
+        }
+
+        public override bool StartMovementByHero()
+        {
+            bool pulling = Hero.IsGrabbingOrPulling;
+            Direction4 allowedDirection = Direction;
+            Direction4 heroDirection = Hero.AnimationDirection;
+            if (pulling)
+                heroDirection = (Direction4)(((int)heroDirection + 2) % 4);
+
+            if (Movement != null ||                 // 이미 이동 중
+                _maximumMoves == 0 ||               // 더 이상 움직일 수 없음
+                EngineSystem.Now < _whenCanMove ||  // 당분간 움직일 수 없음
+                (pulling && !IsPullable) ||
+                (!pulling && !IsPushable) ||
+                (allowedDirection != Direction4.None && heroDirection != allowedDirection))
+            {
+                return false;
+            }
+
+            int dx = X - Hero.X;
+            int dy = Y - Hero.Y;
+
+            SetMovement(new FollowMovement(Hero, dx, dy, false));
+            _soundPlayed = false;
+            
+            return true;
+        }
+
+        public override void StopMovementByHero()
+        {
+            ClearMovement();
+            _whenCanMove = EngineSystem.Now + _movingDelay;
+
+            if (XY != _lastPosition)
+            {
+                _lastPosition = XY;
+
+                if (_maximumMoves == 1)
+                    _maximumMoves = 0;
+            }
+        }
+
+        public override void NotifyMovingBy(MapEntity entity)
+        {
+        }
+
+        public override void NotifyMovedBy(MapEntity entity)
+        {
+        }
+
+        public override void NotifyPositionChanged()
+        {
+            if (Movement != null && !_soundPlayed)
+            {
+                Sound.Play("hero_pushes");
+                _soundPlayed = true;
+            }
+
+            CheckCollisionWithDetectors();
         }
 
         public void Reset()

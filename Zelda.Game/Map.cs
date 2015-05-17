@@ -451,7 +451,7 @@ namespace Zelda.Game
                     break;
 
                 case Ground.Prickle:
-                    onObstacle = entityToCheck.isPrickleObstacle;
+                    onObstacle = entityToCheck.IsPrickleObstacle;
                     break;
 
                 case Ground.Ladder:

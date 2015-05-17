@@ -388,6 +388,11 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 위치
+        public override Point GetFacingPoint()
+        {
+            return GetTouchingPoint(AnimationDirection);
+        }
+
         public override void NotifyFacingEntityChanged(Detector facingEntity)
         {
             if (facingEntity == null &&
@@ -397,26 +402,111 @@ namespace Zelda.Game.Entities
             }
         }
 
+        public bool IsFacingObstacle()
+        {
+            Rectangle collisionBox = BoundingBox;
+            switch (_sprites.AnimationDirection)
+            {
+                case Direction4.Right:
+                    collisionBox.AddX(1);
+                    break;
+
+                case Direction4.Up:
+                    collisionBox.AddY(-1);
+                    break;
+
+                case Direction4.Left:
+                    collisionBox.AddX(-1);
+                    break;
+
+                case Direction4.Down:
+                    collisionBox.AddY(1);
+                    break;
+
+                default:
+                    Debug.Die("Invalid animation direction");
+                    break;
+            }
+
+            return Map.TestCollisionWithObstacles(Layer, collisionBox, this);
+        }
+
         public bool IsFacingDirection4(Direction4 direction4)
         {
             return AnimationDirection == direction4;
         }
+
+        internal void TrySnapToFacingEntity()
+        {
+            Rectangle collisionBox = BoundingBox;
+            if ((int)AnimationDirection % 2 == 0)
+            {
+                if (Math.Abs(collisionBox.Y - FacingEntity.TopLeftY) <= 5)
+                    collisionBox.Y = FacingEntity.TopLeftY;
+            }
+            else
+            {
+                if (Math.Abs(collisionBox.X - FacingEntity.TopLeftX) <= 5)
+                    collisionBox.X = FacingEntity.TopLeftX;
+            }
+
+            if (!Map.TestCollisionWithObstacles(Layer, collisionBox, this))
+            {
+                BoundingBox = collisionBox;
+                NotifyPositionChanged();
+            }
+        }
         #endregion
         
-        #region 충돌
+        #region Obstacles
         public override bool IsObstacleFor(MapEntity other)
         {
             return other.IsHeroObstacle(this);
+        }
+
+        public override bool IsShallowWaterObstacle
+        {
+            get { return _state.IsShallowWaterObstacle; }
+        }
+
+        public override bool IsDeepWaterObstacle
+        {
+            get { return _state.IsDeepWaterObstacle; }
+        }
+
+        public override bool IsHoleObstacle
+        {
+            get { return _state.IsHoleObstacle; }
+        }
+
+        public override bool IsLavaObstacle
+        {
+            get { return _state.IsLavaObstacle; }
+        }
+
+        public override bool IsPrickleObstacle
+        {
+            get { return _state.IsPrickleObstacle; }
+        }
+
+        public override bool IsLadderObstacle
+        {
+            get { return _state.IsLadderObstacle; }
         }
 
         public override bool IsBlockObstacle(Block block)
         {
             return block.IsHeroObstacle(this);
         }
-
+        #endregion
+        
+        #region 충돌
         public void CheckPosition()
         {
             if (!IsOnMap)
+                return;
+
+            if (_state.AreCollisionsIgnored)
                 return;
 
             FacingEntity = null;

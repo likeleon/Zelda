@@ -25,10 +25,10 @@ namespace Zelda.Game.Heroes
 
             if (!Commands.IsCommandPressed(GameCommand.Action))
                 Hero.SetState(new FreeState(Hero));
-            //else if (wantedDirection8 == spriteDirection8)
-            //    Hero.SetState(new PushingState(Hero));
-            //else if (wantedDirection8 == (Direction8)(((int)spriteDirection8 + 4) % 8))
-            //    Hero.SetState(new PullingState(Hero));
+            else if (wantedDirection8 == spriteDirection8)
+                Hero.SetState(new PushingState(Hero));
+            else if (wantedDirection8 == spriteDirection8.GetOpposite())
+                Hero.SetState(new PullingState(Hero));
         }
 
         public override bool IsGrabbingOrPulling

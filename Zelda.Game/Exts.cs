@@ -208,5 +208,20 @@ namespace Zelda.Game
         {
             return str.Substring(startIndex, Math.Min(str.Length - startIndex, length));
         }
+
+        public static Direction8 GetOpposite(this Direction8 dir8)
+        {
+            return (Direction8)(((int)dir8 + 4) % 8);
+        }
+
+        public static Direction8 ToDirection8(this Direction4 dir4)
+        {
+            return (Direction8)((int)dir4 * 2);
+        }
+
+        public static bool IsHorizontal(this Direction4 dir4)
+        {
+            return ((int)dir4 % 2) == 0;
+        }
     }
 }

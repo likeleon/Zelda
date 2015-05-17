@@ -195,6 +195,7 @@ namespace Zelda.Game.Entities
         public Rectangle BoundingBox
         {
             get { return _boundingBox; }
+            set { _boundingBox = value; }
         }
 
         public int Width
@@ -338,6 +339,21 @@ namespace Zelda.Game.Entities
         public Point CenterPoint
         {
             get { return BoundingBox.Center; }
+        }
+
+        public bool IsAlignedToGrid
+        {
+            get { return IsAlignedToGridX && IsAlignedToGridY; }
+        }
+
+        public bool IsAlignedToGridX
+        {
+            get { return TopLeftX % 8 == 0; }
+        }
+
+        public bool IsAlignedToGridY
+        {
+            get { return TopLeftY % 8 == 0; }
         }
         #endregion
 
@@ -579,6 +595,14 @@ namespace Zelda.Game.Entities
         {
         }
 
+        public virtual void NotifyMovingBy(MapEntity entity)
+        {
+        }
+
+        public virtual void NotifyMovedBy(MapEntity entity)
+        {
+        }
+
         public virtual void NotifyLayerChanged()
         {
             if (IsOnMap)
@@ -683,7 +707,7 @@ namespace Zelda.Game.Entities
             get { return true; }
         }
 
-        public virtual bool isPrickleObstacle
+        public virtual bool IsPrickleObstacle
         {
             get { return true; }
         }

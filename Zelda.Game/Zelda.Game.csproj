@@ -117,9 +117,12 @@
     <Compile Include="Heroes\HeroSprites.cs" />
     <Compile Include="Heroes\LiftingState.cs" />
     <Compile Include="Heroes\PlayerMovementState.cs" />
+    <Compile Include="Heroes\PullingState.cs" />
+    <Compile Include="Heroes\PushingState.cs" />
     <Compile Include="Heroes\State.cs" />
     <Compile Include="Heroes\TreasureState.cs" />
     <Compile Include="Movements\FollowMovement.cs" />
+    <Compile Include="Movements\PathMovement.cs" />
     <Compile Include="Movements\PixelMovement.cs" />
     <Compile Include="Movements\PlayerMovement.cs" />
     <Compile Include="Script\ScriptContext.EntityApi.cs" />
