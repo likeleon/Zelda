@@ -24,6 +24,12 @@ namespace Zelda.Game
             get { return _savegame.Game; }
         }
 
+        public void NotifyGameFinished()
+        {
+            foreach (EquipmentItem item in _items.Values)
+                item.Exit();
+        }
+
         public void Update()
         {
             Game game = _savegame.Game;
@@ -92,6 +98,14 @@ namespace Zelda.Game
                 item.Name = itemId;
                 _items[itemId] = item;
             }
+
+            // 아이템 스크립트들을 로드합니다
+            foreach (EquipmentItem item in _items.Values)
+                item.Initialize();
+
+            // 아이템들을 시작합니다
+            foreach (EquipmentItem item in _items.Values)
+                item.Start();
         }
 
         public bool ItemExists(string itemName)

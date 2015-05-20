@@ -22,9 +22,7 @@ namespace Zelda.Game
             _typeCache = new Cache<string,Type>(FindType);
             _ctorCache = new Cache<Type, ConstructorInfo>(GetCtor);
 
-            var asms = typeof(Game).Assembly.GetNamespaces()
-                .Select(c => new Tuple<Assembly, string>(typeof(Game).Assembly, c))
-                .ToList();
+            var asms = new List<Tuple<Assembly, string>>();
 
             foreach (var asmFile in modResources.Assemblies)
             {

@@ -1,4 +1,6 @@
 ﻿using System;
+using Zelda.Game.Script;
+using ScriptItem = Zelda.Game.Script.Item;
 
 namespace Zelda.Game
 {
@@ -28,6 +30,8 @@ namespace Zelda.Game
         {
             get { return _equipment.Savegame; }
         }
+
+        ScriptItem _scriptItem;
 
         #region 속성들
         public string Name { get; set; }
@@ -73,6 +77,23 @@ namespace Zelda.Game
                 Debug.CheckAssertion(HasAmount, "The item '{0}' has no amount".F(Name));
                 return Savegame.GetInteger(AmountSavegameVariable);
             }
+        }
+
+        public void Initialize()
+        {
+            _scriptItem = ScriptContext.RunItem(this);
+        }
+
+        public void Start()
+        {
+            if (_scriptItem != null)
+                _scriptItem.NotifyOnStarted();
+        }
+
+        public void Exit()
+        {
+            if (_scriptItem != null)
+                _scriptItem.NotifyOnFinished();
         }
         #endregion
     }

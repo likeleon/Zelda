@@ -87,6 +87,11 @@ namespace Zelda.Game
         public Game Game { get; set; }
 
         readonly MainLoop _mainLoop;
+
+        public void NotifyGameFinished()
+        {
+            _equipment.NotifyGameFinished();
+        }
         #endregion
 
         #region 생성

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -59,7 +60,7 @@ namespace Zelda.Game.Script
         static void CreateScriptMain()
         {
             var mainTypes = _objectCreator.GetTypesImplementing<Main>();
-            if (mainTypes.Count() <= 0)
+            if (!mainTypes.Any())
                 Debug.Error("'Main' based class not found");
 
             if (mainTypes.Count() > 1)
@@ -75,6 +76,33 @@ namespace Zelda.Game.Script
         {
             if (callback != null)
                 callback();
+        }
+
+        internal static Item RunItem(EquipmentItem item)
+        {
+            string className =  GetScriptClassName<Item>(item.Name);
+            if (className == null)
+                return null;
+
+            Item scriptItem = _objectCreator.CreateObject<Item>(className);
+            scriptItem.NotifyOnCreated(item);
+            return scriptItem;
+        }
+
+        static string GetScriptClassName<T>(string id)
+        {
+            var itemTypes = _objectCreator.GetTypesImplementing<T>();
+            if (!itemTypes.Any())
+                return null;
+
+            foreach (Type itemType in itemTypes)
+            {
+                string idValue = itemType.GetCustomAttributes<IdAttribute>().DefaultIfEmpty(IdAttribute.Default).First().Id;
+                if (idValue == id)
+                    return itemType.Name;
+            }
+
+            return null;
         }
         #endregion
 
@@ -113,5 +141,18 @@ namespace Zelda.Game.Script
             });
         }
         #endregion
+    }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class IdAttribute : Attribute
+    {
+        public static readonly IdAttribute Default = new IdAttribute(String.Empty);
+
+        public string Id;
+
+        public IdAttribute(string id)
+        {
+            Id = id;
+        }
     }
 }

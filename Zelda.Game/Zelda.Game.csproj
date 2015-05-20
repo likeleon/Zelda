@@ -125,6 +125,7 @@
     <Compile Include="Movements\PathMovement.cs" />
     <Compile Include="Movements\PixelMovement.cs" />
     <Compile Include="Movements\PlayerMovement.cs" />
+    <Compile Include="Script\Item.cs" />
     <Compile Include="Script\ScriptContext.EntityApi.cs" />
     <Compile Include="Script\ScriptException.cs" />
     <Compile Include="SpriteData.cs" />

@@ -77,6 +77,7 @@ namespace Zelda.Game
                     _hero.NotifyBeingRemoved();
             }
 
+            _saveGame.NotifyGameFinished();
             _saveGame.Game = null;
 
             _started = false;

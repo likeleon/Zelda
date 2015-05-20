@@ -20,7 +20,7 @@ namespace Zelda.Game
 
         public static IEnumerable<string> GetNamespaces(this Assembly a)
         {
-            return a.GetTypes().Select(t => t.Name).Distinct().Where(n => n != null);
+            return a.GetTypes().Select(t => t.Namespace).Distinct().Where(n => n != null);
         }
 
         public static bool HasAttribute<T>(this MemberInfo mi)
