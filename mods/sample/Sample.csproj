@@ -35,7 +35,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="items\Bomb2.cs" />
+    <Compile Include="items\Bomb.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="menus\ZeldaLogo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
