@@ -87,6 +87,8 @@ namespace Zelda.Game
 
             if (Item.IsSaved)
                 Item.SetVariant(Variant);
+
+            Item.NotifyObtaining(this);
         }
 
         Sprite _sprite;

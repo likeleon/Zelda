@@ -14,9 +14,9 @@ namespace Zelda.Game.Script
             Debug.CheckAssertion(rawSaveGame != null, "rawSaveGame should not be null");
 
             _rawSaveGame = rawSaveGame;
+            _rawSaveGame.ScriptGame = this;
         }
 
-        #region API
         public int Life
         {
             get 
@@ -118,6 +118,16 @@ namespace Zelda.Game.Script
                 }
             });
         }
-        #endregion
+
+        public void SetItemAssigned(int slot, Item item)
+        {
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                if (slot < 1 || slot > 2)
+                    throw new ArgumentException("The item slot should be 1 or 2", "slot");
+
+                _rawSaveGame.Equipment.SetItemAssigned(slot, item.RawItem);
+            });
+        }
     }
 }

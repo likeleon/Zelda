@@ -49,6 +49,7 @@ namespace Zelda.Game
         }
 
         public bool IsObtainable { get; set; }
+        public bool IsAssignable { get; set; }
 
         public string SoundWhenBrandished { get; set; }
         #endregion
@@ -87,14 +88,26 @@ namespace Zelda.Game
         public void Start()
         {
             if (_scriptItem != null)
-                _scriptItem.NotifyOnStarted();
+                _scriptItem.NotifyStarted();
         }
 
         public void Exit()
         {
             if (_scriptItem != null)
-                _scriptItem.NotifyOnFinished();
+                _scriptItem.NotifyFinished();
+        }
+
+        public void NotifyUsing()
+        {
+            if (_scriptItem != null)
+                _scriptItem.NotifyUsing();
         }
         #endregion
+
+        public void NotifyObtaining(Treasure treasure)
+        {
+            if (_scriptItem != null)
+                _scriptItem.NotifyObtaining(treasure.Variant, IsSaved ? SavegameVariable : null);
+        }
     }
 }

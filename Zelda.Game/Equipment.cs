@@ -118,6 +118,24 @@ namespace Zelda.Game
             Debug.CheckAssertion(ItemExists(itemName), "No such item: '{0}'".F(itemName));
             return _items[itemName];
         }
+
+        public void SetItemAssigned(int slot, EquipmentItem item)
+        {
+            Debug.CheckAssertion(slot >= 1 && slot <= 2, "Invalid item slot");
+
+            string key = "_item_slot_" + slot;
+
+            if (item != null)
+            {
+                Debug.CheckAssertion(item.Variant > 0,
+                    "Cannot assign item '{0}' because the player does not have it".F(item.Name));
+                Debug.CheckAssertion(item.IsAssignable,
+                    "The item '{0}' cannot be assigned".F(item.Name));
+                _savegame.SetString(key, item.Name);
+            }
+            else
+                _savegame.SetString(key, String.Empty);
+        }
         #endregion
 
         #region 기본 제공 능력들
