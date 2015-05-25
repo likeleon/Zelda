@@ -129,8 +129,8 @@
     <Compile Include="Movements\PlayerMovement.cs" />
     <Compile Include="Script\ScriptEntity.cs" />
     <Compile Include="Script\ScriptHero.cs" />
-    <Compile Include="Script\Item.cs" />
-    <Compile Include="Script\Map.cs" />
+    <Compile Include="Script\ScriptItem.cs" />
+    <Compile Include="Script\ScriptMap.cs" />
     <Compile Include="Script\ScriptContext.EntityApi.cs" />
     <Compile Include="Script\ScriptException.cs" />
     <Compile Include="SpriteData.cs" />
@@ -142,17 +142,14 @@
     <Compile Include="Movements\StraightMovement.cs" />
     <Compile Include="Movements\TargetMovement.cs" />
     <Compile Include="Savegame.cs" />
-    <Compile Include="Script\Drawable.cs" />
-    <Compile Include="Script\Game.cs" />
+    <Compile Include="Script\ScriptDrawable.cs" />
+    <Compile Include="Script\ScriptGame.cs" />
     <Compile Include="Script\IInputEventHandler.cs" />
-    <Compile Include="Script\Movement.cs" />
+    <Compile Include="Script\ScriptMovement.cs" />
     <Compile Include="Script\MovementType.cs" />
-    <Compile Include="Script\ScriptContext.MainApi.cs" />
-    <Compile Include="Script\ScriptContext.MapApi.cs" />
-    <Compile Include="Script\ScriptContext.MovementApi.cs" />
     <Compile Include="Script\ScriptTools.cs" />
-    <Compile Include="Script\Sprite.cs" />
-    <Compile Include="Script\Timer.cs" />
+    <Compile Include="Script\ScriptSprite.cs" />
+    <Compile Include="Script\ScriptTimer.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="Engine\Surface.cs" />
     <Compile Include="Engine\EngineSystem.cs" />
@@ -173,12 +170,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="ResourceType.cs" />
-    <Compile Include="Script\Language.cs" />
+    <Compile Include="Script\ScriptLanguage.cs" />
     <Compile Include="Script\Main.cs" />
-    <Compile Include="Script\Menu.cs" />
+    <Compile Include="Script\ScriptMenu.cs" />
     <Compile Include="Script\ScriptContext.cs" />
-    <Compile Include="Script\ScriptContext.MenuApi.cs" />
-    <Compile Include="Script\Surface.cs" />
+    <Compile Include="Script\ScriptSurface.cs" />
     <Compile Include="SpriteAnimation.cs" />
     <Compile Include="SpriteAnimationDirection.cs" />
     <Compile Include="SpriteAnimationSet.cs" />
@@ -191,8 +187,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Script\ScriptContext.DrawableApi.cs" />
-    <Compile Include="Script\ScriptContext.TimerApi.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

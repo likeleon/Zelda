@@ -301,8 +301,8 @@ namespace Zelda.Game.Movements
         #endregion
 
         #region 스크립트
-        Script.Movement _scriptMovement;
-        public Script.Movement ScriptMovement
+        Script.ScriptMovement _scriptMovement;
+        public Script.ScriptMovement ScriptMovement
         {
             get { return _scriptMovement; }
             set { _scriptMovement = value; }

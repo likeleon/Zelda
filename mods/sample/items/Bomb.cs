@@ -6,7 +6,7 @@ using Zelda.Game.Script;
 namespace Sample.Items
 {
     [Id("bomb")]
-    class Bomb : Item
+    class Bomb : ScriptItem
     {
         protected override void OnCreated()
         {

@@ -1,6 +1,6 @@
 ﻿using System;
 using Zelda.Game.Script;
-using ScriptItem = Zelda.Game.Script.Item;
+using ScriptItem = Zelda.Game.Script.ScriptItem;
 
 namespace Zelda.Game
 {

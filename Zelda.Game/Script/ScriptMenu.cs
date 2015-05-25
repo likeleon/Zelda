@@ -5,15 +5,15 @@ using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
 {
-    static partial class ScriptContext
+    public abstract class ScriptMenu : IInputEventHandler
     {
         internal class ScriptMenuData
         {
-            public Menu Menu { get; set; }
+            public ScriptMenu Menu { get; set; }
             public object Context { get; set; }
             public bool RecentlyAdded { get; set; }
 
-            public ScriptMenuData(Menu menu, object context)
+            public ScriptMenuData(ScriptMenu menu, object context)
             {
                 Menu = menu;
                 Context = context;
@@ -22,8 +22,19 @@ namespace Zelda.Game.Script
         }
 
         static List<ScriptMenuData> _menus = new List<ScriptMenuData>();
+        
+        public event EventHandler Started;
+        public event EventHandler Finished;
 
-        public static void AddMenu(Menu menu, object context, bool onTop)
+        public static void Start(object context, ScriptMenu menu, bool onTop = true)
+        {
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                AddMenu(menu, context, onTop);
+            });
+        }
+
+        static void AddMenu(ScriptMenu menu, object context, bool onTop)
         {
             if (onTop)
                 _menus.Add(new ScriptMenuData(menu, context));
@@ -33,36 +44,36 @@ namespace Zelda.Game.Script
             menu.NotifyStarted();
         }
 
-        static void UpdateMenus()
+        internal static void UpdateMenus()
         {
             for (int i = _menus.Count - 1; i >= 0; --i)
             {
                 ScriptMenuData menu = _menus[i];
-                
+
                 menu.RecentlyAdded = false;
-                if (menu.Menu ==  null)
+                if (menu.Menu == null)
                 {
                     if (menu.Context != null)
                         throw new InvalidOperationException("Menu with context and no ref");
-                    
+
                     _menus.RemoveAt(i);
                 }
             }
         }
 
-        static void DestroyMenus()
+        internal static void DestroyMenus()
         {
             _menus.Clear();
         }
 
-        static void MenusOnDraw(object context, Surface dstSurface)
+        internal static void MenusOnDraw(object context, ScriptSurface dstSurface)
         {
             ScriptMenuData menu = _menus.Find(m => m.Context == context);
             if (menu != null)
                 MenuOnDraw(menu.Menu, dstSurface);
         }
 
-        static void MenuOnDraw(Menu menu, Surface dstSurface)
+        static void MenuOnDraw(ScriptMenu menu, ScriptSurface dstSurface)
         {
             ScriptTools.ExceptionBoundaryHandle(() =>
             {
@@ -71,12 +82,12 @@ namespace Zelda.Game.Script
             MenusOnDraw(menu, dstSurface);  // 자식 메뉴들을 그려줍니다
         }
 
-        public static bool IsStarted(Menu menu)
+        public static bool IsStarted(ScriptMenu menu)
         {
             return _menus.Any(m => m.Menu == menu);
         }
 
-        public static void Stop(Menu menu)
+        public static void Stop(ScriptMenu menu)
         {
             ScriptMenuData menuData = _menus.Find(m => m.Menu == menu);
             if (menuData != null)
@@ -87,11 +98,11 @@ namespace Zelda.Game.Script
             }
         }
 
-        static void MenuOnFinished(Menu menu)
+        static void MenuOnFinished(ScriptMenu menu)
         {
             RemoveMenus(menu);  // 먼저 모든 자식 메뉴들을 정지시킵니다
             menu.NotifyFinished();
-            RemoveTimers(menu); // 이 메뉴에 관련된 타이머들을 모두 정지시킵니다
+            ScriptTimer.RemoveTimers(menu); // 이 메뉴에 관련된 타이머들을 모두 정지시킵니다
         }
 
         // context와 관련된 모든 메뉴를 해제합니다
@@ -111,7 +122,7 @@ namespace Zelda.Game.Script
             }
         }
 
-        static bool MenusOnInput(object context, InputEvent input)
+        internal static bool MenusOnInput(object context, InputEvent input)
         {
             bool handled = false;
             foreach (ScriptMenuData menu in Enumerable.Reverse(_menus))
@@ -124,15 +135,73 @@ namespace Zelda.Game.Script
             return handled;
         }
 
-        static bool MenuOnInput(Menu menu, InputEvent input)
+        static bool MenuOnInput(ScriptMenu menu, InputEvent input)
         {
             // 자식 메뉴들에게 먼저 이벤트를 보냅니다
             bool handled = MenusOnInput(menu, input);
 
             if (!handled)
-                handled = OnInput(menu, input);
+                handled = ScriptContext.OnInput(menu, input);
 
             return handled;
+        }
+
+        protected virtual void OnStarted()
+        {
+        }
+        
+        protected internal virtual void OnDraw(ScriptSurface dstSurface)
+        {
+        }
+
+        protected virtual void OnFinished()
+        {
+        }
+
+        public bool IsStarted()
+        {
+            return ScriptTools.ExceptionBoundaryHandle<bool>(() =>
+            {
+                return IsStarted(this);
+            });
+        }
+
+        public void Stop()
+        {
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                Stop(this);
+            });
+        }
+
+        internal void NotifyStarted()
+        {
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                OnStarted();
+                if (Started != null)
+                    Started(this, EventArgs.Empty);
+            });
+        }
+
+        internal void NotifyFinished()
+        {
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                OnFinished();
+                if (Finished != null)
+                    Finished(this, EventArgs.Empty);
+            });
+        }
+
+        public virtual bool OnKeyPressed(string key, bool shift, bool control, bool alt)
+        {
+            return false;
+        }
+
+        public virtual bool OnKeyReleased(string key)
+        {
+            return false;
         }
     }
 }

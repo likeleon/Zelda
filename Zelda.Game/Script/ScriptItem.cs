@@ -1,31 +1,30 @@
 ﻿using Zelda.Game.Entities;
-using RawItem = Zelda.Game.EquipmentItem;
 
 namespace Zelda.Game.Script
 {
-    public abstract class Item
+    public abstract class ScriptItem
     {
-        internal RawItem RawItem { get; private set; }
+        internal EquipmentItem _item { get; private set; }
 
-        public Game Game
+        public ScriptGame Game
         {
-            get { return ScriptTools.ExceptionBoundaryHandle<Game>(() => RawItem.Savegame.ScriptGame); }
+            get { return ScriptTools.ExceptionBoundaryHandle<ScriptGame>(() => _item.Savegame.ScriptGame); }
         }
 
-        public Map Map
+        public ScriptMap Map
         {
-            get { return ScriptTools.ExceptionBoundaryHandle<Map>(() => RawItem.Game.CurrentMap.ScriptMap); }
+            get { return ScriptTools.ExceptionBoundaryHandle<ScriptMap>(() => _item.Game.CurrentMap.ScriptMap); }
         }
 
         public string SavegameVariable
         {
             get
             {
-                return ScriptTools.ExceptionBoundaryHandle<string>(() => { return RawItem.SavegameVariable; });
+                return ScriptTools.ExceptionBoundaryHandle<string>(() => { return _item.SavegameVariable; });
             }
             set
             {
-                ScriptTools.ExceptionBoundaryHandle(() => { RawItem.SavegameVariable = value; });
+                ScriptTools.ExceptionBoundaryHandle(() => { _item.SavegameVariable = value; });
             }
         }
 
@@ -33,24 +32,24 @@ namespace Zelda.Game.Script
         {
             get
             {
-                return ScriptTools.ExceptionBoundaryHandle<bool>(() => { return RawItem.IsAssignable; });
+                return ScriptTools.ExceptionBoundaryHandle<bool>(() => { return _item.IsAssignable; });
             }
             set
             {
-                ScriptTools.ExceptionBoundaryHandle(() => { RawItem.IsAssignable = value; });
+                ScriptTools.ExceptionBoundaryHandle(() => { _item.IsAssignable = value; });
             }
         }
 
         public void SetFinished()
         {
-            Hero hero = RawItem.Game.Hero;
+            Hero hero = _item.Game.Hero;
             if (hero.IsUsingItem)
                 hero.ItemBeingUsed.IsFinished = true;
         }
 
-        internal void NotifyCreated(RawItem rawItem)
+        internal void NotifyCreated(EquipmentItem item)
         {
-            RawItem = rawItem;
+            _item = item;
 
             ScriptTools.ExceptionBoundaryHandle(() => { OnCreated(); });
         }

@@ -1,9 +1,9 @@
 using Zelda.Game.Script;
 
-namespace Sample.Items
+namespace Sample.Maps
 {
     [Id("first_map")]
-    class FirstMap : Map
+    class FirstMap : ScriptMap
     {
     }
 }

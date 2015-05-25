@@ -5,37 +5,37 @@ using Zelda.Game.Script;
 
 namespace Sample.Menus
 {
-    class ZeldaLogo : Menu
+    class ZeldaLogo : ScriptMenu
     {
-        readonly Surface _surface;
-        readonly Sprite _title;
-        readonly Sprite _subtitle;
-        readonly Sprite _sun;
-        readonly Sprite _sword;
-        readonly Surface _blackSquare;
+        readonly ScriptSurface _surface;
+        readonly ScriptSprite _title;
+        readonly ScriptSprite _subtitle;
+        readonly ScriptSprite _sun;
+        readonly ScriptSprite _sword;
+        readonly ScriptSurface _blackSquare;
         int _animationStep;
-        Timer _timer;
+        ScriptTimer _timer;
 
         public ZeldaLogo()
         {
-            _surface = Surface.Create(201, 48);
+            _surface = ScriptSurface.Create(201, 48);
             
-            _title = Sprite.Create("menus/solarus_logo");
+            _title = ScriptSprite.Create("menus/solarus_logo");
             _title.SetAnimation("title");
 
-            _subtitle = Sprite.Create("menus/solarus_logo");
+            _subtitle = ScriptSprite.Create("menus/solarus_logo");
             _subtitle.SetAnimation("subtitle");
 
-            _sun = Sprite.Create("menus/solarus_logo");
+            _sun = ScriptSprite.Create("menus/solarus_logo");
             _sun.SetAnimation("sun");
 
-            _sword = Sprite.Create("menus/solarus_logo");
+            _sword = ScriptSprite.Create("menus/solarus_logo");
             _sword.SetAnimation("sword");
 
-            _blackSquare = Surface.Create(48, 15);
+            _blackSquare = ScriptSurface.Create(48, 15);
             _blackSquare.FillColor(Color.Black);
 
-            Timer.Start(this, 5000, () =>
+            ScriptTimer.Start(this, 5000, () =>
             {
                 Console.WriteLine("Timer expired");
                 return true;
@@ -69,7 +69,7 @@ namespace Sample.Menus
             RebuildSurface();
         }
 
-        protected override void OnDraw(Surface screen)
+        protected override void OnDraw(ScriptSurface screen)
         {
             _surface.Draw(screen, screen.Width / 2 - 100, screen.Height / 2 - 24);
         }
@@ -77,13 +77,13 @@ namespace Sample.Menus
         void StartAnimation()
         {
             // 태양의 이동
-            TargetMovement sunMovement = Movement.Create(MovementType.Target) as TargetMovement;
+            ScriptTargetMovement sunMovement = ScriptMovement.Create(MovementType.Target) as ScriptTargetMovement;
             sunMovement.SetSpeed(64);
             sunMovement.SetTarget(new Point(0, -33));
             sunMovement.PositionChanged += (o, e) => RebuildSurface();
 
             // 검의 이동
-            TargetMovement swordMovement = Movement.Create(MovementType.Target) as TargetMovement;
+            ScriptTargetMovement swordMovement = ScriptMovement.Create(MovementType.Target) as ScriptTargetMovement;
             swordMovement.SetSpeed(96);
             swordMovement.SetTarget(new Point(-48, 48));
             swordMovement.PositionChanged += (o, e) => RebuildSurface();
@@ -105,7 +105,7 @@ namespace Sample.Menus
                         Step1();
 
                         // 스텝 2를 위한 타이머를 생성합니다.
-                        _timer = Timer.Start(this, 250, () =>
+                        _timer = ScriptTimer.Start(this, 250, () =>
                         {
                             if (_animationStep <= 1)
                                 Step2();
@@ -137,10 +137,10 @@ namespace Sample.Menus
 
             RebuildSurface();
 
-            Timer.Start(this, 500, () =>
+            ScriptTimer.Start(this, 500, () =>
             {
                 //_surface.FadeOut();
-                Timer.Start(this, 700, () =>
+                ScriptTimer.Start(this, 700, () =>
                 {
                     Stop();
                     return false;

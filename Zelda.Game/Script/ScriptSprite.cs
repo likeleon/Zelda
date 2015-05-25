@@ -1,12 +1,11 @@
 ﻿using System;
 using Zelda.Game.Engine;
-using RawSprite = Zelda.Game.Sprite;
 
 namespace Zelda.Game.Script
 {
-    public class Sprite : Drawable
+    public class ScriptSprite : ScriptDrawable
     {
-        readonly RawSprite _rawSprite;
+        readonly Sprite _sprite;
 
         public Direction4 Direction
         {
@@ -14,25 +13,25 @@ namespace Zelda.Game.Script
             {
                 return ScriptTools.ExceptionBoundaryHandle<Direction4>(() =>
                 {
-                    return _rawSprite.CurrentDirection;
+                    return _sprite.CurrentDirection;
                 });
             }
         }
 
-        public static Sprite Create(string animationSetId)
+        public static ScriptSprite Create(string animationSetId)
         {
-            return ScriptTools.ExceptionBoundaryHandle<Sprite>(() =>
+            return ScriptTools.ExceptionBoundaryHandle<ScriptSprite>(() =>
             {
-                RawSprite rawSprite = new RawSprite(animationSetId);
-                ScriptContext.AddDrawable(rawSprite);
-                return new Sprite(rawSprite);
+                Sprite sprite = new Sprite(animationSetId);
+                ScriptDrawable.AddDrawable(sprite);
+                return new ScriptSprite(sprite);
             });
         }
 
-        Sprite(RawSprite rawSprite)
-            : base(rawSprite)
+        ScriptSprite(Sprite sprite)
+            : base(sprite)
         {
-            _rawSprite = rawSprite;
+            _sprite = sprite;
         }
 
         public void SetAnimation(string animationName)
@@ -42,8 +41,8 @@ namespace Zelda.Game.Script
                 if (animationName == null)
                     throw new ArgumentNullException("animationName");
 
-                _rawSprite.SetCurrentAnimation(animationName);
-                _rawSprite.RestartAnimation();
+                _sprite.SetCurrentAnimation(animationName);
+                _sprite.RestartAnimation();
             });
         }
 
@@ -51,14 +50,14 @@ namespace Zelda.Game.Script
         {
             ScriptTools.ExceptionBoundaryHandle(() =>
             {
-                if (direction < 0 || (int)direction >= _rawSprite.NumDirections)
+                if (direction < 0 || (int)direction >= _sprite.NumDirections)
                 {
                     string msg = "Illegal direction {0} for sprite '{1}' in animation '{2}'"
-                        .F(direction, _rawSprite.AnimationSetId, _rawSprite.CurrentAnimation);
+                        .F(direction, _sprite.AnimationSetId, _sprite.CurrentAnimation);
                     throw new ArgumentOutOfRangeException("direction", msg);
                 }
 
-                _rawSprite.SetCurrentDirection(direction);
+                _sprite.SetCurrentDirection(direction);
             });
         }
     }

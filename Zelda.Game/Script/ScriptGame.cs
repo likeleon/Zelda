@@ -1,20 +1,18 @@
 ﻿using System;
 using Zelda.Game.Engine;
-using RawSaveGame = Zelda.Game.Savegame;
-using RawGame = Zelda.Game.Game;
 
 namespace Zelda.Game.Script
 {
-    public class Game
+    public class ScriptGame
     {
-        readonly RawSaveGame _rawSaveGame;
+        readonly Savegame _savegame;
 
-        Game(RawSaveGame rawSaveGame)
+        ScriptGame(Savegame savegame)
         {
-            Debug.CheckAssertion(rawSaveGame != null, "rawSaveGame should not be null");
+            Debug.CheckAssertion(savegame != null, "rawSaveGame should not be null");
 
-            _rawSaveGame = rawSaveGame;
-            _rawSaveGame.ScriptGame = this;
+            _savegame = savegame;
+            _savegame.ScriptGame = this;
         }
 
         public int Life
@@ -23,14 +21,14 @@ namespace Zelda.Game.Script
             {
                 return ScriptTools.ExceptionBoundaryHandle<int>(() =>
                 {
-                    return _rawSaveGame.Equipment.Life;
+                    return _savegame.Equipment.Life;
                 });
             }
             set 
             {
                 ScriptTools.ExceptionBoundaryHandle(() =>
                 {
-                    _rawSaveGame.Equipment.Life = value;
+                    _savegame.Equipment.Life = value;
                 });
             }
         }
@@ -41,7 +39,7 @@ namespace Zelda.Game.Script
             {
                 return ScriptTools.ExceptionBoundaryHandle<int>(() =>
                 {
-                    return _rawSaveGame.Equipment.MaxLife;
+                    return _savegame.Equipment.MaxLife;
                 });
             }
             set
@@ -51,7 +49,7 @@ namespace Zelda.Game.Script
                     if (value < 0)
                         throw new ArgumentOutOfRangeException("value", "Invalid life value: max life must be strictly positive");
 
-                    _rawSaveGame.Equipment.MaxLife = value;
+                    _savegame.Equipment.MaxLife = value;
                 });
             }
         }
@@ -60,7 +58,7 @@ namespace Zelda.Game.Script
         {
             return ScriptTools.ExceptionBoundaryHandle<int>(() =>
             {
-                return _rawSaveGame.Equipment.GetAbility(ability);
+                return _savegame.Equipment.GetAbility(ability);
             });
         }
 
@@ -68,7 +66,7 @@ namespace Zelda.Game.Script
         {
             ScriptTools.ExceptionBoundaryHandle(() =>
             {
-                _rawSaveGame.Equipment.SetAbility(ability, level);
+                _savegame.Equipment.SetAbility(ability, level);
             });
         }
 
@@ -83,16 +81,16 @@ namespace Zelda.Game.Script
             });
         }
 
-        public static Game Load(string fileName)
+        public static ScriptGame Load(string fileName)
         {
-            return ScriptTools.ExceptionBoundaryHandle<Game>(() =>
+            return ScriptTools.ExceptionBoundaryHandle<ScriptGame>(() =>
             {
                 if (String.IsNullOrWhiteSpace(ModFiles.ModWriteDir))
                     throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
 
-                RawSaveGame rawSaveGame = new RawSaveGame(ScriptContext.MainLoop, fileName);
-                rawSaveGame.Initialize();
-                return new Game(rawSaveGame);
+                Savegame savegame = new Savegame(ScriptContext.MainLoop, fileName);
+                savegame.Initialize();
+                return new ScriptGame(savegame);
             });
         }
 
@@ -103,7 +101,7 @@ namespace Zelda.Game.Script
                 if (CurrentMod.GetResources(ResourceType.Map).Count <= 0)
                     throw new InvalidOperationException("Cannot start game: there is no map in this mod");
 
-                RawGame game = _rawSaveGame.Game;
+                Game game = _savegame.Game;
                 if (game != null)
                 {
                     game.Restart();
@@ -113,20 +111,20 @@ namespace Zelda.Game.Script
                     MainLoop mainLoop = ScriptContext.MainLoop;
                     if (mainLoop.Game != null)
                         mainLoop.Game.Stop();
-                    game = new RawGame(mainLoop, _rawSaveGame);
+                    game = new Game(mainLoop, _savegame);
                     mainLoop.SetGame(game);
                 }
             });
         }
 
-        public void SetItemAssigned(int slot, Item item)
+        public void SetItemAssigned(int slot, ScriptItem item)
         {
             ScriptTools.ExceptionBoundaryHandle(() =>
             {
                 if (slot < 1 || slot > 2)
                     throw new ArgumentException("The item slot should be 1 or 2", "slot");
 
-                _rawSaveGame.Equipment.SetItemAssigned(slot, item.RawItem);
+                _savegame.Equipment.SetItemAssigned(slot, item._item);
             });
         }
     }

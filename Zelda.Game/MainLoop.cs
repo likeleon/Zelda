@@ -2,7 +2,7 @@
 using System.IO;
 using Zelda.Game.Engine;
 using ScriptContext = Zelda.Game.Script.ScriptContext;
-using ScriptSurface = Zelda.Game.Script.Surface;
+using ScriptSurface = Zelda.Game.Script.ScriptSurface;
 
 namespace Zelda.Game
 {

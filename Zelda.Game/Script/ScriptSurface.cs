@@ -1,10 +1,8 @@
-﻿using System;
-using Zelda.Game.Engine;
-using RawSurface = Zelda.Game.Engine.Surface;
+﻿using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
 {
-    public class Surface : Drawable
+    public class ScriptSurface : ScriptDrawable
     {
         public byte Opacity
         {
@@ -12,7 +10,7 @@ namespace Zelda.Game.Script
             {
                 ScriptTools.ExceptionBoundaryHandle(() => 
                 {
-                    _rawSurface.Opacity = value;
+                    _surface.Opacity = value;
                 });
             }
         }
@@ -23,7 +21,7 @@ namespace Zelda.Game.Script
             {
                 return ScriptTools.ExceptionBoundaryHandle<int>(() =>
                 {
-                    return _rawSurface.Width;
+                    return _surface.Width;
                 });
             }
         }
@@ -34,49 +32,49 @@ namespace Zelda.Game.Script
             {
                 return ScriptTools.ExceptionBoundaryHandle<int>(() =>
                 {
-                    return _rawSurface.Height;
+                    return _surface.Height;
                 });
             }
         }
 
-        readonly RawSurface _rawSurface;
-        internal RawSurface RawSurface
+        readonly Surface _surface;
+        internal Surface Surface
         {
-            get { return _rawSurface; }
+            get { return _surface; }
         }
 
-        public static Surface Create()
+        public static ScriptSurface Create()
         {
-            return ScriptTools.ExceptionBoundaryHandle<Surface>(() =>
+            return ScriptTools.ExceptionBoundaryHandle<ScriptSurface>(() =>
             {
                 return Create(Video.ModSize.Width, Video.ModSize.Height);
             });
         }
 
-        public static Surface Create(int width, int height)
+        public static ScriptSurface Create(int width, int height)
         {
-            return ScriptTools.ExceptionBoundaryHandle<Surface>(() =>
+            return ScriptTools.ExceptionBoundaryHandle<ScriptSurface>(() =>
             {
-                RawSurface rawSurface = RawSurface.Create(width, height);
-                if (rawSurface == null)
+                Surface surface = Surface.Create(width, height);
+                if (surface == null)
                     return null;
 
-                ScriptContext.AddDrawable(rawSurface);
-                return new Surface(rawSurface);
+                ScriptDrawable.AddDrawable(surface);
+                return new ScriptSurface(surface);
             });
         }
 
-        internal Surface(RawSurface rawSurface)
-            : base(rawSurface)
+        internal ScriptSurface(Surface surface)
+            : base(surface)
         {
-            _rawSurface = rawSurface;
+            _surface = surface;
         }
 
         public void Clear()
         {
             ScriptTools.ExceptionBoundaryHandle(() =>
             {
-                _rawSurface.Clear();
+                _surface.Clear();
             });
         }
 
@@ -84,7 +82,7 @@ namespace Zelda.Game.Script
         {
             ScriptTools.ExceptionBoundaryHandle(() =>
             {
-                _rawSurface.FillWithColor(color, where);
+                _surface.FillWithColor(color, where);
             });
         }
     }

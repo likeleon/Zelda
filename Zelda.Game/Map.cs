@@ -198,7 +198,7 @@ namespace Zelda.Game
                     if (!type.CanBeStoredInMapFile())
                         Debug.Error("Illegal entity type in map file: " + type);
 
-                    Script.ScriptContext.CreateMapEntityFromData(this, entityData);
+                    Script.ScriptMap.CreateMapEntityFromData(this, entityData);
                 }
             }
         }
@@ -323,7 +323,7 @@ namespace Zelda.Game
             get { return _started; }
         }
 
-        public Script.Map ScriptMap { get; private set; }
+        public Script.ScriptMap ScriptMap { get; private set; }
 
         public void Start()
         {

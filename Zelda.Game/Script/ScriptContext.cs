@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
-using RawMap = Zelda.Game.Map;
 
 namespace Zelda.Game.Script
 {
@@ -42,16 +39,16 @@ namespace Zelda.Game.Script
             });
             Main.Current = null;
 
-            DestroyMenus();
-            DestroyTimers();
-            DestroyDrawables();
+            ScriptMenu.DestroyMenus();
+            ScriptTimer.DestroyTimers();
+            ScriptDrawable.DestroyDrawables();
         }
 
         public static void Update()
         {
-            UpdateDrawables();
-            UpdateMenus();
-            UpdateTimers();
+            ScriptDrawable.UpdateDrawables();
+            ScriptMenu.UpdateMenus();
+            ScriptTimer.UpdateTimers();
 
             ScriptTools.ExceptionBoundaryHandle(() =>
             {
@@ -80,13 +77,13 @@ namespace Zelda.Game.Script
                 callback();
         }
 
-        internal static Item RunItem(EquipmentItem item)
+        internal static ScriptItem RunItem(EquipmentItem item)
         {
-            string className =  GetScriptClassName<Item>(item.Name);
+            string className =  GetScriptClassName<ScriptItem>(item.Name);
             if (className == null)
                 return null;
 
-            Item scriptItem = _objectCreator.CreateObject<Item>(className);
+            ScriptItem scriptItem = _objectCreator.CreateObject<ScriptItem>(className);
             scriptItem.NotifyCreated(item);
             return scriptItem;
         }
@@ -107,20 +104,37 @@ namespace Zelda.Game.Script
             return null;
         }
 
-        internal static Map RunMap(RawMap rawMap, Destination destination)
+        internal static ScriptMap RunMap(Map map, Destination destination)
         {
-            string className = GetScriptClassName<Map>(rawMap.Id);
+            string className = GetScriptClassName<ScriptMap>(map.Id);
             if (className == null)
-                Debug.Die("Cannot find script file for map '{0}'".F(rawMap.Id));
+                Debug.Die("Cannot find script file for map '{0}'".F(map.Id));
 
-            Map scriptMap = _objectCreator.CreateObject<Map>(className);
-            scriptMap.NotifyStarted(rawMap, destination);
+            ScriptMap scriptMap = _objectCreator.CreateObject<ScriptMap>(className);
+            scriptMap.NotifyStarted(map, destination);
             return scriptMap;
+        }
+
+        internal static void MainOnDraw(ScriptSurface dstSurface)
+        {
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                _scriptMain.OnDraw(dstSurface);
+            });
+            ScriptMenu.MenusOnDraw(_scriptMain, dstSurface);
+        }
+
+        internal static bool MainOnInput(InputEvent inputEvent)
+        {
+            bool handled = OnInput(_scriptMain, inputEvent);
+            if (!handled)
+                handled = ScriptMenu.MenusOnInput(_scriptMain, inputEvent);
+            return handled;
         }
         #endregion
 
         #region 이벤트들
-        static bool OnInput(IInputEventHandler handler, InputEvent input)
+        internal static bool OnInput(IInputEventHandler handler, InputEvent input)
         {
             bool handled = false;
             if (input.IsKeyboardEvent)

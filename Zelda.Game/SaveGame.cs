@@ -43,7 +43,7 @@ namespace Zelda.Game
 
         static readonly int SaveGameVersion = 2;
 
-        public Script.Game ScriptGame { get; set; }
+        public Script.ScriptGame ScriptGame { get; set; }
 
         #region 파일 상태
         bool _empty = true;

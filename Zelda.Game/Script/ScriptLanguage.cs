@@ -1,9 +1,8 @@
 ﻿using System;
-using LanguageInternal = Zelda.Game.Language;
 
 namespace Zelda.Game.Script
 {
-    public static class Language
+    public static class ScriptLanguage
     {
         public static string LanguageCode
         {
@@ -11,7 +10,7 @@ namespace Zelda.Game.Script
             {
                 return ScriptTools.ExceptionBoundaryHandle<string>(() =>
                 {
-                    return LanguageInternal.LanguageCode;
+                    return Language.LanguageCode;
                 });
             }
         }
@@ -20,7 +19,7 @@ namespace Zelda.Game.Script
         {
             ScriptTools.ExceptionBoundaryHandle(() =>
             {
-                LanguageInternal.SetLanguage(languageCode);
+                Language.SetLanguage(languageCode);
             });
         }
 
@@ -30,17 +29,17 @@ namespace Zelda.Game.Script
             {
                 if (languageCode != null)
                 {
-                    if (!LanguageInternal.HasLanguage(languageCode))
+                    if (!Language.HasLanguage(languageCode))
                         throw new ArgumentException("No such language: '{0}'".F(languageCode), "languageCode");
 
-                    return LanguageInternal.GetLanguageName(languageCode);
+                    return Language.GetLanguageName(languageCode);
                 }
                 else
                 {
-                    if (LanguageInternal.LanguageCode == null)
+                    if (Language.LanguageCode == null)
                         throw new ArgumentException("No language is set", "languageCode");
 
-                    return LanguageInternal.GetLanguageName(LanguageInternal.LanguageCode);
+                    return Language.GetLanguageName(Language.LanguageCode);
                 }
             });
         }
