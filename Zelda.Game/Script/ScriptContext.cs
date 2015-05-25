@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Zelda.Game.Engine;
+using Zelda.Game.Entities;
+using RawMap = Zelda.Game.Map;
 
 namespace Zelda.Game.Script
 {
@@ -85,7 +87,7 @@ namespace Zelda.Game.Script
                 return null;
 
             Item scriptItem = _objectCreator.CreateObject<Item>(className);
-            scriptItem.NotifyOnCreated(item);
+            scriptItem.NotifyCreated(item);
             return scriptItem;
         }
 
@@ -103,6 +105,17 @@ namespace Zelda.Game.Script
             }
 
             return null;
+        }
+
+        internal static Map RunMap(RawMap rawMap, Destination destination)
+        {
+            string className = GetScriptClassName<Map>(rawMap.Id);
+            if (className == null)
+                Debug.Die("Cannot find script file for map '{0}'".F(rawMap.Id));
+
+            Map scriptMap = _objectCreator.CreateObject<Map>(className);
+            scriptMap.NotifyStarted(rawMap, destination);
+            return scriptMap;
         }
         #endregion
 

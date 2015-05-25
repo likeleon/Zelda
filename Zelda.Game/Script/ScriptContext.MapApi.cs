@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
+using RawMap = Zelda.Game.Map;
 
 namespace Zelda.Game.Script
 {
     static partial class ScriptContext
     {
-        static readonly Dictionary<EntityType, Func<Map, EntityData, MapEntity>> _entityCreationFunctions
-            = new Dictionary<EntityType, Func<Map, EntityData, MapEntity>>()
+        static readonly Dictionary<EntityType, Func<RawMap, EntityData, MapEntity>> _entityCreationFunctions
+            = new Dictionary<EntityType, Func<RawMap, EntityData, MapEntity>>()
         {
             { EntityType.Destination, CreateDestination },
             { EntityType.Destructible, CreateDestructible },
@@ -18,43 +19,43 @@ namespace Zelda.Game.Script
             { EntityType.Block, CreateBlock }
         };
 
-        internal static void CreateMapEntityFromData(Map map, EntityData entityData)
+        internal static void CreateMapEntityFromData(RawMap rawMap, EntityData entityData)
         {
             EntityType type = entityData.Type;
             if (type == EntityType.Tile)
             {
-                CreateTile(map, entityData as TileData);
+                CreateTile(rawMap, entityData as TileData);
             }
             else
             {
-                Func<Map, EntityData, MapEntity> function = null;
+                Func<RawMap, EntityData, MapEntity> function = null;
                 if (!_entityCreationFunctions.TryGetValue(type, out function))
                     Debug.Die("Missing entry creation function for type '{0}'".F(type));
 
-                function(map, entityData);
+                function(rawMap, entityData);
             }
         }
 
         // TODO: static Map.CreateTile() method
-        public static void CreateTile(Map map, TileData data)
+        public static void CreateTile(RawMap rawMap, TileData data)
         {
             ScriptTools.ExceptionBoundaryHandle(() =>
             {
-                TilePattern pattern = map.Tileset.GetTilePattern(data.Pattern);
+                TilePattern pattern = rawMap.Tileset.GetTilePattern(data.Pattern);
 
                 Size size = EntityCreationCheckSize(data.Width, data.Height);
                 for (int y = data.XY.Y; y < data.XY.Y + size.Height; y += pattern.Height)
                 {
                     for (int x = data.XY.X; x < data.XY.X + size.Width; x += pattern.Width)
                     {
-                        Tile tile = new Tile(data.Layer, new Point(x, y), pattern.Size, map.Tileset, data.Pattern);
-                        map.Entities.AddEntity(tile);
+                        Tile tile = new Tile(data.Layer, new Point(x, y), pattern.Size, rawMap.Tileset, data.Pattern);
+                        rawMap.Entities.AddEntity(tile);
                     }
                 }
             });
         }
 
-        public static Destination CreateDestination(Map map, EntityData entityData)
+        public static Destination CreateDestination(RawMap map, EntityData entityData)
         {
             return ScriptTools.ExceptionBoundaryHandle<Destination>(() =>
             {
@@ -72,7 +73,7 @@ namespace Zelda.Game.Script
             });
         }
 
-        public static Destructible CreateDestructible(Map map, EntityData entityData)
+        public static Destructible CreateDestructible(RawMap map, EntityData entityData)
         {
             return ScriptTools.ExceptionBoundaryHandle<Destructible>(() =>
             {
@@ -100,7 +101,7 @@ namespace Zelda.Game.Script
             });
         }
 
-        public static Chest CreateChest(Map map, EntityData entityData)
+        public static Chest CreateChest(RawMap map, EntityData entityData)
         {
             return ScriptTools.ExceptionBoundaryHandle<Chest>(() =>
             {
@@ -141,8 +142,8 @@ namespace Zelda.Game.Script
                 return (map.IsStarted) ? chest : null;
             });
         }
-        
-        public static Npc CreateNpc(Map map, EntityData entityData)
+
+        public static Npc CreateNpc(RawMap map, EntityData entityData)
         {
             return ScriptTools.ExceptionBoundaryHandle<Npc>(() =>
             {
@@ -162,7 +163,7 @@ namespace Zelda.Game.Script
             });
         }
 
-        public static Block CreateBlock(Map map, EntityData entityData)
+        public static Block CreateBlock(RawMap map, EntityData entityData)
         {
             return ScriptTools.ExceptionBoundaryHandle<Block>(() =>
             {

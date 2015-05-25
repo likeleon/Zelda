@@ -108,6 +108,7 @@
     <Compile Include="Entities\Tile.cs" />
     <Compile Include="Equipment.cs" />
     <Compile Include="EquipmentItem.cs" />
+    <Compile Include="EquipmentItemUsage.cs" />
     <Compile Include="GameCommand.cs" />
     <Compile Include="GameCommands.cs" />
     <Compile Include="Heroes\CarryingState.cs" />
@@ -121,11 +122,15 @@
     <Compile Include="Heroes\PushingState.cs" />
     <Compile Include="Heroes\State.cs" />
     <Compile Include="Heroes\TreasureState.cs" />
+    <Compile Include="Heroes\UsingItemState.cs" />
     <Compile Include="Movements\FollowMovement.cs" />
     <Compile Include="Movements\PathMovement.cs" />
     <Compile Include="Movements\PixelMovement.cs" />
     <Compile Include="Movements\PlayerMovement.cs" />
+    <Compile Include="Script\ScriptEntity.cs" />
+    <Compile Include="Script\ScriptHero.cs" />
     <Compile Include="Script\Item.cs" />
+    <Compile Include="Script\Map.cs" />
     <Compile Include="Script\ScriptContext.EntityApi.cs" />
     <Compile Include="Script\ScriptException.cs" />
     <Compile Include="SpriteData.cs" />

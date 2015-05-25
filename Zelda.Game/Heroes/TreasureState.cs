@@ -1,7 +1,6 @@
 ﻿using System;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.Heroes
 {
@@ -29,7 +28,7 @@ namespace Zelda.Game.Heroes
 
             _treasure.GiveToPlayer();
 
-            ScriptContext.NotifyHeroBrandishTreasure(_treasure);
+            Script.ScriptContext.NotifyHeroBrandishTreasure(_treasure);
         }
 
         public override void Stop(State nextState)

@@ -7,8 +7,6 @@ namespace Zelda.Game.Entities
 {
     abstract class MapEntity : DisposableObject
     {
-        MainLoop _mainLoop;
-
         #region 생성과 소멸
         protected MapEntity(string name, Direction4 direction, Layer layer, Point xy, Size size)
         {
@@ -46,6 +44,11 @@ namespace Zelda.Game.Entities
 
         #region 타입
         public abstract EntityType Type { get; }
+
+        public virtual Script.ScriptEntity ScriptEntity
+        {
+            get { return null; }
+        }
 
         public bool IsHero
         {
@@ -99,6 +102,19 @@ namespace Zelda.Game.Entities
 
         #region 속성들
         public string Name { get; set; }
+
+        Direction4 _direction;
+        public Direction4 Direction
+        {
+            get { return _direction; }
+            set
+            {
+                if (value != _direction)
+                {
+                    _direction = value;
+                }
+            }
+        }
         #endregion
 
         #region 맵에 추가
@@ -107,6 +123,8 @@ namespace Zelda.Game.Entities
         {
             get { return _map; }
         }
+
+        MainLoop _mainLoop;
 
         public void SetMap(Map map)
         {
@@ -358,18 +376,6 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 속성
-        Direction4 _direction;
-        public Direction4 Direction
-        {
-            get { return _direction; }
-            set
-            {
-                if (value != _direction)
-                {
-                    _direction = value;
-                }
-            }
-        }
         #endregion
 
         #region 스프라이트

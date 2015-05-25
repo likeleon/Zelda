@@ -119,6 +119,19 @@ namespace Zelda.Game
             return _items[itemName];
         }
 
+        public EquipmentItem GetItemAssigned(int slot)
+        {
+            Debug.CheckAssertion(slot >= 1 && slot <= 2, "Invalid item slot");
+            string savegameVariable = "_item_slot_" + slot;
+            string itemName = _savegame.GetString(savegameVariable);
+
+            EquipmentItem item = null;
+            if (!String.IsNullOrEmpty(itemName))
+                item = GetItem(itemName);
+
+            return item;
+        }
+
         public void SetItemAssigned(int slot, EquipmentItem item)
         {
             Debug.CheckAssertion(slot >= 1 && slot <= 2, "Invalid item slot");

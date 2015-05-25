@@ -1,4 +1,5 @@
-﻿using Zelda.Game.Engine;
+﻿using System;
+using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 
 namespace Zelda.Game.Heroes
@@ -15,7 +16,7 @@ namespace Zelda.Game.Heroes
         {
             _hero = hero;
             _name = stateName;
-            _map = hero.Map;
+            Map = hero.Map;
         }
 
         #region 생성과 소멸
@@ -78,6 +79,14 @@ namespace Zelda.Game.Heroes
                     NotifyActionCommandPressed();
                     break;
 
+                case GameCommand.Item1:
+                    NotifyItemCommandPressed(1);
+                    break;
+
+                case GameCommand.Item2:
+                    NotifyItemCommandPressed(2);
+                    break;
+
                 default:
                     break;
             }
@@ -86,12 +95,19 @@ namespace Zelda.Game.Heroes
         public virtual void NotifyActionCommandPressed()
         {
         }
+
+        public virtual void NotifyItemCommandPressed(int slot)
+        {
+            EquipmentItem item = Equipment.GetItemAssigned(slot);
+            if (item != null && Hero.CanStartItem(item))
+                Hero.StartItem(item);
+        }
         #endregion
 
         #region 게임 오브젝트 접근
         protected MapEntities Entities
         {
-            get { return _map.Entities; }
+            get { return Map.Entities; }
         }
 
         readonly Hero _hero;
@@ -105,15 +121,16 @@ namespace Zelda.Game.Heroes
             get { return _hero.HeroSprites; }
         }
 
-        Map _map;
-        protected Map Map
-        {
-            get { return _map; }
+        protected Map Map { get; private set; }
+
+        protected Equipment Equipment 
+        { 
+            get { return Game.Equipment; } 
         }
 
         protected Game Game
         {
-            get { return _map.Game; }
+            get { return Map.Game; }
         }
 
         protected CommandsEffects CommandsEffects
@@ -130,7 +147,7 @@ namespace Zelda.Game.Heroes
         #region 게임
         public virtual void SetMap(Map map)
         {
-            _map = map;
+            Map = map;
         }
         #endregion
 
@@ -175,6 +192,20 @@ namespace Zelda.Game.Heroes
             get { return false; }
         }
 
+        public virtual bool IsUsingItem
+        {
+            get { return false; }
+        }
+
+        public virtual EquipmentItemUsage ItemBeingUsed
+        {
+            get
+            {
+                Debug.Die("No item is being used in this state");
+                throw new Exception();
+            }
+        }
+
         public virtual bool IsBrandishingTreasure
         {
             get { return false; }
@@ -188,6 +219,11 @@ namespace Zelda.Game.Heroes
         public virtual bool IsMovingGrabbedEntity
         {
             get { return false; }
+        }
+
+        public virtual bool CanStartItem(EquipmentItem item)
+        {
+            return false;
         }
 
         public virtual void NotifyGrabbedEntityCollision()

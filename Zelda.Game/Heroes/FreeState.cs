@@ -43,8 +43,13 @@ namespace Zelda.Game.Heroes
         }
 
         public override bool IsFree
-        {
+        {   
             get { return true; }
+        }
+
+        public override bool CanStartItem(EquipmentItem item)
+        {
+            return Hero.GroundBelow != Ground.Hole;
         }
     }
 }

@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="items\Bomb.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="maps\FirstMap.cs" />
     <Compile Include="menus\ZeldaLogo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="scripts\GameManager.cs" />
@@ -47,7 +48,6 @@
       <Name>Zelda.Game</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)Mods/Sample/"</PostBuildEvent>

@@ -87,6 +87,11 @@ namespace Zelda.Game.Entities
             return false;
         }
 
+        public virtual bool NotifyInteractionWithItem(EquipmentItem item)
+        {
+            return false;
+        }
+
         public virtual bool StartMovementByHero()
         {
             return false;

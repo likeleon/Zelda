@@ -1,4 +1,5 @@
-﻿using RawItem = Zelda.Game.EquipmentItem;
+﻿using Zelda.Game.Entities;
+using RawItem = Zelda.Game.EquipmentItem;
 
 namespace Zelda.Game.Script
 {
@@ -9,6 +10,11 @@ namespace Zelda.Game.Script
         public Game Game
         {
             get { return ScriptTools.ExceptionBoundaryHandle<Game>(() => RawItem.Savegame.ScriptGame); }
+        }
+
+        public Map Map
+        {
+            get { return ScriptTools.ExceptionBoundaryHandle<Map>(() => RawItem.Game.CurrentMap.ScriptMap); }
         }
 
         public string SavegameVariable
@@ -35,7 +41,14 @@ namespace Zelda.Game.Script
             }
         }
 
-        internal void NotifyOnCreated(RawItem rawItem)
+        public void SetFinished()
+        {
+            Hero hero = RawItem.Game.Hero;
+            if (hero.IsUsingItem)
+                hero.ItemBeingUsed.IsFinished = true;
+        }
+
+        internal void NotifyCreated(RawItem rawItem)
         {
             RawItem = rawItem;
 

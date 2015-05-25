@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Zelda.Game.Entities;
+using RawGame = Zelda.Game.Game;
+using RawHero = Zelda.Game.Entities.Hero;
 
 namespace Zelda.Game.Script
 {
@@ -31,8 +28,8 @@ namespace Zelda.Game.Script
         {
             Debug.CheckAssertion(item.Game != null, "Equipment item without game");
 
-            Zelda.Game.Game game = item.Game;
-            Hero hero = game.Hero;
+            RawGame game = item.Game;
+            RawHero hero = game.Hero;
 
             if (hero.IsBrandishingTreasure)
             {

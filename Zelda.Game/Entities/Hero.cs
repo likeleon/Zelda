@@ -12,6 +12,7 @@ namespace Zelda.Game.Entities
         {
             _normalWalkingSpeed = 88;
             _walkingSpeed = _normalWalkingSpeed;
+            _scriptHero = new Script.ScriptHero(this);
 
             Origin = new Point(8, 13);
 
@@ -27,6 +28,12 @@ namespace Zelda.Game.Entities
         public override EntityType Type
         {
             get { return EntityType.Hero; }
+        }
+
+        readonly Script.ScriptHero _scriptHero;
+        public override Script.ScriptEntity ScriptEntity
+        {
+            get { return _scriptHero; }
         }
         #endregion
 
@@ -58,6 +65,16 @@ namespace Zelda.Game.Entities
         public string StateName
         {
             get { return _state.Name; }
+        }
+
+        public bool IsUsingItem
+        {
+            get { return _state.IsUsingItem; }
+        }
+
+        public EquipmentItemUsage ItemBeingUsed
+        {
+            get { return _state.ItemBeingUsed; }
         }
 
         public bool IsBrandishingTreasure
@@ -138,6 +155,23 @@ namespace Zelda.Game.Entities
         public void StartTreasure(Treasure treasure)
         {
             SetState(new TreasureState(this, treasure));
+        }
+
+        public bool CanStartItem(EquipmentItem item)
+        {
+            if (!item.IsAssignable)
+                return false;
+
+            if (item.Variant == 0)
+                return false;
+
+            return _state.CanStartItem(item);
+        }
+
+        public void StartItem(EquipmentItem item)
+        {
+            Debug.CheckAssertion(CanStartItem(item), "The hero cannot start using item '{0}' now".F(item.Name));
+            SetState(new UsingItemState(this, item));
         }
         #endregion
 
