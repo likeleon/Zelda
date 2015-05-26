@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Zelda.Game.Engine;
 using Zelda.Game.Heroes;
+using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
@@ -12,7 +13,7 @@ namespace Zelda.Game.Entities
         {
             _normalWalkingSpeed = 88;
             _walkingSpeed = _normalWalkingSpeed;
-            _scriptHero = new Script.ScriptHero(this);
+            _scriptHero = new ScriptHero(this);
 
             Origin = new Point(8, 13);
 
@@ -30,8 +31,8 @@ namespace Zelda.Game.Entities
             get { return EntityType.Hero; }
         }
 
-        readonly Script.ScriptHero _scriptHero;
-        public override Script.ScriptEntity ScriptEntity
+        readonly ScriptHero _scriptHero;
+        public override ScriptEntity ScriptEntity
         {
             get { return _scriptHero; }
         }

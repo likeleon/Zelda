@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Zelda.Game.Engine;
+using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
@@ -95,7 +96,7 @@ namespace Zelda.Game
             CommandsEffects commandsEffects = _game.CommandsEffects;
             commandsEffects.RestoreActionCommandEffect();
 
-            Script.ScriptContext.NotifyDialogFinished(_game, _dialog, callback);
+            ScriptContext.NotifyDialogFinished(_game, _dialog, callback);
         }
 
         void ShowMoreLines()

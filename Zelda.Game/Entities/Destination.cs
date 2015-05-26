@@ -1,5 +1,6 @@
 ﻿using System;
 using Zelda.Game.Engine;
+using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
@@ -21,6 +22,12 @@ namespace Zelda.Game.Entities
             get { return _isDefaultDestination; }
         }
 
+        readonly ScriptDestination _scriptDestination;
+        public override ScriptEntity ScriptEntity
+        {
+            get { return _scriptDestination; }
+        }
+
         public Destination(
             string name,
             Layer layer,
@@ -36,6 +43,8 @@ namespace Zelda.Game.Entities
 
             if (!String.IsNullOrEmpty(spriteName))
                 CreateSprite(spriteName);
+
+            _scriptDestination = new ScriptDestination(this);
         }
     }
 

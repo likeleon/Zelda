@@ -1,7 +1,7 @@
 ﻿using System;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
-using ScriptContext = Zelda.Game.Script.ScriptContext;
+using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
@@ -11,8 +11,8 @@ namespace Zelda.Game
         public Map(string id)
         {
             _id = id;
-
             _cameraPosition = new Rectangle(new Point(), Video.ModSize);
+            _scriptMap = ScriptContext.CreateScriptMap(this);
         }
         #endregion
 
@@ -198,7 +198,7 @@ namespace Zelda.Game
                     if (!type.CanBeStoredInMapFile())
                         Debug.Error("Illegal entity type in map file: " + type);
 
-                    Script.ScriptMap.CreateMapEntityFromData(this, entityData);
+                    ScriptMap.CreateMapEntityFromData(this, entityData);
                 }
             }
         }
@@ -323,7 +323,11 @@ namespace Zelda.Game
             get { return _started; }
         }
 
-        public Script.ScriptMap ScriptMap { get; private set; }
+        readonly ScriptMap _scriptMap;
+        public ScriptMap ScriptMap
+        {
+            get { return _scriptMap; }
+        }
 
         public void Start()
         {
@@ -332,7 +336,7 @@ namespace Zelda.Game
 
             Music.Play(_musicId, true);
             _entities.NotifyMapStarted();
-            ScriptMap = ScriptContext.RunMap(this, GetDestination());
+            ScriptMap.NotifyStarted(GetDestination());
         }
         #endregion
 

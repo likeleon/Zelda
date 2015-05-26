@@ -1,5 +1,6 @@
 ﻿using System;
 using Zelda.Game.Engine;
+using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
@@ -18,6 +19,11 @@ namespace Zelda.Game.Entities
 
     class Npc : Detector
     {
+        readonly NpcSubtype _subtype;
+        readonly NpcBehavior _behavior;
+        readonly string _itemName;
+        readonly string _dialogToShow;
+
         public Npc(
             Game game, 
             string name,
@@ -54,17 +60,21 @@ namespace Zelda.Game.Entities
             {
                 Debug.Die("Invalid behavior string for NPC '{0}': '{1'}".F(name, behaviorString));
             }
-        }
 
-        readonly NpcSubtype _subtype;
-        readonly NpcBehavior _behavior;
-        readonly string _itemName;
-        readonly string _dialogToShow;
+            _scriptNpc = new ScriptNpc(this);
+        }
 
         public override EntityType Type
         {
             get { return EntityType.Npc; }
         }
+
+        readonly ScriptNpc _scriptNpc;
+        public override ScriptEntity ScriptEntity
+        {
+            get { return _scriptNpc; }
+        }
+
         public bool IsSolid
         {
             get { return _subtype != NpcSubtype.UsualNpc; }

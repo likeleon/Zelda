@@ -1,5 +1,6 @@
 ﻿using System;
 using Zelda.Game.Engine;
+using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
@@ -15,6 +16,7 @@ namespace Zelda.Game.Entities
         readonly Treasure _treasure;
         bool _treasureGiven;
         uint _treasureDate;
+        readonly ScriptChest _scriptChest;
         
         public Chest(
             string name, 
@@ -36,11 +38,18 @@ namespace Zelda.Game.Entities
             Origin = new Point(Width / 2, Height - 3);
 
             SetDrawnInYOrder(sprite.MaxSize.Height > Height);
+
+            _scriptChest = new ScriptChest(this);
         }
         
         public override EntityType Type
         {
             get { return EntityType.Chest; }
+        }
+
+        public override ScriptEntity ScriptEntity
+        {
+            get { return _scriptChest; }
         }
 
         bool _open;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
+using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
@@ -43,7 +44,7 @@ namespace Zelda.Game
 
         static readonly int SaveGameVersion = 2;
 
-        public Script.ScriptGame ScriptGame { get; set; }
+        public ScriptGame ScriptGame { get; set; }
 
         #region 파일 상태
         bool _empty = true;

@@ -53,13 +53,14 @@ namespace Zelda.Game.Entities
             : base(CollisionMode.Facing, name, layer, xy, new Size(16, 16))
         {
             _explosionDate = EngineSystem.Now + 6000;
-            _scriptBomb = new ScriptBomb(this);
 
             CreateSprite("entities/bomb");
             Size = new Size(16, 16);
             Origin = new Point(8, 13);
             SetDrawnInYOrder(true);
             OptimizationDistance = 0;   // 주인공이 멀리 있더라도 폭파될 수 있도록
+
+            _scriptBomb = new ScriptBomb(this);
         }
 
         public override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)

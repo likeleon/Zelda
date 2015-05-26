@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Zelda.Game.Engine;
 using Zelda.Game.Movements;
+using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
@@ -45,7 +45,7 @@ namespace Zelda.Game.Entities
         #region 타입
         public abstract EntityType Type { get; }
 
-        public virtual Script.ScriptEntity ScriptEntity
+        public virtual ScriptEntity ScriptEntity
         {
             get { return null; }
         }

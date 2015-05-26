@@ -1,5 +1,6 @@
 ﻿using System;
 using Zelda.Game.Engine;
+using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
@@ -24,6 +25,8 @@ namespace Zelda.Game.Entities
             CreateSprite(_animationSetId);
 
             UpdateCollisionModes();
+
+            _scriptDestructible = new ScriptDestructible(this);
         }
         #endregion
 
@@ -37,6 +40,12 @@ namespace Zelda.Game.Entities
         public Ground ModifiedGround
         {
             get { return _modifiedGround; }
+        }
+
+        readonly ScriptDestructible _scriptDestructible;
+        public override ScriptEntity ScriptEntity
+        {
+            get { return _scriptDestructible; }
         }
         #endregion
 

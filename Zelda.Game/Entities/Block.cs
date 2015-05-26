@@ -1,6 +1,7 @@
-﻿
-using Zelda.Game.Engine;
+﻿using Zelda.Game.Engine;
 using Zelda.Game.Movements;
+using Zelda.Game.Script;
+
 namespace Zelda.Game.Entities
 {
     class Block : Detector
@@ -30,6 +31,8 @@ namespace Zelda.Game.Entities
             Direction = direction;
             CreateSprite(spriteName);
             SetDrawnInYOrder(Sprite.Size.Height > 16);
+
+            _scriptBlock = new ScriptBlock(this);
         }
 
         public bool IsPushable { get; set; }
@@ -58,6 +61,12 @@ namespace Zelda.Game.Entities
         public override EntityType Type
         {
             get { return EntityType.Block; }
+        }
+
+        readonly ScriptBlock _scriptBlock;
+        public override ScriptEntity ScriptEntity
+        {
+            get { return _scriptBlock; }
         }
 
         public override bool IsObstacleFor(MapEntity other)

@@ -1,6 +1,7 @@
 ﻿using System;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
+using Zelda.Game.Script;
 
 namespace Zelda.Game.Movements
 {
@@ -301,8 +302,8 @@ namespace Zelda.Game.Movements
         #endregion
 
         #region 스크립트
-        Script.ScriptMovement _scriptMovement;
-        public Script.ScriptMovement ScriptMovement
+        ScriptMovement _scriptMovement;
+        public ScriptMovement ScriptMovement
         {
             get { return _scriptMovement; }
             set { _scriptMovement = value; }

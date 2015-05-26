@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Zelda.Game.Engine;
@@ -104,14 +105,14 @@ namespace Zelda.Game.Script
             return null;
         }
 
-        internal static ScriptMap RunMap(Map map, Destination destination)
+        internal static ScriptMap CreateScriptMap(Map map)
         {
             string className = GetScriptClassName<ScriptMap>(map.Id);
             if (className == null)
                 Debug.Die("Cannot find script file for map '{0}'".F(map.Id));
 
             ScriptMap scriptMap = _objectCreator.CreateObject<ScriptMap>(className);
-            scriptMap.NotifyStarted(map, destination);
+            scriptMap.Map = map;
             return scriptMap;
         }
 
