@@ -3,7 +3,7 @@ using Zelda.Game.Engine;
 
 namespace Zelda.Game.Entities
 {
-    class EntityData
+    public class EntityData
     {
         readonly EntityType _type;
         public EntityType Type
@@ -38,6 +38,11 @@ namespace Zelda.Game.Entities
                 return new BlockData(xmlData as BlockXmlData);
             else
                 throw new Exception("Unknown entity type");
+        }
+        
+        public EntityData(EntityType type)
+        {
+            _type = type;
         }
 
         public EntityData(EntityType type, EntityXmlData xmlData)

@@ -75,6 +75,15 @@ namespace Zelda.Game.Heroes
             if (IsCurrentState)
             {
                 _carriedItem.Update();
+
+                if (!IsSuspended)
+                {
+                    if (_carriedItem.IsBroken)
+                    {
+                        _carriedItem = null;
+                        Hero.SetState(new FreeState(Hero));
+                    }
+                }
             }
         }
 

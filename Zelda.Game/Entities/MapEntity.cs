@@ -688,6 +688,10 @@ namespace Zelda.Game.Entities
         {
         }
 
+        public virtual void NotifyCollisionWithBomb(Bomb bomb, CollisionMode collisionMode)
+        {
+        }
+
         public virtual bool IsLowWallObstacle
         {
             get { return true; }

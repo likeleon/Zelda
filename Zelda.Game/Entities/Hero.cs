@@ -568,6 +568,16 @@ namespace Zelda.Game.Entities
             if (CommandsEffects.ActionCommandEffect == ActionCommandEffect.None && IsFree)
                 CommandsEffects.ActionCommandEffect = ActionCommandEffect.Grab;
         }
+
+        public override void NotifyCollisionWithBomb(Bomb bomb, CollisionMode collisionMode)
+        {
+            if (CommandsEffects.ActionCommandEffect == ActionCommandEffect.None &&
+                FacingEntity == bomb &&
+                IsFree)
+            {
+                CommandsEffects.ActionCommandEffect = ActionCommandEffect.Lift;
+            }
+        }
         #endregion
     }
 }

@@ -34,6 +34,7 @@ namespace Zelda.Game.Entities
         {
             _hero = hero;
             _destructionSoundId = destructionSoundId;
+            _explosionDate = explosionDate;
             IsBeingLifted = true;
 
             Direction4 direction = hero.AnimationDirection;
@@ -108,7 +109,7 @@ namespace Zelda.Game.Entities
         bool _isBreaking;
         public bool IsBroken
         {
-            get { return _isBreaking && Sprite.IsAnimationFinished; }
+            get { return _isBreaking && (Sprite.IsAnimationFinished || CanExplode); }
         }
 
         void BreakItemOnGround()
@@ -157,16 +158,40 @@ namespace Zelda.Game.Entities
 
             Movement.Stop();
 
-            if (!String.IsNullOrEmpty(_destructionSoundId))
-                Sound.Play(_destructionSoundId);
+            if (!CanExplode)
+            {
+                if (!String.IsNullOrEmpty(_destructionSoundId))
+                    Sound.Play(_destructionSoundId);
 
-            if (Sprite.HasAnimation("destroy"))
-                Sprite.SetCurrentAnimation("destroy");
+                if (Sprite.HasAnimation("destroy"))
+                    Sprite.SetCurrentAnimation("destroy");
+            }
+            else
+            {
+                Console.WriteLine("Create explosion entity here");
+                Sound.Play("explosion");
+                if (IsBeingThrown)
+                    RemoveFromMap();
+            }
 
             IsBeingThrown = false;
             _isBreaking = true;
         }
 
+        #endregion
+
+        #region 폭파
+        uint _explosionDate;
+
+        public bool CanExplode
+        {
+            get { return _explosionDate != 0; }
+        }
+
+        public bool WillExplodeSoon
+        {
+            get { return CanExplode && EngineSystem.Now >= _explosionDate - 1500; }
+        }
         #endregion
 
         public override void Update()
@@ -182,6 +207,19 @@ namespace Zelda.Game.Entities
 
                 ClearMovement();
                 SetMovement(new FollowMovement(_hero, 0, -18, true));
+            }
+            else if (CanExplode && !_isBreaking)
+            {
+                if (EngineSystem.Now >= _explosionDate)
+                    BreakItem();
+                else if (WillExplodeSoon)
+                {
+                    string animation = Sprite.CurrentAnimation;
+                    if (animation == "stopped")
+                        Sprite.SetCurrentAnimation("stopped_explosion_soon");
+                    else if (animation == "walking")
+                        Sprite.SetCurrentAnimation("walking_explosion_soon");
+                }
             }
 
             if (IsBeingThrown)
@@ -243,6 +281,8 @@ namespace Zelda.Game.Entities
                 uint diff = EngineSystem.Now - WhenSuspended;
                 if (IsBeingThrown)
                     _nextDownDate += diff;
+                if (CanExplode)
+                    _explosionDate += diff;
             }
         }
 

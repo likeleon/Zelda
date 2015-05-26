@@ -205,6 +205,20 @@ namespace Zelda.Game.Script
             });
         }
 
+        public static ScriptBomb CreateBomb(ScriptMap scriptMap, EntityData entityData)
+        {
+            return ScriptTools.ExceptionBoundaryHandle<ScriptBomb>(() =>
+            {
+                Map map = scriptMap.Map;
+                BombData data = entityData as BombData;
+
+                Bomb bomb = new Bomb(data.Name, data.Layer, data.XY);
+                map.Entities.AddEntity(bomb);
+
+                return (map.IsStarted) ? (bomb.ScriptEntity as ScriptBomb) : null;
+            });
+        }
+
         private static Size EntityCreationCheckSize(int width, int height)
         {
             if (width < 0 || width % 8 != 0)

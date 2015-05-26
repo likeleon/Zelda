@@ -1,6 +1,7 @@
 ﻿using System;
 using Zelda.Game;
 using Zelda.Game.Engine;
+using Zelda.Game.Entities;
 using Zelda.Game.Script;
 
 namespace Sample.Items
@@ -34,7 +35,11 @@ namespace Sample.Items
             else if (direction == Direction4.Down)
                 xy.Y += 16;
 
-            //Map.CreateBomb(xy, hero.Layer);
+            ScriptMap.CreateBomb(Map, new BombData()
+            {
+                Layer = hero.Layer,
+                XY = xy
+            });
             Console.WriteLine("CreateBomb here");
             SetFinished();
         }

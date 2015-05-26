@@ -84,6 +84,7 @@
     <Compile Include="Engine\TextSurface.cs" />
     <Compile Include="Entities\AnimatedTilePattern.cs" />
     <Compile Include="Entities\Block.cs" />
+    <Compile Include="Entities\Bomb.cs" />
     <Compile Include="Entities\CarriedItem.cs" />
     <Compile Include="Entities\Chest.cs" />
     <Compile Include="Entities\CollisionMode.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Movements\PathMovement.cs" />
     <Compile Include="Movements\PixelMovement.cs" />
     <Compile Include="Movements\PlayerMovement.cs" />
+    <Compile Include="Script\ScriptBomb.cs" />
     <Compile Include="Script\ScriptEntity.cs" />
     <Compile Include="Script\ScriptHero.cs" />
     <Compile Include="Script\ScriptItem.cs" />
