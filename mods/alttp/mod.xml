@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mod>
+  <ZeldaVersion>0.1</ZeldaVersion>
+  <WriteDir>alttp</WriteDir>
+  <TitleBar>The Legend of Zelda: A Link to the Past</TitleBar>
+  <NormalModSize>320x240</NormalModSize>
+  <MinModSize>320x240</MinModSize>
+  <MaxModSize>400x240</MaxModSize>
+</Mod>
