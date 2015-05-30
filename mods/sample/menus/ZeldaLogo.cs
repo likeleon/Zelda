@@ -34,12 +34,6 @@ namespace Sample.Menus
 
             _blackSquare = ScriptSurface.Create(48, 15);
             _blackSquare.FillColor(Color.Black);
-
-            ScriptTimer.Start(this, 5000, () =>
-            {
-                Console.WriteLine("Timer expired");
-                return true;
-            });
         }
 
         void RebuildSurface()
@@ -67,11 +61,6 @@ namespace Sample.Menus
 
             StartAnimation();
             RebuildSurface();
-        }
-
-        protected override void OnDraw(ScriptSurface screen)
-        {
-            _surface.Draw(screen, screen.Width / 2 - 100, screen.Height / 2 - 24);
         }
 
         void StartAnimation()
@@ -139,7 +128,7 @@ namespace Sample.Menus
 
             ScriptTimer.Start(this, 500, () =>
             {
-                //_surface.FadeOut();
+                _surface.FadeOut(null, null);
                 ScriptTimer.Start(this, 700, () =>
                 {
                     Stop();
@@ -147,6 +136,11 @@ namespace Sample.Menus
                 });
                 return false;
             });
+        }
+        
+        protected override void OnDraw(ScriptSurface screen)
+        {
+            _surface.Draw(screen, screen.Width / 2 - 100, screen.Height / 2 - 24);
         }
 
         public override bool OnKeyPressed(string key, bool shift, bool control, bool alt)

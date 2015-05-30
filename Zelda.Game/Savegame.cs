@@ -112,8 +112,8 @@ namespace Zelda.Game
 
             SetDefaultKeyboardControls();
 
-            _equipment.MaxLife = 1;
-            _equipment.Life = 1;
+            _equipment.SetMaxLife(1);
+            _equipment.SetLife(1);
             _equipment.SetAbility(Ability.Tunic, 1);    // 스프라이트 표현을 위해 필수적으로 필요합니다
         }
 

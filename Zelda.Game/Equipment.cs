@@ -49,45 +49,41 @@ namespace Zelda.Game
         #endregion
 
         #region 생명
-        public int MaxLife
+        public int GetMaxLife()
         {
-            get
-            {
-                return _savegame.GetInteger(Savegame.Key.MaxLife);
-            }
-            set
-            {
-                Debug.CheckAssertion(value >= 0, "Invalid life amount");
+            return _savegame.GetInteger(Savegame.Key.MaxLife);
+        }
+        
+        public void SetMaxLife(int maxLife)
+        {
+            Debug.CheckAssertion(maxLife >= 0, "Invalid life amount");
 
-                _savegame.SetInteger(Savegame.Key.MaxLife, value);
+            _savegame.SetInteger(Savegame.Key.MaxLife, maxLife);
 
-                if (Life > MaxLife)
-                    Life = MaxLife;
-            }
+            if (GetLife() > GetMaxLife())
+                SetLife(maxLife);
         }
 
-        public int Life
+        public int GetLife()
         {
-            get
-            {
-                return _savegame.GetInteger(Savegame.Key.CurrentLife);
-            }
-            set
-            {
-                int life = Math.Max(0, Math.Min(MaxLife, value));
-                _savegame.SetInteger(Savegame.Key.CurrentLife, life);
-            }
+            return _savegame.GetInteger(Savegame.Key.CurrentLife);
+        }
+
+        public void SetLife(int life)
+        {
+            life = Math.Max(0, Math.Min(GetMaxLife(), life));
+            _savegame.SetInteger(Savegame.Key.CurrentLife, life);
         }
 
         public void RemoveLife(int lifeToRemove)
         {
             Debug.CheckAssertion(lifeToRemove >= 0, "Invalid life amount to remove");
-            Life = Life - lifeToRemove; 
+            SetLife(GetLife() - lifeToRemove);
         }
         
         public void RestoreAllLife()
         {
-            Life = MaxLife;
+            SetLife(GetMaxLife());
         }
         #endregion
 

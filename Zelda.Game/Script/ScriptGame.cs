@@ -16,43 +16,30 @@ namespace Zelda.Game.Script
             _savegame.ScriptGame = this;
         }
 
-        public int Life
+        public int GetLife()
         {
-            get 
-            {
-                return ScriptTools.ExceptionBoundaryHandle<int>(() =>
-                {
-                    return _savegame.Equipment.Life;
-                });
-            }
-            set 
-            {
-                ScriptTools.ExceptionBoundaryHandle(() =>
-                {
-                    _savegame.Equipment.Life = value;
-                });
-            }
+            return ScriptTools.ExceptionBoundaryHandle<int>(_savegame.Equipment.GetLife);
         }
 
-        public int MaxLife
+        public void SetLife(int life)
         {
-            get 
-            {
-                return ScriptTools.ExceptionBoundaryHandle<int>(() =>
-                {
-                    return _savegame.Equipment.MaxLife;
-                });
-            }
-            set
-            {
-                ScriptTools.ExceptionBoundaryHandle(() =>
-                {
-                    if (value < 0)
-                        throw new ArgumentOutOfRangeException("value", "Invalid life value: max life must be strictly positive");
+            ScriptTools.ExceptionBoundaryHandle(() => _savegame.Equipment.SetLife(life));
+        }
 
-                    _savegame.Equipment.MaxLife = value;
-                });
-            }
+        public int GetMaxLife()
+        {
+            return ScriptTools.ExceptionBoundaryHandle<int>(_savegame.Equipment.GetMaxLife);
+        }
+
+        public void SetMaxLife(int maxLife)
+        {
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                if (maxLife < 0)
+                    throw new ArgumentOutOfRangeException("value", "Invalid life value: max life must be strictly positive");
+
+                _savegame.Equipment.SetMaxLife(maxLife);
+            });
         }
 
         public ScriptHero Hero

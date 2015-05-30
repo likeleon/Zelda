@@ -59,6 +59,12 @@ namespace Zelda.Game.Script
             });
         }
 
+        [CLSCompliant(false)]
+        public void FadeOut(uint? delay = null, Action callback = null)
+        {
+            throw new NotImplementedException("FadeOut");
+        }
+
         #region ScriptDrawable 관리
         static readonly HashSet<Drawable> _drawables = new HashSet<Drawable>();
         static readonly HashSet<Drawable> _drawablesToRemove = new HashSet<Drawable>();

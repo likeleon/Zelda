@@ -11,8 +11,8 @@ namespace Sample.Scripts
             ScriptGame game = ScriptGame.Load("save1.dat");
             if (!exists)
             {
-                game.MaxLife = 12;
-                game.Life = game.MaxLife;
+                game.SetMaxLife(12);
+                game.SetLife(game.GetMaxLife());
                 game.SetAbility(Ability.Lift, 2);
             }
             game.Start();

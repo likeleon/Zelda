@@ -24,7 +24,7 @@ namespace Zelda.Game
             UpdateCommandsEffects();
             
             // 게임 오버 이후에 재시작하는 경우에 대한 처리입니다
-            if (Equipment.Life <= 0)
+            if (Equipment.GetLife() <= 0)
                 Equipment.RestoreAllLife();
 
             // 시작 맵을 시작합니다
@@ -190,7 +190,7 @@ namespace Zelda.Game
             get
             {
                 return !IsSuspended &&
-                       Equipment.Life > 0;  // 게임 오버 처리가 시작되려고 할 때에는 일시 정지를 허용하면 안 됩니다
+                       Equipment.GetLife() > 0;  // 게임 오버 처리가 시작되려고 할 때에는 일시 정지를 허용하면 안 됩니다
             }
         }
 
