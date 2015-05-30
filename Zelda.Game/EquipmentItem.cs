@@ -101,6 +101,12 @@ namespace Zelda.Game
             if (_scriptItem != null)
                 _scriptItem.NotifyUsing();
         }
+
+        public void NotifyAbilityUsed(Ability ability)
+        {
+            if (_scriptItem != null)
+                _scriptItem.NotifyAbilityUsed(ability);
+        }
         #endregion
 
         public void NotifyObtaining(Treasure treasure)

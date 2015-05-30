@@ -250,6 +250,11 @@ namespace Zelda.Game.Heroes
             SetTunicAnimation("lifting");
         }
 
+        public void SetAnimationHurt()
+        {
+            SetTunicAnimation("hurt");
+        }
+
         public void SetAnimationBrandish()
         {
             SetTunicAnimation("brandish");

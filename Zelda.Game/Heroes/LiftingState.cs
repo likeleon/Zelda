@@ -23,6 +23,8 @@ namespace Zelda.Game.Heroes
             Sprites.SetAnimationLifting();
             Sprites.LiftedItem = _liftedItem;
             Hero.FacingEntity = null;
+
+            Equipment.NotifyAbilityUsed(Ability.Lift);
         }
 
         public override void Stop(State nextState)

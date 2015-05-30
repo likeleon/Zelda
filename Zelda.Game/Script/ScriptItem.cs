@@ -24,7 +24,7 @@ namespace Zelda.Game.Script
             }
             set
             {
-                ScriptTools.ExceptionBoundaryHandle(() => { _item.SavegameVariable = value; });
+                ScriptTools.ExceptionBoundaryHandle(() => _item.SavegameVariable = value);
             }
         }
 
@@ -36,7 +36,7 @@ namespace Zelda.Game.Script
             }
             set
             {
-                ScriptTools.ExceptionBoundaryHandle(() => { _item.IsAssignable = value; });
+                ScriptTools.ExceptionBoundaryHandle(() => _item.IsAssignable = value);
             }
         }
 
@@ -51,7 +51,7 @@ namespace Zelda.Game.Script
         {
             _item = item;
 
-            ScriptTools.ExceptionBoundaryHandle(() => { OnCreated(); });
+            ScriptTools.ExceptionBoundaryHandle(OnCreated);
         }
 
         protected virtual void OnCreated()
@@ -60,7 +60,7 @@ namespace Zelda.Game.Script
 
         internal void NotifyStarted()
         {
-            ScriptTools.ExceptionBoundaryHandle(() => { OnStarted(); });
+            ScriptTools.ExceptionBoundaryHandle(OnStarted);
         }
 
         protected virtual void OnStarted()
@@ -69,7 +69,7 @@ namespace Zelda.Game.Script
 
         internal void NotifyFinished()
         {
-            ScriptTools.ExceptionBoundaryHandle(() => { OnFinished(); });
+            ScriptTools.ExceptionBoundaryHandle(OnFinished);
         }
 
         protected virtual void OnFinished()
@@ -78,7 +78,7 @@ namespace Zelda.Game.Script
 
         internal void NotifyObtaining(int variant, string savegameVariable)
         {
-            ScriptTools.ExceptionBoundaryHandle(() => { OnObtaining(variant, savegameVariable); });
+            ScriptTools.ExceptionBoundaryHandle(() => OnObtaining(variant, savegameVariable));
         }
 
         protected virtual void OnObtaining(int variant, string savegameVariable)
@@ -87,10 +87,19 @@ namespace Zelda.Game.Script
 
         internal void NotifyUsing()
         {
-            ScriptTools.ExceptionBoundaryHandle(() => { OnUsing(); });
+            ScriptTools.ExceptionBoundaryHandle(OnUsing);
         }
 
         protected virtual void OnUsing()
+        {
+        }
+
+        internal void NotifyAbilityUsed(Ability ability)
+        {
+            ScriptTools.ExceptionBoundaryHandle(() => OnAbilityUsed(ability));
+        }
+
+        protected virtual void OnAbilityUsed(Ability ability)
         {
         }
     }

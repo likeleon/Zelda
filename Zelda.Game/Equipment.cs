@@ -78,6 +78,12 @@ namespace Zelda.Game
                 _savegame.SetInteger(Savegame.Key.CurrentLife, life);
             }
         }
+
+        public void RemoveLife(int lifeToRemove)
+        {
+            Debug.CheckAssertion(lifeToRemove >= 0, "Invalid life amount to remove");
+            Life = Life - lifeToRemove; 
+        }
         
         public void RestoreAllLife()
         {
@@ -206,6 +212,12 @@ namespace Zelda.Game
 
             Debug.Die("Invalid ability");
             return (Savegame.Key)(-1);
+        }
+
+        public void NotifyAbilityUsed(Ability ability)
+        {
+            foreach (EquipmentItem item in _items.Values)
+                item.NotifyAbilityUsed(ability);
         }
         #endregion
     }

@@ -87,11 +87,11 @@ namespace Zelda.Game.Entities
 
         public void Hurt(MapEntity source, Sprite sourceSprite, int damage)
         {
-            Point sourceXy = source.XY;
+            Point sourceXY = source.XY;
             if (sourceSprite != null)
-                sourceXy += sourceSprite.XY;
+                sourceXY += sourceSprite.XY;
 
-            //SetState(new HurtState(this, sourceXy, damage));
+            SetState(new HurtState(this, sourceXY, damage));
         }
         #endregion
 
