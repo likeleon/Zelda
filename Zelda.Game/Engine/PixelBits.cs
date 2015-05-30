@@ -43,21 +43,23 @@ namespace Zelda.Game.Engine
                     {
                         ++k;
                         mask = 0x80000000;
-                        _bits[i][k] = 0x00000000;
+                        _bits[i][k] = 0x0000000;
                     }
+
+                    if (!surface.IsPixelTransparent(pixelIndex))
+                        _bits[i][k] |= mask;
+
+                    mask >>= 1;
+                    ++pixelIndex;
                 }
-
-                if (!surface.IsPixelTransparent(pixelIndex))
-                    _bits[i][k] |= mask;
-
-                mask >>= 1;
-                ++pixelIndex;
+                pixelIndex += surface.Width - _width;
             }
-            pixelIndex += surface.Width - _width;
         }
 
         public bool TestCollision(PixelBits other, Point location1, Point location2)
         {
+            bool debugPixelCollisions = false;
+
             if (_bits == null)
                 return false;
 
@@ -69,6 +71,16 @@ namespace Zelda.Game.Engine
             if (!boundingBox1.Overlaps(boundingBox2))
                 return false;
 
+            if (debugPixelCollisions)
+            {
+                Console.WriteLine("{0}".F(EngineSystem.Now));
+                Console.WriteLine(" bounding box collision");
+                Console.WriteLine("rect1 = {0}".F(boundingBox1));
+                Console.WriteLine("rect2 = {0}".F(boundingBox2));
+                Print();
+                other.Print();
+            }
+
             // 두 박스 사이의 겹치는 영역을 계산합니다.
             int intersectionX = Math.Max(boundingBox1.X, boundingBox2.X);
             int intersectionY = Math.Max(boundingBox1.Y, boundingBox2.Y);
@@ -78,9 +90,18 @@ namespace Zelda.Game.Engine
                 Math.Min(boundingBox1.X + boundingBox1.Width, boundingBox2.X + boundingBox2.Width - intersectionX),
                 Math.Min(boundingBox1.Y + boundingBox1.Height, boundingBox2.Y + boundingBox2.Height - intersectionY));
 
+            if (debugPixelCollisions)
+                Console.WriteLine("intersection: {0}".F(intersection));
+
             // 겹치는 영역으로부터 각 바운딩 박스에 상대적인 위치를 계산합니다.
             Point offset1 = intersection.XY - boundingBox1.XY;
             Point offset2 = intersection.XY - boundingBox2.XY;
+
+            if (debugPixelCollisions)
+            {
+                Console.WriteLine("offset1.x = {0}, offset1.y = {1}, offset2.x = {2}, offset2.y = {3}"
+                    .F(offset1.X, offset1.Y, offset2.X, offset2.Y));
+            }
 
             // 겹치는 영역의 각 행에 대해, 오른쪽 바운딩 박스에게는 'a'를, 왼쪽 바운딩 박스에게는 'b' 이름을 사용합니다.
             IEnumerator<uint[]> rowsA, rowsB;
@@ -124,6 +145,9 @@ namespace Zelda.Game.Engine
                 rowsA.MoveNext();
                 rowsB.MoveNext();
 
+                if (debugPixelCollisions)
+                    Console.WriteLine("*** checking row {0} of the intersection rectangle".F(i));
+
                 // 각 마스크에 대해 체크
                 bitsA.MoveNext();
                 bitsB.MoveNext();
@@ -141,6 +165,15 @@ namespace Zelda.Game.Engine
                         nextMaskBLeft = bitsB.Current >> numUsedBitsRowB;
                     }
 
+                    if (debugPixelCollisions)
+                    {
+                        Console.Write("mask_a = ");
+                        PrintMask(maskA);
+                        Console.Write("mask_b = ");
+                        PrintMask(maskB);
+                        Console.WriteLine();
+                    }
+
                     if (((maskALeft & maskB) | (maskA & nextMaskBLeft)) != 0x00000000)
                         return true;
 
@@ -150,6 +183,41 @@ namespace Zelda.Game.Engine
             }
 
             return false;
+        }
+
+        void Print()
+        {
+            Console.WriteLine("Frame size is {0}x{1}".F(_width, _height));
+            for (int i = 0; i < _height; ++i)
+            {
+                int k = -1;
+                uint mask = 0x00000000;
+                for (int j = 0; j < _width; ++j)
+                {
+                    if (mask == 0x00000000)
+                    {
+                        ++k;
+                        mask = 0x80000000;
+                    }
+
+                    if ((_bits[i][k] & mask) != 0)
+                        Console.Write("X");
+                    else
+                        Console.Write(".");
+
+                    mask >>= 1;
+                }
+                Console.WriteLine();
+            }
+        }
+
+        void PrintMask(uint mask)
+        {
+            for (int i = 0; i < 32; ++i)
+            {
+                Console.Write(((mask & 0x80000000) != 0x00000000) ? "X" : ".");
+                mask <<= 1;
+            }
         }
     }
 }
