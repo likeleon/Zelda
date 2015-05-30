@@ -177,6 +177,14 @@ namespace Zelda.Game.Entities
             SetState(new FreeState(this));
         }
 
+        public void StartFreeCarryingLoadingOrRunning()
+        {
+            if (_state.IsCarryingItem)
+                SetState(new CarryingState(this, _state.CarriedItem));
+            else
+                SetState(new FreeState(this));
+        }
+
         public void StartFreezed()
         {
             SetState(new FreezedState(this));
@@ -212,6 +220,19 @@ namespace Zelda.Game.Entities
         {
             Debug.CheckAssertion(CanStartItem(item), "The hero cannot start using item '{0}' now".F(item.Name));
             SetState(new UsingItemState(this, item));
+        }
+
+        public void StartStateFromGround()
+        {
+            switch (GroundBelow)
+            {
+                case Ground.Traversable:
+                case Ground.Empty:
+                case Ground.Ladder:
+                case Ground.Ice:
+                    StartFreeCarryingLoadingOrRunning();
+                    break;
+            }
         }
         #endregion
 

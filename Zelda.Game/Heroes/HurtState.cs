@@ -29,7 +29,7 @@ namespace Zelda.Game.Heroes
             uint invincibilityDuration = 2000;
             Hero.SetInvincible(true, invincibilityDuration);
             Sprites.SetAnimationHurt();
-            //Sprites.Blink(invincibilityDuration);
+            Sprites.Blink(invincibilityDuration);
 
             if (_hasSource)
             {
@@ -50,6 +50,41 @@ namespace Zelda.Game.Heroes
                 if (Equipment.HasAbility(Ability.Tunic))
                     Equipment.NotifyAbilityUsed(Ability.Tunic);
             }
+        }
+
+        public override void Stop(State nextState)
+        {
+            base.Stop(nextState);
+
+            Hero.ClearMovement();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if ((Hero.Movement != null && Hero.Movement.IsFinished) ||
+                EngineSystem.Now >= _endHurtDate)
+            {
+                Hero.ClearMovement();
+                Hero.StartStateFromGround();
+            }
+        }
+
+        public override void SetSuspended(bool suspended)
+        {
+            base.SetSuspended(suspended);
+
+            if (!suspended)
+            {
+                uint diff = EngineSystem.Now - WhenSuspended;
+                _endHurtDate += diff;
+            }
+        }
+
+        public override bool CanBeHurt(MapEntity attacker)
+        {
+            return false;
         }
     }
 }

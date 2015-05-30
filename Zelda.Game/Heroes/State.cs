@@ -237,6 +237,11 @@ namespace Zelda.Game.Heroes
         {
         }
 
+        public bool IsCarryingItem
+        {
+            get { return CarriedItem != null; }
+        }
+
         public virtual CarriedItem CarriedItem
         {
             get { return null; }

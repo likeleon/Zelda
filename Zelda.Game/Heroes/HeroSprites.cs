@@ -91,6 +91,13 @@ namespace Zelda.Game.Heroes
         public void SetSuspended(bool suspended)
         {
             _tunicSprite.SetSuspended(suspended);
+
+            // 타이머
+            uint now = EngineSystem.Now;
+            if (suspended)
+                _whenSuspended = now;
+            else if (_endBlinkDate != 0)
+                _endBlinkDate += now - _whenSuspended;
         }
 
         public void Update()
@@ -101,6 +108,13 @@ namespace Zelda.Game.Heroes
 
             if (LiftedItem != null && _walking)
                 LiftedItem.Sprite.SetCurrentFrame(_tunicSprite.CurrentFrame % 3);
+
+            if (IsBlinking &&
+                _endBlinkDate != 0 &&
+                EngineSystem.Now >= _endBlinkDate)
+            {
+                StopBlink();
+            }
         }
 
         public void NotifyMapStarted()
@@ -268,6 +282,37 @@ namespace Zelda.Game.Heroes
         #endregion
 
         #region 상태
+        uint _whenSuspended;
+
+        bool _blinking;
+        public bool IsBlinking
+        {
+            get { return _blinking; }
+        }
+
+        uint _endBlinkDate;
+
+        public void Blink(uint duration)
+        {
+            uint blinkDelay = 50;
+
+            _blinking = true;
+            _tunicSprite.SetBlinking(blinkDelay);
+
+            if (duration == 0)
+                _endBlinkDate = 0;  // 끝나지 않습니다
+            else
+                _endBlinkDate = EngineSystem.Now + duration;
+        }
+
+        public void StopBlink()
+        {
+            _blinking = false;
+            _endBlinkDate = 0;
+
+            _tunicSprite.SetBlinking(0);
+        }
+
         bool _walking;
 
         public bool IsWalking

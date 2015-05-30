@@ -156,7 +156,10 @@ namespace Zelda.Game
             {
                 uint now = EngineSystem.Now;
                 _nextFrameDate = now + FrameDelay;
+                _blinkNextChangeDate = now;
             }
+            else
+                _blinkIsSpriteVisible = true;
         }
         #endregion
 
@@ -218,6 +221,15 @@ namespace Zelda.Game
                 }
                 HasFrameChanged = true;
             }
+
+            if (IsBlinking)
+            {
+                while (now >= _blinkNextChangeDate)
+                {
+                    _blinkIsSpriteVisible = !_blinkIsSpriteVisible;
+                    _blinkNextChangeDate += _blinkDelay;
+                }
+            }
         }
 
         int GetNextFrame()
@@ -227,13 +239,39 @@ namespace Zelda.Game
 
         public override void RawDraw(Surface dstSurface, Point dstPosition)
         {
-            if (!IsAnimationFinished)
+            if (!IsAnimationFinished &&
+                (_blinkDelay == 0 || _blinkIsSpriteVisible))
+            {
                 _currentAnimation.Draw(dstSurface, dstPosition, _currentDirection, _currentFrame);
+            }
         }
 
         public override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
         {
             throw new NotImplementedException();
+        }
+        #endregion
+
+        #region 효과
+        uint _blinkDelay;
+
+        public bool IsBlinking
+        {
+            get { return _blinkDelay != 0; }
+        }
+
+        bool _blinkIsSpriteVisible;
+        uint _blinkNextChangeDate;
+
+        public void SetBlinking(uint blinkDelay)
+        {
+            _blinkDelay = blinkDelay;
+
+            if (blinkDelay > 0)
+            {
+                _blinkIsSpriteVisible = false;
+                _blinkNextChangeDate = EngineSystem.Now;
+            }
         }
         #endregion
 
