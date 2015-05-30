@@ -58,6 +58,11 @@ namespace Zelda.Game
                 return;
 
             _srcImage = tileset.EntitiesImage;
+            if (_shoudEnablePixelCollisions)
+            {
+                DisablePixelCollisions();   // 이미지를 강제로 다시 생성하게 하기 위해
+                DoEnablePixelCollisions();
+            }
         }
 
         public void Draw(Surface dstSurface, Point dstPosition, Direction4 currentDirection, int currentFrame)
@@ -100,6 +105,33 @@ namespace Zelda.Game
             Debug.CheckAssertion(direction >= 0 && (int)direction < NumDirections,
                 "Invalid spriite direction");
             return _directions[(int)direction];
+        }
+
+        bool _shoudEnablePixelCollisions;
+
+        public void EnablePixelCollisions()
+        {
+            if (_srcImage != null)
+                DoEnablePixelCollisions();
+            else
+                _shoudEnablePixelCollisions = true;
+        }
+
+        void DoEnablePixelCollisions()
+        {
+            foreach (SpriteAnimationDirection direction in _directions)
+                direction.EnablePixelCollisions(_srcImage);
+        }
+
+        void DisablePixelCollisions()
+        {
+            foreach (SpriteAnimationDirection direciton in _directions)
+                direciton.DisablePixelCollisions();
+        }
+
+        public bool ArePixelCollisionsEnabled()
+        {
+            return _directions[0].ArePixelCollisionsEnabled || _shoudEnablePixelCollisions;
         }
     }
 }

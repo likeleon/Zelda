@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 
@@ -79,6 +80,23 @@ namespace Zelda.Game
             }
 
             _animations.Add(animationName, new SpriteAnimation(srcImage, directions.ToArray(), frameDelay, frameToLoopOn));
+        }
+
+        public void EnablePixelCollisions()
+        {
+            if (!ArePixelCollisionsEnabled())
+            {
+                foreach (SpriteAnimation animation in _animations.Values)
+                    animation.EnablePixelCollisions();
+            }
+        }
+
+        public bool ArePixelCollisionsEnabled()
+        {
+            if (_animations.Count <= 0)
+                return false;
+
+            return _animations.First().Value.ArePixelCollisionsEnabled();
         }
     }
 }

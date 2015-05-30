@@ -100,6 +100,8 @@ namespace Zelda.Game.Entities
         readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
         readonly List<MapEntity>[] _entitiesDrawnFirst = new List<MapEntity>[(int)Layer.Count];
         readonly List<MapEntity>[] _entitiesDrawnYOrder = new List<MapEntity>[(int)Layer.Count];
+        readonly List<MapEntity> _entitiesToAdd = new List<MapEntity>();
+        readonly List<MapEntity> _entitiesToRemove = new List<MapEntity>();
 
         public void AddEntity(MapEntity entity)
         {
@@ -170,6 +172,11 @@ namespace Zelda.Game.Entities
             }
 
             entity.SetMap(_map);
+        }
+
+        public void ScheduleAddEntity(MapEntity entity)
+        {
+            _entitiesToAdd.Add(entity);
         }
         
         void AddTile(Tile tile)
@@ -301,8 +308,6 @@ namespace Zelda.Game.Entities
                 _tilesGround[(int)layer, index] = ground;
             }
         }
-
-        readonly List<MapEntity> _entitiesToRemove = new List<MapEntity>();
 
         public void RemoveEntity(MapEntity entity)
         {
@@ -436,6 +441,10 @@ namespace Zelda.Game.Entities
         public void Update()
         {
             Debug.CheckAssertion(_map.IsStarted, "The map is not started");
+
+            foreach (MapEntity entity in _entitiesToAdd)
+                AddEntity(entity);
+            _entitiesToAdd.Clear();
 
             _hero.Update();
 

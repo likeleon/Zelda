@@ -9,6 +9,16 @@ namespace Zelda.Game.Heroes
         {
         }
 
+        public override bool IsGrabbingOrPulling
+        {
+            get { return true; }
+        }
+
+        public override bool CanBeHurt(MapEntity attacker)
+        {
+            return true;
+        }
+
         public override void Start(State previousState)
         {
             base.Start(previousState);
@@ -29,11 +39,6 @@ namespace Zelda.Game.Heroes
                 Hero.SetState(new PushingState(Hero));
             else if (wantedDirection8 == spriteDirection8.GetOpposite())
                 Hero.SetState(new PullingState(Hero));
-        }
-
-        public override bool IsGrabbingOrPulling
-        {
-            get { return true; }
         }
     }
 }

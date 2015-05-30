@@ -181,5 +181,10 @@ namespace Zelda.Game.Heroes
         {
             get { return true; }
         }
+
+        public override bool CanBeHurt(MapEntity attacker)
+        {
+            return !IsMovingGrabbedEntity;
+        }
     }
 }

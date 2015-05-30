@@ -76,7 +76,9 @@ namespace Zelda.Game.Entities
                 entity != this &&
                 (HasLayerIndependentCollisions || Layer == entity.Layer))
             {
-                throw new NotImplementedException();
+                foreach (Sprite thisSprite in Sprites)
+                    if (thisSprite.TestCollision(sprite, X, Y, entity.X, entity.Y))
+                        NotifyCollision(entity, thisSprite, sprite);
             }
         }
         #endregion
@@ -110,12 +112,21 @@ namespace Zelda.Game.Entities
 
         protected void SetCollisionModes(CollisionMode collisionModes)
         {
+            if ((collisionModes & CollisionMode.Sprite) != 0)
+                EnablePixelCollisions();
+
             _collisionModes = collisionModes;
         }
 
         protected void AddCollisionMode(CollisionMode collisionMode)
         {
             SetCollisionModes(_collisionModes | collisionMode);
+        }
+
+        protected void EnablePixelCollisions()
+        {
+            foreach (Sprite sprite in Sprites)
+                sprite.EnablePixelCollisions();
         }
         #endregion
 
@@ -128,6 +139,10 @@ namespace Zelda.Game.Entities
 
         #region Protected - 충돌이 감지되었을 때 불리는 함수들
         public virtual void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        {
+        }
+
+        public virtual void NotifyCollision(MapEntity otherEntity, Sprite thisSprite, Sprite otherSprite)
         {
         }
         #endregion

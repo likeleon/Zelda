@@ -77,5 +77,10 @@ namespace Zelda.Game.Heroes
             Entities.AddEntity(_liftedItem);
             _liftedItem = null;
         }
+
+        public override bool CanBeHurt(MapEntity attacker)
+        {
+            return true;
+        }
     }
 }

@@ -104,7 +104,7 @@ namespace Zelda.Game.Entities
                     if (!_treasure.IsEmpty)
                     {
                         // 플레이어에게 보물을 줍니다
-                        Hero.StartTreasure(_treasure);
+                        Hero.StartTreasure(_treasure, null);
                         _treasureGiven = true;
                     }
                     else

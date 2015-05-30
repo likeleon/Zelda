@@ -1,5 +1,4 @@
-﻿using System;
-using Zelda.Game;
+﻿using Zelda.Game;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 using Zelda.Game.Script;
@@ -40,7 +39,6 @@ namespace Sample.Items
                 Layer = hero.Layer,
                 XY = xy
             });
-            Console.WriteLine("CreateBomb here");
             SetFinished();
         }
     }

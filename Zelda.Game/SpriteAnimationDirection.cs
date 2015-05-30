@@ -52,5 +52,37 @@ namespace Zelda.Game
             return _frames[frame];
         }
         #endregion
+
+        #region 픽셀 충돌
+        PixelBits[] _pixelBits;
+
+        public bool ArePixelCollisionsEnabled
+        {
+            get { return _pixelBits != null; }
+        }
+
+        public void EnablePixelCollisions(Surface srcImage)
+        {
+            if (ArePixelCollisionsEnabled)
+                return;
+             
+            _pixelBits = new PixelBits[NumFrames];
+            for (int i = 0; i < NumFrames; ++i)
+                _pixelBits[i] = new PixelBits(srcImage, _frames[i]);
+        }
+        
+        public void DisablePixelCollisions()
+        {
+            _pixelBits = null;
+        }
+
+        public PixelBits GetPixelBits(int frame)
+        {
+            Debug.CheckAssertion(ArePixelCollisionsEnabled,
+                "Pixel-precise collisions are not enabled for this sprite");
+            Debug.CheckAssertion(frame >= 0 && frame < NumFrames, "Invalid frame number");
+            return _pixelBits[frame];
+        }
+        #endregion
     }
 }

@@ -402,9 +402,13 @@ namespace Zelda.Game.Entities
             get { return _sprites[0]; }
         }
 
-        public Sprite CreateSprite(string animationSetId)
+        public Sprite CreateSprite(string animationSetId, bool enablePixelCollisions = false)
         {
             Sprite sprite = new Sprite(animationSetId);
+
+            if (enablePixelCollisions)
+                sprite.EnablePixelCollisions();
+
             _sprites.Add(sprite);
             return sprite;
         }
@@ -689,6 +693,10 @@ namespace Zelda.Game.Entities
         }
 
         public virtual void NotifyCollisionWithBomb(Bomb bomb, CollisionMode collisionMode)
+        {
+        }
+
+        public virtual void NotifyCollisionWithExplosion(Explosion explosion, Sprite spriteOverlapping)
         {
         }
 

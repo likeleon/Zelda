@@ -56,6 +56,45 @@ namespace Zelda.Game.Entities
         }
         #endregion
 
+        #region 적들
+        bool _invincible;
+        public bool IsInvincible
+        {
+            get { return _invincible; }
+        }
+
+        uint _endInvincibleDate;
+
+        public void SetInvincible(bool invincible, uint duration)
+        {
+            _invincible = invincible;
+            _endInvincibleDate = 0;
+            if (invincible)
+                _endInvincibleDate = EngineSystem.Now + duration;
+        }
+
+        void UpdateInvincibility()
+        {
+            if (IsInvincible &&
+                EngineSystem.Now >= _endInvincibleDate)
+                SetInvincible(false, 0);
+        }
+
+        public virtual bool CanBeHurt(MapEntity attacker)
+        {
+            return !IsInvincible && _state.CanBeHurt(attacker);
+        }
+
+        public void Hurt(MapEntity source, Sprite sourceSprite, int damage)
+        {
+            Point sourceXy = source.XY;
+            if (sourceSprite != null)
+                sourceXy += sourceSprite.XY;
+
+            //SetState(new HurtState(this, sourceXy, damage));
+        }
+        #endregion
+
         #region 상태
         State _state;
         internal State State
@@ -153,9 +192,9 @@ namespace Zelda.Game.Entities
             SetState(new LiftingState(this, itemToLift));
         }
 
-        public void StartTreasure(Treasure treasure)
+        public void StartTreasure(Treasure treasure, Action callback)
         {
-            SetState(new TreasureState(this, treasure));
+            SetState(new TreasureState(this, treasure, callback));
         }
 
         public bool CanStartItem(EquipmentItem item)
@@ -298,6 +337,7 @@ namespace Zelda.Game.Entities
         #region 게임 루프
         public override void Update()
         {
+            UpdateInvincibility();
             UpdateMovement();
             _sprites.Update();
 
@@ -320,6 +360,14 @@ namespace Zelda.Game.Entities
         public override void SetSuspended(bool suspended)
         {
             base.SetSuspended(suspended);
+
+            if (!suspended)
+            {
+                uint diff = EngineSystem.Now - WhenSuspended;
+
+                if (_endInvincibleDate != 0)
+                    _endInvincibleDate += diff;
+            }
 
             _sprites.SetSuspended(suspended);
             _state.SetSuspended(suspended);
@@ -577,6 +625,17 @@ namespace Zelda.Game.Entities
                 IsFree)
             {
                 CommandsEffects.ActionCommandEffect = ActionCommandEffect.Lift;
+            }
+        }
+
+        public override void NotifyCollisionWithExplosion(Explosion explosion, Sprite spriteOverlapping)
+        {
+            string spriteId = spriteOverlapping.AnimationSetId;
+            if (!_state.CanAvoidExplosion &&
+                spriteId == HeroSprites.TunicSpriteId &&
+                CanBeHurt(explosion))
+            {
+                Hurt(explosion, null, 2);
             }
         }
         #endregion

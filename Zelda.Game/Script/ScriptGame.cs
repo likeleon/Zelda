@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
@@ -52,6 +53,11 @@ namespace Zelda.Game.Script
                     _savegame.Equipment.MaxLife = value;
                 });
             }
+        }
+
+        public ScriptHero Hero
+        {
+            get { return (_savegame.Game.Hero.ScriptEntity as ScriptHero); }
         }
 
         public int GetAbility(Ability ability)

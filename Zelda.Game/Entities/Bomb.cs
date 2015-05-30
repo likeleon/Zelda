@@ -55,6 +55,7 @@ namespace Zelda.Game.Entities
             _explosionDate = EngineSystem.Now + 6000;
 
             CreateSprite("entities/bomb");
+            Sprite.EnablePixelCollisions();
             Size = new Size(16, 16);
             Origin = new Point(8, 13);
             SetDrawnInYOrder(true);
@@ -97,6 +98,12 @@ namespace Zelda.Game.Entities
             return false;
         }
 
+        public override void NotifyCollisionWithExplosion(Explosion explosion, Sprite spriteOverlapping)
+        {
+            if (!IsBeingRemoved)
+                Explode();
+        }
+
         public override void SetSuspended(bool suspended)
         {
             base.SetSuspended(suspended);
@@ -129,7 +136,7 @@ namespace Zelda.Game.Entities
 
         void Explode()
         {
-            Console.WriteLine("Create explosion entity here.");
+            Entities.ScheduleAddEntity(new Explosion(String.Empty, Layer, CenterPoint, true));
             Sound.Play("explosion");
             RemoveFromMap();
         }

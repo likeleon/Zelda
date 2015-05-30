@@ -6,13 +6,13 @@ namespace Zelda.Game.Script
 {
     static partial class ScriptContext
     {
-        internal static void NotifyHeroBrandishTreasure(Treasure treasure)
+        internal static void NotifyHeroBrandishTreasure(Treasure treasure, Action callback)
         {
             string dialogId = "_treasure.{0}.{1}".F(treasure.ItemName, treasure.Variant);
 
             Action dialogCallback = () =>
             {
-                TreasureDialogFinished(treasure.Item, treasure.Variant, treasure.SavegameVariable);
+                TreasureDialogFinished(treasure.Item, treasure.Variant, treasure.SavegameVariable, callback);
             };
 
             if (!DialogResource.Exists(dialogId))
@@ -24,12 +24,15 @@ namespace Zelda.Game.Script
                 treasure.Game.StartDialog(dialogId, dialogCallback);
         }
 
-        static void TreasureDialogFinished(EquipmentItem item, int treasureVariant, string treasureSavegameVariable)
+        static void TreasureDialogFinished(EquipmentItem item, int treasureVariant, string treasureSavegameVariable, Action callback)
         {
             Debug.CheckAssertion(item.Game != null, "Equipment item without game");
 
             RawGame game = item.Game;
             RawHero hero = game.Hero;
+
+            if (callback != null)
+                callback.Invoke();
 
             if (hero.IsBrandishingTreasure)
             {

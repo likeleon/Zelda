@@ -76,6 +76,7 @@
     <Compile Include="Engine\Geometry.cs" />
     <Compile Include="Engine\ModFiles.cs" />
     <Compile Include="Engine\Music.cs" />
+    <Compile Include="Engine\PixelBits.cs" />
     <Compile Include="Engine\Point.cs" />
     <Compile Include="Engine\Rectangle.cs" />
     <Compile Include="Engine\InputEvent.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Entities\Detector.cs" />
     <Compile Include="Entities\EntityType.cs" />
     <Compile Include="Entities\EntityData.cs" />
+    <Compile Include="Entities\Explosion.cs" />
     <Compile Include="Entities\Ground.cs" />
     <Compile Include="Entities\Hero.cs" />
     <Compile Include="Entities\Layer.cs" />

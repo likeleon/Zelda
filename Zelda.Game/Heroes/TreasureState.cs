@@ -8,12 +8,14 @@ namespace Zelda.Game.Heroes
     class TreasureState : State
     {
         readonly Treasure _treasure;
+        readonly Action _callback;
 
-        public TreasureState(Hero hero, Treasure treasure)
+        public TreasureState(Hero hero, Treasure treasure, Action callback)
             : base(hero, "treasure")
         {
             _treasure = treasure;
             _treasure.CheckObtainable();
+            _callback = callback;
         }
 
         public override void Start(State previousState)
@@ -29,7 +31,7 @@ namespace Zelda.Game.Heroes
 
             _treasure.GiveToPlayer();
 
-            ScriptContext.NotifyHeroBrandishTreasure(_treasure);
+            ScriptContext.NotifyHeroBrandishTreasure(_treasure, _callback);
         }
 
         public override void Stop(State nextState)

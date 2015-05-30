@@ -77,7 +77,7 @@ namespace Zelda.Game.Engine
         byte _internalOpacity = 255;
         public byte Opacity
         {
-            set 
+            set
             {
                 if (_softwareDestination)
                 {
@@ -106,7 +106,7 @@ namespace Zelda.Game.Engine
         }
 
         readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
-        IntPtr _internalSurface;
+        internal IntPtr _internalSurface;
         Texture _internalTexture;
         Color? _internalColor;
         bool _isRendered;
@@ -208,11 +208,11 @@ namespace Zelda.Game.Engine
         }
 
         void Render(
-            IntPtr renderer, 
-            Rectangle srcRect, 
-            Rectangle dstRect, 
-            Rectangle clipRect, 
-            byte opacity, 
+            IntPtr renderer,
+            Rectangle srcRect,
+            Rectangle dstRect,
+            Rectangle clipRect,
+            byte opacity,
             HashSet<SubSurfaceNode> subsurfaces)
         {
             if (_internalSurface != IntPtr.Zero)
@@ -269,8 +269,8 @@ namespace Zelda.Game.Engine
                 // 딸린 표면의 타겟 영역과 이 표면의 클리핑 영역을 가지고 클리핑 영역 계산
                 Rectangle superimposedClipRect;
                 if (SDL.SDL_IntersectRect(
-                    ref subsurfaceDstRect._rect, 
-                    ref clipRect._rect, 
+                    ref subsurfaceDstRect._rect,
+                    ref clipRect._rect,
                     out superimposedClipRect._rect) == SDL.SDL_bool.SDL_TRUE)
                 {
                     subsurface.SrcSurface.Render(
@@ -303,7 +303,7 @@ namespace Zelda.Game.Engine
 
         public void Clear(Rectangle where)
         {
-            Debug.CheckAssertion(_softwareDestination, 
+            Debug.CheckAssertion(_softwareDestination,
                 "Partial surface clear is only supported with software surfaces");
 
             if (_internalSurface == null)
@@ -400,9 +400,9 @@ namespace Zelda.Game.Engine
         void AddSubSurface(Surface srcSurface, Rectangle region, Point dstPosistion)
         {
             SubSurfaceNode node = new SubSurfaceNode(
-                srcSurface, 
-                region, 
-                new Rectangle(dstPosistion), 
+                srcSurface,
+                region,
+                new Rectangle(dstPosistion),
                 srcSurface._subsurfaces);
 
             // 현재 dst_surface가 이미 렌더링된 상태라면 subsurface 리스트를 비운다
@@ -445,8 +445,8 @@ namespace Zelda.Game.Engine
                 byte opacity;
                 SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out opacity);
                 IntPtr convertedSurface = SDL.SDL_ConvertSurface(
-                    _internalSurface, 
-                    Video.PixelFormat, 
+                    _internalSurface,
+                    Video.PixelFormat,
                     0);
                 Debug.CheckAssertion(convertedSurface != IntPtr.Zero, "Failed to convert software surface");
 
@@ -498,6 +498,52 @@ namespace Zelda.Game.Engine
             coloredSurface.SoftwareDestination = false;
             coloredSurface._internalColor = color;
             coloredSurface.RawDrawRegion(new Rectangle(coloredSurface.Size), this, fillwhere.XY);
+        }
+
+        public bool IsPixelTransparent(int index)
+        {
+            uint pixel = GetPixel(index);
+            uint colorkey;
+            bool withColorkey = SDL.SDL_GetColorKey(_internalSurface, out colorkey) == 0;
+
+            if (withColorkey && pixel == colorkey)
+                return true;
+
+            uint amask = _internalSurface.ToSDLSurface().format.ToSDLPixelFormat().Amask;
+            if (amask != 0 && (pixel & amask) == 0)
+                return true;
+
+            return false;
+        }
+
+        uint GetPixel(int index)
+        {
+            Debug.CheckAssertion(_internalSurface != null,
+                "Attempt to read a pixel on a hardware or a buffer surface.");
+
+            SDL.SDL_PixelFormat format = _internalSurface.ToSDLSurface().format.ToSDLPixelFormat();
+
+            unsafe 
+            {
+                byte* pixels = (byte *)_internalSurface.ToSDLSurface().pixels.ToPointer();
+                switch (format.BytesPerPixel)
+                {
+                    case 1:
+                        return pixels[index];
+
+                    case 4:
+                        return ((uint*)pixels)[index];
+
+                    case 2:
+                        return ((ushort*)pixels)[index];
+
+                    case 3:
+                        return *(uint*)(&pixels[index * 3]) & 0xffffff00 >> 8;
+                }
+            }
+
+            Debug.Die("Unknown pixel depth: {0}".F(format.BitsPerPixel));
+            return 0;
         }
     }
 }

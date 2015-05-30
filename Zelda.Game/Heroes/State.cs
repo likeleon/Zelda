@@ -186,6 +186,13 @@ namespace Zelda.Game.Heroes
             get { return (_hero.State == this) && (!_hero.State.IsStopping); }
         }
 
+        #region 적들
+        public virtual bool CanBeHurt(MapEntity attacker)
+        {
+            return false;
+        }
+        #endregion
+
         #region 상태별
         public virtual bool IsFree
         {
@@ -273,6 +280,11 @@ namespace Zelda.Game.Heroes
         }
 
         public virtual bool IsLadderObstacle
+        {
+            get { return false; }
+        }
+
+        public virtual bool CanAvoidExplosion
         {
             get { return false; }
         }
