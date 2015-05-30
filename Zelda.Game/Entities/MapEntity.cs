@@ -434,6 +434,14 @@ namespace Zelda.Game.Entities
             _sprites.RemoveAll(_oldSprites.Contains);
             _oldSprites.Clear();
         }
+
+        public virtual void NotifySpriteFrameChanged(Sprite sprite, string animation, int frame)
+        {
+        }
+
+        public virtual void NotifySpriteAnimationFinished(Sprite sprite, string animation)
+        {
+        }
         #endregion
 
         #region 게임 오브젝트 접근용 (편의성)
@@ -503,7 +511,18 @@ namespace Zelda.Game.Entities
 
             // 스프라이트 업데이트
             foreach (Sprite sprite in _sprites)
+            {
                 sprite.Update();
+                if (sprite.HasFrameChanged)
+                {
+                    if (sprite.ArePixelCollisionsEnabled())
+                        CheckCollisionWithDetectors(sprite);
+
+                    NotifySpriteFrameChanged(sprite, sprite.CurrentAnimation, sprite.CurrentFrame);
+                    if (sprite.IsAnimationFinished)
+                        NotifySpriteAnimationFinished(sprite, sprite.CurrentAnimation);
+                }
+            }
             ClearOldSprites();
 
             // 이동 업데이트
@@ -669,6 +688,11 @@ namespace Zelda.Game.Entities
 
             // 간단한 충돌 검사
             _map.CheckCollisionWithDetectors(this);
+
+            // 픽셀단위 충돌 검사
+            foreach (Sprite sprite in _sprites)
+                if (sprite.ArePixelCollisionsEnabled())
+                    Map.CheckCollisionWithDetectors(this, sprite);
         }
 
         public void CheckCollisionWithDetectors(Sprite sprite)

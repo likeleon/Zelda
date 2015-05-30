@@ -70,12 +70,7 @@ namespace Zelda.Game
             get { return _currentFrame; }
         }
 
-        bool _frameChanged;
-        public bool FrameChanged
-        {
-            get { return _frameChanged; }
-            set { _frameChanged = value; }
-        }
+        public bool HasFrameChanged { get; set; }
 
         Direction4 _currentDirection;
         public Direction4 CurrentDirection
@@ -124,7 +119,7 @@ namespace Zelda.Game
             if (currentFrame != _currentFrame)
             {
                 _currentFrame = currentFrame;
-                FrameChanged = true;
+                HasFrameChanged = true;
             }
         }
 
@@ -198,7 +193,7 @@ namespace Zelda.Game
             if (IsSuspended)
                 return;
 
-            _frameChanged = false;
+            HasFrameChanged = false;
             uint now = EngineSystem.Now;
 
             // 시간에 따라 프레임을 갱신해 줍니다
@@ -221,7 +216,7 @@ namespace Zelda.Game
                     _currentFrame = nextFrame;
                     _nextFrameDate += _frameDelay;
                 }
-                FrameChanged = true;
+                HasFrameChanged = true;
             }
         }
 

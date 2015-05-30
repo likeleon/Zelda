@@ -36,6 +36,15 @@ namespace Zelda.Game.Entities
             if (Sprite.IsAnimationFinished)
                 RemoveFromMap();
         }
+
+        public override void NotifySpriteFrameChanged(Sprite sprite, string animation, int frame)
+        {
+            if (frame == 1)
+            {
+                // 픽셀 단위가 아닌 충돌 검사도 합니다
+                CheckCollisionWithDetectors();
+            }
+        }
         #endregion
 
         #region 충돌
