@@ -79,7 +79,7 @@ namespace Zelda.Game.Engine
         {
             set
             {
-                if (_softwareDestination)
+                if (IsSoftwareDestination)
                 {
                     if (_internalSurface == IntPtr.Zero)
                         CreateSoftwareSurface();
@@ -98,12 +98,7 @@ namespace Zelda.Game.Engine
         }
 
         [Description("그리기 동작이 RAM과 GPU 어디에서 일어나는지를 의미합니다.")]
-        bool _softwareDestination = true;
-        public bool SoftwareDestination
-        {
-            get { return _softwareDestination; }
-            set { _softwareDestination = value; }
-        }
+        public bool IsSoftwareDestination { get; set; }
 
         readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
         internal IntPtr _internalSurface;
@@ -111,6 +106,8 @@ namespace Zelda.Game.Engine
         Color? _internalColor;
         bool _isRendered;
         bool _disposed;
+
+        public override Surface TransitionSurface { get { return this; } }
 
         public static Surface Create(int width, int height)
         {
@@ -170,6 +167,8 @@ namespace Zelda.Game.Engine
 
             _width = width;
             _height = height;
+
+            IsSoftwareDestination = true;
         }
 
         public Surface(IntPtr internalSurface)
@@ -177,6 +176,8 @@ namespace Zelda.Game.Engine
             _internalSurface = internalSurface;
             _width = _internalSurface.ToSDLSurface().w;
             _height = _internalSurface.ToSDLSurface().h;
+
+            IsSoftwareDestination = true;
         }
 
         ~Surface()
@@ -221,7 +222,7 @@ namespace Zelda.Game.Engine
                     CreateTextureFromSurface();
 
                 // 소프트웨어 표면에 변경이 있다면 하드웨어 텍스쳐를 갱신합니다
-                else if (SoftwareDestination && !_isRendered)
+                else if (IsSoftwareDestination && !_isRendered)
                 {
                     ConvertSoftwareSurface();
                     SDL.SDL_UpdateTexture(
@@ -294,7 +295,7 @@ namespace Zelda.Game.Engine
 
             if (_internalSurface != null)
             {
-                if (_softwareDestination)
+                if (IsSoftwareDestination)
                     SDL.SDL_FillRect(_internalSurface, IntPtr.Zero, GetColorValue(Color.Transparent));
                 else
                     _internalSurface = IntPtr.Zero;
@@ -303,7 +304,7 @@ namespace Zelda.Game.Engine
 
         public void Clear(Rectangle where)
         {
-            Debug.CheckAssertion(_softwareDestination,
+            Debug.CheckAssertion(IsSoftwareDestination,
                 "Partial surface clear is only supported with software surfaces");
 
             if (_internalSurface == null)
@@ -326,7 +327,7 @@ namespace Zelda.Game.Engine
 
         public override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
         {
-            if (dstSurface.SoftwareDestination)
+            if (dstSurface.IsSoftwareDestination)
             {
                 if (dstSurface._internalSurface == IntPtr.Zero)
                     dstSurface.CreateSoftwareSurface();
@@ -495,7 +496,7 @@ namespace Zelda.Game.Engine
         {
             Rectangle fillwhere = where ?? new Rectangle(0, 0, _width, _height);
             Surface coloredSurface = Surface.Create(fillwhere.Size);
-            coloredSurface.SoftwareDestination = false;
+            coloredSurface.IsSoftwareDestination = false;
             coloredSurface._internalColor = color;
             coloredSurface.RawDrawRegion(new Rectangle(coloredSurface.Size), this, fillwhere.XY);
         }
@@ -544,6 +545,11 @@ namespace Zelda.Game.Engine
 
             Debug.Die("Unknown pixel depth: {0}".F(format.BitsPerPixel));
             return 0;
+        }
+
+        public override void DrawTransition(Transition transition)
+        {
+            Transition.Draw(this);
         }
     }
 }

@@ -137,10 +137,10 @@ namespace Zelda.Game
         public void Load(Game game)
         {
             _visibleSurface = Surface.Create(Video.ModSize);
-            _visibleSurface.SoftwareDestination = false;
+            _visibleSurface.IsSoftwareDestination = false;
 
             _backgroundSurface = Surface.Create(Video.ModSize);
-            _backgroundSurface.SoftwareDestination = false;
+            _backgroundSurface.IsSoftwareDestination = false;
 
             LoadMapData(game);
 

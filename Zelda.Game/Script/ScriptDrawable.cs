@@ -16,17 +16,11 @@ namespace Zelda.Game.Script
         {
             get 
             {
-                return ScriptTools.ExceptionBoundaryHandle<Point>(() =>
-                {
-                    return _drawable.XY;
-                });
+                return ScriptTools.ExceptionBoundaryHandle(() => _drawable.XY);
             }
             set 
             {
-                ScriptTools.ExceptionBoundaryHandle(() =>
-                {
-                    _drawable.XY = value;
-                });
+                ScriptTools.ExceptionBoundaryHandle(() => _drawable.XY = value);
             }
         }
 
@@ -37,32 +31,29 @@ namespace Zelda.Game.Script
 
         public void Draw(ScriptSurface dstSurface)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                Draw(dstSurface, 0, 0);
-            });
+            ScriptTools.ExceptionBoundaryHandle(() => Draw(dstSurface, 0, 0));
         }
 
         public void Draw(ScriptSurface dstSurface, int x, int y)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                _drawable.Draw(dstSurface.Surface, x, y);
-            });
+            ScriptTools.ExceptionBoundaryHandle(() => _drawable.Draw(dstSurface.Surface, x, y));
         }
 
         public void StopMovement()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                _drawable.StopMovement();
-            });
+            ScriptTools.ExceptionBoundaryHandle(_drawable.StopMovement);
         }
 
         [CLSCompliant(false)]
         public void FadeOut(uint? delay = null, Action callback = null)
         {
-            throw new NotImplementedException("FadeOut");
+            ScriptTools.ExceptionBoundaryHandle(() =>
+            {
+                TransitionFade transition = new TransitionFade(TransitionDirection.Closing, _drawable.TransitionSurface);
+                transition.ClearColor();
+                transition.Delay = delay ?? 20;
+                _drawable.StartTransition(transition, callback);
+            });
         }
 
         #region ScriptDrawable 관리
@@ -71,10 +62,7 @@ namespace Zelda.Game.Script
 
         internal static bool HasDrawable(Drawable drawable)
         {
-            return ScriptTools.ExceptionBoundaryHandle<bool>(() =>
-            {
-                return _drawables.Contains(drawable);
-            });
+            return ScriptTools.ExceptionBoundaryHandle(() => _drawables.Contains(drawable));
         }
 
         internal static void AddDrawable(Drawable drawable)

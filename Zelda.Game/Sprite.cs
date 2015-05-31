@@ -8,6 +8,11 @@ namespace Zelda.Game
 {
     class Sprite : Drawable
     {
+        readonly Lazy<Surface> _intermediateSurface;
+        
+        Surface IntermediateSurface { get { return _intermediateSurface.Value; } }
+        public Point Origin { get { return _currentAnimation.GetDirection(_currentDirection).Origin; } }
+
         #region 초기화
         public static void Initialize()
         {
@@ -169,6 +174,8 @@ namespace Zelda.Game
             _animationSetId = id;
             _animationSet = GetAnimationSet(id);
             SetCurrentAnimation(_animationSet.DefaultAnimation);
+
+            _intermediateSurface = Exts.Lazy(() => Surface.Create(MaxSize));
         }
 
         public void SetTileset(Tileset tileset)
@@ -242,13 +249,30 @@ namespace Zelda.Game
             if (!IsAnimationFinished &&
                 (_blinkDelay == 0 || _blinkIsSpriteVisible))
             {
-                _currentAnimation.Draw(dstSurface, dstPosition, _currentDirection, _currentFrame);
+                if (!_intermediateSurface.IsValueCreated)
+                    _currentAnimation.Draw(dstSurface, dstPosition, _currentDirection, _currentFrame);
+                else
+                {
+                    IntermediateSurface.Clear();
+                    _currentAnimation.Draw(IntermediateSurface, Origin, _currentDirection, _currentFrame);
+                    IntermediateSurface.DrawRegion(new Rectangle(Size), dstSurface, dstPosition - Origin);
+                }
             }
         }
 
         public override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
         {
             throw new NotImplementedException();
+        }
+
+        public override Surface TransitionSurface
+        {
+            get { return IntermediateSurface; }
+        }
+
+        public override void DrawTransition(Transition transition)
+        {
+            Transition.Draw(IntermediateSurface);
         }
         #endregion
 

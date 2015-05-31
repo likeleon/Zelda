@@ -250,6 +250,8 @@ namespace Zelda.Game.Engine
 
         Point _textPosition;
 
+        public override Surface TransitionSurface { get { return _surface; } }
+
         void Rebuild()
         {
             _surface = null;
@@ -374,6 +376,11 @@ namespace Zelda.Game.Engine
         {
             if (_surface != null)
                 _surface.RawDrawRegion(region, dstSurface, dstPosition + _textPosition);
+        }
+
+        public override void DrawTransition(Transition transition)
+        {
+            Transition.Draw(_surface);
         }
     }
 }
