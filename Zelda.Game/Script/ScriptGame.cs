@@ -18,22 +18,22 @@ namespace Zelda.Game.Script
 
         public int GetLife()
         {
-            return ScriptTools.ExceptionBoundaryHandle<int>(_savegame.Equipment.GetLife);
+            return ScriptToCore.Call<int>(_savegame.Equipment.GetLife);
         }
 
         public void SetLife(int life)
         {
-            ScriptTools.ExceptionBoundaryHandle(() => _savegame.Equipment.SetLife(life));
+            ScriptToCore.Call(() => _savegame.Equipment.SetLife(life));
         }
 
         public int GetMaxLife()
         {
-            return ScriptTools.ExceptionBoundaryHandle<int>(_savegame.Equipment.GetMaxLife);
+            return ScriptToCore.Call<int>(_savegame.Equipment.GetMaxLife);
         }
 
         public void SetMaxLife(int maxLife)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 if (maxLife < 0)
                     throw new ArgumentOutOfRangeException("value", "Invalid life value: max life must be strictly positive");
@@ -49,23 +49,17 @@ namespace Zelda.Game.Script
 
         public int GetAbility(Ability ability)
         {
-            return ScriptTools.ExceptionBoundaryHandle<int>(() =>
-            {
-                return _savegame.Equipment.GetAbility(ability);
-            });
+            return ScriptToCore.Call(() => _savegame.Equipment.GetAbility(ability));
         }
 
         public void SetAbility(Ability ability, int level)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                _savegame.Equipment.SetAbility(ability, level);
-            });
+            ScriptToCore.Call(() => _savegame.Equipment.SetAbility(ability, level));
         }
 
         public static bool Exists(string fileName)
         {
-            return ScriptTools.ExceptionBoundaryHandle<bool>(() =>
+            return ScriptToCore.Call(() =>
             {
                 if (String.IsNullOrWhiteSpace(ModFiles.ModWriteDir))
                     throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
@@ -76,7 +70,7 @@ namespace Zelda.Game.Script
 
         public static ScriptGame Load(string fileName)
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptGame>(() =>
+            return ScriptToCore.Call(() =>
             {
                 if (String.IsNullOrWhiteSpace(ModFiles.ModWriteDir))
                     throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
@@ -89,7 +83,7 @@ namespace Zelda.Game.Script
 
         public void Start()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 if (CurrentMod.GetResources(ResourceType.Map).Count <= 0)
                     throw new InvalidOperationException("Cannot start game: there is no map in this mod");
@@ -112,7 +106,7 @@ namespace Zelda.Game.Script
 
         public void SetItemAssigned(int slot, ScriptItem item)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 if (slot < 1 || slot > 2)
                     throw new ArgumentException("The item slot should be 1 or 2", "slot");

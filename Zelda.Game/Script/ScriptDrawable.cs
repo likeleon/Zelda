@@ -14,14 +14,8 @@ namespace Zelda.Game.Script
 
         public Point XY
         {
-            get 
-            {
-                return ScriptTools.ExceptionBoundaryHandle(() => _drawable.XY);
-            }
-            set 
-            {
-                ScriptTools.ExceptionBoundaryHandle(() => _drawable.XY = value);
-            }
+            get { return _drawable.XY; }
+            set { _drawable.XY = value; }
         }
 
         internal ScriptDrawable(Drawable drawable)
@@ -31,23 +25,23 @@ namespace Zelda.Game.Script
 
         public void Draw(ScriptSurface dstSurface)
         {
-            ScriptTools.ExceptionBoundaryHandle(() => Draw(dstSurface, 0, 0));
+            ScriptToCore.Call(() => Draw(dstSurface, 0, 0));
         }
 
         public void Draw(ScriptSurface dstSurface, int x, int y)
         {
-            ScriptTools.ExceptionBoundaryHandle(() => _drawable.Draw(dstSurface.Surface, x, y));
+            ScriptToCore.Call(() => _drawable.Draw(dstSurface.Surface, x, y));
         }
 
         public void StopMovement()
         {
-            ScriptTools.ExceptionBoundaryHandle(_drawable.StopMovement);
+            ScriptToCore.Call(_drawable.StopMovement);
         }
 
         [CLSCompliant(false)]
         public void FadeOut(uint? delay = null, Action callback = null)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 TransitionFade transition = new TransitionFade(TransitionDirection.Closing, _drawable.TransitionSurface);
                 transition.ClearColor();
@@ -62,12 +56,12 @@ namespace Zelda.Game.Script
 
         internal static bool HasDrawable(Drawable drawable)
         {
-            return ScriptTools.ExceptionBoundaryHandle(() => _drawables.Contains(drawable));
+            return _drawables.Contains(drawable);
         }
 
         internal static void AddDrawable(Drawable drawable)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 if (HasDrawable(drawable))
                     throw new ArgumentException("This drawable object is already registered", "drawable");
@@ -78,7 +72,7 @@ namespace Zelda.Game.Script
 
         internal static void RemoveDrawable(Drawable drawable)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 if (!HasDrawable(drawable))
                     throw new ArgumentException("This drawable object was not created by Mod");
@@ -90,7 +84,7 @@ namespace Zelda.Game.Script
 
         internal static void UpdateDrawables()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 foreach (Drawable drawable in _drawables)
                     drawable.Update();
@@ -101,11 +95,8 @@ namespace Zelda.Game.Script
 
         internal static void DestroyDrawables()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                _drawables.Clear();
-                _drawablesToRemove.Clear();
-            });
+            _drawables.Clear();
+            _drawablesToRemove.Clear();
         }
         #endregion
     }

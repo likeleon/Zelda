@@ -332,7 +332,7 @@ namespace Zelda.Game
         public void Start()
         {
             _started = true;
-            _visibleSurface.Opacity = 255;
+            _visibleSurface.SetOpacity(255);
 
             Music.Play(_musicId, true);
             _entities.NotifyMapStarted();

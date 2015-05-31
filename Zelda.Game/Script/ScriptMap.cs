@@ -12,7 +12,7 @@ namespace Zelda.Game.Script
     
         internal void NotifyStarted(Destination destionation)
         {
-            ScriptTools.ExceptionBoundaryHandle(() => { OnStarted(); });
+            CoreToScript.Call(OnStarted);
         }
 
         public ScriptEntity GetEntity(string name)
@@ -57,7 +57,7 @@ namespace Zelda.Game.Script
 
         internal static void CreateTile(ScriptMap scriptMap, TileData data)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 Map map = scriptMap.Map;
                 TilePattern pattern = map.Tileset.GetTilePattern(data.Pattern);
@@ -76,7 +76,7 @@ namespace Zelda.Game.Script
 
         internal static ScriptDestination CreateDestination(ScriptMap scriptMap, EntityData entityData)
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptDestination>(() =>
+            return ScriptToCore.Call(() =>
             {
                 Map map = scriptMap.Map;
                 DestinationData data = entityData as DestinationData;
@@ -95,7 +95,7 @@ namespace Zelda.Game.Script
 
         internal static ScriptDestructible CreateDestructible(ScriptMap scriptMap, EntityData entityData)
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptDestructible>(() =>
+            return ScriptToCore.Call(() =>
             {
                 Map map = scriptMap.Map;
                 DestructibleData data = entityData as DestructibleData;
@@ -124,7 +124,7 @@ namespace Zelda.Game.Script
 
         internal static ScriptChest CreateChest(ScriptMap scriptMap, EntityData entityData)
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptChest>(() =>
+            return ScriptToCore.Call(() =>
             {
                 Map map = scriptMap.Map;
                 ChestData data = entityData as ChestData;
@@ -167,7 +167,7 @@ namespace Zelda.Game.Script
 
         internal static ScriptNpc CreateNpc(ScriptMap scriptMap, EntityData entityData)
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptNpc>(() =>
+            return ScriptToCore.Call(() =>
             {
                 Map map = scriptMap.Map;
                 NpcData data = entityData as NpcData;
@@ -188,7 +188,7 @@ namespace Zelda.Game.Script
 
         internal static ScriptBlock CreateBlock(ScriptMap scriptMap, EntityData entityData)
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptBlock>(() =>
+            return ScriptToCore.Call(() =>
             {
                 Map map = scriptMap.Map;
                 BlockData data = entityData as BlockData;
@@ -213,7 +213,7 @@ namespace Zelda.Game.Script
 
         public static ScriptBomb CreateBomb(ScriptMap scriptMap, EntityData entityData)
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptBomb>(() =>
+            return ScriptToCore.Call(() =>
             {
                 Map map = scriptMap.Map;
                 BombData data = entityData as BombData;

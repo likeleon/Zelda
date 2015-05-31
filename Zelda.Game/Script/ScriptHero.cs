@@ -20,7 +20,7 @@ namespace Zelda.Game.Script
 
         public void StartTreasure(string itemName, int? variant, string savegameVariable, Action callback)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 if (!!_hero.Game.Equipment.ItemExists(itemName))
                     throw new ArgumentException("No such item '{0}'".F(itemName), "itemName");

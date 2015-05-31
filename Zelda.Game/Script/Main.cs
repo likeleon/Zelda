@@ -38,18 +38,12 @@ namespace Zelda.Game.Script
 
         public void Exit()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                ScriptContext.MainLoop.Exiting = true;
-            });
+            ScriptToCore.Call(() => ScriptContext.MainLoop.Exiting = true);
         }
 
         public void Reset()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                ScriptContext.MainLoop.SetResetting();
-            });
+            ScriptToCore.Call(ScriptContext.MainLoop.SetResetting);
         }
     }
 }

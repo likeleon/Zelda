@@ -75,26 +75,23 @@ namespace Zelda.Game.Engine
 
         [Description("투명도")]
         byte _internalOpacity = 255;
-        public byte Opacity
+        public void SetOpacity(byte opacity)
         {
-            set
+            if (IsSoftwareDestination)
             {
-                if (IsSoftwareDestination)
-                {
-                    if (_internalSurface == IntPtr.Zero)
-                        CreateSoftwareSurface();
+                if (_internalSurface == IntPtr.Zero)
+                    CreateSoftwareSurface();
 
-                    ConvertSoftwareSurface();
+                ConvertSoftwareSurface();
 
-                    int error = SDL.SDL_SetSurfaceAlphaMod(_internalSurface, value);
-                    if (error != 0)
-                        Debug.Error(SDL.SDL_GetError());
+                int error = SDL.SDL_SetSurfaceAlphaMod(_internalSurface, opacity);
+                if (error != 0)
+                    Debug.Error(SDL.SDL_GetError());
 
-                    _isRendered = false;
-                }
-                else
-                    _internalOpacity = value;
+                _isRendered = false;
             }
+            else
+                _internalOpacity = opacity;
         }
 
         [Description("그리기 동작이 RAM과 GPU 어디에서 일어나는지를 의미합니다.")]

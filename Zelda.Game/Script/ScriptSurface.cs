@@ -4,38 +4,13 @@ namespace Zelda.Game.Script
 {
     public class ScriptSurface : ScriptDrawable
     {
-        public byte Opacity
+        public void SetOpacity(byte opacity)
         {
-            set 
-            {
-                ScriptTools.ExceptionBoundaryHandle(() => 
-                {
-                    _surface.Opacity = value;
-                });
-            }
+            ScriptToCore.Call(() => _surface.SetOpacity(opacity));
         }
 
-        public int Width
-        {
-            get 
-            {
-                return ScriptTools.ExceptionBoundaryHandle<int>(() =>
-                {
-                    return _surface.Width;
-                });
-            }
-        }
-
-        public int Height
-        {
-            get 
-            {
-                return ScriptTools.ExceptionBoundaryHandle<int>(() =>
-                {
-                    return _surface.Height;
-                });
-            }
-        }
+        public int Width { get { return _surface.Width; } }
+        public int Height { get { return _surface.Height; } }
 
         readonly Surface _surface;
         internal Surface Surface
@@ -45,15 +20,12 @@ namespace Zelda.Game.Script
 
         public static ScriptSurface Create()
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptSurface>(() =>
-            {
-                return Create(Video.ModSize.Width, Video.ModSize.Height);
-            });
+            return ScriptToCore.Call(() => Create(Video.ModSize.Width, Video.ModSize.Height));
         }
 
         public static ScriptSurface Create(int width, int height)
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptSurface>(() =>
+            return ScriptToCore.Call(() =>
             {
                 Surface surface = Surface.Create(width, height);
                 if (surface == null)
@@ -72,18 +44,12 @@ namespace Zelda.Game.Script
 
         public void Clear()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                _surface.Clear();
-            });
+            ScriptToCore.Call(_surface.Clear);
         }
 
         public void FillColor(Color color, Rectangle? where = null)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                _surface.FillWithColor(color, where);
-            });
+            ScriptToCore.Call(() => _surface.FillWithColor(color, where));
         }
     }
 }

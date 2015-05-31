@@ -25,15 +25,12 @@ namespace Zelda.Game.Script
             _objectCreator = new ObjectCreator(CurrentMod.Resources);
 
             CreateScriptMain();
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                _scriptMain.OnStarted();
-            });
+            CoreToScript.Call(_scriptMain.OnStarted);
         }
 
         public static void Exit()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            CoreToScript.Call(() =>
             {
                 if (_scriptMain != null)
                     _scriptMain.OnFinished();
@@ -51,10 +48,7 @@ namespace Zelda.Game.Script
             ScriptMenu.UpdateMenus();
             ScriptTimer.UpdateTimers();
 
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                _scriptMain.OnUpdate();
-            });
+            CoreToScript.Call(_scriptMain.OnUpdate);
         }
 
         static void CreateScriptMain()
@@ -118,10 +112,7 @@ namespace Zelda.Game.Script
 
         internal static void MainOnDraw(ScriptSurface dstSurface)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                _scriptMain.OnDraw(dstSurface);
-            });
+            CoreToScript.Call(() => _scriptMain.OnDraw(dstSurface));
             ScriptMenu.MenusOnDraw(_scriptMain, dstSurface);
         }
 
@@ -150,7 +141,7 @@ namespace Zelda.Game.Script
 
         static bool OnKeyPressed(IInputEventHandler handler, InputEvent input)
         {
-            return ScriptTools.ExceptionBoundaryHandle<bool>(() =>
+            return CoreToScript.Call(() =>
             {
                 string keyName = InputEvent.GetKeyboardKeyName(input.KeyboardKey);
                 bool shift = input.IsWithShift;
@@ -162,7 +153,7 @@ namespace Zelda.Game.Script
 
         static bool OnKeyReleased(IInputEventHandler context, InputEvent input)
         {
-            return ScriptTools.ExceptionBoundaryHandle<bool>(() =>
+            return CoreToScript.Call(() =>
             {
                 string keyName = InputEvent.GetKeyboardKeyName(input.KeyboardKey);
                 return context.OnKeyReleased(keyName);

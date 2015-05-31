@@ -4,17 +4,13 @@ namespace Zelda.Game
 {
     static class Language
     {
-        static string _languageCode;
-        public static string LanguageCode
-        {
-            get { return _languageCode; }
-        }
+        public static string LanguageCode { get; private set; }
 
         public static void SetLanguage(string languageCode)
         {
             Debug.CheckAssertion(HasLanguage(languageCode), "No such language: '{0}'".F(languageCode));
 
-            _languageCode = languageCode;
+            LanguageCode = languageCode;
             DialogResource.Initialize();
         }
 

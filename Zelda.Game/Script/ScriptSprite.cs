@@ -9,18 +9,12 @@ namespace Zelda.Game.Script
 
         public Direction4 Direction
         {
-            get 
-            {
-                return ScriptTools.ExceptionBoundaryHandle<Direction4>(() =>
-                {
-                    return _sprite.CurrentDirection;
-                });
-            }
+            get { return _sprite.CurrentDirection; }
         }
 
         public static ScriptSprite Create(string animationSetId)
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptSprite>(() =>
+            return ScriptToCore.Call(() =>
             {
                 Sprite sprite = new Sprite(animationSetId);
                 ScriptDrawable.AddDrawable(sprite);
@@ -36,7 +30,7 @@ namespace Zelda.Game.Script
 
         public void SetAnimation(string animationName)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 if (animationName == null)
                     throw new ArgumentNullException("animationName");
@@ -48,7 +42,7 @@ namespace Zelda.Game.Script
 
         public void SetDirection(Direction4 direction)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 if (direction < 0 || (int)direction >= _sprite.NumDirections)
                 {

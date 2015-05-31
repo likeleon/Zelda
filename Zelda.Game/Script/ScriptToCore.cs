@@ -2,9 +2,9 @@
 
 namespace Zelda.Game.Script
 {
-    class ScriptTools
+    public static class ScriptToCore
     {
-        public static T ExceptionBoundaryHandle<T>(Func<T> func)
+        public static T Call<T>(Func<T> func)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace Zelda.Game.Script
             return default(T);
         }
 
-        public static void ExceptionBoundaryHandle(Action action)
+        public static void Call(Action action)
         {
             try
             {
@@ -43,17 +43,6 @@ namespace Zelda.Game.Script
             {
                 Debug.Error("Unexpected exception: " + ex.ToString());
             }
-        }
-
-        public static void ArgError(string arg_name, string message)
-        {
-            string msg = "bad argument '{0}' ({1})".F(arg_name, message);
-            Error(msg);
-        }
-
-        public static void Error(string message)
-        {
-            throw new ScriptException(message);
         }
     }
 }

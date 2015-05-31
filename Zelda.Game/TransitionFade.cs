@@ -80,7 +80,7 @@ namespace Zelda.Game
             {
                 Debug.CheckAssertion(dstSurface.IsSoftwareDestination,
                     "Cannot apply fade transition: this surface is in read-only mode");
-                _dstSurface.Opacity = alphaImpl;
+                _dstSurface.SetOpacity(alphaImpl);
             }
             else
             {

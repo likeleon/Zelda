@@ -4,28 +4,16 @@ namespace Zelda.Game.Script
 {
     public static class ScriptLanguage
     {
-        public static string LanguageCode
-        {
-            get 
-            {
-                return ScriptTools.ExceptionBoundaryHandle<string>(() =>
-                {
-                    return Language.LanguageCode;
-                });
-            }
-        }
-
+        public static string LanguageCode { get { return Language.LanguageCode; } }
+        
         public static void SetLanguage(string languageCode)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                Language.SetLanguage(languageCode);
-            });
+            ScriptToCore.Call(() => Language.SetLanguage(languageCode));
         }
 
         public static string GetLanguageName(string languageCode)
         {
-            return ScriptTools.ExceptionBoundaryHandle<string>(() =>
+            return ScriptToCore.Call(() =>
             {
                 if (languageCode != null)
                 {

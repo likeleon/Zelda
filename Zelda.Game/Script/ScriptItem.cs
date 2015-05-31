@@ -6,38 +6,19 @@ namespace Zelda.Game.Script
     {
         internal EquipmentItem _item { get; private set; }
 
-        public ScriptGame Game
-        {
-            get { return ScriptTools.ExceptionBoundaryHandle<ScriptGame>(() => _item.Savegame.ScriptGame); }
-        }
-
-        public ScriptMap Map
-        {
-            get { return ScriptTools.ExceptionBoundaryHandle<ScriptMap>(() => _item.Game.CurrentMap.ScriptMap); }
-        }
+        public ScriptGame Game { get { return _item.Savegame.ScriptGame; } }
+        public ScriptMap Map { get { return _item.Game.CurrentMap.ScriptMap; } }
 
         public string SavegameVariable
         {
-            get
-            {
-                return ScriptTools.ExceptionBoundaryHandle<string>(() => { return _item.SavegameVariable; });
-            }
-            set
-            {
-                ScriptTools.ExceptionBoundaryHandle(() => _item.SavegameVariable = value);
-            }
+            get { return _item.SavegameVariable; }
+            set { _item.SavegameVariable = value; }
         }
 
         public bool IsAssignable
         {
-            get
-            {
-                return ScriptTools.ExceptionBoundaryHandle<bool>(() => { return _item.IsAssignable; });
-            }
-            set
-            {
-                ScriptTools.ExceptionBoundaryHandle(() => _item.IsAssignable = value);
-            }
+            get { return _item.IsAssignable; }
+            set { _item.IsAssignable = value; }
         }
 
         public void SetFinished()
@@ -51,7 +32,7 @@ namespace Zelda.Game.Script
         {
             _item = item;
 
-            ScriptTools.ExceptionBoundaryHandle(OnCreated);
+            CoreToScript.Call(OnCreated);
         }
 
         protected virtual void OnCreated()
@@ -60,7 +41,7 @@ namespace Zelda.Game.Script
 
         internal void NotifyStarted()
         {
-            ScriptTools.ExceptionBoundaryHandle(OnStarted);
+            CoreToScript.Call(OnStarted);
         }
 
         protected virtual void OnStarted()
@@ -69,7 +50,7 @@ namespace Zelda.Game.Script
 
         internal void NotifyFinished()
         {
-            ScriptTools.ExceptionBoundaryHandle(OnFinished);
+            CoreToScript.Call(OnFinished);
         }
 
         protected virtual void OnFinished()
@@ -78,7 +59,7 @@ namespace Zelda.Game.Script
 
         internal void NotifyObtaining(int variant, string savegameVariable)
         {
-            ScriptTools.ExceptionBoundaryHandle(() => OnObtaining(variant, savegameVariable));
+            CoreToScript.Call(() => OnObtaining(variant, savegameVariable));
         }
 
         protected virtual void OnObtaining(int variant, string savegameVariable)
@@ -87,7 +68,7 @@ namespace Zelda.Game.Script
 
         internal void NotifyUsing()
         {
-            ScriptTools.ExceptionBoundaryHandle(OnUsing);
+            CoreToScript.Call(OnUsing);
         }
 
         protected virtual void OnUsing()
@@ -96,7 +77,7 @@ namespace Zelda.Game.Script
 
         internal void NotifyAbilityUsed(Ability ability)
         {
-            ScriptTools.ExceptionBoundaryHandle(() => OnAbilityUsed(ability));
+            CoreToScript.Call(() => OnAbilityUsed(ability));
         }
 
         protected virtual void OnAbilityUsed(Ability ability)

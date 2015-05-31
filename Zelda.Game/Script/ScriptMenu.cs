@@ -22,16 +22,13 @@ namespace Zelda.Game.Script
         }
 
         static List<ScriptMenuData> _menus = new List<ScriptMenuData>();
-        
-        public event EventHandler Started;
-        public event EventHandler Finished;
+
+        public event EventHandler Started = delegate { };
+        public event EventHandler Finished = delegate { };
 
         public static void Start(object context, ScriptMenu menu, bool onTop = true)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                AddMenu(menu, context, onTop);
-            });
+            ScriptToCore.Call(() => AddMenu(menu, context, onTop));
         }
 
         static void AddMenu(ScriptMenu menu, object context, bool onTop)
@@ -75,10 +72,7 @@ namespace Zelda.Game.Script
 
         static void MenuOnDraw(ScriptMenu menu, ScriptSurface dstSurface)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                menu.OnDraw(dstSurface);
-            });
+            CoreToScript.Call(() => menu.OnDraw(dstSurface));
             MenusOnDraw(menu, dstSurface);  // 자식 메뉴들을 그려줍니다
         }
 
@@ -160,37 +154,29 @@ namespace Zelda.Game.Script
 
         public bool IsStarted()
         {
-            return ScriptTools.ExceptionBoundaryHandle<bool>(() =>
-            {
-                return IsStarted(this);
-            });
+            return ScriptToCore.Call(() => IsStarted(this));
         }
 
         public void Stop()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                Stop(this);
-            });
+            ScriptToCore.Call(() => Stop(this));
         }
 
         internal void NotifyStarted()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            CoreToScript.Call(() =>
             {
                 OnStarted();
-                if (Started != null)
-                    Started(this, EventArgs.Empty);
+                Started(this, EventArgs.Empty);
             });
         }
 
         internal void NotifyFinished()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            CoreToScript.Call(() =>
             {
                 OnFinished();
-                if (Finished != null)
-                    Finished(this, EventArgs.Empty);
+                Finished(this, EventArgs.Empty);
             });
         }
 

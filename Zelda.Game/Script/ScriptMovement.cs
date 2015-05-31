@@ -13,7 +13,7 @@ namespace Zelda.Game.Script
 
         public static ScriptMovement Create(MovementType type)
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptMovement>(() =>
+            return ScriptToCore.Call(() =>
             {
                 ScriptMovement movement = null;
                 if (type == MovementType.Target)
@@ -42,7 +42,7 @@ namespace Zelda.Game.Script
 
         public void Start(object objectToMove, Action finishedCallback)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 Stop();
 
@@ -65,7 +65,7 @@ namespace Zelda.Game.Script
 
         internal void NotifyPositionChanged(Point xy)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 OnPositionChanged(xy);
                 if (PositionChanged != null)
@@ -79,7 +79,7 @@ namespace Zelda.Game.Script
 
         internal void NotifyMovementFinished()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
+            ScriptToCore.Call(() =>
             {
                 OnMovementFinished();
                 if (MovementFinished != null)
@@ -115,18 +115,12 @@ namespace Zelda.Game.Script
 
         public void SetSpeed(int speed)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                _targetMovement.SetMovingSpeed(speed);
-            });
+            ScriptToCore.Call(() => _targetMovement.SetMovingSpeed(speed));
         }
 
         public void SetTarget(Point xy)
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                _targetMovement.SetTarget(xy);
-            });
+            ScriptToCore.Call(() => _targetMovement.SetTarget(xy));
         }
     }
 }

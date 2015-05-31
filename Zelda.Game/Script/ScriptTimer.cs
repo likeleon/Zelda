@@ -11,7 +11,7 @@ namespace Zelda.Game.Script
         [CLSCompliant(false)]
         public static ScriptTimer Start(object context, uint delay, Func<bool> callback)
         {
-            return ScriptTools.ExceptionBoundaryHandle<ScriptTimer>(() =>
+            return ScriptToCore.Call(() =>
             {
                 object timerContext = context ?? ScriptContext.MainLoop.Game;
 
@@ -32,10 +32,7 @@ namespace Zelda.Game.Script
 
         public void Stop()
         {
-            ScriptTools.ExceptionBoundaryHandle(() =>
-            {
-                RemoveTimer(_timer);
-            });
+            ScriptToCore.Call(() => RemoveTimer(_timer));
         }
 
         #region 타이머 관리
@@ -94,7 +91,7 @@ namespace Zelda.Game.Script
             if (!_timers.ContainsKey(timer) || _timers[timer].Callback == null)
                 return;
 
-            bool repeat = ScriptTools.ExceptionBoundaryHandle<bool>(_timers[timer].Callback.Invoke);
+            bool repeat = CoreToScript.Call<bool>(_timers[timer].Callback.Invoke);
             if (repeat)
             {
                 timer.ExpirationDate += timer.InitialDuration;

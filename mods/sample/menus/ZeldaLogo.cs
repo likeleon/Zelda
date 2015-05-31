@@ -54,7 +54,7 @@ namespace Sample.Menus
         protected override void OnStarted()
         {
             _animationStep = 0;
-            _surface.Opacity = 255;
+            _surface.SetOpacity(255);
             _sun.SetDirection(0);
             _sun.XY = new Point(0, 0);
             _sword.XY = new Point(0, 0);
