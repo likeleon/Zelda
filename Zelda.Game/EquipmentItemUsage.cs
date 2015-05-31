@@ -4,13 +4,9 @@ namespace Zelda.Game
     class EquipmentItemUsage
     {
         readonly EquipmentItem _item;
-        public EquipmentItem Item
-        {
-            get { return _item; }
-        }
-
         readonly int _variant;
 
+        public EquipmentItem Item { get { return _item; } }
         public bool IsFinished { get; set; }
 
         public EquipmentItemUsage(EquipmentItem item)

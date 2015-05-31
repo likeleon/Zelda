@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Zelda.Game
@@ -8,17 +7,11 @@ namespace Zelda.Game
     // 프로그램으로 전달되는 런타임 인자들을 저장
     public class Arguments
     {
-        private string _programName;
-        public string ProgramName
-        {
-            get { return _programName; }
-        }
+        readonly string _programName;
+        public string ProgramName { get { return _programName; } }
 
         private readonly List<string> _args;
-        public IEnumerable<string> Args
-        {
-            get { return _args; }
-        }
+        public IEnumerable<string> Args { get { return _args; } }
 
         public Arguments(string[] args)
         {

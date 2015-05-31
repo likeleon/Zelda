@@ -223,5 +223,11 @@ namespace Zelda.Game
         {
             return ((int)dir4 % 2) == 0;
         }
+
+        public static void SafeCall<T>(this T t, Action action)
+        {
+            if (t != null)
+                action();
+        }
     }
 }

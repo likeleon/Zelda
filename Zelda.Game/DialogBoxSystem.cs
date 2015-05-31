@@ -7,34 +7,22 @@ namespace Zelda.Game
 {
     class DialogBoxSystem
     {
+        static readonly int _numVisibleLines = 3;
+
         readonly Game _game;
-        public Game Game
-        {
-            get { return _game; }
-        }
-
-        string _dialogId;
-        public string DialogId
-        {
-            get { return _dialogId; }
-        }
-
-        public bool IsEnabled
-        {
-            get { return !String.IsNullOrEmpty(_dialogId); }
-        }
+        readonly Queue<string> _remainingLines = new Queue<string>();
+        readonly TextSurface[] _lineSurfaces = new TextSurface[_numVisibleLines];
 
         Dialog _dialog;
         Action _callback;
-
-        #region 내장 다이얼로그 박스용
-        static readonly int _numVisibleLines = 3;
-
         bool _builtIn;
-        readonly Queue<string> _remainingLines = new Queue<string>();
-        readonly TextSurface[] _lineSurfaces = new TextSurface[_numVisibleLines];
         Point _textPosition;
-        #endregion
+
+        public Game Game { get { return _game; } }
+
+        public string DialogId { get; private set; }
+        public bool IsEnabled { get { return !String.IsNullOrEmpty(DialogId); } }
+        bool HasMoreLines { get { return _remainingLines.Count > 0; } }
 
         public DialogBoxSystem(Game game)
         {
@@ -48,7 +36,7 @@ namespace Zelda.Game
         {
             Debug.CheckAssertion(!IsEnabled, "A dialog is already active");
 
-            _dialogId = dialogId;
+            DialogId = dialogId;
             _dialog = DialogResource.GetDialog(dialogId);
             _callback = callback;
 
@@ -91,7 +79,7 @@ namespace Zelda.Game
 
             Action callback = _callback;
             _callback = null;
-            _dialogId = String.Empty;
+            DialogId = String.Empty;
 
             CommandsEffects commandsEffects = _game.CommandsEffects;
             commandsEffects.RestoreActionCommandEffect();
@@ -129,11 +117,6 @@ namespace Zelda.Game
                 else
                     _lineSurfaces[i].SetText(String.Empty);
             }
-        }
-
-        bool HasMoreLines
-        {
-            get { return _remainingLines.Count > 0; }
         }
 
         public bool NotifyCommandPressed(GameCommand command)

@@ -1,34 +1,30 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
 namespace Zelda.Game
 {
     static class CurrentMod
     {
-        static ModResources _resources;
-        internal static ModResources Resources
-        {
-            get { return _resources; }
-        }
-
+        internal static ModResources Resources { get; private set; }
+    
         public static void Initialize()
         {
-            _resources = new ModResources();
-            _resources.ImportFromModFile("project_db.xml");
+            Resources = new ModResources();
+            Resources.ImportFromModFile("project_db.xml");
         }
 
         public static void Quit()
         {
-            _resources.Clear();
+            Resources.Clear();
         }
 
         public static bool ResourceExists(ResourceType resourceType, string id)
         {
-            return _resources.Exists(resourceType, id);
+            return Resources.Exists(resourceType, id);
         }
 
         public static IReadOnlyDictionary<string, string> GetResources(ResourceType resourceType)
         {
-            return _resources.GetElements(resourceType);
+            return Resources.GetElements(resourceType);
         }
     }
 }

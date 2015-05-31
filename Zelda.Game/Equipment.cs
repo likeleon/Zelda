@@ -5,23 +5,16 @@ namespace Zelda.Game
 {
     class Equipment
     {
-        #region 생성
+        readonly Savegame _savegame;
+        readonly Dictionary<string, EquipmentItem> _items = new Dictionary<string, EquipmentItem>();
+        bool _suspended;
+
+        public Savegame Savegame { get { return _savegame; } }
+        public Game Game { get { return _savegame.Game; } }
+        
         public Equipment(Savegame saveGame)
         {
             _savegame = saveGame;
-        }
-        #endregion
-
-        #region 기본
-        readonly Savegame _savegame;
-        public Savegame Savegame
-        {
-            get { return _savegame; }
-        }
-
-        public Game Game
-        {
-            get { return _savegame.Game; }
         }
 
         public void NotifyGameFinished()
@@ -41,14 +34,11 @@ namespace Zelda.Game
                 SetSuspended(gameSuspended);
         }
 
-        bool _suspended;
         public void SetSuspended(bool suspended)
         {
             _suspended = suspended;
         }
-        #endregion
 
-        #region 생명
         public int GetMaxLife()
         {
             return _savegame.GetInteger(Savegame.Key.MaxLife);
@@ -85,10 +75,6 @@ namespace Zelda.Game
         {
             SetLife(GetMaxLife());
         }
-        #endregion
-
-        #region 장비 아이템들
-        readonly Dictionary<string, EquipmentItem> _items = new Dictionary<string, EquipmentItem>();
 
         public void LoadItems()
         {
@@ -151,9 +137,7 @@ namespace Zelda.Game
             else
                 _savegame.SetString(key, String.Empty);
         }
-        #endregion
 
-        #region 기본 제공 능력들
         public bool HasAbility(Ability ability, int level = 1)
         {
             return GetAbility(ability) >= level;
@@ -215,6 +199,5 @@ namespace Zelda.Game
             foreach (EquipmentItem item in _items.Values)
                 item.NotifyAbilityUsed(ability);
         }
-        #endregion
     }
 }
