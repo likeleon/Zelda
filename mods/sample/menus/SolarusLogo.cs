@@ -143,9 +143,9 @@ namespace Sample.Menus
             _surface.Draw(screen, screen.Width / 2 - 100, screen.Height / 2 - 24);
         }
 
-        public override bool OnKeyPressed(string key, bool shift, bool control, bool alt)
+        public override bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)
         {
-            if (key == "escape")
+            if (key == KeyboardKey.KEY_ESCAPE)
                 Main.Current.Exit();
             else
             {

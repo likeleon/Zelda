@@ -1,9 +1,24 @@
-﻿
+﻿using Zelda.Game.Engine;
+
 namespace Zelda.Game.Script
 {
+    public class Modifiers
+    {
+        public bool Shift { get; private set; }
+        public bool Control { get; private set; }
+        public bool Alt { get; private set; }
+
+        internal Modifiers(InputEvent inputEvent)
+        {
+            Shift = inputEvent.IsWithShift;
+            Control = inputEvent.IsWithControl;
+            Alt = inputEvent.IsWithAlt;
+        }
+    }
+
     interface IInputEventHandler
     {
-        bool OnKeyPressed(string key, bool shift, bool control, bool alt);
-        bool OnKeyReleased(string key);
+        bool OnKeyPressed(KeyboardKey key, Modifiers modifiers);
+        bool OnKeyReleased(KeyboardKey key);
     }
 }

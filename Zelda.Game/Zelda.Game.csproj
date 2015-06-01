@@ -74,6 +74,7 @@
     <Compile Include="Engine\FileSystem.cs" />
     <Compile Include="Engine\FontResource.cs" />
     <Compile Include="Engine\Geometry.cs" />
+    <Compile Include="Engine\KeyboardKey.cs" />
     <Compile Include="Engine\ModFiles.cs" />
     <Compile Include="Engine\Music.cs" />
     <Compile Include="Engine\PixelBits.cs" />

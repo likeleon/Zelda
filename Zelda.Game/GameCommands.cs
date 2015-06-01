@@ -48,7 +48,7 @@ namespace Zelda.Game
                 if (command == GameCommand.None)
                     continue;
 
-                InputEvent.KeyboardKeys keyboardKey = GetSavedKeyboardBinding(command);
+                KeyboardKey keyboardKey = GetSavedKeyboardBinding(command);
                 _keyboardMapping[keyboardKey] = command;
             }
         }
@@ -58,7 +58,7 @@ namespace Zelda.Game
             get { return _game.SaveGame; }
         }
 
-        InputEvent.KeyboardKeys GetSavedKeyboardBinding(GameCommand command)
+        KeyboardKey GetSavedKeyboardBinding(GameCommand command)
         {
             Savegame.Key savegameKey = GetKeyboardBindingSavegameKey(command);
             string keyboardKeyName = Savegame.GetString(savegameKey);
@@ -112,23 +112,23 @@ namespace Zelda.Game
         }
 
         #region 키보드 매핑
-        readonly Dictionary<InputEvent.KeyboardKeys, GameCommand> _keyboardMapping = new Dictionary<InputEvent.KeyboardKeys,GameCommand>();
+        readonly Dictionary<KeyboardKey, GameCommand> _keyboardMapping = new Dictionary<KeyboardKey,GameCommand>();
 
-        void KeyboardKeyPressed(InputEvent.KeyboardKeys keyboardKeyPressed)
+        void KeyboardKeyPressed(KeyboardKey keyboardKeyPressed)
         {
             GameCommand commandPressed = GetCommandFromKeyboard(keyboardKeyPressed);
             if (commandPressed != GameCommand.None)
                 GameCommandPressed(commandPressed);
         }
 
-        void KeyboardKeyReleased(InputEvent.KeyboardKeys keyboardKeyReleased)
+        void KeyboardKeyReleased(KeyboardKey keyboardKeyReleased)
         {
             GameCommand commandReleased = GetCommandFromKeyboard(keyboardKeyReleased);
             if (commandReleased != GameCommand.None)
                 GameCommandReleased(commandReleased);
         }
 
-        GameCommand GetCommandFromKeyboard(InputEvent.KeyboardKeys key)
+        GameCommand GetCommandFromKeyboard(KeyboardKey key)
         {
             GameCommand command;
             if (_keyboardMapping.TryGetValue(key, out command))

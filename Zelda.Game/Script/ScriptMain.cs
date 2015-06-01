@@ -43,12 +43,12 @@ namespace Zelda.Game.Script
             ScriptToCore.Call(ScriptContext.MainLoop.SetResetting);
         }
 
-        public virtual bool OnKeyPressed(string key, bool shift, bool control, bool alt)
+        public virtual bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)
         {
             return false;
         }
 
-        public virtual bool OnKeyReleased(string key)
+        public virtual bool OnKeyReleased(KeyboardKey key)
         {
             return false;
         }

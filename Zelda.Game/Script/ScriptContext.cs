@@ -143,20 +143,15 @@ namespace Zelda.Game.Script
         {
             return CoreToScript.Call(() =>
             {
-                string keyName = InputEvent.GetKeyboardKeyName(input.KeyboardKey);
-                bool shift = input.IsWithShift;
-                bool control = input.IsWithControl;
-                bool alt = input.IsWithAlt;
-                return handler.OnKeyPressed(keyName, shift, control, alt);
+                return handler.OnKeyPressed(input.KeyboardKey, new Modifiers(input));
             });
         }
 
-        static bool OnKeyReleased(IInputEventHandler context, InputEvent input)
+        static bool OnKeyReleased(IInputEventHandler handler, InputEvent input)
         {
             return CoreToScript.Call(() =>
             {
-                string keyName = InputEvent.GetKeyboardKeyName(input.KeyboardKey);
-                return context.OnKeyReleased(keyName);
+                return handler.OnKeyReleased(input.KeyboardKey);
             });
         }
         #endregion
