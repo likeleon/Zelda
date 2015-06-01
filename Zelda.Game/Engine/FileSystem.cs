@@ -98,6 +98,15 @@ namespace Zelda.Game.Engine
             return Encoding.UTF8.GetString(bytes);
         }
 
+        private static IntPtr EncodeUTF8(string s)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(s);
+            IntPtr ptr = Marshal.AllocHGlobal(bytes.Length + 1);
+            Marshal.Copy(bytes, 0, ptr, bytes.Length);
+            Marshal.WriteByte(ptr, bytes.Length, 0);
+            return ptr;
+        }
+
         [CLSCompliant(false)] // Not CLS Compliant because it's named the same as PHYSFS_Version
         public static void PHYSFS_VERSION(out PHYSFS_Version ver)
         {
@@ -106,8 +115,16 @@ namespace Zelda.Game.Engine
             ver.patch = PHYSFS_VER_PATCH;
         }
 
-        [DllImport(PHYSFS_NATIVE_LIBRARY, CallingConvention = CALLING_CONVENTION), SuppressUnmanagedCodeSecurity]
-        public extern static int PHYSFS_addToSearchPath(string newDir, int appendToPath);
+        [DllImport(PHYSFS_NATIVE_LIBRARY, CallingConvention = CALLING_CONVENTION, EntryPoint = "PHYSFS_addToSearchPath"), SuppressUnmanagedCodeSecurity]
+        private extern static int PHYSFS_addToSearchPathInternal(IntPtr newDir, int appendToPath);
+
+        public static int PHYSFS_addToSearchPath(string newDir, int appendToPath)
+        {
+            IntPtr ptr = EncodeUTF8(newDir);
+            int ret = PHYSFS_addToSearchPathInternal(ptr, appendToPath);
+            Marshal.FreeHGlobal(ptr);
+            return ret;
+        }
 
         [DllImport(PHYSFS_NATIVE_LIBRARY, CallingConvention = CALLING_CONVENTION), SuppressUnmanagedCodeSecurity]
         public extern static int PHYSFS_close(IntPtr handle);
@@ -424,8 +441,16 @@ namespace Zelda.Game.Engine
         [DllImport(PHYSFS_NATIVE_LIBRARY, CallingConvention = CALLING_CONVENTION), SuppressUnmanagedCodeSecurity]
         public extern static int PHYSFS_setSaneConfig(string organization, string appName, string archiveExt, int includeCdRoms, int archivesFirst);
 
-        [DllImport(PHYSFS_NATIVE_LIBRARY, CallingConvention = CALLING_CONVENTION), SuppressUnmanagedCodeSecurity]
-        public extern static int PHYSFS_setWriteDir(string newDir);
+        [DllImport(PHYSFS_NATIVE_LIBRARY, CallingConvention = CALLING_CONVENTION, EntryPoint = "PHYSFS_setWriteDir"), SuppressUnmanagedCodeSecurity]
+        private extern static int PHYSFS_setWriteDirInternal(IntPtr newDir);
+
+        public static int PHYSFS_setWriteDir(string newDir)
+        {
+            IntPtr ptr = EncodeUTF8(newDir);
+            int ret = PHYSFS_setWriteDirInternal(ptr);
+            Marshal.FreeHGlobal(ptr);
+            return ret;
+        }
 
         public static PHYSFS_ArchiveInfo[] PHYSFS_supportedArchiveTypes()
         {
