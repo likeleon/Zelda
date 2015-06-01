@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
@@ -32,32 +33,30 @@ namespace Zelda.Game
         {
             _dialogs.Clear();
 
-            using (MemoryStream stream = ModFiles.DataFileRead(_fileName, true))
+            var stream = ModFiles.DataFileRead(_fileName, true);
+            var data = stream.XmlDeserialize<DialogXmlData>();
+            foreach (var dialogData in data.Dialogs.EmptyIfNull())
             {
-                DialogXmlData data = stream.XmlDeserialize<DialogXmlData>();
-                foreach (var dialogData in data.Dialogs)
+                Dialog dialog = new Dialog();
+                dialog.Id = dialogData.Id;
+                dialog.Text = dialogData.Text;
+
+                if (dialogData.PropertyElements != null)
                 {
-                    Dialog dialog = new Dialog();
-                    dialog.Id = dialogData.Id;
-                    dialog.Text = dialogData.Text;
-
-                    if (dialogData.PropertyElements != null)
-                    {
-                        foreach (XmlElement element in dialogData.PropertyElements)
-                            dialog.SetProperty(element.Name, element.InnerText);
-                    }
-
-                    if (String.IsNullOrEmpty(dialog.Id))
-                        throw new InvalidDataException("Missing value dialog Id");
-
-                    if (string.IsNullOrEmpty(dialog.Text))
-                        throw new InvalidDataException("Missing text for dialog '{0}'".F(dialog.Id));
-
-                    if (Exists(dialog.Id))
-                        throw new InvalidDataException("Duplicate dialog '{0}'".F(dialog.Id));
-
-                    _dialogs.Add(dialog.Id, dialog);
+                    foreach (XmlElement element in dialogData.PropertyElements)
+                        dialog.SetProperty(element.Name, element.InnerText);
                 }
+
+                if (String.IsNullOrEmpty(dialog.Id))
+                    throw new InvalidDataException("Missing value dialog Id");
+
+                if (string.IsNullOrEmpty(dialog.Text))
+                    throw new InvalidDataException("Missing text for dialog '{0}'".F(dialog.Id));
+
+                if (Exists(dialog.Id))
+                    throw new InvalidDataException("Duplicate dialog '{0}'".F(dialog.Id));
+
+                _dialogs.Add(dialog.Id, dialog);
             }
         }
 

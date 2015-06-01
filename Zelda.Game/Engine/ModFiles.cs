@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Zelda.Game.Engine
 {
@@ -165,6 +166,22 @@ namespace Zelda.Game.Engine
                 // 모드가 세이브나 설정 파일과 같은 데이터 파일들을 읽을 수 있게 해줍니다
                 FileSystem.PHYSFS_addToSearchPath(FileSystem.PHYSFS_getWriteDir(), 0);
             }
+        }
+
+        public static void DataFileSave(string fileName, byte[] buffer)
+        {
+            IntPtr file = FileSystem.PHYSFS_openWrite(fileName);
+            if (file == IntPtr.Zero)
+                Debug.Die("Cannot open file '{0}' for writing: {1}".F(fileName, FileSystem.PHYSFS_getLastError()));
+
+            var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+            if (FileSystem.PHYSFS_write(file, handle.AddrOfPinnedObject(), (uint)buffer.Length, 1) == -1)
+            {
+                handle.Free();
+                Debug.Die("Cannot write file '{0}': {1}".F(fileName, FileSystem.PHYSFS_getLastError()));
+            }
+            handle.Free();
+            FileSystem.PHYSFS_close(file);
         }
         #endregion
 

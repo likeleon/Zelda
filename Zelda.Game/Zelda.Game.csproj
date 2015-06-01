@@ -138,6 +138,7 @@
     <Compile Include="Script\ScriptDestination.cs" />
     <Compile Include="Script\ScriptDestructible.cs" />
     <Compile Include="Script\ScriptEntity.cs" />
+    <Compile Include="Script\ScriptFile.cs" />
     <Compile Include="Script\ScriptHero.cs" />
     <Compile Include="Script\ScriptItem.cs" />
     <Compile Include="Script\ScriptMap.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Script\ScriptException.cs" />
     <Compile Include="Script\ScriptNpc.cs" />
     <Compile Include="Script\ScriptToCore.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="SpriteData.cs" />
     <Compile Include="Transition.cs" />
     <Compile Include="TransitionFade.cs" />
@@ -184,7 +186,7 @@
     </Compile>
     <Compile Include="ResourceType.cs" />
     <Compile Include="Script\ScriptLanguage.cs" />
-    <Compile Include="Script\Main.cs" />
+    <Compile Include="Script\ScriptMain.cs" />
     <Compile Include="Script\ScriptMenu.cs" />
     <Compile Include="Script\ScriptContext.cs" />
     <Compile Include="Script\ScriptSurface.cs" />

@@ -16,7 +16,7 @@ namespace Zelda.Game.Script
         }
 
         static ObjectCreator _objectCreator;
-        static Main _scriptMain;
+        static ScriptMain _scriptMain;
 
         #region 메인 루프
         public static void Initialize(MainLoop mainLoop)
@@ -35,7 +35,7 @@ namespace Zelda.Game.Script
                 if (_scriptMain != null)
                     _scriptMain.OnFinished();
             });
-            Main.Current = null;
+            ScriptMain.Current = null;
 
             ScriptMenu.DestroyMenus();
             ScriptTimer.DestroyTimers();
@@ -53,7 +53,7 @@ namespace Zelda.Game.Script
 
         static void CreateScriptMain()
         {
-            var mainTypes = _objectCreator.GetTypesImplementing<Main>();
+            var mainTypes = _objectCreator.GetTypesImplementing<ScriptMain>();
             if (!mainTypes.Any())
                 Debug.Error("'Main' based class not found");
 
@@ -62,8 +62,8 @@ namespace Zelda.Game.Script
 
             Type mainType = mainTypes.First();
             ConstructorInfo ctor = mainType.GetConstructor(Type.EmptyTypes);
-            _scriptMain = (Main)ctor.Invoke(null);
-            Main.Current = _scriptMain;
+            _scriptMain = (ScriptMain)ctor.Invoke(null);
+            ScriptMain.Current = _scriptMain;
         }
 
         internal static void NotifyDialogFinished(Zelda.Game.Game game, Dialog dialog, Action callback)

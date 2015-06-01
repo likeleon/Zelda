@@ -51,6 +51,12 @@ namespace Zelda.Game
             return (T)serializer.Deserialize(stream);
         }
 
+        public static void XmlSerialize(this object obj, Stream stream)
+        {
+            var serializer = new XmlSerializer(obj.GetType());
+            serializer.Serialize(stream, obj);
+        }
+
         public static string CheckField(this string value, string name)
         {
             if (value == null)
@@ -224,10 +230,9 @@ namespace Zelda.Game
             return ((int)dir4 % 2) == 0;
         }
 
-        public static void SafeCall<T>(this T t, Action action)
+        public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> source)
         {
-            if (t != null)
-                action();
+            return source ?? Enumerable.Empty<T>();
         }
     }
 }

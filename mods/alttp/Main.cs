@@ -1,12 +1,17 @@
 ﻿using System;
+using Zelda.Game.Script;
 
 namespace Alttp
 {
-    public class Main : Zelda.Game.Script.Main
+    public class Main : ScriptMain
     {
+        bool _debugEnabled;
+
         protected override void OnStarted()
         {
-            Console.WriteLine("A Link To The Past.");
+            LoadSettings();
+
+            _debugEnabled = ScriptFile.Exists("debug");
         }
     }
 }

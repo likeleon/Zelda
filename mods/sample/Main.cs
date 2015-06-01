@@ -5,7 +5,7 @@ using Zelda.Game.Script;
 
 namespace Sample
 {
-    public class Main : Zelda.Game.Script.Main
+    public class Main : ScriptMain
     {
         protected override void OnStarted()
         {
