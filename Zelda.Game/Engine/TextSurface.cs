@@ -28,7 +28,9 @@ namespace Zelda.Game.Engine
     }
 
     class TextSurface : Drawable
-    {        
+    {
+        public static readonly int DefaultFontSize = 11;
+   
         public TextSurface(int x, int y)
             : this(x, y, TextHorizontalAlignment.Left, TextVerticalAlignment.Middle)
         {

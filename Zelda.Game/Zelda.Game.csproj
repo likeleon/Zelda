@@ -147,6 +147,7 @@
     <Compile Include="Script\ScriptContext.EntityApi.cs" />
     <Compile Include="Script\ScriptException.cs" />
     <Compile Include="Script\ScriptNpc.cs" />
+    <Compile Include="Script\ScriptTextSurface.cs" />
     <Compile Include="Script\ScriptToCore.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SpriteData.cs" />

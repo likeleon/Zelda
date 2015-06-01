@@ -30,7 +30,7 @@ namespace Zelda.Game.Engine
             }
         }
 
-        class FontFile
+        class FontFile : DisposableObject
         {
             public string FileName { get; set; }
             public byte[] Buffer { get; set; }
@@ -41,6 +41,12 @@ namespace Zelda.Game.Engine
             public FontFile()
             {
                 OutlineFonts = new Dictionary<int, OutlineFontReader>();
+            }
+
+            protected override void OnDispose(bool disposing)
+            {
+                foreach (var font in OutlineFonts.Values)
+                    font.Dispose();
             }
         }
 
@@ -54,6 +60,9 @@ namespace Zelda.Game.Engine
 
         public static void Quit()
         {
+            foreach (var font in _fonts.Values)
+                font.Dispose();
+
             _fonts.Clear();
             _fontsLoaded = false;
             SDL_ttf.TTF_Quit();

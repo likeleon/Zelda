@@ -6,6 +6,7 @@ namespace Alttp
 {
     public class Main : ScriptMain
     {
+        ScriptGame _game;
         bool _debugEnabled;
 
         protected override void OnStarted()
@@ -15,6 +16,14 @@ namespace Alttp
             _debugEnabled = ScriptFile.Exists("debug");
 
             var solarusLogo = new SolarusLogo();
+            var languageMenu = new LanguageMenu();
+
+            solarusLogo.Finished += (_, e) =>
+            {
+                if (_game == null)
+                    ScriptMenu.Start(this, languageMenu);
+            };
+
             ScriptMenu.Start(this, solarusLogo);
         }
 

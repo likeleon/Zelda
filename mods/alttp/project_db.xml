@@ -5,5 +5,13 @@
   </Assemblies>
   <Languages>
     <Language Id="en" Description="English" />
+    <Language Id="ko_KR" Description="한국어" />
+    <Language Id="zh_CN" Description="中文（中国）" />
+    <Language Id="zh_TW" Description="中文（台灣）" />
   </Languages>
+  <Fonts>
+    <Font Id="minecraftia" Description="minecraftia" />
+    <Font Id="NanumBarunGothic" Description="나눔바른고딕" />
+    <Font Id="wqy-zenhei" Description="wqy-zenhei" />
+  </Fonts>
 </ProjectDB>

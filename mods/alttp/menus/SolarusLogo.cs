@@ -130,7 +130,7 @@ namespace Alttp.Menus
 
             ScriptTimer.Start(this, 500, () =>
             {
-                _surface.FadeOut(null, null);
+                _surface.FadeOut();
                 ScriptTimer.Start(this, 700, () =>
                 {
                     Stop();
@@ -148,7 +148,7 @@ namespace Alttp.Menus
         public override bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)
         {
             if (key == KeyboardKey.KEY_ESCAPE)
-                Main.Current.Exit();
+                ScriptMain.Exit();
             else
             {
                 if (_timer != null)

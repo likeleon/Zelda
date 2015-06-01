@@ -1,14 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using GameLanguage = Zelda.Game.Language;
 
 namespace Zelda.Game.Script
 {
     public static class ScriptLanguage
     {
-        public static string LanguageCode { get { return Language.LanguageCode; } }
+        static Lazy<List<string>> _languages;
+        
+        public static string Language { get { return GameLanguage.LanguageCode; } }
+        public static IEnumerable<string> Languages { get { return _languages.Value; } }
+
+        static ScriptLanguage()
+        {
+            _languages = Exts.Lazy(() => CurrentMod.GetResources(ResourceType.Language).Select(r => r.Key).ToList());
+        }
         
         public static void SetLanguage(string languageCode)
         {
-            ScriptToCore.Call(() => Language.SetLanguage(languageCode));
+            ScriptToCore.Call(() => GameLanguage.SetLanguage(languageCode));
         }
 
         public static string GetLanguageName(string languageCode)
@@ -17,17 +28,17 @@ namespace Zelda.Game.Script
             {
                 if (languageCode != null)
                 {
-                    if (!Language.HasLanguage(languageCode))
+                    if (!GameLanguage.HasLanguage(languageCode))
                         throw new ArgumentException("No such language: '{0}'".F(languageCode), "languageCode");
 
-                    return Language.GetLanguageName(languageCode);
+                    return GameLanguage.GetLanguageName(languageCode);
                 }
                 else
                 {
-                    if (Language.LanguageCode == null)
+                    if (GameLanguage.LanguageCode == null)
                         throw new ArgumentException("No language is set", "languageCode");
 
-                    return Language.GetLanguageName(Language.LanguageCode);
+                    return GameLanguage.GetLanguageName(GameLanguage.LanguageCode);
                 }
             });
         }

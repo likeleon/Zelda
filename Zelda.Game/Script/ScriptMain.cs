@@ -33,12 +33,12 @@ namespace Zelda.Game.Script
             });
         }
 
-        public void Exit()
+        public static void Exit()
         {
             ScriptToCore.Call(() => ScriptContext.MainLoop.Exiting = true);
         }
 
-        public void Reset()
+        public static void Reset()
         {
             ScriptToCore.Call(ScriptContext.MainLoop.SetResetting);
         }
