@@ -13,9 +13,9 @@ namespace Sample
 
             ScriptLanguage.SetLanguage("en");
 
-            ZeldaLogo zeldaLogo = new ZeldaLogo();
-            zeldaLogo.Finished += (o, e) => GameManager.StartGame();
-            ScriptMenu.Start(this, zeldaLogo);
+            SolarusLogo solarusLogo = new SolarusLogo();
+            solarusLogo.Finished += (o, e) => GameManager.StartGame();
+            ScriptMenu.Start(this, solarusLogo);
         }
     }
 }

@@ -3,9 +3,9 @@ using Zelda.Game;
 using Zelda.Game.Engine;
 using Zelda.Game.Script;
 
-namespace Sample.Menus
+namespace Alttp.Menus
 {
-    class ZeldaLogo : ScriptMenu
+    class SolarusLogo : ScriptMenu
     {
         readonly ScriptSurface _surface;
         readonly ScriptSprite _title;
@@ -16,10 +16,10 @@ namespace Sample.Menus
         int _animationStep;
         ScriptTimer _timer;
 
-        public ZeldaLogo()
+        public SolarusLogo()
         {
             _surface = ScriptSurface.Create(201, 48);
-            
+
             _title = ScriptSprite.Create("menus/solarus_logo");
             _title.SetAnimation("title");
 
@@ -98,7 +98,7 @@ namespace Sample.Menus
                         {
                             if (_animationStep <= 1)
                                 Step2();
-                            
+
                             return false;
                         });
                     }
@@ -109,13 +109,15 @@ namespace Sample.Menus
         void Step1()
         {
             _animationStep = 1;
-            
+
             _sun.SetDirection(Direction4.Up);
             _sun.StopMovement();
             _sun.XY = new Point(0, -33);
 
             _sword.StopMovement();
             _sword.XY = new Point(-48, 48);
+
+            ScriptAudio.PlaySound("solarus_logo");
 
             RebuildSurface();
         }
@@ -137,7 +139,7 @@ namespace Sample.Menus
                 return false;
             });
         }
-        
+
         protected override void OnDraw(ScriptSurface screen)
         {
             _surface.Draw(screen, screen.Width / 2 - 100, screen.Height / 2 - 24);

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Alttp.Menus;
 using Zelda.Game.Script;
 
 namespace Alttp
@@ -12,6 +12,14 @@ namespace Alttp
             LoadSettings();
 
             _debugEnabled = ScriptFile.Exists("debug");
+
+            var solarusLogo = new SolarusLogo();
+            ScriptMenu.Start(this, solarusLogo);
+        }
+
+        protected override void OnFinished()
+        {
+            SaveSettings();
         }
     }
 }

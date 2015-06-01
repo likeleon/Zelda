@@ -132,6 +132,7 @@
     <Compile Include="Movements\PixelMovement.cs" />
     <Compile Include="Movements\PlayerMovement.cs" />
     <Compile Include="Script\CoreToScript.cs" />
+    <Compile Include="Script\ScriptAudio.cs" />
     <Compile Include="Script\ScriptBlock.cs" />
     <Compile Include="Script\ScriptBomb.cs" />
     <Compile Include="Script\ScriptChest.cs" />

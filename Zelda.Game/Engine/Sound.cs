@@ -145,6 +145,11 @@ namespace Zelda.Game.Engine
         static readonly List<Sound> _currentSounds = new List<Sound>();
         static readonly Dictionary<string, Sound> _allSounds = new Dictionary<string, Sound>();
 
+        public static bool Exists(string soundId)
+        {
+            return ModFiles.DataFileExists("sounds/{0}.ogg".F(soundId));
+        }
+
         public static void Play(string soundId)
         {
             if (!_allSounds.ContainsKey(soundId))
