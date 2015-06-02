@@ -25,7 +25,12 @@ namespace Zelda.Game.Script
 
         public void Draw(ScriptSurface dstSurface)
         {
-            ScriptToCore.Call(() => Draw(dstSurface, 0, 0));
+            Draw(dstSurface, 0, 0);
+        }
+
+        public void Draw(ScriptSurface dstSurface, Point xy)
+        {
+            Draw(dstSurface, xy.X, xy.Y);
         }
 
         public void Draw(ScriptSurface dstSurface, int x, int y)
@@ -36,6 +41,18 @@ namespace Zelda.Game.Script
         public void StopMovement()
         {
             ScriptToCore.Call(_drawable.StopMovement);
+        }
+
+        [CLSCompliant(false)]
+        public void FadeIn(uint? delay = null, Action callback = null)
+        {
+            ScriptToCore.Call(() =>
+            {
+                TransitionFade transition = new TransitionFade(TransitionDirection.Opening, _drawable.TransitionSurface);
+                transition.ClearColor();
+                transition.Delay = delay ?? 20;
+                _drawable.StartTransition(transition, callback);
+            });
         }
 
         [CLSCompliant(false)]

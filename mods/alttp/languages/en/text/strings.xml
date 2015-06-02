@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Strings>
+  <Text>
+    <Key>title_screen.website</Key>
+    <Value>www.solarus-games.org</Value>
+  </Text>
+  <Text>
+    <Key>title_screen.press_space</Key>
+    <Value>Press the space bar</Value>
+  </Text>
+</Strings>

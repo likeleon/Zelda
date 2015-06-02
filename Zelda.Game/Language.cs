@@ -12,6 +12,7 @@ namespace Zelda.Game
 
             LanguageCode = languageCode;
             DialogResource.Initialize();
+            StringResource.Initialize();
         }
 
         public static bool HasLanguage(string languageCode)

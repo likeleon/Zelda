@@ -54,7 +54,7 @@ namespace Alttp.Menus
             var cursorPosition = 0;
             foreach (var id in ScriptLanguage.Languages)
             {
-                var font = GetMenuFont(id);
+                var font = LanguageFonts.GetMenuFont(id);
                 Language language = new Language(id, font.Item1, font.Item2);
 
                 if (id == defaultId)
@@ -72,18 +72,6 @@ namespace Alttp.Menus
             }
             else
                 SetCursorPosition(cursorPosition);
-        }
-
-        Tuple<string, int> GetMenuFont(string language)
-        {
-            language = language ?? ScriptLanguage.Language;
-
-            if (language == "ko_KR")
-                return Tuple.Create("NanumBarunGothic", 12);
-            else if (language == "zh_TW" || language == "zh_CN")
-                return Tuple.Create("wqy-zenhei", 12);
-            else
-                return Tuple.Create("minecraftia", 8);
         }
 
         void SetCursorPosition(int cursorPosition)
@@ -134,11 +122,7 @@ namespace Alttp.Menus
                     ScriptLanguage.SetLanguage(language.Id);
                     _finished = true;
                     _surface.FadeOut();
-                    ScriptTimer.Start(this, 700, () =>
-                    {
-                        Stop();
-                        return false;
-                    });
+                    ScriptTimer.Start(this, 700, (Action)Stop);
                 }
             }
             else if (key == KeyboardKey.KEY_RIGHT)

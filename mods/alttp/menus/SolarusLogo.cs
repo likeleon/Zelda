@@ -98,8 +98,6 @@ namespace Alttp.Menus
                         {
                             if (_animationStep <= 1)
                                 Step2();
-
-                            return false;
                         });
                     }
                 });
@@ -131,12 +129,7 @@ namespace Alttp.Menus
             ScriptTimer.Start(this, 500, () =>
             {
                 _surface.FadeOut();
-                ScriptTimer.Start(this, 700, () =>
-                {
-                    Stop();
-                    return false;
-                });
-                return false;
+                ScriptTimer.Start(this, 700, (Action)Stop);
             });
         }
 

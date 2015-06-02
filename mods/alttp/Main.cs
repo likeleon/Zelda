@@ -17,11 +17,18 @@ namespace Alttp
 
             var solarusLogo = new SolarusLogo();
             var languageMenu = new LanguageMenu();
+            var titleScreen = new Title();
 
             solarusLogo.Finished += (_, e) =>
             {
                 if (_game == null)
                     ScriptMenu.Start(this, languageMenu);
+            };
+
+            languageMenu.Finished += (_, e) =>
+            {
+                if (_game == null)
+                    ScriptMenu.Start(this, titleScreen);
             };
 
             ScriptMenu.Start(this, solarusLogo);

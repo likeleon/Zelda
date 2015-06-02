@@ -98,8 +98,6 @@ namespace Sample.Menus
                         {
                             if (_animationStep <= 1)
                                 Step2();
-                            
-                            return false;
                         });
                     }
                 });
@@ -129,12 +127,7 @@ namespace Sample.Menus
             ScriptTimer.Start(this, 500, () =>
             {
                 _surface.FadeOut(null, null);
-                ScriptTimer.Start(this, 700, () =>
-                {
-                    Stop();
-                    return false;
-                });
-                return false;
+                ScriptTimer.Start(this, 700, (Action)Stop);
             });
         }
         

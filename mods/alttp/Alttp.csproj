@@ -35,9 +35,11 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LanguageFonts.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="menus\LanguageMenu.cs" />
     <Compile Include="menus\SolarusLogo.cs" />
+    <Compile Include="menus\Title.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

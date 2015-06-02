@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Zelda.Game.Engine
@@ -21,8 +20,17 @@ namespace Zelda.Game.Engine
 
         static IntPtr _device;
         static IntPtr _context;
+        static readonly List<Sound> _currentSounds = new List<Sound>();
+        static readonly Dictionary<string, Sound> _allSounds = new Dictionary<string, Sound>();
         
         static float _volume = 1.0f;
+        static bool _initialized;
+        static bool _soundsPreloaded;
+        
+        readonly string _id;
+        uint _buffer = AL10.AL_NONE;
+        Queue<uint> _sources = new Queue<uint>();
+
         public static float Volume
         {
             get { return _volume; }
@@ -33,11 +41,7 @@ namespace Zelda.Game.Engine
             }
         }
 
-        static bool _initialized;
-        public static bool IsInitialized
-        {
-            get { return _initialized; }
-        }
+        public static bool IsInitialized { get { return _initialized; } }
 
         static Sound()
         {
@@ -142,8 +146,20 @@ namespace Zelda.Game.Engine
             return nbBytes;
         }
 
-        static readonly List<Sound> _currentSounds = new List<Sound>();
-        static readonly Dictionary<string, Sound> _allSounds = new Dictionary<string, Sound>();
+        public static void LoadAll()
+        {
+            if (IsInitialized || _soundsPreloaded)
+                return;
+
+            var soundElements = CurrentMod.GetResources(ResourceType.Sound);
+            foreach (var soundId in soundElements.Keys)
+            {
+                _allSounds[soundId] = new Sound(soundId);
+                _allSounds[soundId].Load();
+            }
+
+            _soundsPreloaded = true;
+        }
 
         public static bool Exists(string soundId)
         {
@@ -157,10 +173,6 @@ namespace Zelda.Game.Engine
 
             _allSounds[soundId].Start();
         }
-
-        readonly string _id;
-        uint _buffer = AL10.AL_NONE;
-        Queue<uint> _sources = new Queue<uint>();
         
         public Sound(string soundId = "")
         {

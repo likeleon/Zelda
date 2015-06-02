@@ -4,19 +4,11 @@ namespace Zelda.Game.Script
 {
     public class ScriptSurface : ScriptDrawable
     {
-        public void SetOpacity(byte opacity)
-        {
-            ScriptToCore.Call(() => _surface.SetOpacity(opacity));
-        }
-
         public int Width { get { return _surface.Width; } }
         public int Height { get { return _surface.Height; } }
 
         readonly Surface _surface;
-        internal Surface Surface
-        {
-            get { return _surface; }
-        }
+        internal Surface Surface { get { return _surface; } }
 
         public static ScriptSurface Create()
         {
@@ -27,19 +19,38 @@ namespace Zelda.Game.Script
         {
             return ScriptToCore.Call(() =>
             {
-                Surface surface = Surface.Create(width, height);
-                if (surface == null)
-                    return null;
-
-                ScriptDrawable.AddDrawable(surface);
-                return new ScriptSurface(surface);
+                var surface = Surface.Create(width, height);
+                return CreateScriptSurface(surface);
             });
+        }
+
+        public static ScriptSurface Create(string fileName, bool languageSpecific = false)
+        {
+            return ScriptToCore.Call(() =>
+            {
+                var surface = Surface.Create(fileName, languageSpecific ? Surface.ImageDirectory.Language : Surface.ImageDirectory.Sprites);
+                return CreateScriptSurface(surface);
+            });
+        }
+
+        static ScriptSurface CreateScriptSurface(Surface surface)
+        {
+            if (surface == null)
+                return null;
+
+            ScriptDrawable.AddDrawable(surface);
+            return new ScriptSurface(surface);
         }
 
         internal ScriptSurface(Surface surface)
             : base(surface)
         {
             _surface = surface;
+        }
+
+        public void SetOpacity(byte opacity)
+        {
+            ScriptToCore.Call(() => _surface.SetOpacity(opacity));
         }
 
         public void Clear()

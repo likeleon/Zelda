@@ -25,6 +25,16 @@ namespace Zelda.Game.Script
             });
         }
 
+        [CLSCompliant(false)]
+        public static ScriptTimer Start(object context, uint delay, Action callback)
+        {
+            return Start(context, delay, () =>
+            {
+                callback.Invoke();
+                return false;
+            });
+        }
+        
         ScriptTimer(Timer timer)
         {
             _timer = timer;
@@ -36,12 +46,10 @@ namespace Zelda.Game.Script
         }
 
         #region 타이머 관리
-        public delegate bool TimerCallback();
-
         class ScriptTimerData
         {
-            TimerCallback _callback;
-            public TimerCallback Callback
+            Func<bool> _callback;
+            public Func<bool> Callback
             {
                 get { return _callback; }
                 set { _callback = value; }
@@ -53,7 +61,7 @@ namespace Zelda.Game.Script
                 get { return _context; }
             }
 
-            public ScriptTimerData(TimerCallback callback, object context)
+            public ScriptTimerData(Func<bool> callback, object context)
             {
                 _callback = callback;
                 _context = context;
@@ -63,7 +71,7 @@ namespace Zelda.Game.Script
         static readonly Dictionary<Timer, ScriptTimerData> _timers = new Dictionary<Timer, ScriptTimerData>();
         static readonly List<Timer> _timersToRemove = new List<Timer>();
 
-        internal static void AddTimer(Timer timer, object context, TimerCallback callback)
+        internal static void AddTimer(Timer timer, object context, Func<bool> callback)
         {
             if (_timers.Values.Any(data => callback == data.Callback))
                 throw new InvalidOperationException("Callback already used by a timer");
@@ -117,7 +125,7 @@ namespace Zelda.Game.Script
             foreach (var entry in timersToUpdate)
             {
                 Timer timer = entry.Key;
-                TimerCallback callback = entry.Value.Callback;
+                Func<bool> callback = entry.Value.Callback;
                 if (callback != null)
                 {
                     timer.Update();

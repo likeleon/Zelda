@@ -20,20 +20,12 @@ namespace Zelda.Game.Engine
 
         static readonly int _nbBuffers = 8;
         static uint[] _buffers = new uint[_nbBuffers];
-
-        static bool _initialized;
-        public static bool IsInitialized
-        {
-            get { return _initialized; }
-        }
-
         static float _volume = 1.0f;
-        
         static Music _currentMusic;
-        public static string CurrentMusicId
-        {
-            get { return (_currentMusic != null) ? _currentMusic._id : None; }
-        }
+
+        public static bool IsInitialized { get; private set; }
+        
+        public static string CurrentMusicId { get { return (_currentMusic != null) ? _currentMusic._id : None; } }
 
         public static Format CurrentFormat
         {
@@ -62,7 +54,7 @@ namespace Zelda.Game.Engine
         public static void Initialize()
         {
             Volume = 100;
-            _initialized = true;
+            IsInitialized = true;
         }
 
         public static void Quit()
@@ -82,11 +74,27 @@ namespace Zelda.Game.Engine
             {
                 bool playing = _currentMusic.UpdatePlaying();
                 if (!playing)
+                {
+                    var callback = _currentMusic._callback;
                     _currentMusic = null;
+                    if (callback != null)
+                        callback.Invoke();
+                }
             }
         }
 
-        public static void Play(string musicId, bool loop)
+        public static bool Exists(string musicId)
+        {
+            if (musicId == None || musicId == Unchanged)
+                return true;
+
+            string fileName;
+            Format format;
+            FindMusicFile(musicId, out fileName, out format);
+            return !String.IsNullOrEmpty(fileName);
+        }
+
+        public static void Play(string musicId, bool loop, Action callback = null)
         {
             if (musicId == Unchanged || musicId == CurrentMusicId)
                 return;
@@ -99,13 +107,18 @@ namespace Zelda.Game.Engine
 
             if (musicId != None)
             {
-                _currentMusic = new Music(musicId, loop);
+                _currentMusic = new Music(musicId, loop, callback);
                 if (!_currentMusic.Start())
                     _currentMusic = null;
             }
         }
 
-        public static void FindMusicFile(string musicId, ref string fileName, ref Format format)
+        public static void StopPlaying()
+        {
+            Play(None, false);
+        }
+
+        public static void FindMusicFile(string musicId, out string fileName, out Format format)
         {
             fileName = null;
             format = Format.Ogg;
@@ -121,22 +134,28 @@ namespace Zelda.Game.Engine
 
         #region Instance
         readonly string _id;
-        Format _format;
         readonly bool _loop;
+        
+        Format _format;
         uint _source = AL10.AL_NONE;
         string _fileName;
+        Action _callback;
 
         // OGG 한정
         IntPtr _oggFile;
         readonly Sound.SoundFromMemory _oggMem = new Sound.SoundFromMemory();
         GCHandle _oggMemHandle;
 
-        Music(string musicId, bool loop)
+        Music(string musicId, bool loop, Action callback)
         {
             _id = musicId;
             _format = Format.Ogg;
             _loop = loop;
+            _callback = callback;
 
+            Debug.CheckAssertion(!loop || callback == null,
+                "Attemp to set both a loop and a callback to music");
+            
             for (int i = 0; i < _nbBuffers; ++i)
                 _buffers[i] = AL10.AL_NONE;
         }
@@ -148,7 +167,7 @@ namespace Zelda.Game.Engine
 
             if (_fileName == null)
             {
-                FindMusicFile(_id, ref _fileName, ref _format);
+                FindMusicFile(_id, out _fileName, out _format);
                 if (_fileName == null)
                 {
                     Debug.Error("Cannot find music file 'musics/{0}' (tried with extentions .ogg)".F(_id));
@@ -209,6 +228,8 @@ namespace Zelda.Game.Engine
         {
             if (!IsInitialized)
                 return;
+
+            _callback = null;
 
             int nbQueued;
             uint buffer = 0;
