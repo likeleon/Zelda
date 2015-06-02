@@ -10,6 +10,7 @@
     <Language Id="zh_TW" Description="中文（台灣）" />
   </Languages>
   <Fonts>
+    <Font Id="la" Description="la" />
     <Font Id="minecraftia" Description="minecraftia" />
     <Font Id="NanumBarunGothic" Description="나눔바른고딕" />
     <Font Id="wqy-zenhei" Description="wqy-zenhei" />

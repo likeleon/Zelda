@@ -48,7 +48,7 @@ namespace Alttp.Menus
 
             _zsPresentsImg = ScriptSurface.Create("title_screen_initialization.png", true);
             
-            _zsPresentsPos = new Point(160 - _zsPresentsImg.Width, 120 - _zsPresentsImg.Height / 2);
+            _zsPresentsPos = new Point(160 - _zsPresentsImg.Width / 2, 120 - _zsPresentsImg.Height / 2);
             ScriptAudio.PlaySound("intro");
 
             ScriptTimer.Start(this, 2000, () =>
@@ -72,7 +72,6 @@ namespace Alttp.Menus
                 timeOfDay = "sunset";
             else
                 timeOfDay = "night";
-            timeOfDay = "sunset";
 
             _backgroundImg = ScriptSurface.Create("menus/title_{0}_background.png".F(timeOfDay));
             _cloudsImg = ScriptSurface.Create("menus/title_{0}_clouds.png".F(timeOfDay));
@@ -91,7 +90,7 @@ namespace Alttp.Menus
 
             _pressSpaceImg = ScriptTextSurface.Create(
                 font: dialogFont.Item1,
-                fontSize: menuFont.Item2,
+                fontSize: dialogFont.Item2,
                 color: Color.White,
                 textKey: "title_screen.press_space",
                 horizontalAlignment: TextHorizontalAlignment.Center);
