@@ -157,8 +157,6 @@ namespace Zelda.Game.Engine
             return _itDecoder.GetChannelVolume(channel);
         }
 
-        static byte[] soundBuffer;
-
         public static void SetChannelVolume(int channel, int volume)
         {
             Debug.CheckAssertion(Format == MusicFormat.It,
@@ -219,12 +217,13 @@ namespace Zelda.Game.Engine
             AL10.alSourcef(_source, AL10.AL_GAIN, _volume);
 
             // 음악을 메모리로 읽어옵니다
+            byte[] soundBuffer;
+
             switch (_format)
             {
-
                 case MusicFormat.It:
                     {
-                        soundBuffer = ModFiles.DataFileRead(_fileName).ToArray();
+                        soundBuffer = ModFiles.DataFileRead(_fileName).GetBuffer();
 
                         _itDecoder.Load(soundBuffer);
 
