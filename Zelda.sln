@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vorbisfile-CS", "Libraries\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alttp", "mods\alttp\Alttp.csproj", "{AD3C79E5-F6DC-47EB-A687-A8F612499AEE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibModPlugSharp", "Libraries\LibModPlugSharp\LibModPlugSharp\LibModPlugSharp.csproj", "{3A364BD1-40BE-40D1-BE47-EE15BE6E351D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -55,6 +57,10 @@ Global
 		{AD3C79E5-F6DC-47EB-A687-A8F612499AEE}.Debug|x86.Build.0 = Debug|x86
 		{AD3C79E5-F6DC-47EB-A687-A8F612499AEE}.Release|x86.ActiveCfg = Release|x86
 		{AD3C79E5-F6DC-47EB-A687-A8F612499AEE}.Release|x86.Build.0 = Release|x86
+		{3A364BD1-40BE-40D1-BE47-EE15BE6E351D}.Debug|x86.ActiveCfg = Debug|x86
+		{3A364BD1-40BE-40D1-BE47-EE15BE6E351D}.Debug|x86.Build.0 = Debug|x86
+		{3A364BD1-40BE-40D1-BE47-EE15BE6E351D}.Release|x86.ActiveCfg = Release|x86
+		{3A364BD1-40BE-40D1-BE47-EE15BE6E351D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,5 +71,6 @@ Global
 		{4FF0E874-ADB4-4AE5-B059-DD6116C4A370} = {30F0DE48-ABB3-4E5A-B7C9-E26C7118908A}
 		{C976BE87-E250-4120-9826-98B6C2CD7496} = {30F0DE48-ABB3-4E5A-B7C9-E26C7118908A}
 		{AD3C79E5-F6DC-47EB-A687-A8F612499AEE} = {1873B807-93AD-433D-B5A1-83184727FF01}
+		{3A364BD1-40BE-40D1-BE47-EE15BE6E351D} = {30F0DE48-ABB3-4E5A-B7C9-E26C7118908A}
 	EndGlobalSection
 EndGlobal

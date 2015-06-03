@@ -74,6 +74,7 @@
     <Compile Include="Engine\FileSystem.cs" />
     <Compile Include="Engine\FontResource.cs" />
     <Compile Include="Engine\Geometry.cs" />
+    <Compile Include="Engine\ItDecoder.cs" />
     <Compile Include="Engine\KeyboardKey.cs" />
     <Compile Include="Engine\ModFiles.cs" />
     <Compile Include="Engine\Music.cs" />
@@ -225,6 +226,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Libraries\LibModPlugSharp\LibModPlugSharp\LibModPlugSharp.csproj">
+      <Project>{3a364bd1-40be-40d1-be47-ee15be6e351d}</Project>
+      <Name>LibModPlugSharp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Libraries\OpenAL-CS\OpenAL-CS.csproj">
       <Project>{4ff0e874-adb4-4ae5-b059-dd6116c4a370}</Project>
       <Name>OpenAL-CS</Name>

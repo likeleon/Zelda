@@ -62,7 +62,7 @@ namespace Alttp.Menus
         {
             _phase = Phase.Title;
 
-            //ScriptAudio.PlayMusic("title_screen");
+            ScriptAudio.PlayMusic("title_screen");
 
             var hours = DateTime.Now.Hour;
             var timeOfDay = string.Empty;
