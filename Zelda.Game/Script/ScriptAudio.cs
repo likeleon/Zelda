@@ -42,5 +42,10 @@ namespace Zelda.Game.Script
                 Music.Play(musicId, loop, callback);
             }
         }
+
+        public static void StopMusic()
+        {
+            ScriptToCore.Call(Music.StopPlaying);
+        }
     }
 }

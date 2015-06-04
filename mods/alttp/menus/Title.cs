@@ -14,6 +14,8 @@ namespace Alttp.Menus
             Title
         }
 
+        readonly bool _debugEnabled;
+
         Phase _phase;
         ScriptSurface _surface;
         ScriptSurface _zsPresentsImg;
@@ -29,6 +31,12 @@ namespace Alttp.Menus
         bool _showPressSpace;
         Point _cloudsXY;
         bool _allowSkip;
+        bool _finished;
+
+        public Title(bool debugEnabled)
+        {
+            _debugEnabled = debugEnabled;
+        }
 
         protected override void OnStarted()
         {
@@ -171,6 +179,53 @@ namespace Alttp.Menus
 
             if (_showPressSpace)
                 _pressSpaceImg.Draw(_surface, 160, 200);
+        }
+
+        public override bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)
+        {
+            var handled = false;
+
+            if (key == KeyboardKey.KEY_ESCAPE)
+            {
+                Main.Exit();
+                handled = true;
+            }
+            else if (key == KeyboardKey.KEY_SPACE || key == KeyboardKey.KEY_RETURN)
+            {
+                handled = TryFinishTitle();
+            }
+            else if (_debugEnabled)
+            {
+                if (key == KeyboardKey.KEY_LEFT_SHIFT || key == KeyboardKey.KEY_RIGHT_SHIFT)
+                {
+                    FinishTitle();
+                    handled = true;
+                }
+            }
+
+            return handled;
+        }
+
+        bool TryFinishTitle()
+        {
+            if (_phase == Phase.Title &&
+                _allowSkip &&
+                !_finished)
+            {
+                _finished = true;
+
+                _surface.FadeOut(30);
+                ScriptTimer.Start(this, 700, (Action)FinishTitle);
+                return true;
+            }
+
+            return false;
+        }
+
+        void FinishTitle()
+        {
+            ScriptAudio.StopMusic();
+            ScriptMenu.Stop(this);
         }
     }
 }

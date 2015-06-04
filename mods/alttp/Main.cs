@@ -17,7 +17,7 @@ namespace Alttp
 
             var solarusLogo = new SolarusLogo();
             var languageMenu = new LanguageMenu();
-            var titleScreen = new Title();
+            var titleScreen = new Title(_debugEnabled);
 
             solarusLogo.Finished += (_, e) =>
             {
