@@ -185,18 +185,18 @@ namespace Alttp.Menus
         {
             var handled = false;
 
-            if (key == KeyboardKey.KEY_ESCAPE)
+            if (key == KeyboardKey.Escape)
             {
                 Main.Exit();
                 handled = true;
             }
-            else if (key == KeyboardKey.KEY_SPACE || key == KeyboardKey.KEY_RETURN)
+            else if (key == KeyboardKey.Space || key == KeyboardKey.Return)
             {
                 handled = TryFinishTitle();
             }
             else if (_debugEnabled)
             {
-                if (key == KeyboardKey.KEY_LEFT_SHIFT || key == KeyboardKey.KEY_RIGHT_SHIFT)
+                if (key == KeyboardKey.LeftShift || key == KeyboardKey.RightShift)
                 {
                     FinishTitle();
                     handled = true;

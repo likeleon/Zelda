@@ -108,12 +108,12 @@ namespace Alttp.Menus
         {
             bool handled = false;
 
-            if (key == KeyboardKey.KEY_ESCAPE)
+            if (key == KeyboardKey.Escape)
             {
                 handled = true;
                 ScriptMain.Exit();
             }
-            else if (key == KeyboardKey.KEY_SPACE || key == KeyboardKey.KEY_RETURN)
+            else if (key == KeyboardKey.Space || key == KeyboardKey.Return)
             {
                 if (!_finished)
                 {
@@ -125,13 +125,13 @@ namespace Alttp.Menus
                     ScriptTimer.Start(this, 700, (Action)Stop);
                 }
             }
-            else if (key == KeyboardKey.KEY_RIGHT)
+            else if (key == KeyboardKey.Right)
                 handled = DirectionPressed(Direction8.Right);
-            else if (key == KeyboardKey.KEY_UP)
+            else if (key == KeyboardKey.Up)
                 handled = DirectionPressed(Direction8.Up);
-            else if (key == KeyboardKey.KEY_LEFT)
+            else if (key == KeyboardKey.Left)
                 handled = DirectionPressed(Direction8.Left);
-            else if (key == KeyboardKey.KEY_DOWN)
+            else if (key == KeyboardKey.Down)
                 handled = DirectionPressed(Direction8.Down);
 
             return handled;

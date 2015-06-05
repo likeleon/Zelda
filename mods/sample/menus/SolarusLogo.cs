@@ -138,7 +138,7 @@ namespace Sample.Menus
 
         public override bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)
         {
-            if (key == KeyboardKey.KEY_ESCAPE)
+            if (key == KeyboardKey.Escape)
                 ScriptMain.Exit();
             else
             {
