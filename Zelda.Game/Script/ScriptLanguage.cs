@@ -42,5 +42,10 @@ namespace Zelda.Game.Script
                 }
             });
         }
+
+        public static string GetString(string key)
+        {
+            return ScriptToCore.Call(() => StringResource.GetString(key));
+        }
     }
 }

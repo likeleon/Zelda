@@ -18,6 +18,7 @@ namespace Alttp
             var solarusLogo = new SolarusLogo();
             var languageMenu = new LanguageMenu();
             var titleScreen = new Title(_debugEnabled);
+            var savegameMenu = new Savegames();
 
             solarusLogo.Finished += (_, e) =>
             {
@@ -29,6 +30,12 @@ namespace Alttp
             {
                 if (_game == null)
                     ScriptMenu.Start(this, titleScreen);
+            };
+
+            titleScreen.Finished += (_, e) =>
+            {
+                if (_game == null)
+                    ScriptMenu.Start(this, savegameMenu);
             };
 
             ScriptMenu.Start(this, solarusLogo);

@@ -8,4 +8,20 @@
     <Key>title_screen.press_space</Key>
     <Value>Press the space bar</Value>
   </Text>
+  <Text>
+    <Key>selection_menu.empty</Key>
+    <Value>Empty</Value>
+  </Text>
+  <Text>
+    <Key>selection_menu.phase.select_file</Key>
+    <Value>Select a file</Value>
+  </Text>
+  <Text>
+    <Key>selection_menu.erase</Key>
+    <Value>Erase</Value>
+  </Text>
+  <Text>
+    <Key>selection_menu.options</Key>
+    <Value>Options</Value>
+  </Text>
 </Strings>

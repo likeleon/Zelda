@@ -114,5 +114,20 @@ namespace Zelda.Game.Script
                 _savegame.Equipment.SetItemAssigned(slot, item._item);
             });
         }
+
+        public bool GetBooleanValue(string key)
+        {
+            return Script.ScriptToCore.Call(() => _savegame.GetBoolean(key));
+        }
+
+        public int GetIntegerValue(string key)
+        {
+            return Script.ScriptToCore.Call(() => _savegame.GetInteger(key));
+        }
+
+        public string GetStringValue(string key)
+        {
+            return Script.ScriptToCore.Call(() => _savegame.GetString(key));
+        }
     }
 }

@@ -7,6 +7,8 @@ namespace Zelda.Game.Script
     {
         readonly TextSurface _textSurface;
 
+        public string Text { get { return _textSurface.Text; } }
+
         public static ScriptTextSurface Create(
             string font = null,
             TextRenderingMode renderingMode = TextRenderingMode.Solid,
@@ -55,6 +57,23 @@ namespace Zelda.Game.Script
         public void SetColor(Color color)
         {
             ScriptToCore.Call(() => _textSurface.SetTextColor(color));
+        }
+
+        public void SetText(string text)
+        {
+            ScriptToCore.Call(() => _textSurface.SetText(text));
+        }
+
+        public void SetTextKey(string key)
+        {
+            ScriptToCore.Call(() =>
+            {
+                if (!StringResource.Exists(key))
+                    throw new ArgumentException("No value with key '{0}' in strings.dat for lange '{1}'"
+                        .F(key, Language.LanguageCode));
+                
+                _textSurface.SetText(StringResource.GetString(key));
+            });
         }
     }
 }
