@@ -278,6 +278,8 @@ namespace Zelda.Game.Engine
 
             _callback = null;
 
+            AL10.alSourceStop(_source);
+
             int nbQueued;
             uint buffer = 0;
             AL10.alGetSourcei(_source, AL10.AL_BUFFERS_QUEUED, out nbQueued);
@@ -406,7 +408,7 @@ namespace Zelda.Game.Engine
 
         void DecodeIt(uint destinationBuffer, int nbSamples)
         {
-            byte[] rawData = new byte[nbSamples];
+            byte[] rawData = new byte[nbSamples * 2];
             int bytesRead = _itDecoder.Decode(rawData, nbSamples);
 
             if (bytesRead > 0)
