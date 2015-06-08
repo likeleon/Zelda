@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Zelda.Game.Engine
 {
@@ -10,12 +11,9 @@ namespace Zelda.Game.Engine
         class OutlineFontReader : DisposableObject
         {
             readonly IntPtr _rw;
-            
             readonly IntPtr _outlineFont;
-            public IntPtr OutlineFont
-            {
-                get { return _outlineFont; }
-            }
+
+            public IntPtr OutlineFont { get { return _outlineFont; } }
 
             public OutlineFontReader(IntPtr rw, IntPtr outlineFont)
             {
@@ -25,28 +23,48 @@ namespace Zelda.Game.Engine
 
             protected override void OnDispose(bool disposing)
             {
-                // TODO: 네이티브의 SDL_RWclose(rw)에 해당하는 구현 방법을 찾지 못했다. _rw에 대한 메모리 릭 확인할 것.
                 SDL_ttf.TTF_CloseFont(_outlineFont);
+                // TODO: 네이티브의 SDL_RWclose(rw)에 해당하는 구현 방법을 찾지 못했다. _rw에 대한 메모리 릭 확인할 것.
             }
         }
 
         class FontFile : DisposableObject
         {
-            public string FileName { get; set; }
-            public byte[] Buffer { get; set; }
-            
+            readonly string _fileName;
+            readonly byte[] _buffer;
+            readonly GCHandle _bufferHandle;
+
+            public string FileName { get { return _fileName; } }
+            public int BufferLength { get { return _buffer.Length; } }
             public Surface BitmapFont { get; set; }
             public Dictionary<int, OutlineFontReader> OutlineFonts { get; private set; }
 
-            public FontFile()
+            public FontFile(string fileName, bool is_bitmap)
             {
-                OutlineFonts = new Dictionary<int, OutlineFontReader>();
+                _fileName = fileName;
+
+                if (is_bitmap)
+                    BitmapFont = Surface.Create(_fileName, Surface.ImageDirectory.Data);
+                else
+                {
+                    _buffer = ModFiles.DataFileRead(_fileName);
+                    _bufferHandle = GCHandle.Alloc(_buffer, GCHandleType.Pinned);
+                    OutlineFonts = new Dictionary<int, OutlineFontReader>();
+                }
+            }
+            
+            public IntPtr GetBufferPtr()
+            {
+                return _bufferHandle.AddrOfPinnedObject(); 
             }
 
             protected override void OnDispose(bool disposing)
             {
                 foreach (var font in OutlineFonts.Values)
                     font.Dispose();
+
+                if (_bufferHandle != null)
+                    _bufferHandle.Free();
             }
         }
 
@@ -106,13 +124,7 @@ namespace Zelda.Game.Engine
                     continue;
                 }
 
-                FontFile font = new FontFile();
-                font.FileName = fileNameStart + fontExt.ext;
-                if (fontExt.bitmap)
-                    font.BitmapFont = Surface.Create(font.FileName, Surface.ImageDirectory.Data);
-                else
-                    font.Buffer = ModFiles.DataFileRead(font.FileName);
-
+                var font = new FontFile(fileNameStart + fontExt.ext, fontExt.bitmap);
                 _fonts.Add(fontId, font);
             }
 
@@ -154,16 +166,16 @@ namespace Zelda.Game.Engine
             Debug.CheckAssertion(Exists(fontId), "No such font: '{0}'".F(fontId));
             Debug.CheckAssertion(!IsBitmapFont(fontId), "This is not a outline font: '{0}'".F(fontId));
 
-            FontFile font = _fonts[fontId];
+            var font = _fonts[fontId];
             var outlineFonts = font.OutlineFonts;
             if (outlineFonts.ContainsKey(size))
                 return outlineFonts[size].OutlineFont;
 
-            IntPtr rw = SDL.SDL_RWFromMem(font.Buffer, font.Buffer.Length);
-            IntPtr outlineFont = SDL_ttf.TTF_OpenFontRW(rw, 0, size);
+            var rw = SDL.SDL_RWFromMem(font.GetBufferPtr(), font.BufferLength);
+            var outlineFont = SDL_ttf.TTF_OpenFontRW(rw, 0, size);
             Debug.CheckAssertion(outlineFont != IntPtr.Zero,
                 "Cannot load font from file '{0}': {1}".F(font.FileName, SDL.SDL_GetError()));
-            OutlineFontReader reader = new OutlineFontReader(rw, outlineFont);
+            var reader = new OutlineFontReader(rw, outlineFont);
             outlineFonts.Add(size, reader);
             return outlineFonts[size].OutlineFont;
         }

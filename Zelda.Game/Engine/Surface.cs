@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Zelda.Game.Engine
 {
@@ -146,8 +147,10 @@ namespace Zelda.Game.Engine
 
             IntPtr softwareSurface;
             byte[] buffer = ModFiles.DataFileRead(prefixedFileName, languageSpecific);
-            IntPtr rw = SDL.SDL_RWFromMem(buffer, buffer.Length);
+            GCHandle bufferHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+            IntPtr rw = SDL.SDL_RWFromMem(bufferHandle.AddrOfPinnedObject(), buffer.Length);
             softwareSurface = SDL_image.IMG_Load_RW(rw, 0);
+            bufferHandle.Free();
             // TODO: 네이티브의 SDL_RWclose(rw)에 해당하는 구현 방법을 찾지 못했다. 메모리 릭 확인할 것.
 
             Debug.CheckAssertion(softwareSurface != IntPtr.Zero, "Cannot load image '{0}'".F(prefixedFileName));

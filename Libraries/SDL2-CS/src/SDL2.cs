@@ -89,9 +89,8 @@ namespace SDL2
 		 */
 
 		/* IntPtr refers to an SDL_RWops */
-		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern IntPtr SDL_RWFromMem(byte[] mem, int size);
-
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr SDL_RWFromMem(IntPtr mem, int size);
 		#endregion
 
 		#region SDL_main.h
