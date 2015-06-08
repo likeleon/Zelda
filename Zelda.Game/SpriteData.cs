@@ -133,11 +133,11 @@ namespace Zelda.Game
             get { return _defaultAnimationName; }
         }
 
-        protected override bool ImportFromStream(Stream stream)
+        protected override bool ImportFromStream(byte[] buffer)
         {
             try
             {
-                SpriteXmlData xmlData = stream.XmlDeserialize<SpriteXmlData>();
+                SpriteXmlData xmlData = buffer.XmlDeserialize<SpriteXmlData>();
                 foreach (SpriteXmlData.Animation animation in xmlData.Animations)
                 {
                     string animationName = animation.Name.CheckField("Name");

@@ -145,13 +145,10 @@ namespace Zelda.Game.Engine
                 return IntPtr.Zero;
 
             IntPtr softwareSurface;
-            using (MemoryStream stream = ModFiles.DataFileRead(prefixedFileName, languageSpecific))
-            {
-                byte[] buffer = stream.ToArray();
-                IntPtr rw = SDL.SDL_RWFromMem(buffer, buffer.Length);
-                softwareSurface = SDL_image.IMG_Load_RW(rw, 0);
-                // TODO: 네이티브의 SDL_RWclose(rw)에 해당하는 구현 방법을 찾지 못했다. 메모리 릭 확인할 것.
-            }
+            byte[] buffer = ModFiles.DataFileRead(prefixedFileName, languageSpecific);
+            IntPtr rw = SDL.SDL_RWFromMem(buffer, buffer.Length);
+            softwareSurface = SDL_image.IMG_Load_RW(rw, 0);
+            // TODO: 네이티브의 SDL_RWclose(rw)에 해당하는 구현 방법을 찾지 못했다. 메모리 릭 확인할 것.
 
             Debug.CheckAssertion(softwareSurface != IntPtr.Zero, "Cannot load image '{0}'".F(prefixedFileName));
 

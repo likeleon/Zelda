@@ -111,7 +111,7 @@ namespace Zelda.Game.Engine
                 if (fontExt.bitmap)
                     font.BitmapFont = Surface.Create(font.FileName, Surface.ImageDirectory.Data);
                 else
-                    font.Buffer = ModFiles.DataFileRead(font.FileName).ToArray();
+                    font.Buffer = ModFiles.DataFileRead(font.FileName);
 
                 _fonts.Add(fontId, font);
             }

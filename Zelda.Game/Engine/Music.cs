@@ -223,7 +223,7 @@ namespace Zelda.Game.Engine
             {
                 case MusicFormat.It:
                     {
-                        soundBuffer = ModFiles.DataFileRead(_fileName).GetBuffer();
+                        soundBuffer = ModFiles.DataFileRead(_fileName);
 
                         _itDecoder.Load(soundBuffer);
 
@@ -300,7 +300,6 @@ namespace Zelda.Game.Engine
                 case MusicFormat.Ogg:
                     Vorbisfile.ov_clear(ref _oggFile);
                     _oggMemHandle.Free();
-                    _oggMem.data.Dispose();
                     break;
 
                 default:

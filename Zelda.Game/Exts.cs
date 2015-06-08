@@ -51,6 +51,12 @@ namespace Zelda.Game
             return (T)serializer.Deserialize(stream);
         }
 
+        public static T XmlDeserialize<T>(this byte[] buffer)
+        {
+            using (var stream = new MemoryStream(buffer))
+                return stream.XmlDeserialize<T>();
+        }
+
         public static void XmlSerialize(this object obj, Stream stream)
         {
             var serializer = new XmlSerializer(obj.GetType());

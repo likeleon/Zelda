@@ -11,12 +11,9 @@ namespace Zelda.Game
             if (!ModFiles.DataFileExists(modFileName))
                 Debug.Error("Cannot find mod file '{0}'".F(modFileName));
 
-            using (Stream stream = ModFiles.DataFileRead(modFileName))
-            {
-                return ImportFromStream(stream);
-            }
+            return ImportFromStream(ModFiles.DataFileRead(modFileName));
         }
 
-        protected abstract bool ImportFromStream(Stream stream);
+        protected abstract bool ImportFromStream(byte[] buffer);
     }
 }

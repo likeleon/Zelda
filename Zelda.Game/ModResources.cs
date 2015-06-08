@@ -59,11 +59,11 @@ namespace Zelda.Game
                 .ToDictionary(t => t, t => new ResourceMap());
         }
 
-        protected override bool ImportFromStream(Stream stream)
+        protected override bool ImportFromStream(byte[] buffer)
         {
             try
             {
-                ProjectDB db = stream.XmlDeserialize<ProjectDB>();
+                ProjectDB db = buffer.XmlDeserialize<ProjectDB>();
 
                 _assemblies = db.Assemblies.ToArray();
 

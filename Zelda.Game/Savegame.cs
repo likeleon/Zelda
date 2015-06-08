@@ -134,12 +134,9 @@ namespace Zelda.Game
         {
             try
             {
-                using (MemoryStream stream = ModFiles.DataFileRead(_fileName))
-                {
-                    SaveData saveData = stream.XmlDeserialize<SaveData>();
-                    foreach (var pair in saveData.SavedValues)
-                        _savedValues[pair.Key] = pair.Value;
-                }
+                SaveData saveData = ModFiles.DataFileRead(_fileName).XmlDeserialize<SaveData>();
+                foreach (var pair in saveData.SavedValues)
+                    _savedValues[pair.Key] = pair.Value;
             }
             catch (Exception ex)
             {

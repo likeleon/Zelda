@@ -11,7 +11,7 @@ namespace Zelda.Game.Engine
         [StructLayout(LayoutKind.Sequential)]
         public class SoundFromMemory
         {
-            public MemoryStream data;
+            public byte[] data;
             public uint position;
             public bool loop;
         }
@@ -140,7 +140,7 @@ namespace Zelda.Game.Engine
             else if (mem.position + nbBytes >= totalSize)
                 nbBytes = totalSize - mem.position;
 
-            Marshal.Copy(mem.data.GetBuffer(), (int)mem.position, ptr, (int)nbBytes);
+            Marshal.Copy(mem.data, (int)mem.position, ptr, (int)nbBytes);
             mem.position += nbBytes;
 
             return nbBytes;
@@ -358,7 +358,6 @@ namespace Zelda.Game.Engine
             }
 
             memHandle.Free();
-            mem.data.Dispose();
             return buffer;
         }
     }

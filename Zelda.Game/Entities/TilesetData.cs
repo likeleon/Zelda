@@ -52,11 +52,11 @@ namespace Zelda.Game.Entities
             get { return _patterns; }
         }
 
-        protected override bool ImportFromStream(Stream stream)
+        protected override bool ImportFromStream(byte[] buffer)
         {
             try
             {
-                TilesetXmlData data = stream.XmlDeserialize<TilesetXmlData>();
+                TilesetXmlData data = buffer.XmlDeserialize<TilesetXmlData>();
                 BackgroundColor = data.BackgroundColor.CheckColor("BackgroundColor");
                 foreach (var pattern in data.TilePatterns)
                 {

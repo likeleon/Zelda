@@ -16,8 +16,7 @@ namespace Zelda.Game
             var fileName = "text/strings.xml";
             try
             {
-                var stream = ModFiles.DataFileRead(fileName, true);
-                var data = stream.XmlDeserialize<StringXmlData>();
+                var data = ModFiles.DataFileRead(fileName, true).XmlDeserialize<StringXmlData>();
                 foreach (var text in data.Texts.EmptyIfNull())
                     _strings.Add(text.Key, text.Value);
             }

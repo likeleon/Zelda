@@ -40,12 +40,7 @@ namespace Zelda.Game
         {
             try
             {
-                ModProperties properties = null;
-                using (Stream buffer = ModFiles.DataFileRead(fileName))
-                {
-                    XmlSerializer serializer = new XmlSerializer(typeof(ModProperties));
-                    properties = (ModProperties)serializer.Deserialize(buffer);
-                }
+                ModProperties properties = ModFiles.DataFileRead(fileName).XmlDeserialize<ModProperties>();
 
                 if (properties.NormalModSizeString == null)
                     properties.NormalModSizeString = "320x240";

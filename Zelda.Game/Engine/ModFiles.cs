@@ -110,7 +110,7 @@ namespace Zelda.Game.Engine
             return (FileSystem.PHYSFS_exists(fullFileName) != 0);
         }
 
-        public static MemoryStream DataFileRead(string fileName, bool languageSpecific = false)
+        public static byte[] DataFileRead(string fileName, bool languageSpecific = false)
         {
             string fullFileName;
             if (languageSpecific)
@@ -135,8 +135,7 @@ namespace Zelda.Game.Engine
 
             FileSystem.PHYSFS_read(file, out buffer, 1, (uint)size);
             FileSystem.PHYSFS_close(file);
-
-            return new MemoryStream(buffer, 0, (int)size, false, true);
+            return buffer;
         }
         #endregion
 

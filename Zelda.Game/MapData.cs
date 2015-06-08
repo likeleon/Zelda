@@ -86,11 +86,11 @@ namespace Zelda.Game
                 _entities[(int)layer] = new List<EntityData>();
         }
 
-        protected override bool ImportFromStream(Stream stream)
+        protected override bool ImportFromStream(byte[] buffer)
         {
             try
             {
-                MapXmlData data = stream.XmlDeserialize<MapXmlData>();
+                var data = buffer.XmlDeserialize<MapXmlData>();
                 Location = new Point(data.Properties.X.OptField(0), data.Properties.Y.OptField(0));
                 Size = new Size(data.Properties.Width.CheckField("Width"), data.Properties.Height.CheckField("Height"));
                 World = data.Properties.World.OptField(String.Empty);

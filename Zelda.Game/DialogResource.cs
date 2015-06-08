@@ -33,8 +33,8 @@ namespace Zelda.Game
         {
             _dialogs.Clear();
 
-            var stream = ModFiles.DataFileRead(_fileName, true);
-            var data = stream.XmlDeserialize<DialogXmlData>();
+            var buffer = ModFiles.DataFileRead(_fileName, true);
+            var data = buffer.XmlDeserialize<DialogXmlData>();
             foreach (var dialogData in data.Dialogs.EmptyIfNull())
             {
                 Dialog dialog = new Dialog();

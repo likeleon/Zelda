@@ -28,11 +28,8 @@ namespace Zelda.Game
             {
                 try
                 {
-                    using (MemoryStream stream = ModFiles.DataFileRead(asmFile))
-                    {
-                        Assembly asm = Assembly.Load(stream.ToArray());
-                        asms.AddRange(asm.GetNamespaces().Select(ns => new Tuple<Assembly, string>(asm, ns)));
-                    }
+                    Assembly asm = Assembly.Load(ModFiles.DataFileRead(asmFile));
+                    asms.AddRange(asm.GetNamespaces().Select(ns => new Tuple<Assembly, string>(asm, ns)));
                 }
                 catch (Exception ex)
                 {
