@@ -1,9 +1,6 @@
 ﻿using SDL2;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Zelda.Game.Engine
 {
@@ -30,6 +27,26 @@ namespace Zelda.Game.Engine
     class TextSurface : Drawable
     {
         public static readonly int DefaultFontSize = 11;
+
+        Surface _surface;
+        Point _textPosition;
+
+        public int X { get; private set; }
+        public int Y { get; private set; }
+        public TextHorizontalAlignment HorizontalAlignment { get; private set; }
+        public TextVerticalAlignment VerticalAlignment { get; private set; }
+        public TextRenderingMode RenderingMode { get; private set; }
+        public string Font { get; private set; }
+        public Color TextColor { get; private set; }
+        public int FontSize { get; private set; }
+        public string Text { get; private set; }
+        public bool IsEmpty { get { return String.IsNullOrWhiteSpace(Text); } }
+
+        public int Width { get { return _surface != null ? _surface.Width : 0; } }
+        public int Height { get { return _surface != null ? _surface.Height : 0; } }
+        public Size Size { get { return new Size(Width, Height); } }
+
+        public override Surface TransitionSurface { get { return _surface; } }
    
         public TextSurface(int x, int y)
             : this(x, y, TextHorizontalAlignment.Left, TextVerticalAlignment.Middle)
@@ -40,86 +57,62 @@ namespace Zelda.Game.Engine
             TextHorizontalAlignment horizontalAlignment, 
             TextVerticalAlignment verticalAlignment)
         {
-            _x = x;
-            _y = y;
-            _horizontalAlignment = horizontalAlignment;
-            _verticalAlignment = verticalAlignment;
+            X = x;
+            Y = y;
+            HorizontalAlignment = horizontalAlignment;
+            VerticalAlignment = verticalAlignment;
 
-            _fontId = FontResource.GetDefaultFontId();
-            _renderingMode = TextRenderingMode.Solid;
-            _textColor = Color.White;
-            _fontSize = 11;
-            _text = String.Empty;
-        }
-
-        int _x;
-        public int X
-        {
-            get { return _x; }
+            Font = FontResource.GetDefaultFontId();
+            RenderingMode = TextRenderingMode.Solid;
+            TextColor = Color.White;
+            FontSize = 11;
+            Text = String.Empty;
         }
 
         public void SetX(int x)
         {
-            if (x == _x)
+            if (x == X)
                 return;
 
-            _x = x;
+            X = x;
             Rebuild();
-        }
-
-        int _y;
-        public int Y
-        {
-            get { return _y; }
         }
 
         public void SetY(int y)
         {
-            if (y == _y)
+            if (y == Y)
                 return;
 
-            _y = y;
+            Y = y;
             Rebuild();
         }
 
         public void SetPosition(int x, int y)
         {
-            if (x == _x && y == _y)
+            if (x == X && y == Y)
                 return;
 
-            _x = x;
-            _y = y;
+            X = x;
+            Y = y;
             Rebuild();
-        }
-
-        TextHorizontalAlignment _horizontalAlignment;
-        public TextHorizontalAlignment HorizontalAlignment
-        {
-            get { return _horizontalAlignment; }
         }
 
         public void SetHorizontalAlignment(TextHorizontalAlignment horizontalAlignment)
         {
-            if (horizontalAlignment == _horizontalAlignment)
+            if (horizontalAlignment == HorizontalAlignment)
                 return;
 
-            _horizontalAlignment = horizontalAlignment;
+            HorizontalAlignment = horizontalAlignment;
             
             Rebuild();
         }
 
-        TextVerticalAlignment _verticalAlignment;
-        public TextVerticalAlignment VerticalAlignment
-        {
-            get { return _verticalAlignment; }
-        }
-
         public void SetVerticalAlignment(TextVerticalAlignment verticalAlignment)
         {
-            if (verticalAlignment == _verticalAlignment)
+            if (verticalAlignment == VerticalAlignment)
                 return;
 
-            _verticalAlignment = verticalAlignment;
+            VerticalAlignment = verticalAlignment;
 
             Rebuild();
         }
@@ -127,179 +120,111 @@ namespace Zelda.Game.Engine
         public void SetAlignment(TextHorizontalAlignment horizontalAlignment,
             TextVerticalAlignment verticalAlignment)
         {
-            if (horizontalAlignment == _horizontalAlignment &&
-                verticalAlignment == _verticalAlignment)
+            if (horizontalAlignment == HorizontalAlignment &&
+                verticalAlignment == VerticalAlignment)
                 return;
 
-            _horizontalAlignment = horizontalAlignment;
-            _verticalAlignment = verticalAlignment;
+            HorizontalAlignment = horizontalAlignment;
+            VerticalAlignment = verticalAlignment;
             Rebuild();
-        }
-
-        string _fontId;
-        public string Font
-        {
-            get { return _fontId; }
         }
         
         public void SetFont(string fontId)
         {
-            if (fontId == _fontId)
+            if (fontId == Font)
                 return;
 
-            _fontId = fontId;
+            Font = fontId;
             Rebuild();
-        }
-
-        TextRenderingMode _renderingMode;
-        public TextRenderingMode RenderingMode
-        {
-            get { return _renderingMode; }
         }
 
         public void SetRenderingMode(TextRenderingMode renderingMode)
         {
-            if (renderingMode == _renderingMode)
+            if (renderingMode == RenderingMode)
                 return;
 
-            _renderingMode = renderingMode;
+            RenderingMode = renderingMode;
             Rebuild();
-        }
-
-        Color _textColor;
-        public Color TextColor
-        {
-            get { return _textColor; }
         }
 
         public void SetTextColor(Color color)
         {
-            if (color == _textColor)
+            if (color == TextColor)
                 return;
 
-            _textColor = color;
+            TextColor = color;
             Rebuild();
-        }
-
-        int _fontSize;
-        public int FontSize
-        {
-            get { return _fontSize; }
         }
 
         public void SetFontSize(int fontSize)
         {
-            if (fontSize == _fontSize)
+            if (fontSize == FontSize)
                 return;
 
-            _fontSize = fontSize;
+            FontSize = fontSize;
             Rebuild();
-        }
-
-        string _text;
-        public string Text
-        {
-            get { return _text; }
         }
 
         public void SetText(string text)
         {
-            if (text == _text)
+            if (text == Text)
                 return;
 
-            _text = text;
+            Text = text;
             Rebuild();
         }
 
         public void AddChar(char c)
         {
-            SetText(_text + c);
+            SetText(Text + c);
         }
-
-        public bool IsEmpty
-        {
-            get { return String.IsNullOrWhiteSpace(_text); }
-        }
-
-        Surface _surface;
-
-        public int Width
-        {
-            get 
-            {
-                if (_surface == null)
-                    return 0;
-
-                return _surface.Width;
-            }
-        }
-        
-        public int Height
-        {
-            get
-            {
-                if (_surface == null)
-                    return 0;
-
-                return _surface.Height;
-            }
-        }
-
-        public Size Size
-        {
-            get { return new Size(Width, Height); }
-        }
-
-        Point _textPosition;
-
-        public override Surface TransitionSurface { get { return _surface; } }
 
         void Rebuild()
         {
             _surface = null;
 
-            if (String.IsNullOrEmpty(_fontId))
+            if (String.IsNullOrEmpty(Font))
                 return;
 
             if (IsEmpty)
                 return;
 
-            Debug.CheckAssertion(FontResource.Exists(_fontId), "No such font: '{0}'".F(_fontId));
+            Debug.CheckAssertion(FontResource.Exists(Font), "No such font: '{0}'".F(Font));
 
-            if (FontResource.IsBitmapFont(_fontId))
+            if (FontResource.IsBitmapFont(Font))
                 RebuildBitmap();
             else
                 RebuildTtf();
 
             int xLeft = 0, yTop = 0;
 
-            switch (_horizontalAlignment)
+            switch (HorizontalAlignment)
             {
                 case TextHorizontalAlignment.Left:
-                    xLeft = _x;
+                    xLeft = X;
                     break;
 
                 case TextHorizontalAlignment.Center:
-                    xLeft = _x - _surface.Width / 2;
+                    xLeft = X - _surface.Width / 2;
                     break;
 
                 case TextHorizontalAlignment.Right:
-                    xLeft = _x - _surface.Width;
+                    xLeft = X - _surface.Width;
                     break;
             }
 
-            switch (_verticalAlignment)
+            switch (VerticalAlignment)
             {
                 case TextVerticalAlignment.Top:
-                    yTop = _y;
+                    yTop = Y;
                     break;
 
                 case TextVerticalAlignment.Middle:
-                    yTop = _y - _surface.Height / 2;
+                    yTop = Y - _surface.Height / 2;
                     break;
 
                 case TextVerticalAlignment.Bottom:
-                    yTop = _y - _surface.Height;
+                    yTop = Y - _surface.Height;
                     break;
             }
 
@@ -308,10 +233,10 @@ namespace Zelda.Game.Engine
 
         void RebuildBitmap()
         {
-            int numChars = _text.Length;
+            int numChars = Text.Length;
 
             // 표면 크기로부터 글자 크기를 결정합니다
-            Surface bitmap = FontResource.GetBitmapFont(_fontId);
+            Surface bitmap = FontResource.GetBitmapFont(Font);
             Size bitmapSize = bitmap.Size;
             int charWidth = bitmapSize.Width / 128;
             int charHeight = bitmapSize.Height / 16;
@@ -320,7 +245,7 @@ namespace Zelda.Game.Engine
 
             // 문자들을 그립니다
             Point dstPosition = new Point();
-            byte[] utf8Bytes = Encoding.UTF8.GetBytes(_text);
+            byte[] utf8Bytes = Encoding.UTF8.GetBytes(Text);
             for (int i = 0; i < utf8Bytes.Length; ++i)
             {
                 char firstByte = (char)utf8Bytes[i];
@@ -347,23 +272,23 @@ namespace Zelda.Game.Engine
         void RebuildTtf()
         {
             IntPtr internalSurface = IntPtr.Zero;
-            IntPtr internalFont = FontResource.GetOutlineFont(_fontId, _fontSize);
+            IntPtr internalFont = FontResource.GetOutlineFont(Font, FontSize);
             SDL.SDL_Color internalColor;
-            _textColor.GetComponents(out internalColor.r, out internalColor.g, out internalColor.b, out internalColor.a);
+            TextColor.GetComponents(out internalColor.r, out internalColor.g, out internalColor.b, out internalColor.a);
 
-            switch (_renderingMode)
+            switch (RenderingMode)
             {
                 case TextRenderingMode.Solid:
-                    internalSurface = SDL_ttf.TTF_RenderUNICODE_Solid(internalFont, _text, internalColor);
+                    internalSurface = SDL_ttf.TTF_RenderUNICODE_Solid(internalFont, Text, internalColor);
                     break;
 
                 case TextRenderingMode.Antialising:
-                    internalSurface = SDL_ttf.TTF_RenderUNICODE_Blended(internalFont, _text, internalColor);
+                    internalSurface = SDL_ttf.TTF_RenderUNICODE_Blended(internalFont, Text, internalColor);
                     break;
             }
 
             Debug.CheckAssertion(internalSurface != IntPtr.Zero,
-                "Cannot create the text surface for string '{0}': {1}".F(_text, SDL.SDL_GetError()));
+                "Cannot create the text surface for string '{0}': {1}".F(Text, SDL.SDL_GetError()));
 
             _surface = new Surface(internalSurface);
         }

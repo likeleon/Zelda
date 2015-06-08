@@ -69,7 +69,7 @@ namespace Zelda.Game.Script
             ScriptToCore.Call(() =>
             {
                 if (!StringResource.Exists(key))
-                    throw new ArgumentException("No value with key '{0}' in strings.dat for lange '{1}'"
+                    throw new ArgumentException("No value with key '{0}' in strings.xml for lange '{1}'"
                         .F(key, Language.LanguageCode));
                 
                 _textSurface.SetText(StringResource.GetString(key));

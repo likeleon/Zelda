@@ -50,7 +50,10 @@ namespace Zelda.Game
     {
         public class Text
         {
+            [XmlAttribute]
             public string Key { get; set; }
+
+            [XmlText]
             public string Value { get; set; }
         }
 
