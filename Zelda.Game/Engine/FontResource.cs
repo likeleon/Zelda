@@ -60,10 +60,13 @@ namespace Zelda.Game.Engine
 
             protected override void OnDispose(bool disposing)
             {
-                foreach (var font in OutlineFonts.Values)
-                    font.Dispose();
+                if (OutlineFonts != null)
+                {
+                    foreach (var font in OutlineFonts.Values)
+                        font.Dispose();
+                }
 
-                if (_bufferHandle != null)
+                if (_bufferHandle.IsAllocated)
                     _bufferHandle.Free();
             }
         }
