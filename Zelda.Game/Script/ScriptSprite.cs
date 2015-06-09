@@ -7,10 +7,7 @@ namespace Zelda.Game.Script
     {
         readonly Sprite _sprite;
 
-        public Direction4 Direction
-        {
-            get { return _sprite.CurrentDirection; }
-        }
+        public Direction4 Direction { get { return _sprite.CurrentDirection; } }
 
         public static ScriptSprite Create(string animationSetId)
         {
@@ -52,6 +49,19 @@ namespace Zelda.Game.Script
                 }
 
                 _sprite.SetCurrentDirection(direction);
+            });
+        }
+
+        public void SetFrame(int frame)
+        {
+            ScriptToCore.Call(() =>
+            {
+                if (frame < 0 || frame >= _sprite.GetNumFrames())
+                {
+                    throw new ArgumentOutOfRangeException("Illegal frame {0} for sprite '{1}' in direction {2} of animation '{3}'"
+                        .F(frame, _sprite.AnimationSetId, _sprite.CurrentDirection, _sprite.CurrentAnimation), "frame");
+                }
+                _sprite.SetCurrentFrame(frame);
             });
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Alttp.Menus;
+using System;
 using Zelda.Game.Engine;
 using Zelda.Game.Script;
 
@@ -18,7 +19,7 @@ namespace Alttp
             var solarusLogo = new SolarusLogo();
             var languageMenu = new LanguageMenu();
             var titleScreen = new Title(_debugEnabled);
-            var savegameMenu = new Savegames();
+            var savegameMenu = new Savegames(this);
 
             solarusLogo.Finished += (_, e) =>
             {
@@ -61,6 +62,11 @@ namespace Alttp
             bool handled = true;
 
             return handled;
+        }
+
+        public void StartSavegame(ScriptGame game)
+        {
+            Console.WriteLine("Start save game here");
         }
     }
 }

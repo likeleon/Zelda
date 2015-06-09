@@ -75,6 +75,11 @@ namespace Zelda.Game
             get { return _currentFrame; }
         }
 
+        public int GetNumFrames()
+        {
+            return _currentAnimation.GetDirection(_currentDirection).NumFrames;
+        }
+
         public bool HasFrameChanged { get; set; }
 
         Direction4 _currentDirection;
