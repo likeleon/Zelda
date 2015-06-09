@@ -3,29 +3,17 @@ using Zelda.Game;
 using Zelda.Game.Engine;
 using Zelda.Game.Script;
 
-namespace Alttp.Menus
+namespace Alttp.Menus.TitleScreens
 {
-    class Title : ScriptMenu
+    class TitlePhase : IPhase
     {
-        enum Phase
-        {
-            Black,
-            ZsPresents,
-            Title
-        }
-
-        readonly bool _debugEnabled;
-
-        Phase _phase;
-        ScriptSurface _surface;
-        ScriptSurface _zsPresentsImg;
-        Point _zsPresentsPos;
-        ScriptSurface _backgroundImg;
-        ScriptSurface _cloudsImg;
-        ScriptSurface _logoImg;
-        ScriptSurface _bordersImg;
-        ScriptTextSurface _websiteImg;
-        ScriptTextSurface _pressSpaceImg;
+        readonly ScriptSurface _surface;
+        readonly ScriptSurface _backgroundImg;
+        readonly ScriptSurface _cloudsImg;
+        readonly ScriptSurface _logoImg;
+        readonly ScriptSurface _bordersImg;
+        readonly ScriptTextSurface _websiteImg;
+        readonly ScriptTextSurface _pressSpaceImg;
         ScriptSurface _dxImg;
         ScriptSurface _starImg;
         bool _showPressSpace;
@@ -33,42 +21,11 @@ namespace Alttp.Menus
         bool _allowSkip;
         bool _finished;
 
-        public Title(bool debugEnabled)
+        public event EventHandler Finished = delegate { };
+
+        public TitlePhase(ScriptSurface surface)
         {
-            _debugEnabled = debugEnabled;
-        }
-
-        protected override void OnStarted()
-        {
-            // 0.3초 동안 검정 스크린을 유지합니다.
-            _phase = Phase.Black;
-
-            _surface = ScriptSurface.Create(320, 240);
-            ScriptTimer.Start(this, 300, (Action)PhaseZsPresents);
-
-            // 0.3초의 시간 동안 사운드 이펙트들을 미리 로딩합니다.
-            ScriptAudio.PreloadSounds();
-        }
-
-        void PhaseZsPresents()
-        {
-            _phase = Phase.ZsPresents;
-
-            _zsPresentsImg = ScriptSurface.Create("title_screen_initialization.png", true);
-            
-            _zsPresentsPos = new Point(160 - _zsPresentsImg.Width / 2, 120 - _zsPresentsImg.Height / 2);
-            ScriptAudio.PlaySound("intro");
-
-            ScriptTimer.Start(this, 2000, () =>
-            {
-                _surface.FadeOut(10);
-                ScriptTimer.Start(this, 700, (Action)PhaseTitle);
-            });
-        }
-
-        void PhaseTitle()
-        {
-            _phase = Phase.Title;
+            _surface = surface;
 
             ScriptAudio.PlayMusic("title_screen");
 
@@ -88,7 +45,7 @@ namespace Alttp.Menus
 
             var dialogFont = LanguageFonts.GetDialogFont();
             var menuFont = LanguageFonts.GetMenuFont();
-            
+
             _websiteImg = ScriptTextSurface.Create(
                 font: menuFont.Item1,
                 fontSize: menuFont.Item2,
@@ -141,22 +98,7 @@ namespace Alttp.Menus
             ScriptTimer.Start(this, 2000, () => _allowSkip = true);
         }
 
-        protected override void OnDraw(ScriptSurface dstSurface)
-        {
-            if (_phase == Phase.Title)
-                DrawPhaseTitle();
-            else if (_phase == Phase.ZsPresents)
-                DrawPhasePresent();
-
-            _surface.Draw(dstSurface, dstSurface.Width / 2 - 160, dstSurface.Height / 2 - 120);
-        }
-
-        void DrawPhasePresent()
-        {
-            _zsPresentsImg.Draw(_surface, _zsPresentsPos);
-        }
-
-        void DrawPhaseTitle()
+        public void OnDraw(ScriptSurface dstSurface)
         {
             _surface.FillColor(Color.Black);
             _backgroundImg.Draw(_surface);
@@ -181,51 +123,17 @@ namespace Alttp.Menus
                 _pressSpaceImg.Draw(_surface, 160, 200);
         }
 
-        public override bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)
+        public bool TryFinishTitle()
         {
-            var handled = false;
-
-            if (key == KeyboardKey.Escape)
-            {
-                Main.Exit();
-                handled = true;
-            }
-            else if (key == KeyboardKey.Space || key == KeyboardKey.Return)
-            {
-                handled = TryFinishTitle();
-            }
-            else if (_debugEnabled)
-            {
-                if (key == KeyboardKey.LeftShift || key == KeyboardKey.RightShift)
-                {
-                    FinishTitle();
-                    handled = true;
-                }
-            }
-
-            return handled;
-        }
-
-        bool TryFinishTitle()
-        {
-            if (_phase == Phase.Title &&
-                _allowSkip &&
-                !_finished)
+            if (_allowSkip && !_finished)
             {
                 _finished = true;
 
                 _surface.FadeOut(30);
-                ScriptTimer.Start(this, 700, (Action)FinishTitle);
+                ScriptTimer.Start(this, 700, () => Finished(this, EventArgs.Empty));
                 return true;
             }
-
             return false;
-        }
-
-        void FinishTitle()
-        {
-            ScriptAudio.StopMusic();
-            ScriptMenu.Stop(this);
         }
     }
 }

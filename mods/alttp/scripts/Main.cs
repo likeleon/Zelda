@@ -1,4 +1,6 @@
 ﻿using Alttp.Menus;
+using Alttp.Menus.SavegameScreens;
+using Alttp.Menus.TitleScreens;
 using System;
 using Zelda.Game.Engine;
 using Zelda.Game.Script;
@@ -18,8 +20,8 @@ namespace Alttp
 
             var solarusLogo = new SolarusLogo();
             var languageMenu = new LanguageMenu();
-            var titleScreen = new Title(_debugEnabled);
-            var savegameMenu = new Savegames(this);
+            var titleScreen = new TitleScreen(_debugEnabled);
+            var savegameScreen = new SavegameScreen(this);
 
             solarusLogo.Finished += (_, e) =>
             {
@@ -36,7 +38,7 @@ namespace Alttp
             titleScreen.Finished += (_, e) =>
             {
                 if (_game == null)
-                    ScriptMenu.Start(this, savegameMenu);
+                    ScriptMenu.Start(this, savegameScreen);
             };
 
             ScriptMenu.Start(this, solarusLogo);

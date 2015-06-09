@@ -38,9 +38,16 @@
     <Compile Include="LanguageFonts.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Menus\LanguageMenu.cs" />
-    <Compile Include="Menus\Savegames.cs" />
+    <Compile Include="Menus\SavegameScreens\IPhase.cs" />
+    <Compile Include="Menus\SavegameScreens\SavegameScreen.cs" />
+    <Compile Include="Menus\SavegameScreens\SelectFilePhase.cs" />
+    <Compile Include="Menus\SavegameScreens\Slot.cs" />
     <Compile Include="Menus\SolarusLogo.cs" />
-    <Compile Include="Menus\Title.cs" />
+    <Compile Include="Menus\TitleScreens\BlackPhase.cs" />
+    <Compile Include="Menus\TitleScreens\IPhase.cs" />
+    <Compile Include="Menus\TitleScreens\Title.cs" />
+    <Compile Include="Menus\TitleScreens\TitlePhase.cs" />
+    <Compile Include="Menus\TitleScreens\ZsPresentsPhase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -49,7 +49,8 @@ namespace Zelda.Game
 
         protected override void OnDispose(bool disposing)
         {
-            _srcImage.Dispose();
+            if (_srcImage != null)
+                _srcImage.Dispose();
         }
 
         public void SetTileset(Tileset tileset)
