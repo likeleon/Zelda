@@ -13,13 +13,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mods", "mods", "{1873B807-93AD-433D-B5A1-83184727FF01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Mods\Sample\Sample.csproj", "{7CF397B1-0707-4E70-A184-F1DB8A5843B7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "mods\sample\scripts\Sample.csproj", "{7CF397B1-0707-4E70-A184-F1DB8A5843B7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenAL-CS", "Libraries\OpenAL-CS\OpenAL-CS.csproj", "{4FF0E874-ADB4-4AE5-B059-DD6116C4A370}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vorbisfile-CS", "Libraries\Vorbisfile-CS\Vorbisfile-CS.csproj", "{C976BE87-E250-4120-9826-98B6C2CD7496}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alttp", "mods\alttp\Alttp.csproj", "{AD3C79E5-F6DC-47EB-A687-A8F612499AEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alttp", "mods\alttp\scripts\Alttp.csproj", "{AD3C79E5-F6DC-47EB-A687-A8F612499AEE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibModPlugSharp", "Libraries\LibModPlugSharp\LibModPlugSharp\LibModPlugSharp.csproj", "{3A364BD1-40BE-40D1-BE47-EE15BE6E351D}"
 EndProject
