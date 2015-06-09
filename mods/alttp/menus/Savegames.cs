@@ -199,6 +199,8 @@ namespace Alttp.Menus
                 position.Y -= 1;
                 if (position.Y <= -_cloudHeight)
                     position.Y = _surface.Height - _cloudHeight;
+
+                _cloudPositions[i] = position;
             }
 
             ScriptTimer.Start(this, 100, (Action)RepeatMoveClouds);
@@ -315,9 +317,7 @@ namespace Alttp.Menus
             else if (key == KeyboardKey.Down)
                 handled = DirectionPressed(Direction8.Down);
             else if (!_finished)
-            {
                 _phase.KeyPressed(this, key);
-            }
 
             return handled;
         }
