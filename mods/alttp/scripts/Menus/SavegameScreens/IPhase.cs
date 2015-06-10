@@ -6,8 +6,9 @@ namespace Alttp.Menus.SavegameScreens
     interface IPhase
     {
         string Name { get; }
-        void OnDraw(SavegameScreen screen);
-        bool DirectionPressed(SavegameScreen screen, Direction8 direction8);
-        bool KeyPressed(SavegameScreen screen, KeyboardKey key);
+        
+        void OnDraw();
+        bool DirectionPressed(Direction8 direction8);
+        bool KeyPressed(KeyboardKey key);
     }
 }
