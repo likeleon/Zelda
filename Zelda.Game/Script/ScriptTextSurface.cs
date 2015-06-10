@@ -8,6 +8,7 @@ namespace Zelda.Game.Script
         readonly TextSurface _textSurface;
 
         public string Text { get { return _textSurface.Text; } }
+        public Size Size { get { return _textSurface.Size; } }
 
         public static ScriptTextSurface Create(
             string font = null,
@@ -74,6 +75,21 @@ namespace Zelda.Game.Script
                 
                 _textSurface.SetText(StringResource.GetString(key));
             });
+        }
+        
+        public void SetFont(string fontId)
+        {
+            ScriptToCore.Call(() =>
+            {
+                if (!FontResource.Exists(fontId))
+                    throw new ArgumentException("No such font: '{0}'".F(fontId));
+                _textSurface.SetFont(fontId);
+            });
+        }
+
+        public void SetFontSize(int fontSize)
+        {
+            ScriptToCore.Call(() => _textSurface.SetFontSize(fontSize));
         }
     }
 }

@@ -5,6 +5,9 @@ namespace Zelda.Game.Script
 {
     public class ScriptAudio
     {
+        public static int MusicVolume { get { return Music.Volume; } }
+        public static int SoundVolume { get { return Sound.Volume; } }
+
         public static void PlaySound(string soundId)
         {
             ScriptToCore.Call(() =>
@@ -46,6 +49,16 @@ namespace Zelda.Game.Script
         public static void StopMusic()
         {
             ScriptToCore.Call(Music.StopPlaying);
+        }
+
+        public static void SetMusicVolume(int volume)
+        {
+            ScriptToCore.Call(() => Music.SetVolume(volume));
+        }
+
+        public static void SetSoundVolume(int volume)
+        {
+            ScriptToCore.Call(() => Sound.SetVolume(volume));
         }
     }
 }

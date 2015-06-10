@@ -40,24 +40,13 @@ namespace Zelda.Game.Engine
             }
         }
 
-        public static int Volume
-        {
-            get { return (int)(_volume * 100.0 + 0.5); }
-            set
-            {
-                value = Math.Min(100, Math.Max(0, value));
-                _volume = value / 100.0f;
-
-                if (_currentMusic != null)
-                    AL10.alSourcef(_currentMusic._source, AL10.AL_GAIN, _volume);
-            }
-        }
+        public static int Volume { get { return (int)(_volume * 100.0 + 0.5); } }
 
         public static void Initialize()
         {
             _itDecoder = new ItDecoder();
 
-            Volume = 100;
+            SetVolume(100);
             IsInitialized = true;
         }
 
@@ -139,6 +128,15 @@ namespace Zelda.Game.Engine
                 format = MusicFormat.It;
                 fileName = fileNameStart + ".it";
             }
+        }
+
+        public static void SetVolume(int volume)
+        {
+            volume = Math.Min(100, Math.Max(0, volume));
+            _volume = volume / 100.0f;
+
+            if (_currentMusic != null)
+                AL10.alSourcef(_currentMusic._source, AL10.AL_GAIN, _volume);
         }
 
         public static int GetNumChannels()

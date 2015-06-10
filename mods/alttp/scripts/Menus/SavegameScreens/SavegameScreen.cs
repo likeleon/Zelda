@@ -17,9 +17,6 @@ namespace Alttp.Menus.SavegameScreens
         ScriptSurface _saveContainerImg;
         ScriptSurface _optionContainerImg;
         
-        ScriptTextSurface _option1Text;
-        ScriptTextSurface _option2Text;
-        
         bool _allowCursorMove = true;
         Point[] _cloudPositions;
         IPhase _phase;
@@ -30,6 +27,8 @@ namespace Alttp.Menus.SavegameScreens
         public bool IsFinished { get; set; }
         public ScriptSurface Surface { get; private set; }
         public ScriptTextSurface TitleText { get; private set; }
+        public ScriptTextSurface Option1Text { get; private set; }
+        public ScriptTextSurface Option2Text { get; private set; }
         public ScriptSprite CursorSprite { get; private set; }
 
         public SavegameScreen(Main main)
@@ -49,8 +48,8 @@ namespace Alttp.Menus.SavegameScreens
 
             var dialogFont = LanguageFonts.GetDialogFont();
             var menuFont = LanguageFonts.GetMenuFont();
-            _option1Text = ScriptTextSurface.Create(font: dialogFont.Item1, fontSize: dialogFont.Item2);
-            _option2Text = ScriptTextSurface.Create(font: dialogFont.Item1, fontSize: dialogFont.Item2);
+            Option1Text = ScriptTextSurface.Create(font: dialogFont.Item1, fontSize: dialogFont.Item2);
+            Option2Text = ScriptTextSurface.Create(font: dialogFont.Item1, fontSize: dialogFont.Item2);
             TitleText = ScriptTextSurface.Create(font: menuFont.Item1, fontSize: menuFont.Item2, horizontalAlignment: TextHorizontalAlignment.Center);
 
             CursorSprite = ScriptSprite.Create("menus/selection_menu_cursor");
@@ -103,7 +102,7 @@ namespace Alttp.Menus.SavegameScreens
             ScriptTimer.Start(this, 100, (Action)RepeatMoveClouds);
         }
 
-        void ReadSavegames()
+        public void ReadSavegames()
         {
             Slots = Enumerable.Range(1, 3).Select(i => new Slot(i)).ToArray();
         }
@@ -115,6 +114,7 @@ namespace Alttp.Menus.SavegameScreens
 
         public void InitPhaseOptions()
         {
+            _phase = new OptionsPhase(this);
         }
 
         public void InitPhaseEraseFile()
@@ -127,8 +127,15 @@ namespace Alttp.Menus.SavegameScreens
 
         public void SetBottomButtons(string key1, string key2)
         {
-            _option1Text.SetTextKey(key1 ?? string.Empty);
-            _option2Text.SetTextKey(key2 ?? string.Empty);
+            if (key1 != null)
+                Option1Text.SetTextKey(key1);
+            else
+                Option1Text.SetText(string.Empty);
+
+            if (key2 != null)
+                Option2Text.SetTextKey(key2);
+            else
+                Option2Text.SetText(string.Empty);
         }
 
         protected override void OnDraw(ScriptSurface dstSurface)
@@ -169,15 +176,15 @@ namespace Alttp.Menus.SavegameScreens
 
         public void DrawBottomButtons()
         {
-            if (!String.IsNullOrEmpty(_option1Text.Text))
+            if (!String.IsNullOrEmpty(Option1Text.Text))
             {
                 _optionContainerImg.Draw(Surface, 57, 158);
-                _option1Text.Draw(Surface, 90, 172);
+                Option1Text.Draw(Surface, 90, 172);
             }
-            if (!String.IsNullOrEmpty(_option2Text.Text))
+            if (!String.IsNullOrEmpty(Option2Text.Text))
             {
                 _optionContainerImg.Draw(Surface, 165, 158);
-                _option2Text.Draw(Surface, 198, 172);
+                Option2Text.Draw(Surface, 198, 172);
             }
         }
 
@@ -238,7 +245,7 @@ namespace Alttp.Menus.SavegameScreens
             SetCursorPosition(cursorPosition);
         }
 
-        void SetCursorPosition(int cursorPosition)
+        public void SetCursorPosition(int cursorPosition)
         {
             CursorPosition = cursorPosition;
             CursorSprite.SetFrame(0);

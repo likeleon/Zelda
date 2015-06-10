@@ -31,16 +31,7 @@ namespace Zelda.Game.Engine
         uint _buffer = AL10.AL_NONE;
         Queue<uint> _sources = new Queue<uint>();
 
-        public static float Volume
-        {
-            get { return _volume; }
-            set
-            {
-                value = Math.Min(100, Math.Max(0, value));
-                _volume = value / 100.0f;
-            }
-        }
-
+        public static int Volume { get { return (int)(_volume * 100.0 + 0.5); } }
         public static bool IsInitialized { get { return _initialized; } }
 
         static Sound()
@@ -85,7 +76,7 @@ namespace Zelda.Game.Engine
             AL10.alGenBuffers(IntPtr.Zero, null);   // 몇몇 시스템에서 첫 사운드가 로드될 때 발생하는 에러 대비
 
             _initialized = true;
-            Volume = 100;
+            SetVolume(100);
 
             Music.Initialize();
         }
@@ -172,6 +163,12 @@ namespace Zelda.Game.Engine
                 _allSounds.Add(soundId, new Sound(soundId));
 
             _allSounds[soundId].Start();
+        }
+
+        public static void SetVolume(int volume)
+        {
+            volume = Math.Min(100, Math.Max(0, volume));
+            _volume = volume / 100.0f;
         }
         
         public Sound(string soundId = "")
