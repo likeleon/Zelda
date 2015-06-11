@@ -33,7 +33,7 @@ namespace Alttp.Menus.SavegameScreens
                     fontSize: font.Item2,
                     horizontalAlignment: TextHorizontalAlignment.Right);
 
-                CurrentIndex = -1;                
+                CurrentIndex = 0;                
             }
 
             public void SetValue(int index)
@@ -43,7 +43,7 @@ namespace Alttp.Menus.SavegameScreens
 
                 CurrentIndex = index;
                 
-                ApplyValue(Values[index]);
+                ApplyValue(Values[index - 1]);
             }
 
             protected abstract void ApplyValue(string value);
@@ -78,8 +78,8 @@ namespace Alttp.Menus.SavegameScreens
             public VideoModeOption(OptionsPhase phase)
                 : base(phase)
             {
-                Values = new string[] { };
-                InitialValue = string.Empty;
+                Values = new string[] { "Normal" };
+                InitialValue = Values[0];
             }
 
             protected override void ApplyValue(string value)
@@ -142,8 +142,8 @@ namespace Alttp.Menus.SavegameScreens
 
             _options = new Option[] { new LanguageOption(this), new VideoModeOption(this), new MusicVolumeOption(this), new SoundVolumeOption(this) };
             foreach (var option in _options)
-                for (int i = 0; i < option.Values.Length; ++i)
-                    if (option.Values[i] == option.InitialValue)
+                for (int i = 1; i <= option.Values.Length; ++i)
+                    if (option.Values[i - 1] == option.InitialValue)
                         option.SetValue(i);
 
             _leftArrowSprite = ScriptSprite.Create("menus/arrow");
@@ -207,12 +207,90 @@ namespace Alttp.Menus.SavegameScreens
 
         public bool DirectionPressed(Zelda.Game.Direction8 direction8)
         {
+            if (!_modifyingOption)
+            {
+                if (direction8 == Direction8.Up)
+                {
+                    ScriptAudio.PlaySound("cursor");
+                    _leftArrowSprite.SetFrame(0);
+                    var position = _optionsCursorPosition - 1;
+                    if (position == 0)
+                        position = _options.Length + 1;
+                    SetOptionsCursorPosition(position);
+                    return true;
+                }
+                else if (direction8 == Direction8.Down)
+                {
+                    ScriptAudio.PlaySound("cursor");
+                    _leftArrowSprite.SetFrame(0);
+                    var position = _optionsCursorPosition + 1;
+                    if (position > _options.Length + 1)
+                        position = 1;
+                    SetOptionsCursorPosition(position);
+                    return true;
+                }
+            }
+            else
+            {
+                if (direction8 == Direction8.Right)
+                {
+                    var option = _options[_optionsCursorPosition - 1];
+                    var index = (option.CurrentIndex % option.Values.Length) + 1;
+                    option.SetValue(index);
+                    ScriptAudio.PlaySound("cursor");
+                    _leftArrowSprite.SetFrame(0);
+                    _rightArrowSprite.SetFrame(0);
+                    return true;
+                }
+                else if (direction8 == Direction8.Left)
+                {
+                    var option = _options[_optionsCursorPosition - 1];
+                    var index = (option.CurrentIndex + option.Values.Length - 2) % option.Values.Length + 1;
+                    option.SetValue(index);
+                    ScriptAudio.PlaySound("cursor");
+                    _leftArrowSprite.SetFrame(0);
+                    _rightArrowSprite.SetFrame(0);
+                    return true;
+                }
+            }
             return false;
         }
 
-        public bool KeyPressed(Zelda.Game.Engine.KeyboardKey key)
+        public bool KeyPressed(KeyboardKey key)
         {
-            return false;
+            if (key != KeyboardKey.Space && key != KeyboardKey.Return)
+                return false;
+
+            if (_optionsCursorPosition > _options.Length)
+            {
+                ScriptAudio.PlaySound("ok");
+                _screen.InitPhaseSelectFile();
+            }
+            else
+            {
+                var option = _options[_optionsCursorPosition - 1];
+                if (!_modifyingOption)
+                {
+                    ScriptAudio.PlaySound("ok");
+                    _leftArrowSprite.SetFrame(0);
+                    _rightArrowSprite.SetFrame(0);
+                    option.LabelText.SetColor(Color.White);
+                    option.ValueText.SetColor(Color.Yellow);
+                    _screen.TitleText.SetTextKey("selection_menu.phase.options.changing");
+                    _modifyingOption = true;
+                }
+                else
+                {
+                    ScriptAudio.PlaySound("danger");
+                    option.LabelText.SetColor(Color.Yellow);
+                    option.ValueText.SetColor(Color.White);
+                    _leftArrowSprite.SetFrame(0);
+                    _rightArrowSprite.SetFrame(0);
+                    _screen.TitleText.SetTextKey("selection_menu.phase.options");
+                    _modifyingOption = false;
+                }
+            }
+            return true;
         }
 
         void ReloadOptionsStrings()
@@ -228,9 +306,9 @@ namespace Alttp.Menus.SavegameScreens
                 option.ValueText.SetFontSize(menuFont.Item2);
                 option.LabelText.SetTextKey("selection_menu.options.{0}".F(Name));
 
-                if (option is VideoModeOption && option.CurrentIndex != -1)
+                if (option is VideoModeOption && option.CurrentIndex != 0)
                 {
-                    var mode = option.Values[option.CurrentIndex];
+                    var mode = option.Values[option.CurrentIndex - 1];
                     option.ValueText.SetText(mode);
                 }
             }
