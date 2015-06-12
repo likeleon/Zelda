@@ -30,11 +30,9 @@ namespace Zelda.Game.Script
 
         public static void Exit()
         {
-            CoreToScript.Call(() =>
-            {
-                if (_scriptMain != null)
-                    _scriptMain.OnFinished();
-            });
+            if (_scriptMain != null)
+                CoreToScript.Call(_scriptMain.OnFinished);
+            
             ScriptMain.Current = null;
 
             ScriptMenu.DestroyMenus();
@@ -66,7 +64,7 @@ namespace Zelda.Game.Script
             ScriptMain.Current = _scriptMain;
         }
 
-        internal static void NotifyDialogFinished(Zelda.Game.Game game, Dialog dialog, Action callback)
+        internal static void NotifyDialogFinished(Game game, Dialog dialog, Action callback)
         {
             if (callback != null)
                 callback();

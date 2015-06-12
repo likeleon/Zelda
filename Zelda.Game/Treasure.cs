@@ -5,69 +5,40 @@ namespace Zelda.Game
 {
     class Treasure
     {
-        public Treasure(Game game, string itemName, int variant, string savegameVariable)
-        {
-            _game = game;
-            _itemName = itemName;
-            _variant = variant;
-            SavegameVariable = savegameVariable;
-        }
+        Sprite _sprite;
 
-        readonly Game _game;
-        public Game Game
-        {
-            get { return _game; }
-        }
-
-        string _itemName;
-        public string ItemName
-        {
-            get { return _itemName; }
-        }
-
-        public EquipmentItem Item
-        {
-            get { return _game.Equipment.GetItem(ItemName); }
-        }
-
-        int _variant;
-        public int Variant
-        {
-            get { return _variant; }
-        }
-
+        public Game Game { get; private set; }
+        public string ItemName { get; private set; }
+        public EquipmentItem Item { get { return Game.Equipment.GetItem(ItemName); } }
+        public int Variant { get; private set; }
         public string SavegameVariable { get; private set; }
 
-        public bool IsSaved
-        {
-            get { return !String.IsNullOrEmpty(SavegameVariable); }
-        }
-
-        public bool IsFound
-        {
-            get { return IsSaved && _game.SaveGame.GetBoolean(SavegameVariable); }
-        }
-
-        public bool IsEmpty
-        {
-            get { return String.IsNullOrEmpty(_itemName); }
-        }
-
+        public bool IsSaved { get { return !String.IsNullOrEmpty(SavegameVariable); } }
+        public bool IsFound { get { return IsSaved && Game.SaveGame.GetBoolean(SavegameVariable); } }
+        public bool IsEmpty { get { return String.IsNullOrEmpty(ItemName); } }
         public bool IsObtainable
         {
             get
             {
-                return String.IsNullOrEmpty(_itemName) ||
-                       _game.Equipment.GetItem(_itemName).IsObtainable;
+                return String.IsNullOrEmpty(ItemName) ||
+                       Game.Equipment.GetItem(ItemName).IsObtainable;
             }
+        }
+
+        public Treasure(Game game, string itemName, int variant, string savegameVariable)
+        {
+            Game = game;
+            ItemName = itemName;
+            Variant = variant;
+            SavegameVariable = savegameVariable;
         }
 
         public void EnsureObtainable()
         {
-            if (!String.IsNullOrEmpty(_itemName) && !_game.Equipment.GetItem(_itemName).IsObtainable)
+            if (!String.IsNullOrEmpty(ItemName) && !Game.Equipment.GetItem(ItemName).IsObtainable)
             {
-                _itemName = String.Empty;
-                _variant = 1;
+                ItemName = String.Empty;
+                Variant = 1;
             }
         }
 
@@ -83,15 +54,13 @@ namespace Zelda.Game
             CheckObtainable();
 
             if (IsSaved)
-                _game.SaveGame.SetBoolean(SavegameVariable, true);
+                Game.SaveGame.SetBoolean(SavegameVariable, true);
 
             if (Item.IsSaved)
                 Item.SetVariant(Variant);
 
             Item.NotifyObtaining(this);
         }
-
-        Sprite _sprite;
 
         public void Draw(Surface dstSurface, int x, int y)
         {
