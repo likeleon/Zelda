@@ -168,14 +168,14 @@ namespace Zelda.Game.Engine
             }
         }
 
-        public static void DataFileSave(string fileName, byte[] buffer)
+        public static void DataFileSave(string fileName, byte[] buffer, long length)
         {
             IntPtr file = FileSystem.PHYSFS_openWrite(fileName);
             if (file == IntPtr.Zero)
                 Debug.Die("Cannot open file '{0}' for writing: {1}".F(fileName, FileSystem.PHYSFS_getLastError()));
 
             var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-            if (FileSystem.PHYSFS_write(file, handle.AddrOfPinnedObject(), (uint)buffer.Length, 1) == -1)
+            if (FileSystem.PHYSFS_write(file, handle.AddrOfPinnedObject(), (uint)length, 1) == -1)
             {
                 handle.Free();
                 Debug.Die("Cannot write file '{0}': {1}".F(fileName, FileSystem.PHYSFS_getLastError()));

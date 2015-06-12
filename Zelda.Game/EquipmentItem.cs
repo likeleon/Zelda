@@ -6,7 +6,6 @@ namespace Zelda.Game
     class EquipmentItem
     {
         readonly Equipment _equipment;
-        ScriptItem _scriptItem;
 
         public Equipment Equipment { get { return _equipment; } }
         public Game Game { get { return _equipment.Game; } }
@@ -24,6 +23,8 @@ namespace Zelda.Game
         public bool IsAssignable { get; set; }
 
         public string SoundWhenBrandished { get; set; }
+
+        public ScriptItem ScriptItem { get; private set; }
 
         public int Variant
         {
@@ -61,37 +62,37 @@ namespace Zelda.Game
 
         public void Initialize()
         {
-            _scriptItem = ScriptContext.RunItem(this);
+            ScriptItem = ScriptContext.RunItem(this);
         }
 
         public void Start()
         {
-            if (_scriptItem != null)
-                _scriptItem.NotifyStarted();
+            if (ScriptItem != null)
+                ScriptItem.NotifyStarted();
         }
 
         public void Exit()
         {
-            if (_scriptItem != null)
-                _scriptItem.NotifyFinished();
+            if (ScriptItem != null)
+                ScriptItem.NotifyFinished();
         }
 
         public void NotifyUsing()
         {
-            if (_scriptItem != null)
-                _scriptItem.NotifyUsing();
+            if (ScriptItem != null)
+                ScriptItem.NotifyUsing();
         }
 
         public void NotifyAbilityUsed(Ability ability)
         {
-            if (_scriptItem != null)
-                _scriptItem.NotifyAbilityUsed(ability);
+            if (ScriptItem != null)
+                ScriptItem.NotifyAbilityUsed(ability);
         }
 
         public void NotifyObtaining(Treasure treasure)
         {
-            if (_scriptItem != null)
-                _scriptItem.NotifyObtaining(treasure.Variant, IsSaved ? SavegameVariable : null);
+            if (ScriptItem != null)
+                ScriptItem.NotifyObtaining(treasure.Variant, IsSaved ? SavegameVariable : null);
         }
     }
 }

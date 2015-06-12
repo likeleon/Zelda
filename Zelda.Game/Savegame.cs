@@ -1,12 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
 using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
+    [XmlRoot("SaveData")]
+    public class SaveXmlData
+    {
+        public class KeySavedValue
+        {
+            public string Key { get; set; }
+            public SavedValue Value { get; set; }
+        }
+
+        [XmlElement("KeySavedValue")]
+        public KeySavedValue[] KeySavedValues { get; set; }
+    }
+
+    public class SavedValue
+    {
+        public enum Types
+        {
+            String,
+            Integer,
+            Boolean
+        }
+
+        public Types Type { get; set; }
+        public string StringData { get; set; }
+        public int IntData { get; set; }
+    }
+
     class Savegame
     {
         public enum Key
@@ -35,23 +63,17 @@ namespace Zelda.Game
             AbilityDetectWeakWalls, // 약한 벽 감지 레벨
         }
 
-        [XmlRoot("SaveData")]
-        public class SaveData
-        {
-            [XmlElement("SavedValue")]
-            public Dictionary<string, SavedValue> SavedValues { get; set; }
-        }
-
         static readonly int SaveGameVersion = 2;
 
-        public ScriptGame ScriptGame { get; set; }
+        readonly MainLoop _mainLoop;
+        readonly Dictionary<string, SavedValue> _savedValues = new Dictionary<string, SavedValue>();
+        
+        public string FileName { get; private set; }
+        public bool IsEmpty { get; private set; }
 
-        #region 파일 상태
-        bool _empty = true;
-        public bool IsEmpty
-        {
-            get { return _empty; }
-        }
+        public ScriptGame ScriptGame { get; set; }
+        public Equipment Equipment { get; private set; }
+        public Game Game { get; set; }
 
         public void Initialize()
         {
@@ -59,52 +81,32 @@ namespace Zelda.Game
             Debug.CheckAssertion(!String.IsNullOrWhiteSpace(modWriteDir),
                 "The mod write directory for savegames was not set in mod.xml");
 
-            if (!ModFiles.DataFileExists(_fileName))
+            if (!ModFiles.DataFileExists(FileName))
             {
-                _empty = true;
+                IsEmpty = true;
                 SetInitialValues();
             }
             else
             {
-                _empty = false;
+                IsEmpty = false;
                 ImportFromFile();
             }
 
             Equipment.LoadItems();
         }
         
-        readonly string _fileName;
-        public string FileName
-        {
-            get { return _fileName; }
-        }
-        #endregion
-
-        #region 세이브되지 않는 데이터
-        readonly Equipment _equipment;
-        public Equipment Equipment
-        {
-            get { return _equipment; }
-        }
-
-        public Game Game { get; set; }
-
-        readonly MainLoop _mainLoop;
 
         public void NotifyGameFinished()
         {
-            _equipment.NotifyGameFinished();
+            Equipment.NotifyGameFinished();
         }
-        #endregion
 
-        #region 생성
         public Savegame(MainLoop mainLoop, string fileName)
         {
             _mainLoop = mainLoop;
-            _fileName = fileName;
-            _equipment = new Equipment(this);
+            FileName = fileName;
+            Equipment = new Equipment(this);
         }
-        #endregion
 
         void SetInitialValues()
         {
@@ -112,9 +114,9 @@ namespace Zelda.Game
 
             SetDefaultKeyboardControls();
 
-            _equipment.SetMaxLife(1);
-            _equipment.SetLife(1);
-            _equipment.SetAbility(Ability.Tunic, 1);    // 스프라이트 표현을 위해 필수적으로 필요합니다
+            Equipment.SetMaxLife(1);
+            Equipment.SetLife(1);
+            Equipment.SetAbility(Ability.Tunic, 1);    // 스프라이트 표현을 위해 필수적으로 필요합니다
         }
 
         void SetDefaultKeyboardControls()
@@ -134,33 +136,29 @@ namespace Zelda.Game
         {
             try
             {
-                SaveData saveData = ModFiles.DataFileRead(_fileName).XmlDeserialize<SaveData>();
-                foreach (var pair in saveData.SavedValues)
+                var saveData = ModFiles.DataFileRead(FileName).XmlDeserialize<SaveXmlData>();
+                foreach (var pair in saveData.KeySavedValues)
                     _savedValues[pair.Key] = pair.Value;
             }
             catch (Exception ex)
             {
-                Debug.Die("Failed to load savegame file '{0}': {1}".F(_fileName, ex.Message));
+                Debug.Die("Failed to load savegame file '{0}': {1}".F(FileName, ex.Message));
             }
         }
 
-        #region 데이터
-        public class SavedValue
+        public void Save()
         {
-            public enum Types
-            {
-                String,
-                Integer,
-                Boolean
-            }
+            var saveData = new SaveXmlData();
+            saveData.KeySavedValues = _savedValues
+                .Select(v => new SaveXmlData.KeySavedValue() { Key = v.Key, Value = v.Value })
+                .ToArray();
 
-            public Types Type { get; set; }
-            public string StringData { get; set; }
-            public int IntData { get; set; }
+            var stream = new MemoryStream();
+            saveData.XmlSerialize(stream);
+            ModFiles.DataFileSave(FileName, stream.GetBuffer(), stream.Length);
+            IsEmpty = false;
         }
 
-        readonly Dictionary<string, SavedValue> _savedValues = new Dictionary<string, SavedValue>();
-        
         bool TypeIs(string key, SavedValue.Types type)
         {
             SavedValue value;
@@ -275,6 +273,5 @@ namespace Zelda.Game
         {
             return GetBoolean(key.ToString());
         }
-        #endregion
     }
 }

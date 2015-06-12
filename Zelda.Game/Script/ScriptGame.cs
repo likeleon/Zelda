@@ -117,17 +117,63 @@ namespace Zelda.Game.Script
 
         public bool GetBooleanValue(string key)
         {
-            return Script.ScriptToCore.Call(() => _savegame.GetBoolean(key));
+            return ScriptToCore.Call(() => _savegame.GetBoolean(key));
         }
 
         public int GetIntegerValue(string key)
         {
-            return Script.ScriptToCore.Call(() => _savegame.GetInteger(key));
+            return ScriptToCore.Call(() => _savegame.GetInteger(key));
         }
 
         public string GetStringValue(string key)
         {
-            return Script.ScriptToCore.Call(() => _savegame.GetString(key));
+            return ScriptToCore.Call(() => _savegame.GetString(key));
+        }
+
+        public void SetStringValue(string key, string value)
+        {
+            ScriptToCore.Call(() =>
+            {
+                ThrowIfInvalidKey(key);
+                _savegame.SetString(key, value);
+            });
+        }
+
+        void ThrowIfInvalidKey(string key)
+        {
+            if (key[0] == '_')
+                throw new ArgumentException("Invalid savegame variable '{0}': names prefixed by '_' are reserved for built-in variables".F(key));
+        }
+
+        public void Save()
+        {
+            ScriptToCore.Call(() =>
+            {
+                if (String.IsNullOrEmpty(ModFiles.ModWriteDir))
+                    throw new InvalidOperationException("Cannot save game: no write directory was specified in mod.xml");
+                
+                _savegame.Save();
+            });
+        }
+
+        public void SetStartingLocation(string mapId, string destinationName = null)
+        {
+            ScriptToCore.Call(() =>
+            {
+                _savegame.SetString(Savegame.Key.StartingMap, mapId);
+                _savegame.SetString(Savegame.Key.StartingPoint, destinationName);
+            });
+        }
+
+        public ScriptItem GetItem(string itemName)
+        {
+            return ScriptToCore.Call(() =>
+            {
+                if (!_savegame.Equipment.ItemExists(itemName))
+                    throw new ArgumentException("No such item: '{0}'".F(itemName));
+                
+                return _savegame.Equipment.GetItem(itemName).ScriptItem;
+            });
         }
     }
 }

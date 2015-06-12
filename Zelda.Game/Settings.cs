@@ -35,7 +35,7 @@ namespace Zelda.Game
             
             var stream = new MemoryStream();
             settings.XmlSerialize(stream);
-            ModFiles.DataFileSave(fileName, stream.GetBuffer());
+            ModFiles.DataFileSave(fileName, stream.GetBuffer(), stream.Length);
             return true;
         }
     }

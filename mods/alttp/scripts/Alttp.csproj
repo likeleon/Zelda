@@ -35,9 +35,12 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Items\RupeeBag.cs" />
+    <Compile Include="Items\Tunic.cs" />
     <Compile Include="LanguageFonts.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Menus\LanguageMenu.cs" />
+    <Compile Include="Menus\SavegameScreens\ChooseNamePhase.cs" />
     <Compile Include="Menus\SavegameScreens\IPhase.cs" />
     <Compile Include="Menus\SavegameScreens\OptionsPhase.cs" />
     <Compile Include="Menus\SavegameScreens\SavegameScreen.cs" />

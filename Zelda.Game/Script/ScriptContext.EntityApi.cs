@@ -10,10 +10,7 @@ namespace Zelda.Game.Script
         {
             string dialogId = "_treasure.{0}.{1}".F(treasure.ItemName, treasure.Variant);
 
-            Action dialogCallback = () =>
-            {
-                TreasureDialogFinished(treasure.Item, treasure.Variant, treasure.SavegameVariable, callback);
-            };
+            Action dialogCallback = () => TreasureDialogFinished(treasure.Item, treasure.Variant, treasure.SavegameVariable, callback);
 
             if (!DialogResource.Exists(dialogId))
             {
@@ -28,11 +25,14 @@ namespace Zelda.Game.Script
         {
             Debug.CheckAssertion(item.Game != null, "Equipment item without game");
 
-            RawGame game = item.Game;
-            RawHero hero = game.Hero;
+            var game = item.Game;
+            var hero = game.Hero;
+            var treasure = new Treasure(game, item.Name, treasureVariant, treasureSavegameVariable);
 
             if (callback != null)
-                callback.Invoke();
+                CoreToScript.Call(callback);
+
+            item.ScriptItem.NotifyObtained(treasure);
 
             if (hero.IsBrandishingTreasure)
             {

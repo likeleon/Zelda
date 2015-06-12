@@ -123,6 +123,7 @@ namespace Alttp.Menus.SavegameScreens
 
         public void InitPhaseChooseName()
         {
+            _phase = new ChooseNamePhase(this);
         }
 
         public void SetBottomButtons(string key1, string key2)
@@ -272,6 +273,18 @@ namespace Alttp.Menus.SavegameScreens
                 ScriptAudio.PlaySound("cursor");
                 SetCursorPosition(4);
             }
+        }
+
+        public void SetInitialValues(ScriptGame savegame, string playerName)
+        {
+            savegame.SetStartingLocation("0", "start_position");
+            savegame.SetStringValue("player_name", playerName);
+
+            savegame.SetMaxLife(12);
+            savegame.SetLife(savegame.GetMaxLife());
+            savegame.GetItem("tunic").SetVariant(1);
+            savegame.SetAbility(Ability.Tunic, 1);
+            savegame.GetItem("rupee_bag").SetVariant(1);
         }
     }
 }

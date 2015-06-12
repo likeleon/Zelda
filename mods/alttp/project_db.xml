@@ -15,4 +15,8 @@
     <Font Id="NanumBarunGothic" Description="나눔바른고딕" />
     <Font Id="wqy-zenhei" Description="wqy-zenhei" />
   </Fonts>
+  <Items>
+    <Item Id="tunic" Description="Tunic (green / blue / red)" />
+    <Item Id="rupee_bag" Description="Rupee bag (small / large / huge)" />
+  </Items>
 </ProjectDB>

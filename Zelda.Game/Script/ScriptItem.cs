@@ -1,4 +1,5 @@
-﻿using Zelda.Game.Entities;
+﻿using System;
+using Zelda.Game.Entities;
 
 namespace Zelda.Game.Script
 {
@@ -66,6 +67,16 @@ namespace Zelda.Game.Script
         {
         }
 
+        internal void NotifyObtained(Treasure treasure)
+        {
+            var savegameVariable = (treasure.IsSaved) ? treasure.SavegameVariable : null;
+            CoreToScript.Call(() => OnObtained(treasure.Variant, savegameVariable));
+        }
+        
+        protected virtual void OnObtained(int variant, string savegameVariable)
+        {
+        }
+
         internal void NotifyUsing()
         {
             CoreToScript.Call(OnUsing);
@@ -82,6 +93,17 @@ namespace Zelda.Game.Script
 
         protected virtual void OnAbilityUsed(Ability ability)
         {
+        }
+
+        public void SetVariant(int variant)
+        {
+            ScriptToCore.Call(() =>
+            {
+                if (!_item.IsSaved)
+                    throw new InvalidOperationException("Item '{0}' is not saved".F(_item.Name));
+                
+                _item.SetVariant(variant);
+            });
         }
     }
 }
