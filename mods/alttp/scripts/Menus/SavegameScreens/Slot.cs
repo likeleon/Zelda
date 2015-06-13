@@ -18,8 +18,8 @@ namespace Alttp.Menus.SavegameScreens
             Savegame = ScriptGame.Load(FileName);
             NumberImg = ScriptSurface.Create("menus/selection_menu_save{0}.png".F(index));
 
-            var dialogFont = LanguageFonts.GetDialogFont();
-            _playerNameText = ScriptTextSurface.Create(font: dialogFont.Item1, fontSize: dialogFont.Item2);
+            var dialogFont = Fonts.GetDialogFont();
+            _playerNameText = ScriptTextSurface.Create(font: dialogFont.Id, fontSize: dialogFont.Size);
 
             if (ScriptGame.Exists(FileName))
             {

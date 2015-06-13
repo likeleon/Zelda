@@ -54,8 +54,8 @@ namespace Alttp.Menus
             var cursorPosition = 0;
             foreach (var id in ScriptLanguage.Languages)
             {
-                var font = LanguageFonts.GetMenuFont(id);
-                Language language = new Language(id, font.Item1, font.Item2);
+                var font = Fonts.GetMenuFont(id);
+                Language language = new Language(id, font.Id, font.Size);
 
                 if (id == defaultId)
                     cursorPosition = index;

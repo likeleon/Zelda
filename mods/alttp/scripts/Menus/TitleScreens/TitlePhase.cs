@@ -43,19 +43,19 @@ namespace Alttp.Menus.TitleScreens
             _logoImg = ScriptSurface.Create("menus/title_logo.png");
             _bordersImg = ScriptSurface.Create("menus/title_borders.png");
 
-            var dialogFont = LanguageFonts.GetDialogFont();
-            var menuFont = LanguageFonts.GetMenuFont();
+            var dialogFont = Fonts.GetDialogFont();
+            var menuFont = Fonts.GetMenuFont();
 
             _websiteImg = ScriptTextSurface.Create(
-                font: menuFont.Item1,
-                fontSize: menuFont.Item2,
+                font: menuFont.Id,
+                fontSize: menuFont.Size,
                 color: new Color(240, 200, 56),
                 textKey: "title_screen.website",
                 horizontalAlignment: TextHorizontalAlignment.Center);
 
             _pressSpaceImg = ScriptTextSurface.Create(
-                font: dialogFont.Item1,
-                fontSize: dialogFont.Item2,
+                font: dialogFont.Id,
+                fontSize: dialogFont.Size,
                 color: Color.White,
                 textKey: "title_screen.press_space",
                 horizontalAlignment: TextHorizontalAlignment.Center);

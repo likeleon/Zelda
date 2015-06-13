@@ -46,11 +46,11 @@ namespace Alttp.Menus.SavegameScreens
             _saveContainerImg = ScriptSurface.Create("menus/selection_menu_save_container.png");
             _optionContainerImg = ScriptSurface.Create("menus/selection_menu_option_container.png");
 
-            var dialogFont = LanguageFonts.GetDialogFont();
-            var menuFont = LanguageFonts.GetMenuFont();
-            Option1Text = ScriptTextSurface.Create(font: dialogFont.Item1, fontSize: dialogFont.Item2);
-            Option2Text = ScriptTextSurface.Create(font: dialogFont.Item1, fontSize: dialogFont.Item2);
-            TitleText = ScriptTextSurface.Create(font: menuFont.Item1, fontSize: menuFont.Item2, horizontalAlignment: TextHorizontalAlignment.Center);
+            var dialogFont = Fonts.GetDialogFont();
+            var menuFont = Fonts.GetMenuFont();
+            Option1Text = ScriptTextSurface.Create(font: dialogFont.Id, fontSize: dialogFont.Size);
+            Option2Text = ScriptTextSurface.Create(font: dialogFont.Id, fontSize: dialogFont.Size);
+            TitleText = ScriptTextSurface.Create(font: menuFont.Id, fontSize: menuFont.Size, horizontalAlignment: TextHorizontalAlignment.Center);
 
             CursorSprite = ScriptSprite.Create("menus/selection_menu_cursor");
 

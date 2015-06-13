@@ -24,8 +24,8 @@ namespace Alttp.Menus.SavegameScreens
 
             _screen.TitleText.SetTextKey("selection_menu.phase.choose_name");
             _screen.CursorSprite.SetAnimation("letters");
-            var font = LanguageFonts.GetMenuFont();
-            _playerNameText = ScriptTextSurface.Create(font: font.Item1, fontSize: font.Item2);
+            var font = Fonts.GetMenuFont();
+            _playerNameText = ScriptTextSurface.Create(font: font.Id, fontSize: font.Size);
             _lettersImg = ScriptSurface.Create("menus/selection_menu_letters.png");
             _nameArrowSprite = ScriptSprite.Create("menus/arrow");
             _nameArrowSprite.SetDirection(Direction4.Right);

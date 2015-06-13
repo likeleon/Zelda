@@ -37,7 +37,7 @@
   <ItemGroup>
     <Compile Include="Items\RupeeBag.cs" />
     <Compile Include="Items\Tunic.cs" />
-    <Compile Include="LanguageFonts.cs" />
+    <Compile Include="Fonts.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Menus\LanguageMenu.cs" />
     <Compile Include="Menus\SavegameScreens\ChooseNamePhase.cs" />

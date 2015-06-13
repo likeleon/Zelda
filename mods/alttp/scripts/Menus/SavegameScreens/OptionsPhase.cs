@@ -23,14 +23,14 @@ namespace Alttp.Menus.SavegameScreens
             {
                 _phase = phase;
 
-                var font = LanguageFonts.GetMenuFont();
+                var font = Fonts.GetMenuFont();
                 LabelText = ScriptTextSurface.Create(
-                    font: font.Item1,
-                    fontSize: font.Item2,
+                    font: font.Id,
+                    fontSize: font.Size,
                     textKey: "selection_menu.options.{0}".F(Name));
                 ValueText = ScriptTextSurface.Create(
-                    font: font.Item1,
-                    fontSize: font.Item2,
+                    font: font.Id,
+                    fontSize: font.Size,
                     horizontalAlignment: TextHorizontalAlignment.Right);
 
                 CurrentIndex = 0;                
@@ -295,15 +295,15 @@ namespace Alttp.Menus.SavegameScreens
 
         void ReloadOptionsStrings()
         {
-            var menuFont = LanguageFonts.GetMenuFont();
-            var dialogFont = LanguageFonts.GetDialogFont();
+            var menuFont = Fonts.GetMenuFont();
+            var dialogFont = Fonts.GetDialogFont();
 
             foreach (var option in _options)
             {
-                option.LabelText.SetFont(menuFont.Item1);
-                option.LabelText.SetFontSize(menuFont.Item2);
-                option.ValueText.SetFont(menuFont.Item1);
-                option.ValueText.SetFontSize(menuFont.Item2);
+                option.LabelText.SetFont(menuFont.Id);
+                option.LabelText.SetFontSize(menuFont.Size);
+                option.ValueText.SetFont(menuFont.Id);
+                option.ValueText.SetFontSize(menuFont.Size);
                 option.LabelText.SetTextKey("selection_menu.options.{0}".F(Name));
 
                 if (option is VideoModeOption && option.CurrentIndex != 0)
@@ -314,12 +314,12 @@ namespace Alttp.Menus.SavegameScreens
             }
 
             _screen.TitleText.SetTextKey("selection_menu.phase.options");
-            _screen.TitleText.SetFont(menuFont.Item1);
-            _screen.TitleText.SetFontSize(menuFont.Item2);
-            _screen.Option1Text.SetFont(dialogFont.Item1);
-            _screen.Option1Text.SetFontSize(dialogFont.Item2);
-            _screen.Option2Text.SetFont(dialogFont.Item1);
-            _screen.Option2Text.SetFontSize(dialogFont.Item2);
+            _screen.TitleText.SetFont(menuFont.Id);
+            _screen.TitleText.SetFontSize(menuFont.Size);
+            _screen.Option1Text.SetFont(dialogFont.Id);
+            _screen.Option1Text.SetFontSize(dialogFont.Size);
+            _screen.Option2Text.SetFont(dialogFont.Id);
+            _screen.Option2Text.SetFontSize(dialogFont.Size);
             _screen.SetBottomButtons("selection_menu.back", null);
             _screen.ReadSavegames();    // - Empty - 텍스트를 갱신하기 위해서 필요합니다
         }
