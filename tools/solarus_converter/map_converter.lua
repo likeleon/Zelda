@@ -104,7 +104,9 @@ local function export_map(quest_path, map_id, map)
     properties_elem:append("Floor")[1] = map.properties.floor
   end
   properties_elem:append("Tileset")[1] = map.properties.tileset
-  properties_elem:append("Music")[1] = map.properties.music
+  if map.properties.music ~= nil then
+    properties_elem:append("Music")[1] = map.properties.music
+  end
 
   for _, tile in ipairs(map.tiles) do
     local tile_elem = root:append("Tile")

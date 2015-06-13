@@ -3,29 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
-using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
     class SpriteAnimationDirectionData
     {
-        readonly Point _xy;
-        public Point XY
-        {
-            get { return _xy; }
-        }
-
-        readonly Size _size;
-        public Size Size
-        {
-            get { return _size; }
-        }
-
-        readonly Point _origin;
-        public Point Origin
-        {
-            get { return _origin; }
-        }
+        public Point XY { get; private set; }
+        public Size Size { get; private set; }
+        public Point Origin { get; private set; }
         
         int _numFrames;
         public int NumFrames
@@ -43,25 +28,25 @@ namespace Zelda.Game
 
         public SpriteAnimationDirectionData(Point xy, Size size, Point origin, int numFrames, int numColumns = 1)
         {
-            _xy = xy;
-            _size = size;
-            _origin = origin;
+            XY = xy;
+            Size = size;
+            Origin = origin;
             NumFrames = numFrames;
             NumColumns = numColumns;
         }
 
         public List<Rectangle> GetAllFrames()
         {
-            List<Rectangle> frames = new List<Rectangle>();
-            int frameNumber = 0;
+            var frames = new List<Rectangle>();
+            var frameNumber = 0;
 
-            int numRows = _numFrames / _numColumns;
+            var numRows = _numFrames / _numColumns;
             if (_numFrames % _numColumns != 0)
                 ++numRows;
 
-            for (int row = 0; row < numRows && frameNumber < _numFrames; ++row)
+            for (var row = 0; row < numRows && frameNumber < _numFrames; ++row)
             {
-                for (int col = 0; col < _numColumns && frameNumber < NumFrames; ++col)
+                for (var col = 0; col < _numColumns && frameNumber < NumFrames; ++col)
                 {
                     frames.Add(new Rectangle(
                         XY.X + col * Size.Width,
