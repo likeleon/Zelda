@@ -189,7 +189,7 @@ namespace Zelda.Game
             _entities = new MapEntities(game, this);
 
             // 엔티티들을 생성합니다
-            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+            for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
             {
                 for (int i = 0; i < data.GetNumEntities((Layer)layer); ++i)
                 {

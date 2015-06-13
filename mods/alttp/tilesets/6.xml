@@ -9,7 +9,7 @@
   </BackgroundColor>
   <TilePattern Id="2">
     <Ground>Traversable</Ground>
-    <DefaultLayer>Hight</DefaultLayer>
+    <DefaultLayer>High</DefaultLayer>
     <X>0</X>
     <Y>0</Y>
     <Width>16</Width>
@@ -17,7 +17,7 @@
   </TilePattern>
   <TilePattern Id="3">
     <Ground>Traversable</Ground>
-    <DefaultLayer>Hight</DefaultLayer>
+    <DefaultLayer>High</DefaultLayer>
     <X>16</X>
     <Y>0</Y>
     <Width>8</Width>

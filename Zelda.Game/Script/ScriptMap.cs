@@ -8,11 +8,14 @@ namespace Zelda.Game.Script
 {
     public class ScriptMap
     {
+        public ScriptGame Game { get { return Map.Game.SaveGame.ScriptGame; } }
+        public ScriptHero Hero { get { return Map.Game.Hero.AsScriptEntity<ScriptHero>(); } }
+
         internal Map Map { get; set;}
     
-        internal void NotifyStarted(Destination destionation)
+        internal void NotifyStarted(Destination destination)
         {
-            CoreToScript.Call(OnStarted);
+            CoreToScript.Call(() => OnStarted(destination.AsScriptEntity<ScriptDestination>()));
         }
 
         public ScriptEntity GetEntity(string name)
@@ -21,7 +24,7 @@ namespace Zelda.Game.Script
             return (entity != null) ? entity.ScriptEntity : null;
         }
 
-        protected virtual void OnStarted()
+        protected virtual void OnStarted(ScriptDestination destination)
         {
         }
 
@@ -89,7 +92,7 @@ namespace Zelda.Game.Script
                     data.Default);
                 map.Entities.AddEntity(destination);
 
-                return (map.IsStarted) ? (destination.ScriptEntity as ScriptDestination) : null;
+                return (map.IsStarted) ? destination.AsScriptEntity<ScriptDestination>() : null;
             });
         }
 
@@ -118,7 +121,7 @@ namespace Zelda.Game.Script
                 destructible.DamageOnEnemies = data.DamageOnEnemies;
                 map.Entities.AddEntity(destructible);
 
-                return (map.IsStarted) ? (destructible.ScriptEntity as ScriptDestructible) : null;
+                return (map.IsStarted) ? destructible.AsScriptEntity<ScriptDestructible>() : null;
             });
         }
 
@@ -161,7 +164,7 @@ namespace Zelda.Game.Script
                 chest.CannotOpenDialogId = data.CannotOpenDialog;
                 map.Entities.AddEntity(chest);
 
-                return (map.IsStarted) ? (chest.ScriptEntity as ScriptChest) : null;
+                return (map.IsStarted) ? chest.AsScriptEntity<ScriptChest>() : null;
             });
         }
 
@@ -182,7 +185,7 @@ namespace Zelda.Game.Script
                     data.Behavior);
                 map.Entities.AddEntity(npc);
 
-                return (map.IsStarted) ? (npc.ScriptEntity as ScriptNpc) : null;
+                return (map.IsStarted) ? npc.AsScriptEntity<ScriptNpc>() : null;
             });
         }
 
@@ -207,7 +210,7 @@ namespace Zelda.Game.Script
                     data.MaximumMoves);
                 map.Entities.AddEntity(block);
 
-                return (map.IsStarted) ? (block.ScriptEntity as ScriptBlock) : null;
+                return (map.IsStarted) ? block.AsScriptEntity<ScriptBlock>() : null;
             });
         }
 
@@ -221,7 +224,7 @@ namespace Zelda.Game.Script
                 Bomb bomb = new Bomb(data.Name, data.Layer, data.XY);
                 map.Entities.AddEntity(bomb);
 
-                return (map.IsStarted) ? (bomb.ScriptEntity as ScriptBomb) : null;
+                return (map.IsStarted) ? bomb.AsScriptEntity<ScriptBomb>() : null;
             });
         }
 

@@ -11,8 +11,8 @@ namespace Zelda.Game.Entities
         readonly int _mapWidth8;
         readonly int _mapHeight8;
         readonly int _tilesGridSize;
-        readonly NonAnimatedRegions[] _nonAnimatedRegions = new NonAnimatedRegions[(int)Layer.Count];
-        readonly List<Tile>[] _tilesInAnimatedRegions = new List<Tile>[(int)Layer.Count];
+        readonly NonAnimatedRegions[] _nonAnimatedRegions = new NonAnimatedRegions[(int)Layer.NumLayer];
+        readonly List<Tile>[] _tilesInAnimatedRegions = new List<Tile>[(int)Layer.NumLayer];
 
         #region 생성
         public MapEntities(Game game, Map map)
@@ -24,8 +24,8 @@ namespace Zelda.Game.Entities
             _tilesGridSize = _mapWidth8 * _mapHeight8;
             _hero = _game.Hero;
 
-            _tilesGround = new Ground[(int)Layer.Count, _tilesGridSize];
-            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+            _tilesGround = new Ground[(int)Layer.NumLayer, _tilesGridSize];
+            for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
             {
                 Ground initialGround = ((Layer)layer == Layer.Low) ? Ground.Traversable : Ground.Empty;
                 for (int i = 0; i < _tilesGridSize; ++i)
@@ -83,7 +83,7 @@ namespace Zelda.Game.Entities
             return _tilesGround[(int)layer, (y >> 3) * _mapWidth8 + (x >> 3)];
         }
 
-        readonly List<MapEntity>[] _obstacleEntities = new List<MapEntity>[(int)Layer.Count];
+        readonly List<MapEntity>[] _obstacleEntities = new List<MapEntity>[(int)Layer.NumLayer];
         public IEnumerable<MapEntity> GetObstacleEntities(Layer layer)
         {
             return _obstacleEntities[(int)layer];
@@ -98,8 +98,8 @@ namespace Zelda.Game.Entities
 
         #region 엔티티 관리
         readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
-        readonly List<MapEntity>[] _entitiesDrawnFirst = new List<MapEntity>[(int)Layer.Count];
-        readonly List<MapEntity>[] _entitiesDrawnYOrder = new List<MapEntity>[(int)Layer.Count];
+        readonly List<MapEntity>[] _entitiesDrawnFirst = new List<MapEntity>[(int)Layer.NumLayer];
+        readonly List<MapEntity>[] _entitiesDrawnYOrder = new List<MapEntity>[(int)Layer.NumLayer];
         readonly List<MapEntity> _entitiesToAdd = new List<MapEntity>();
         readonly List<MapEntity> _entitiesToRemove = new List<MapEntity>();
 
@@ -166,9 +166,9 @@ namespace Zelda.Game.Entities
             if (!String.IsNullOrEmpty(entity.Name))
             {
                 if (_namedEntities.ContainsKey(entity.Name))
-                {
                     throw new NotImplementedException("AddEntity duplicated name: {0}".F(entity.Name));
-                }
+
+                _namedEntities.Add(entity.Name, entity);
             }
 
             entity.SetMap(_map);
@@ -328,7 +328,7 @@ namespace Zelda.Game.Entities
                 {
                     if (entity.HasLayerIndependentCollisions)
                     {
-                        for (int i = 0; i < (int)Layer.Count; ++i)
+                        for (int i = 0; i < (int)Layer.NumLayer; ++i)
                             _obstacleEntities[i].Remove(entity);
                     }
                     else
@@ -413,14 +413,14 @@ namespace Zelda.Game.Entities
             _hero.NotifyTilesetChanged();
 
             // 애니메이션되지 않는 타일들의 pre-drawing 데이터들을 구성합니다
-            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+            for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
                 _nonAnimatedRegions[layer].Build(_tilesInAnimatedRegions[layer]);
         }
 
         public void NotifyTilesetChanged()
         {
             // 최적화된 타일들을 다시그려줍니다
-            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+            for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
                 _nonAnimatedRegions[layer].NotifyTilesetChanged();
 
             foreach (MapEntity entity in _allEntities)
@@ -448,7 +448,7 @@ namespace Zelda.Game.Entities
 
             _hero.Update();
 
-            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+            for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
                 _entitiesDrawnYOrder[layer].Sort((a, b) => (b.TopLeftY + b.Height) - (a.TopLeftY + a.Height));
 
             foreach (MapEntity entity in _allEntities)
@@ -462,7 +462,7 @@ namespace Zelda.Game.Entities
 
         public void Draw()
         {
-            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+            for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
             {
                 // 에니메이션되는 타일을 포함하는 영역들을 먼저 그립니다
                 foreach (Tile tile in _tilesInAnimatedRegions[layer])

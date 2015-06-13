@@ -70,10 +70,7 @@ namespace Zelda.Game.Script
             });
         }
 
-        public ScriptHero Hero
-        {
-            get { return (_savegame.Game.Hero.ScriptEntity as ScriptHero); }
-        }
+        public ScriptHero Hero { get { return _savegame.Game.Hero.AsScriptEntity<ScriptHero>(); } }
 
         public int GetAbility(Ability ability)
         {

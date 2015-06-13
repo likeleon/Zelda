@@ -25,7 +25,7 @@ local ground_names = {
 }
 
 local layer_names = {
-  "Low", "Intermediate", "Hight", "NumLayers"
+  "Low", "Intermediate", "High", "NumLayers"
 }
 
 local scrolling_names = {

@@ -76,13 +76,13 @@ namespace Zelda.Game
 
         public static readonly int NoFloor = 9999;
 
-        readonly List<EntityData>[] _entities = new List<EntityData>[(int)Layer.Count];
+        readonly List<EntityData>[] _entities = new List<EntityData>[(int)Layer.NumLayer];
         readonly Dictionary<string, EntityIndex> _namedEntities = new Dictionary<string, EntityIndex>();
 
         public MapData()
         {
             World = String.Empty;
-            for (int layer = 0; layer < (int)Layer.Count; ++layer)
+            for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
                 _entities[(int)layer] = new List<EntityData>();
         }
 

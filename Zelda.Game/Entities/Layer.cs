@@ -6,6 +6,6 @@ namespace Zelda.Game.Entities
         Low,
         Intermediate,
         High,
-        Count,  // num of layer
+        NumLayer,
     }
 }

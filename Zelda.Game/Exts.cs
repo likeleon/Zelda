@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
+using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
@@ -239,6 +240,14 @@ namespace Zelda.Game
         public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> source)
         {
             return source ?? Enumerable.Empty<T>();
+        }
+
+        internal static T AsScriptEntity<T>(this MapEntity entity) where T: ScriptEntity
+        {
+            if (entity == null)
+                return null;
+
+            return entity.ScriptEntity as T;
         }
     }
 }
