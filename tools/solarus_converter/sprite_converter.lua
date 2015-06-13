@@ -10,10 +10,12 @@ local function import_sprite(quest_path, sprite_id)
 
   local sprite = {}
   sprite.animations = {}
+  sprite.animation_names = {}
 
   local env = {}
   function env.animation(properties)
     sprite.animations[properties.name] = properties
+    sprite.animation_names[#sprite.animation_names + 1] = properties.name
   end
 
   local file = quest_path .. "sprites/" .. sprite_id .. ".dat"
@@ -37,7 +39,8 @@ local function export_sprite(quest_path, sprite_id, sprite)
 
   local root = xml.new("Sprite")
 
-  for name, animation in pairs(sprite.animations) do
+  for _, name in ipairs(sprite.animation_names) do
+    local animation = sprite.animations[name]
     local anim_elem = root:append("Animation")
     anim_elem["Name"] = name
     anim_elem:append("SrcImage")[1] = animation.src_image

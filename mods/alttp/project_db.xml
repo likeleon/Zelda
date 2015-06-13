@@ -15,6 +15,12 @@
     <Font Id="NanumBarunGothic" Description="나눔바른고딕" />
     <Font Id="wqy-zenhei" Description="wqy-zenhei" />
   </Fonts>
+  <Maps>
+    <Map Id="0" Description="Intro" />
+  </Maps>
+  <Tilesets>
+    <Tileset Id="6" Description="Intro" />
+  </Tilesets>
   <Items>
     <Item Id="tunic" Description="Tunic (green / blue / red)" />
     <Item Id="rupee_bag" Description="Rupee bag (small / large / huge)" />

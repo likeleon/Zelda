@@ -42,13 +42,15 @@ local function import_tileset(quest_path, tileset_id)
 
   local tileset = {}
   tileset.tile_patterns = {}
+  tileset.tile_pattern_ids = {}
 
   local env = {}
   function env.background_color(color)
     tileset.background_color = color
   end
   function env.tile_pattern(properties)
-    tileset.tile_patterns[properties.id] = properties
+    tileset.tile_patterns[tostring(properties.id)] = properties
+    tileset.tile_pattern_ids[#tileset.tile_pattern_ids + 1] = properties.id
   end
 
   local file = quest_path .. "tilesets/" .. tileset_id .. ".dat"
@@ -80,7 +82,8 @@ local function export_tileset(quest_path, tileset_id, tileset)
     bgcolor_elem:append("A")[1] = tileset.background_color[4]
   end
 
-  for id, pattern in ipairs(tileset.tile_patterns) do
+  for _, id in ipairs(tileset.tile_pattern_ids) do
+    local pattern = tileset.tile_patterns[tostring(id)]
     local pattern_elem = root:append("TilePattern")
     pattern_elem["Id"] = id
     pattern_elem:append("Ground")[1] = ground_names[pattern.ground]

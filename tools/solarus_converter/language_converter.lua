@@ -7,10 +7,12 @@ require("LuaXml")
 
 local function import_strings(quest_path, language_id)
   local strings = {}
+  local string_keys = {}
 
   local env = {}
   function env.text(properties)
     strings[properties.key] = properties.value
+    string_keys[#string_keys + 1] = properties.key
   end
 
   local file = quest_path .. "languages/" .. language_id .. "/text/strings.dat"
@@ -26,22 +28,23 @@ local function import_strings(quest_path, language_id)
     end
   end
 
-  return strings
+  return strings, string_keys
 end
 
 local function import_language(quest_path, language_id)
   print("Importing language '" .. language_id .. "'")
 
   local language = {}
-  language.strings = import_strings(quest_path, language_id)
+  language.strings, language.string_keys = import_strings(quest_path, language_id)
 
   return language
 end
 
-local function export_strings(quest_path, language_id, strings)
+local function export_strings(quest_path, language_id, strings, string_keys)
   local root = xml.new("Strings")
 
-  for key, value in pairs(strings) do
+  for _, key in ipairs(string_keys) do
+    local value = strings[key]
     local text_elem = root:append("Text")
     text_elem["Key"] = key
     text_elem[1] = value
@@ -54,7 +57,7 @@ end
 local function export_language(quest_path, language_id, language)
   print("Exporting language '" .. language_id .. "'")
 
-  export_strings(quest_path, language_id, language.strings)
+  export_strings(quest_path, language_id, language.strings, language.string_keys)
 end
 
 local function import(quest_path, resources)
