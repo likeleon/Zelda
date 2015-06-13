@@ -1,12 +1,11 @@
 ﻿using System;
-
 using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
 {
     public class ScriptGame
     {
-        readonly Savegame _savegame;
+        Savegame _savegame;
 
         public static bool Exists(string fileName)
         {
@@ -19,16 +18,18 @@ namespace Zelda.Game.Script
             });
         }
 
-        public static ScriptGame Load(string fileName)
+        public static T Load<T>(string fileName) where T : ScriptGame
         {
-            return ScriptToCore.Call(() =>
+            return ScriptToCore.Call<T>(() =>
             {
                 if (String.IsNullOrWhiteSpace(ModFiles.ModWriteDir))
                     throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
 
-                Savegame savegame = new Savegame(ScriptContext.MainLoop, fileName);
-                savegame.Initialize();
-                return new ScriptGame(savegame);
+                T game = (T)Activator.CreateInstance(typeof(T));
+                game._savegame = new Savegame(ScriptContext.MainLoop, fileName);
+                game._savegame.Initialize();
+                game._savegame.ScriptGame = game;
+                return game;
             });
         }
 
@@ -41,14 +42,6 @@ namespace Zelda.Game.Script
 
                 ModFiles.DataFileDelete(fileName);
             });
-        }
-
-        ScriptGame(Savegame savegame)
-        {
-            Debug.CheckAssertion(savegame != null, "rawSaveGame should not be null");
-
-            _savegame = savegame;
-            _savegame.ScriptGame = this;
         }
 
         public int GetLife()

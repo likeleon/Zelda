@@ -122,22 +122,15 @@ namespace Zelda.Game
     class SpriteData : XmlData
     {
         Dictionary<string, SpriteAnimationData> _animations = new Dictionary<string, SpriteAnimationData>();
-        public IDictionary<string, SpriteAnimationData> Animations
-        {
-            get { return _animations; }
-        }
-        
-        string _defaultAnimationName;
-        public string DefaultAnimationName
-        {
-            get { return _defaultAnimationName; }
-        }
+        public IDictionary<string, SpriteAnimationData> Animations { get { return _animations; } }
+
+        public string DefaultAnimationName { get; private set; }
 
         protected override bool ImportFromStream(byte[] buffer)
         {
             try
             {
-                SpriteXmlData xmlData = buffer.XmlDeserialize<SpriteXmlData>();
+                var xmlData = buffer.XmlDeserialize<SpriteXmlData>();
                 foreach (SpriteXmlData.Animation animation in xmlData.Animations)
                 {
                     string animationName = animation.Name.CheckField("Name");
@@ -181,7 +174,7 @@ namespace Zelda.Game
 
                     // 첫번째 애니메이션을 기본으로 해줍니다
                     if (_animations.Count == 1)
-                        _defaultAnimationName = animationName;
+                        DefaultAnimationName = animationName;
                 }
             }
             catch (Exception ex)

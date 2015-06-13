@@ -8,14 +8,14 @@ namespace Alttp.Menus.SavegameScreens
         readonly ScriptTextSurface _playerNameText;
 
         public string FileName { get; private set; }
-        public ScriptGame Savegame { get; private set; }
+        public PlayGame Savegame { get; private set; }
         public ScriptSurface NumberImg { get; private set; }
         public ScriptTextSurface PlayerNameText { get { return _playerNameText; } }
 
         public Slot(int index)
         {
             FileName = "save{0}.dat".F(index);
-            Savegame = ScriptGame.Load(FileName);
+            Savegame = ScriptGame.Load<PlayGame>(FileName);
             NumberImg = ScriptSurface.Create("menus/selection_menu_save{0}.png".F(index));
 
             var dialogFont = Fonts.GetDialogFont();

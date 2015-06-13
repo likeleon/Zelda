@@ -54,6 +54,7 @@
     <Compile Include="Menus\TitleScreens\Title.cs" />
     <Compile Include="Menus\TitleScreens\TitlePhase.cs" />
     <Compile Include="Menus\TitleScreens\ZsPresentsPhase.cs" />
+    <Compile Include="PlayGame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

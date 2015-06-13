@@ -7,10 +7,11 @@ using Zelda.Game.Script;
 
 namespace Alttp
 {
-    public class Main : ScriptMain
+    class Main : ScriptMain
     {
-        ScriptGame _game;
         bool _debugEnabled;
+
+        public ScriptGame Game { get; set; }
 
         protected override void OnStarted()
         {
@@ -25,19 +26,19 @@ namespace Alttp
 
             solarusLogo.Finished += (_, e) =>
             {
-                if (_game == null)
+                if (Game == null)
                     ScriptMenu.Start(this, languageMenu);
             };
 
             languageMenu.Finished += (_, e) =>
             {
-                if (_game == null)
+                if (Game == null)
                     ScriptMenu.Start(this, titleScreen);
             };
 
             titleScreen.Finished += (_, e) =>
             {
-                if (_game == null)
+                if (Game == null)
                     ScriptMenu.Start(this, savegameScreen);
             };
 
@@ -66,9 +67,9 @@ namespace Alttp
             return handled;
         }
 
-        public void StartSavegame(ScriptGame game)
+        public void StartSavegame(PlayGame game)
         {
-            Console.WriteLine("Start save game here");
+            game.Play(this);
         }
     }
 }

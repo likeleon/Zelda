@@ -5,16 +5,15 @@ namespace Zelda.Game
 {
     class Equipment
     {
-        readonly Savegame _savegame;
         readonly Dictionary<string, EquipmentItem> _items = new Dictionary<string, EquipmentItem>();
         bool _suspended;
 
-        public Savegame Savegame { get { return _savegame; } }
-        public Game Game { get { return _savegame.Game; } }
+        public Savegame Savegame { get; private set; }
+        public Game Game { get { return Savegame.Game; } }
         
         public Equipment(Savegame saveGame)
         {
-            _savegame = saveGame;
+            Savegame = saveGame;
         }
 
         public void NotifyGameFinished()
@@ -25,7 +24,7 @@ namespace Zelda.Game
 
         public void Update()
         {
-            Game game = _savegame.Game;
+            Game game = Savegame.Game;
             if (game == null)
                 return;
 
@@ -41,14 +40,14 @@ namespace Zelda.Game
 
         public int GetMaxLife()
         {
-            return _savegame.GetInteger(Savegame.Key.MaxLife);
+            return Savegame.GetInteger(Savegame.Key.MaxLife);
         }
         
         public void SetMaxLife(int maxLife)
         {
             Debug.CheckAssertion(maxLife >= 0, "Invalid life amount");
 
-            _savegame.SetInteger(Savegame.Key.MaxLife, maxLife);
+            Savegame.SetInteger(Savegame.Key.MaxLife, maxLife);
 
             if (GetLife() > GetMaxLife())
                 SetLife(maxLife);
@@ -56,13 +55,13 @@ namespace Zelda.Game
 
         public int GetLife()
         {
-            return _savegame.GetInteger(Savegame.Key.CurrentLife);
+            return Savegame.GetInteger(Savegame.Key.CurrentLife);
         }
 
         public void SetLife(int life)
         {
             life = Math.Max(0, Math.Min(GetMaxLife(), life));
-            _savegame.SetInteger(Savegame.Key.CurrentLife, life);
+            Savegame.SetInteger(Savegame.Key.CurrentLife, life);
         }
 
         public void RemoveLife(int lifeToRemove)
@@ -110,21 +109,20 @@ namespace Zelda.Game
         public EquipmentItem GetItemAssigned(int slot)
         {
             Debug.CheckAssertion(slot >= 1 && slot <= 2, "Invalid item slot");
-            string savegameVariable = "_item_slot_" + slot;
-            string itemName = _savegame.GetString(savegameVariable);
+            var savegameVariable = "_item_slot_" + slot;
+            var itemName = Savegame.GetString(savegameVariable);
 
-            EquipmentItem item = null;
-            if (!String.IsNullOrEmpty(itemName))
-                item = GetItem(itemName);
-
-            return item;
+            if (String.IsNullOrEmpty(itemName))
+                return null;
+            
+            return GetItem(itemName);
         }
 
         public void SetItemAssigned(int slot, EquipmentItem item)
         {
             Debug.CheckAssertion(slot >= 1 && slot <= 2, "Invalid item slot");
 
-            string key = "_item_slot_" + slot;
+            var key = "_item_slot_" + slot;
 
             if (item != null)
             {
@@ -132,10 +130,10 @@ namespace Zelda.Game
                     "Cannot assign item '{0}' because the player does not have it".F(item.Name));
                 Debug.CheckAssertion(item.IsAssignable,
                     "The item '{0}' cannot be assigned".F(item.Name));
-                _savegame.SetString(key, item.Name);
+                Savegame.SetString(key, item.Name);
             }
             else
-                _savegame.SetString(key, String.Empty);
+                Savegame.SetString(key, String.Empty);
         }
 
         public bool HasAbility(Ability ability, int level = 1)
@@ -145,7 +143,7 @@ namespace Zelda.Game
 
         public void SetAbility(Ability ability, int level)
         {
-            _savegame.SetInteger(GetAbilitySavegameVariable(ability), level);
+            Savegame.SetInteger(GetAbilitySavegameVariable(ability), level);
 
             if (Game != null)
             {
@@ -161,7 +159,7 @@ namespace Zelda.Game
 
         public int GetAbility(Ability ability)
         {
-            return _savegame.GetInteger(GetAbilitySavegameVariable(ability));
+            return Savegame.GetInteger(GetAbilitySavegameVariable(ability));
         }
 
         Savegame.Key GetAbilitySavegameVariable(Ability ability)

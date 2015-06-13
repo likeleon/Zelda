@@ -7,8 +7,8 @@ namespace Sample.Scripts
     {
         public static void StartGame()
         {
-            bool exists = ScriptGame.Exists("save1.dat");
-            ScriptGame game = ScriptGame.Load("save1.dat");
+            var exists = ScriptGame.Exists("save1.dat");
+            var game = ScriptGame.Load<ScriptGame>("save1.dat");
             if (!exists)
             {
                 game.SetMaxLife(12);

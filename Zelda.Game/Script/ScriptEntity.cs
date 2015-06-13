@@ -7,15 +7,8 @@ namespace Zelda.Game.Script
     {
         readonly MapEntity _entity;
 
-        public Point Position
-        {
-            get { return _entity.XY; }
-        }
-
-        public Layer Layer
-        {
-            get { return _entity.Layer; }
-        }
+        public Point Position { get { return _entity.XY; } }
+        public Layer Layer { get { return _entity.Layer; } }
 
         internal ScriptEntity(MapEntity entity)
         {
