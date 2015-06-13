@@ -41,6 +41,8 @@
     <Compile Include="Main.cs" />
     <Compile Include="Menus\LanguageMenu.cs" />
     <Compile Include="Menus\SavegameScreens\ChooseNamePhase.cs" />
+    <Compile Include="Menus\SavegameScreens\ConfirmErasePhase.cs" />
+    <Compile Include="Menus\SavegameScreens\EraseFilePhase.cs" />
     <Compile Include="Menus\SavegameScreens\IPhase.cs" />
     <Compile Include="Menus\SavegameScreens\OptionsPhase.cs" />
     <Compile Include="Menus\SavegameScreens\SavegameScreen.cs" />

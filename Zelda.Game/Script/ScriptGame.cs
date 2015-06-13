@@ -8,6 +8,41 @@ namespace Zelda.Game.Script
     {
         readonly Savegame _savegame;
 
+        public static bool Exists(string fileName)
+        {
+            return ScriptToCore.Call(() =>
+            {
+                if (String.IsNullOrWhiteSpace(ModFiles.ModWriteDir))
+                    throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
+
+                return ModFiles.DataFileExists(fileName);
+            });
+        }
+
+        public static ScriptGame Load(string fileName)
+        {
+            return ScriptToCore.Call(() =>
+            {
+                if (String.IsNullOrWhiteSpace(ModFiles.ModWriteDir))
+                    throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
+
+                Savegame savegame = new Savegame(ScriptContext.MainLoop, fileName);
+                savegame.Initialize();
+                return new ScriptGame(savegame);
+            });
+        }
+
+        public static void Delete(string fileName)
+        {
+            ScriptToCore.Call(() =>
+            {
+                if (string.IsNullOrEmpty(ModFiles.ModWriteDir))
+                    throw new InvalidOperationException("Cannot delete savegame: no mod directory was specified in mod.xml");
+
+                ModFiles.DataFileDelete(fileName);
+            });
+        }
+
         ScriptGame(Savegame savegame)
         {
             Debug.CheckAssertion(savegame != null, "rawSaveGame should not be null");
@@ -55,30 +90,6 @@ namespace Zelda.Game.Script
         public void SetAbility(Ability ability, int level)
         {
             ScriptToCore.Call(() => _savegame.Equipment.SetAbility(ability, level));
-        }
-
-        public static bool Exists(string fileName)
-        {
-            return ScriptToCore.Call(() =>
-            {
-                if (String.IsNullOrWhiteSpace(ModFiles.ModWriteDir))
-                    throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
-
-                return ModFiles.DataFileExists(fileName);
-            });
-        }
-
-        public static ScriptGame Load(string fileName)
-        {
-            return ScriptToCore.Call(() =>
-            {
-                if (String.IsNullOrWhiteSpace(ModFiles.ModWriteDir))
-                    throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
-
-                Savegame savegame = new Savegame(ScriptContext.MainLoop, fileName);
-                savegame.Initialize();
-                return new ScriptGame(savegame);
-            });
         }
 
         public void Start()

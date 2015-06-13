@@ -119,11 +119,17 @@ namespace Alttp.Menus.SavegameScreens
 
         public void InitPhaseEraseFile()
         {
+            _phase = new EraseFilePhase(this);
         }
 
         public void InitPhaseChooseName()
         {
             _phase = new ChooseNamePhase(this);
+        }
+
+        public void InitPhaseConfirmErase()
+        {
+            _phase = new ConfirmErasePhase(this);
         }
 
         public void SetBottomButtons(string key1, string key2)
