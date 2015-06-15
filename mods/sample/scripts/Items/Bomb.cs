@@ -1,5 +1,4 @@
 ﻿using Zelda.Game;
-using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 using Zelda.Game.Script;
 
@@ -21,10 +20,10 @@ namespace Sample.Items
 
         protected override void OnUsing()
         {
-            ScriptHero hero = Map.GetEntity("hero") as ScriptHero;
+            var hero = Map.GetEntity<ScriptHero>("hero");
             
-            Point xy = hero.Position;
-            Direction4 direction = hero.Direction;
+            var xy = hero.Position;
+            var direction = hero.Direction;
             if (direction == Direction4.Right)
                 xy.X += 16;
             else if (direction == Direction4.Up)

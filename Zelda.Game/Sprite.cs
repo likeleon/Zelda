@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
+using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
     class Sprite : Drawable
     {
         readonly Lazy<Surface> _intermediateSurface;
+        readonly Lazy<ScriptSprite> _scriptSprite;
+        bool _ignoreSuspended;
         
         Surface IntermediateSurface { get { return _intermediateSurface.Value; } }
         public Point Origin { get { return _currentAnimation.GetDirection(_currentDirection).Origin; } }
+
+        public ScriptSprite ScriptSprite { get { return _scriptSprite.Value; } }
 
         #region 초기화
         public static void Initialize()
@@ -156,7 +161,7 @@ namespace Zelda.Game
 
         public override void SetSuspended(bool suspended)
         {
-            if (suspended == IsSuspended)
+            if (suspended == IsSuspended || _ignoreSuspended)
                 return;
 
             base.SetSuspended(suspended);
@@ -181,6 +186,7 @@ namespace Zelda.Game
             SetCurrentAnimation(_animationSet.DefaultAnimation);
 
             _intermediateSurface = Exts.Lazy(() => Surface.Create(MaxSize));
+            _scriptSprite = Exts.Lazy<ScriptSprite>(() => new ScriptSprite(this));
         }
 
         public void SetTileset(Tileset tileset)
@@ -335,6 +341,12 @@ namespace Zelda.Game
             Debug.CheckAssertion(animationSet != null, "No animation set");
 
             return animationSet;
+        }
+
+        public void SetIgnoreSuspended(bool ignoreSuspended)
+        {
+            SetSuspended(false);
+            _ignoreSuspended = ignoreSuspended;
         }
     }
 }

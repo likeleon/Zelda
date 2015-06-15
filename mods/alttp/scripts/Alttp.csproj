@@ -40,6 +40,7 @@
     <Compile Include="Fonts.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Maps\Intro.cs" />
+    <Compile Include="Menus\DialogBox.cs" />
     <Compile Include="Menus\LanguageMenu.cs" />
     <Compile Include="Menus\SavegameScreens\ChooseNamePhase.cs" />
     <Compile Include="Menus\SavegameScreens\ConfirmErasePhase.cs" />

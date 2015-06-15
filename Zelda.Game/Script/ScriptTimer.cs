@@ -13,7 +13,15 @@ namespace Zelda.Game.Script
         {
             return ScriptToCore.Call(() =>
             {
-                object timerContext = context ?? ScriptContext.MainLoop.Game;
+                var timerContext = context;
+                if (timerContext == null)
+                {
+                    var game = ScriptContext.MainLoop.Game;
+                    if (game != null && game.HasCurrentMap)
+                        timerContext = game.CurrentMap.ScriptMap;
+                    else
+                        timerContext = ScriptMain.Current;
+                }
 
                 Timer timer = new Timer(delay);
                 AddTimer(timer, timerContext, callback.Invoke);

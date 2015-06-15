@@ -38,6 +38,17 @@ namespace Zelda.Game.Script
             ScriptToCore.Call(() => _drawable.Draw(dstSurface.Surface, x, y));
         }
 
+        public void DrawRegion(Rectangle region, ScriptSurface dstSurface, Point? dstPosition = null)
+        {
+            ScriptToCore.Call(() => 
+            {
+                if (dstPosition != null)
+                    _drawable.DrawRegion(region, dstSurface.Surface, dstPosition.Value);
+                else
+                    _drawable.DrawRegion(region, dstSurface.Surface);
+            });
+        }
+
         public void StopMovement()
         {
             ScriptToCore.Call(_drawable.StopMovement);

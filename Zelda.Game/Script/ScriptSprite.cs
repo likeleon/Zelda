@@ -1,5 +1,4 @@
 ﻿using System;
-using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
 {
@@ -13,13 +12,13 @@ namespace Zelda.Game.Script
         {
             return ScriptToCore.Call(() =>
             {
-                Sprite sprite = new Sprite(animationSetId);
+                var sprite = new Sprite(animationSetId);
                 ScriptDrawable.AddDrawable(sprite);
-                return new ScriptSprite(sprite);
+                return sprite.ScriptSprite;
             });
         }
 
-        ScriptSprite(Sprite sprite)
+        internal ScriptSprite(Sprite sprite)
             : base(sprite)
         {
             _sprite = sprite;
@@ -63,6 +62,11 @@ namespace Zelda.Game.Script
                 }
                 _sprite.SetCurrentFrame(frame);
             });
+        }
+
+        public void SetIgnoreSuspended(bool ignoreSuspended)
+        {
+            ScriptToCore.Call(() => _sprite.SetIgnoreSuspended(ignoreSuspended));
         }
     }
 }

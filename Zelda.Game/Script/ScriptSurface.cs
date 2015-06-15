@@ -15,6 +15,11 @@ namespace Zelda.Game.Script
             return ScriptToCore.Call(() => Create(Video.ModSize.Width, Video.ModSize.Height));
         }
 
+        public static ScriptSurface Create(Size size)
+        {
+            return ScriptToCore.Call(() => Create(size.Width, size.Height));
+        }
+
         public static ScriptSurface Create(int width, int height)
         {
             return ScriptToCore.Call(() =>
@@ -35,11 +40,8 @@ namespace Zelda.Game.Script
 
         static ScriptSurface CreateScriptSurface(Surface surface)
         {
-            if (surface == null)
-                return null;
-
             ScriptDrawable.AddDrawable(surface);
-            return new ScriptSurface(surface);
+            return surface.ScriptSurface;
         }
 
         internal ScriptSurface(Surface surface)

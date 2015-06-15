@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Zelda.Game.Engine;
-using Zelda.Game.Entities;
 
 namespace Zelda.Game.Script
 {
@@ -64,12 +62,6 @@ namespace Zelda.Game.Script
             ScriptMain.Current = _scriptMain;
         }
 
-        internal static void NotifyDialogFinished(Game game, Dialog dialog, Action callback)
-        {
-            if (callback != null)
-                callback();
-        }
-
         internal static ScriptItem RunItem(EquipmentItem item)
         {
             string className =  GetScriptClassName<ScriptItem>(item.Name);
@@ -112,6 +104,12 @@ namespace Zelda.Game.Script
         {
             CoreToScript.Call(() => _scriptMain.OnDraw(dstSurface));
             ScriptMenu.MenusOnDraw(_scriptMain, dstSurface);
+        }
+
+        internal static void GameOnDraw(Game game, ScriptSurface dstSurface)
+        {
+            CoreToScript.Call(() => game.SaveGame.ScriptGame.OnDraw(dstSurface));
+            ScriptMenu.MenusOnDraw(game.SaveGame.ScriptGame, dstSurface);
         }
 
         internal static bool MainOnInput(InputEvent inputEvent)

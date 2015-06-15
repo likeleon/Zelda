@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using Zelda.Game.Entities;
 using Key = Zelda.Game.Savegame.Key;
+using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
@@ -64,6 +65,7 @@ namespace Zelda.Game
                 return;
 
             _started = true;
+            SaveGame.ScriptGame.NotifyStarted();
         }
 
         public void Stop()
@@ -71,12 +73,13 @@ namespace Zelda.Game
             if (!_started)
                 return;
 
-            if (_currentMap != null)
+            if (CurrentMap != null)
             {
                 if (_hero.IsOnMap)
                     _hero.NotifyBeingRemoved();
             }
 
+            SaveGame.ScriptGame.NotifyFinished();
             _saveGame.NotifyGameFinished();
             _saveGame.Game = null;
 
@@ -128,7 +131,7 @@ namespace Zelda.Game
         #region 메인 루프에 의해 호출되는 함수들
         public bool NotifyInput(InputEvent inputEvent)
         {
-            if (_currentMap != null && _currentMap.IsLoaded)
+            if (CurrentMap != null && CurrentMap.IsLoaded)
                 _commands.NotifyInput(inputEvent);
             return true;
         }
@@ -140,7 +143,7 @@ namespace Zelda.Game
             if (!_started)
                 return;
 
-            _currentMap.Update();
+            CurrentMap.Update();
 
             Equipment.Update();
             UpdateCommandsEffects();
@@ -148,40 +151,39 @@ namespace Zelda.Game
 
         public void Draw(Surface dstSurface)
         {
-            if (_currentMap == null)
+            if (CurrentMap == null)
                 return; // 게임의 초기화가 완료되기 전입니다
 
-            if (_currentMap.IsLoaded)
+            if (CurrentMap.IsLoaded)
             {
-                _currentMap.Draw();
-                _currentMap.VisibleSurface.Draw(dstSurface);
+                CurrentMap.Draw();
+                CurrentMap.VisibleSurface.Draw(dstSurface);
 
                 if (IsDialogEnabled)
                     _dialogBox.Draw(dstSurface);
             }
+
+            ScriptContext.GameOnDraw(this, dstSurface.ScriptSurface);
+        }
+
+        public bool NotifyDialogStarted(Dialog dialog, object info)
+        {
+            return _saveGame.ScriptGame.NotifyDialogStarted(dialog, info);
+        }
+
+        public void NotifyDialogFinished(Dialog dialog, Action<object> callback, object status)
+        {
+            _saveGame.ScriptGame.NotifyDialogFinished(dialog);
+
+            if (callback != null)
+                CoreToScript.Call(() => callback(status));
         }
         #endregion
 
         #region 현재 게임 상태
-        bool _paused;
-        public bool IsPaused
-        {
-            get { return _paused; }
-        }
-
-        public bool IsDialogEnabled
-        {
-            get { return _dialogBox.IsEnabled; }
-        }
-
-        public bool IsSuspended
-        {
-            get
-            {
-                return _currentMap == null ||
-                       IsPaused;
-            }
-        }
+        public bool IsPaused { get; private set; }
+        public bool IsDialogEnabled { get { return _dialogBox.IsEnabled; } }
+        public bool IsSuspended { get { return CurrentMap == null || IsPaused; } }
         #endregion
         
         #region 일시 정지
@@ -204,10 +206,10 @@ namespace Zelda.Game
 
         public void SetPaused(bool paused)
         {
-            if (_paused == paused)
+            if (IsPaused == paused)
                 return;
 
-            _paused = paused;
+            IsPaused = paused;
             if (paused)
             {
                 _commandsEffects.SaveActionCommandEffect();
@@ -223,17 +225,17 @@ namespace Zelda.Game
         #region 다이얼로그
         readonly DialogBoxSystem _dialogBox;
 
-        public void StartDialog(string dialogId, Action callback)
+        public void StartDialog(string dialogId, object info, Action<object> callback)
         {
             if (!DialogResource.Exists(dialogId))
                 Debug.Error("No such dialog: '{0}'".F(dialogId));
             else
-                _dialogBox.Open(dialogId, callback);
+                _dialogBox.Open(dialogId, info, callback);
         }
 
-        public void StopDialog()
+        public void StopDialog(object status)
         {
-            _dialogBox.Close();
+            _dialogBox.Close(status);
         }
         #endregion
 
@@ -265,23 +267,16 @@ namespace Zelda.Game
         #endregion
 
         #region 맵
-        Map _currentMap;
-        public bool HasCurrentMap
-        {
-            get { return _currentMap != null; }
-        }
+        public bool HasCurrentMap { get { return CurrentMap != null; } }
 
-        public Map CurrentMap
-        {
-            get { return _currentMap; }
-        }
+        public Map CurrentMap { get; private set; }
 
         Map _nextMap;
 
         public void SetCurrentMap(string mapId, string destinationName)
         {
             // 다음 맵을 준비합니다
-            if (_currentMap == null || mapId != _currentMap.Id)
+            if (CurrentMap == null || mapId != CurrentMap.Id)
             {
                 // 다른 맵입니다
                 _nextMap = new Map(mapId);
@@ -290,7 +285,7 @@ namespace Zelda.Game
             else
             {
                 // 동일한 맵입니다
-                _nextMap = _currentMap;
+                _nextMap = CurrentMap;
             }
 
             _nextMap.DestinationName = destinationName;
@@ -306,20 +301,20 @@ namespace Zelda.Game
         {
             if (_nextMap != null)
             {
-                if (_currentMap == null)
+                if (CurrentMap == null)
                 {
-                    _currentMap = _nextMap;
+                    CurrentMap = _nextMap;
                     _nextMap = null;
                 }
             }
 
-            Rectangle previousMapLocation = _currentMap.Location;
+            Rectangle previousMapLocation = CurrentMap.Location;
 
-            if (_started && !_currentMap.IsStarted)
+            if (_started && !CurrentMap.IsStarted)
             {
-                Debug.CheckAssertion(_currentMap.IsLoaded, "This map is not loaded");
-                _hero.PlaceOnDestination(_currentMap, previousMapLocation);
-                _currentMap.Start();
+                Debug.CheckAssertion(CurrentMap.IsLoaded, "This map is not loaded");
+                _hero.PlaceOnDestination(CurrentMap, previousMapLocation);
+                CurrentMap.Start();
             }
         }
         #endregion

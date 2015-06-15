@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
@@ -13,7 +12,10 @@ namespace Zelda.Game
     {
         public class Dialog
         {
+            [XmlAttribute]
             public string Id { get; set; }
+          
+            [XmlElement]
             public string Text { get; set; }
 
             [XmlAnyElement]

@@ -12,7 +12,7 @@ namespace Zelda.Game
         {
             _id = id;
             _cameraPosition = new Rectangle(new Point(), Video.ModSize);
-            _scriptMap = ScriptContext.CreateScriptMap(this);
+            ScriptMap = ScriptContext.CreateScriptMap(this);
         }
         #endregion
 
@@ -317,21 +317,12 @@ namespace Zelda.Game
         #endregion
 
         #region 시작
-        bool _started;
-        public bool IsStarted
-        {
-            get { return _started; }
-        }
-
-        readonly ScriptMap _scriptMap;
-        public ScriptMap ScriptMap
-        {
-            get { return _scriptMap; }
-        }
+        public bool IsStarted { get; private set; }
+        public ScriptMap ScriptMap { get; private set; }
 
         public void Start()
         {
-            _started = true;
+            IsStarted = true;
             _visibleSurface.SetOpacity(255);
 
             Music.Play(_musicId, true);

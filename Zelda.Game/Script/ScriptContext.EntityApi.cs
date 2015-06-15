@@ -10,15 +10,15 @@ namespace Zelda.Game.Script
         {
             string dialogId = "_treasure.{0}.{1}".F(treasure.ItemName, treasure.Variant);
 
-            Action dialogCallback = () => TreasureDialogFinished(treasure.Item, treasure.Variant, treasure.SavegameVariable, callback);
+            Action<object> dialogCallback = (_) => TreasureDialogFinished(treasure.Item, treasure.Variant, treasure.SavegameVariable, callback);
 
             if (!DialogResource.Exists(dialogId))
             {
                 Debug.Error("Missing treasure dialog: '{0}'".F(dialogId));
-                dialogCallback();
+                dialogCallback(null);
             }
             else
-                treasure.Game.StartDialog(dialogId, dialogCallback);
+                treasure.Game.StartDialog(dialogId, null, dialogCallback);
         }
 
         static void TreasureDialogFinished(EquipmentItem item, int treasureVariant, string treasureSavegameVariable, Action callback)

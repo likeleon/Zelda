@@ -94,7 +94,6 @@ namespace Zelda.Game
 
             Equipment.LoadItems();
         }
-        
 
         public void NotifyGameFinished()
         {

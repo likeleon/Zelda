@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Runtime.InteropServices;
+using Zelda.Game.Script;
 
 namespace Zelda.Game.Engine
 {
@@ -99,12 +99,15 @@ namespace Zelda.Game.Engine
         public bool IsSoftwareDestination { get; set; }
 
         readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
+        readonly Lazy<ScriptSurface> _scriptSurface;
+
         internal IntPtr _internalSurface;
         Texture _internalTexture;
         Color? _internalColor;
         bool _isRendered;
         bool _disposed;
 
+        public ScriptSurface ScriptSurface { get { return _scriptSurface.Value; } }
         public override Surface TransitionSurface { get { return this; } }
 
         public static Surface Create(int width, int height)
@@ -159,21 +162,25 @@ namespace Zelda.Game.Engine
         }
 
         public Surface(int width, int height)
+            : this()
         {
             Debug.CheckAssertion(width > 0 && height > 0, "Attempt to create a surface with an empty size");
 
             _width = width;
             _height = height;
-
-            IsSoftwareDestination = true;
         }
 
         public Surface(IntPtr internalSurface)
+            : this()
         {
             _internalSurface = internalSurface;
             _width = _internalSurface.ToSDLSurface().w;
             _height = _internalSurface.ToSDLSurface().h;
-
+        }
+        
+        Surface()
+        {
+            _scriptSurface = Exts.Lazy<ScriptSurface>(() => new ScriptSurface(this));
             IsSoftwareDestination = true;
         }
 

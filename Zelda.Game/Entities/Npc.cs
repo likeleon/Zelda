@@ -151,7 +151,7 @@ namespace Zelda.Game.Entities
             if (effect != ActionCommandEffect.Lift)
             {
                 if (_behavior == NpcBehavior.Dialog)
-                    Game.StartDialog(_dialogToShow, () => { });
+                    Game.StartDialog(_dialogToShow, null, null);
                 else
                     CallScriptHeroInteraction();
                 return true;

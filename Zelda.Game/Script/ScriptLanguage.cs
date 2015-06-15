@@ -47,5 +47,16 @@ namespace Zelda.Game.Script
         {
             return ScriptToCore.Call(() => StringResource.GetString(key));
         }
+
+        public static Dialog GetDialog(string dialogId)
+        {
+            return ScriptToCore.Call(() =>
+            {
+                if (!DialogResource.Exists(dialogId))
+                    return null;
+
+                return DialogResource.GetDialog(dialogId);
+            });
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace Zelda.Game.Script
     {
         public ScriptGame Game { get { return Map.Game.SaveGame.ScriptGame; } }
         public ScriptHero Hero { get { return Map.Game.Hero.AsScriptEntity<ScriptHero>(); } }
+        public Rectangle CameraPosition { get { return Map.CameraPosition; } }
 
         internal Map Map { get; set;}
     
@@ -18,10 +19,13 @@ namespace Zelda.Game.Script
             CoreToScript.Call(() => OnStarted(destination.AsScriptEntity<ScriptDestination>()));
         }
 
-        public ScriptEntity GetEntity(string name)
+        public T GetEntity<T>(string name) where T : ScriptEntity
         {
-            MapEntity entity = Map.Entities.FindEntity(name);
-            return (entity != null) ? entity.ScriptEntity : null;
+            var entity = Map.Entities.FindEntity(name);
+            if (entity == null || entity.IsBeingRemoved)
+                return null;
+
+            return entity.AsScriptEntity<T>();
         }
 
         protected virtual void OnStarted(ScriptDestination destination)

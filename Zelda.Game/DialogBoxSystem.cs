@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Zelda.Game.Engine;
-using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
@@ -14,7 +13,7 @@ namespace Zelda.Game
         readonly TextSurface[] _lineSurfaces = new TextSurface[_numVisibleLines];
 
         Dialog _dialog;
-        Action _callback;
+        Action<object> _callback;
         bool _builtIn;
         Point _textPosition;
 
@@ -32,7 +31,7 @@ namespace Zelda.Game
                 _lineSurfaces[i] = new TextSurface(0, 0, TextHorizontalAlignment.Left, TextVerticalAlignment.Bottom);
         }
 
-        public void Open(string dialogId, Action callback)
+        public void Open(string dialogId, object info, Action<object> callback)
         {
             Debug.CheckAssertion(!IsEnabled, "A dialog is already active");
 
@@ -44,7 +43,7 @@ namespace Zelda.Game
             commandsEffects.SaveActionCommandEffect();
             commandsEffects.ActionCommandEffect = ActionCommandEffect.None;
 
-            _builtIn = true;    // TODO: 스크립트에서 커스텀 버전 쓸 수 있게 지원
+            _builtIn = !Game.NotifyDialogStarted(_dialog, info);
             if (_builtIn)
             {
                 // 내장 대화창을 보여주는 경우입니다
@@ -73,18 +72,18 @@ namespace Zelda.Game
             }
         }
 
-        public void Close()
+        public void Close(object status)
         {
             Debug.CheckAssertion(IsEnabled, "No dialog is active");
 
-            Action callback = _callback;
+            var callback = _callback;
             _callback = null;
             DialogId = String.Empty;
 
             CommandsEffects commandsEffects = _game.CommandsEffects;
             commandsEffects.RestoreActionCommandEffect();
 
-            ScriptContext.NotifyDialogFinished(_game, _dialog, callback);
+            _game.NotifyDialogFinished(_dialog, callback, status);
         }
 
         void ShowMoreLines()
@@ -93,7 +92,7 @@ namespace Zelda.Game
 
             if (!HasMoreLines)
             {
-                Close();
+                Close(null);
                 return;
             }
 

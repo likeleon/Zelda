@@ -65,8 +65,7 @@ namespace Zelda.Game.Script
 
         internal static void MenusOnDraw(object context, ScriptSurface dstSurface)
         {
-            ScriptMenuData menu = _menus.Find(m => m.Context == context);
-            if (menu != null)
+            foreach (var menu in _menus.Where(m => m.Context == context))
                 MenuOnDraw(menu.Menu, dstSurface);
         }
 

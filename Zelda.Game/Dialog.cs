@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Zelda.Game
 {
-    class Dialog
+    public class Dialog
     {
         public string Id { get; set; }
         public string Text { get; set; }

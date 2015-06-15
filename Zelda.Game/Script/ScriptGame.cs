@@ -7,6 +7,28 @@ namespace Zelda.Game.Script
     {
         Savegame _savegame;
 
+        public bool IsDialogEnabled
+        {
+            get
+            {
+                if (_savegame.Game == null)
+                    return false;
+
+                return _savegame.Game.IsDialogEnabled;
+            }
+        }
+
+        public ScriptMap Map
+        {
+            get
+            {
+                if (_savegame.Game == null || !_savegame.Game.HasCurrentMap)
+                    return null;
+
+                return _savegame.Game.CurrentMap.ScriptMap;
+            }
+        }
+
         public static bool Exists(string fileName)
         {
             return ScriptToCore.Call(() =>
@@ -152,7 +174,7 @@ namespace Zelda.Game.Script
             {
                 if (String.IsNullOrEmpty(ModFiles.ModWriteDir))
                     throw new InvalidOperationException("Cannot save game: no write directory was specified in mod.xml");
-                
+
                 _savegame.Save();
             });
         }
@@ -172,9 +194,83 @@ namespace Zelda.Game.Script
             {
                 if (!_savegame.Equipment.ItemExists(itemName))
                     throw new ArgumentException("No such item: '{0}'".F(itemName));
-                
+
                 return _savegame.Equipment.GetItem(itemName).ScriptItem;
             });
+        }
+
+        public void NotifyStarted()
+        {
+            CoreToScript.Call(OnStarted);
+        }
+
+        protected virtual void OnStarted()
+        {
+        }
+
+        public void NotifyFinished()
+        {
+            CoreToScript.Call(OnFinished);
+        }
+
+        protected virtual void OnFinished()
+        {
+        }
+
+        public bool NotifyDialogStarted(Dialog dialog, object info)
+        {
+            return CoreToScript.Call<bool>(() => OnDialogStarted(dialog, info));
+        }
+
+        protected virtual bool OnDialogStarted(Dialog dialog, object info)
+        {
+            return false;
+        }
+
+        public void NotifyDialogFinished(Dialog dialog)
+        {
+            CoreToScript.Call(() => OnDialogFinished(dialog));
+        }
+
+        protected virtual void OnDialogFinished(Dialog dialog)
+        {
+        }
+
+        public void StartDialog(string dialogId, object info, Action<object> callback)
+        {
+            ScriptToCore.Call(() =>
+            {
+                if (!DialogResource.Exists(dialogId))
+                    throw new ArgumentException("No such dialog: '{0}'".F(dialogId));
+
+                var game = _savegame.Game;
+                if (game == null)
+                    throw new InvalidOperationException("Cannot start dialog: this game is not running.");
+
+                if (game.IsDialogEnabled)
+                    throw new InvalidOperationException("Cannot start dialog: another dialog is already active.");
+
+                game.StartDialog(dialogId, info, callback);
+            });
+        }
+
+        public void StopDialog(object status = null)
+        {
+            ScriptToCore.Call(() =>
+            {
+                var game = _savegame.Game;
+                if (game == null)
+                    throw new InvalidOperationException("Cannot stop dialog: this game is not running.");
+
+                if (!game.IsDialogEnabled)
+                    throw new InvalidOperationException("Cannot stop dialog: no dialog is active.");
+
+                game.StopDialog(status);
+            });
+        }
+
+        public virtual void OnDraw(ScriptSurface dstSurface)
+        {
         }
     }
 }
