@@ -108,7 +108,7 @@ namespace Zelda.Game.Script
 
         internal static void GameOnDraw(Game game, ScriptSurface dstSurface)
         {
-            CoreToScript.Call(() => game.SaveGame.ScriptGame.OnDraw(dstSurface));
+            game.SaveGame.ScriptGame.NotifyDraw(dstSurface);
             ScriptMenu.MenusOnDraw(game.SaveGame.ScriptGame, dstSurface);
         }
 

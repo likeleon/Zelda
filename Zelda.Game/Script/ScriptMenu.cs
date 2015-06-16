@@ -143,7 +143,7 @@ namespace Zelda.Game.Script
         {
         }
         
-        protected internal virtual void OnDraw(ScriptSurface dstSurface)
+        protected virtual void OnDraw(ScriptSurface dstSurface)
         {
         }
 
@@ -185,6 +185,28 @@ namespace Zelda.Game.Script
         }
 
         public virtual bool OnKeyReleased(KeyboardKey key)
+        {
+            return false;
+        }
+
+        internal static bool OnCommandPressed(object context, GameCommand command)
+        {
+            bool handled = false;
+            foreach (var menu in _menus.Where(m => m.Context == context).Reverse())
+                handled = MenuOnCommandPressed(menu.Menu, command);
+            return handled;
+        }
+
+        static bool MenuOnCommandPressed(ScriptMenu menu, GameCommand command)
+        {
+            // 자식들이 먼저 처리하게 합니다
+            if (OnCommandPressed(menu, command))
+                return true;
+
+            return CoreToScript.Call(() => menu.OnCommandPressed(command));
+        }
+
+        protected virtual bool OnCommandPressed(GameCommand command)
         {
             return false;
         }

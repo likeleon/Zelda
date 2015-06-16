@@ -248,6 +248,9 @@ namespace Zelda.Game
                     return;
             }
 
+            if (_saveGame.ScriptGame.NotifyCommandPressed(command))
+                return;
+
             if (command == GameCommand.Pause)
             {
                 if (IsPaused)

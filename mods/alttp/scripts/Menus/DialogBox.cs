@@ -77,7 +77,7 @@ namespace Alttp.Menus
         int _lineIndex;
         int _visibleLineIndex;
         int _charIndex;
-        bool _isAllCurrentLinesAreDisplayed;
+        bool _isFull;
 
         bool _skipped;
         bool _needLetterSound;
@@ -185,7 +185,7 @@ namespace Alttp.Menus
             _visibleLineIndex = 0;
             _charIndex = 0;
             _skipped = false;
-            _isAllCurrentLinesAreDisplayed = false;
+            _isFull = false;
             _needLetterSound = (_style != DialogBoxStyle.Empty);
 
             if (_dialog.HasProperty("Skip"))
@@ -236,14 +236,14 @@ namespace Alttp.Menus
         void RepeatShowCharacter()
         {
             CheckFull();
-            while (!_isAllCurrentLinesAreDisplayed && CurrentLineIsFinished())
+            while (!_isFull && CurrentLineIsFinished())
             {
                 _charIndex = 0;
                 ++_visibleLineIndex;
                 CheckFull();
             }
 
-            if (!_isAllCurrentLinesAreDisplayed)
+            if (!_isFull)
                 AddCharacter();
             else
             {
@@ -264,9 +264,9 @@ namespace Alttp.Menus
         {
             if (_visibleLineIndex >= _numVisibleLines - 1 &&
                 _charIndex > _visibleLines[_numVisibleLines - 1].Length - 1)
-                _isAllCurrentLinesAreDisplayed = true;
+                _isFull = true;
             else
-                _isAllCurrentLinesAreDisplayed = false;
+                _isFull = false;
         }
 
         void AddCharacter()
@@ -377,13 +377,13 @@ namespace Alttp.Menus
                 _questionDstPosition.X = x + 18;
 
             if (_selectedAnswer != DialogBoxSelectedAnswer.NoQuestion && 
-                _isAllCurrentLinesAreDisplayed &&
+                _isFull &&
                 !HasMoreLines)
             {
                 _boxImg.DrawRegion(new Rectangle(96, 60, 8, 8), _dialogSurface, _questionDstPosition);
             }
 
-            if (_isAllCurrentLinesAreDisplayed)
+            if (_isFull)
                 _endLinesSprite.Draw(_dialogSurface, x + 103, y + 56);
 
             _dialogSurface.Draw(dstSurface);
@@ -392,6 +392,68 @@ namespace Alttp.Menus
         protected override void OnFinished()
         {
             // TODO
+        }
+
+        protected override bool OnCommandPressed(GameCommand command)
+        {
+            if (command == GameCommand.Action)
+            {
+                if (_isFull)
+                    ShowMoreLines();
+                else if (_skipMode != DialogBoxSkipMode.None)
+                    ShowAllNow();
+            }
+            else if (command == GameCommand.Attack)
+            {
+                if (_skipMode == DialogBoxSkipMode.All)
+                {
+                    _skipped = true;
+                    _game.StopDialog("skipped");
+                }
+                else if (_isFull)
+                    ShowMoreLines();
+                else if (_skipMode == DialogBoxSkipMode.Current)
+                    ShowAllNow();
+            }
+            else if (command == GameCommand.Up || command == GameCommand.Down)
+            {
+                if (_selectedAnswer != DialogBoxSelectedAnswer.NoQuestion &&
+                    !HasMoreLines &&
+                    _isFull)
+                {
+                    ScriptAudio.PlaySound("cursor");
+                    _selectedAnswer = (DialogBoxSelectedAnswer)(3 - (int)_selectedAnswer);
+                    var yOffset = (_selectedAnswer == DialogBoxSelectedAnswer.One) ? 27 : 40;
+                    _questionDstPosition.Y = _boxDstPosition.Y + yOffset;
+                }
+            }
+
+            return true;
+        }
+
+        void ShowAllNow()
+        {
+            if (_isFull)
+            {
+                ShowMoreLines();
+                return;
+            }
+
+            _gradual = false;
+            CheckFull();
+            while (!_isFull)
+            {
+                while (!_isFull && CurrentLineIsFinished())
+                {
+                    _charIndex = 0;
+                    ++_visibleLineIndex;
+                    CheckFull();
+                }
+
+                if (!_isFull)
+                    AddCharacter();
+                CheckFull();
+            }
         }
     }
 }

@@ -199,7 +199,7 @@ namespace Zelda.Game.Script
             });
         }
 
-        public void NotifyStarted()
+        internal void NotifyStarted()
         {
             CoreToScript.Call(OnStarted);
         }
@@ -208,7 +208,7 @@ namespace Zelda.Game.Script
         {
         }
 
-        public void NotifyFinished()
+        internal void NotifyFinished()
         {
             CoreToScript.Call(OnFinished);
         }
@@ -217,7 +217,7 @@ namespace Zelda.Game.Script
         {
         }
 
-        public bool NotifyDialogStarted(Dialog dialog, object info)
+        internal bool NotifyDialogStarted(Dialog dialog, object info)
         {
             return CoreToScript.Call<bool>(() => OnDialogStarted(dialog, info));
         }
@@ -227,7 +227,7 @@ namespace Zelda.Game.Script
             return false;
         }
 
-        public void NotifyDialogFinished(Dialog dialog)
+        internal void NotifyDialogFinished(Dialog dialog)
         {
             CoreToScript.Call(() => OnDialogFinished(dialog));
         }
@@ -269,8 +269,29 @@ namespace Zelda.Game.Script
             });
         }
 
-        public virtual void OnDraw(ScriptSurface dstSurface)
+        internal void NotifyDraw(ScriptSurface dstSurface)
         {
+            CoreToScript.Call(() => OnDraw(dstSurface));
+        }
+
+        protected virtual void OnDraw(ScriptSurface dstSurface)
+        {
+        }
+
+        internal bool NotifyCommandPressed(GameCommand command)
+        {
+            return CoreToScript.Call(() => 
+            {
+                if (OnCommandPressed(command))
+                    return true;
+
+                return ScriptMenu.OnCommandPressed(this, command);
+            });
+        }
+
+        protected virtual bool OnCommandPressed(GameCommand command)
+        {
+            return false;
         }
     }
 }
