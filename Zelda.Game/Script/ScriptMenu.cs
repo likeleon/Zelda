@@ -93,6 +93,11 @@ namespace Zelda.Game.Script
             }
         }
 
+        public static void StopAll(IMenuContext context)
+        {
+            ScriptToCore.Call(() => RemoveMenus(context));
+        }
+
         static void MenuOnFinished(ScriptMenu menu)
         {
             RemoveMenus(menu);  // 먼저 모든 자식 메뉴들을 정지시킵니다
@@ -106,11 +111,12 @@ namespace Zelda.Game.Script
             // 어떤 메뉴들은 OnFinished 시점에 새로운 메뉴들을 생성할 수 있는데, 이들은 제거되지 않아야 합니다
             _menus.ForEach(m => m.RecentlyAdded = false);
 
-            foreach (var menu in _menus.Where(m => m.Context == context && !m.RecentlyAdded))
+            foreach (var menuData in _menus.Where(m => m.Context == context && !m.RecentlyAdded))
             {
-                menu.Menu = null;
-                menu.Context = null;
-                MenuOnFinished(menu.Menu);
+                var menu = menuData.Menu;
+                menuData.Menu = null;
+                menuData.Context = null;
+                MenuOnFinished(menu);
             }
         }
 

@@ -2,6 +2,7 @@
 using Alttp.Menus.SavegameScreens;
 using Alttp.Menus.TitleScreens;
 using System;
+using Zelda.Game;
 using Zelda.Game.Engine;
 using Zelda.Game.Script;
 
@@ -11,7 +12,7 @@ namespace Alttp
     {
         bool _debugEnabled;
 
-        public ScriptGame Game { get; set; }
+        public PlayGame Game { get; set; }
 
         protected override void OnStarted()
         {
@@ -63,8 +64,31 @@ namespace Alttp
         bool DebugOnKeyPressed(KeyboardKey key, Modifiers modifiers)
         {
             bool handled = true;
+            
+            if (key == KeyboardKey.F1)
+                StartGameIfSaveExists(1);
+            else if (key == KeyboardKey.F2)
+                StartGameIfSaveExists(2);
+            else if (key == KeyboardKey.F3)
+                StartGameIfSaveExists(3);
+            else
+                handled = false;
 
             return handled;
+        }
+
+        void StartGameIfSaveExists(int saveIndex)
+        {
+            if (saveIndex < 1 || saveIndex > 3)
+                throw new ArgumentOutOfRangeException("saveIndex", "Should be in range of 1~3");
+
+            var saveFileName = "save{0}.dat".F(saveIndex);
+            if (ScriptGame.Exists(saveFileName))
+            {
+                Game = ScriptGame.Load<PlayGame>(saveFileName);
+                ScriptMenu.StopAll(this);
+                StartSavegame(Game);
+            }
         }
 
         public void StartSavegame(PlayGame game)
