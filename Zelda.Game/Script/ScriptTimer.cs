@@ -149,16 +149,12 @@ namespace Zelda.Game.Script
         }
 
         // context와 관련된 모든 타이머들을 해제합니다
-        internal static void RemoveTimers(object context)
+        internal static void RemoveTimers(IMenuContext context)
         {
-            foreach (var entry in _timers)
+            foreach (var timer in _timers.Where(kvp => kvp.Value.Context == context))
             {
-                Timer timer = entry.Key;
-                if (entry.Value.Context == context)
-                {
-                    entry.Value.Callback = null;
-                    _timersToRemove.Add(timer);
-                }
+                timer.Value.Callback = null;
+                _timersToRemove.Add(timer.Key);
             }
         }
         #endregion

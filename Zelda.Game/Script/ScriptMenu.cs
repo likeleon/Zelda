@@ -5,15 +5,17 @@ using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
 {
-    public abstract class ScriptMenu : IInputEventHandler, ITimerContext
+    public interface IMenuContext { }
+
+    public abstract class ScriptMenu : IInputEventHandler, ITimerContext, IMenuContext
     {
         internal class ScriptMenuData
         {
             public ScriptMenu Menu { get; set; }
-            public object Context { get; set; }
+            public IMenuContext Context { get; set; }
             public bool RecentlyAdded { get; set; }
 
-            public ScriptMenuData(ScriptMenu menu, object context)
+            public ScriptMenuData(ScriptMenu menu, IMenuContext context)
             {
                 Menu = menu;
                 Context = context;
@@ -26,12 +28,12 @@ namespace Zelda.Game.Script
         public event EventHandler Started = delegate { };
         public event EventHandler Finished = delegate { };
 
-        public static void Start(object context, ScriptMenu menu, bool onTop = true)
+        public static void Start(IMenuContext context, ScriptMenu menu, bool onTop = true)
         {
             ScriptToCore.Call(() => AddMenu(menu, context, onTop));
         }
 
-        static void AddMenu(ScriptMenu menu, object context, bool onTop)
+        static void AddMenu(ScriptMenu menu, IMenuContext context, bool onTop)
         {
             if (onTop)
                 _menus.Add(new ScriptMenuData(menu, context));
@@ -63,7 +65,7 @@ namespace Zelda.Game.Script
             _menus.Clear();
         }
 
-        internal static void MenusOnDraw(object context, ScriptSurface dstSurface)
+        internal static void MenusOnDraw(IMenuContext context, ScriptSurface dstSurface)
         {
             foreach (var menu in _menus.Where(m => m.Context == context))
                 MenuOnDraw(menu.Menu, dstSurface);
@@ -99,7 +101,7 @@ namespace Zelda.Game.Script
         }
 
         // context와 관련된 모든 메뉴를 해제합니다
-        static void RemoveMenus(object context)
+        static void RemoveMenus(IMenuContext context)
         {
             // 어떤 메뉴들은 OnFinished 시점에 새로운 메뉴들을 생성할 수 있는데, 이들은 제거되지 않아야 합니다
             _menus.ForEach(m => m.RecentlyAdded = false);
@@ -115,7 +117,7 @@ namespace Zelda.Game.Script
             }
         }
 
-        internal static bool MenusOnInput(object context, InputEvent input)
+        internal static bool MenusOnInput(IMenuContext context, InputEvent input)
         {
             bool handled = false;
             foreach (ScriptMenuData menu in Enumerable.Reverse(_menus))
@@ -137,18 +139,6 @@ namespace Zelda.Game.Script
                 handled = ScriptContext.OnInput(menu, input);
 
             return handled;
-        }
-
-        protected virtual void OnStarted()
-        {
-        }
-        
-        protected virtual void OnDraw(ScriptSurface dstSurface)
-        {
-        }
-
-        protected virtual void OnFinished()
-        {
         }
 
         public bool IsStarted()
@@ -189,7 +179,7 @@ namespace Zelda.Game.Script
             return false;
         }
 
-        internal static bool OnCommandPressed(object context, GameCommand command)
+        internal static bool OnCommandPressed(IMenuContext context, GameCommand command)
         {
             bool handled = false;
             foreach (var menu in _menus.Where(m => m.Context == context).Reverse())
@@ -204,6 +194,18 @@ namespace Zelda.Game.Script
                 return true;
 
             return CoreToScript.Call(() => menu.OnCommandPressed(command));
+        }
+
+        protected virtual void OnStarted()
+        {
+        }
+
+        protected virtual void OnDraw(ScriptSurface dstSurface)
+        {
+        }
+
+        protected virtual void OnFinished()
+        {
         }
 
         protected virtual bool OnCommandPressed(GameCommand command)

@@ -3,7 +3,7 @@ using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
 {
-    public class ScriptGame
+    public class ScriptGame : IMenuContext
     {
         Savegame _savegame;
 
@@ -199,43 +199,6 @@ namespace Zelda.Game.Script
             });
         }
 
-        internal void NotifyStarted()
-        {
-            CoreToScript.Call(OnStarted);
-        }
-
-        protected virtual void OnStarted()
-        {
-        }
-
-        internal void NotifyFinished()
-        {
-            CoreToScript.Call(OnFinished);
-        }
-
-        protected virtual void OnFinished()
-        {
-        }
-
-        internal bool NotifyDialogStarted(Dialog dialog, object info)
-        {
-            return CoreToScript.Call<bool>(() => OnDialogStarted(dialog, info));
-        }
-
-        protected virtual bool OnDialogStarted(Dialog dialog, object info)
-        {
-            return false;
-        }
-
-        internal void NotifyDialogFinished(Dialog dialog)
-        {
-            CoreToScript.Call(() => OnDialogFinished(dialog));
-        }
-
-        protected virtual void OnDialogFinished(Dialog dialog)
-        {
-        }
-
         public void StartDialog(string dialogId, object info, Action<object> callback)
         {
             ScriptToCore.Call(() =>
@@ -269,13 +232,29 @@ namespace Zelda.Game.Script
             });
         }
 
+        internal void NotifyStarted()
+        {
+            CoreToScript.Call(OnStarted);
+        }
+
+        internal void NotifyFinished()
+        {
+            CoreToScript.Call(OnFinished);
+        }
+
+        internal bool NotifyDialogStarted(Dialog dialog, object info)
+        {
+            return CoreToScript.Call<bool>(() => OnDialogStarted(dialog, info));
+        }
+
+        internal void NotifyDialogFinished(Dialog dialog)
+        {
+            CoreToScript.Call(() => OnDialogFinished(dialog));
+        }
+
         internal void NotifyDraw(ScriptSurface dstSurface)
         {
             CoreToScript.Call(() => OnDraw(dstSurface));
-        }
-
-        protected virtual void OnDraw(ScriptSurface dstSurface)
-        {
         }
 
         internal bool NotifyCommandPressed(GameCommand command)
@@ -287,6 +266,27 @@ namespace Zelda.Game.Script
 
                 return ScriptMenu.OnCommandPressed(this, command);
             });
+        }
+
+        protected virtual void OnStarted()
+        {
+        }
+
+        protected virtual void OnFinished()
+        {
+        }
+
+        protected virtual bool OnDialogStarted(Dialog dialog, object info)
+        {
+            return false;
+        }
+
+        protected virtual void OnDialogFinished(Dialog dialog)
+        {
+        }
+
+        protected virtual void OnDraw(ScriptSurface dstSurface)
+        {
         }
 
         protected virtual bool OnCommandPressed(GameCommand command)
