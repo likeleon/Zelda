@@ -25,8 +25,8 @@ namespace Zelda.Game.Script
 
         static List<ScriptMenuData> _menus = new List<ScriptMenuData>();
 
-        public event EventHandler Started = delegate { };
-        public event EventHandler Finished = delegate { };
+        public event EventHandler Started;
+        public event EventHandler Finished;
 
         public static void Start(IMenuContext context, ScriptMenu menu, bool onTop = true)
         {
@@ -47,7 +47,7 @@ namespace Zelda.Game.Script
         {
             for (int i = _menus.Count - 1; i >= 0; --i)
             {
-                ScriptMenuData menu = _menus[i];
+                var menu = _menus[i];
 
                 menu.RecentlyAdded = false;
                 if (menu.Menu == null)
@@ -106,28 +106,22 @@ namespace Zelda.Game.Script
             // 어떤 메뉴들은 OnFinished 시점에 새로운 메뉴들을 생성할 수 있는데, 이들은 제거되지 않아야 합니다
             _menus.ForEach(m => m.RecentlyAdded = false);
 
-            foreach (ScriptMenuData menu in _menus)
+            foreach (var menu in _menus.Where(m => m.Context == context && !m.RecentlyAdded))
             {
-                if (menu.Context == context && !menu.RecentlyAdded)
-                {
-                    menu.Menu = null;
-                    menu.Context = null;
-                    MenuOnFinished(menu.Menu);
-                }
+                menu.Menu = null;
+                menu.Context = null;
+                MenuOnFinished(menu.Menu);
             }
         }
 
         internal static bool MenusOnInput(IMenuContext context, InputEvent input)
         {
-            bool handled = false;
-            foreach (ScriptMenuData menu in Enumerable.Reverse(_menus))
+            foreach (var menu in _menus.Where(m => m.Context == context).Reverse())
             {
-                if (menu.Context == context)
-                    handled = MenuOnInput(menu.Menu, input);
-                if (handled)
-                    break;
+                if (MenuOnInput(menu.Menu, input))
+                    return true;
             }
-            return handled;
+            return false;
         }
 
         static bool MenuOnInput(ScriptMenu menu, InputEvent input)
@@ -156,7 +150,8 @@ namespace Zelda.Game.Script
             CoreToScript.Call(() =>
             {
                 OnStarted();
-                Started(this, EventArgs.Empty);
+                if (Started != null)
+                    Started(this, EventArgs.Empty);
             });
         }
 
@@ -165,7 +160,8 @@ namespace Zelda.Game.Script
             CoreToScript.Call(() =>
             {
                 OnFinished();
-                Finished(this, EventArgs.Empty);
+                if (Finished != null)
+                    Finished(this, EventArgs.Empty);
             });
         }
 
