@@ -3,7 +3,7 @@ using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
 {
-    public abstract class ScriptMain : IInputEventHandler
+    public abstract class ScriptMain : IInputEventHandler, ITimerContext
     {
         public static ScriptMain Current { get; internal set; }
 

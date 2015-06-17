@@ -10,7 +10,7 @@ namespace Alttp.Menus.TitleScreens
         readonly bool _debugEnabled;
 
         IPhase _phase;
-        ScriptSurface _surface;
+        public ScriptSurface Surface { get; private set; }
 
         public TitleScreen(bool debugEnabled)
         {
@@ -19,33 +19,33 @@ namespace Alttp.Menus.TitleScreens
 
         protected override void OnStarted()
         {
-            _surface = ScriptSurface.Create(320, 240);
+            Surface = ScriptSurface.Create(320, 240);
             
             // 0.3초 동안 검정 스크린을 유지합니다.
-            _phase = new BlackPhase();
+            _phase = new BlackPhase(this);
             _phase.Finished += (_, e) => PhaseZsPresents();
         }
 
         void PhaseZsPresents()
         {
-            _phase = new ZsPresentsPhase(_surface);
+            _phase = new ZsPresentsPhase(this);
             _phase.Finished += (_, e) => 
             {
-                _surface.FadeOut(10);
+                Surface.FadeOut(10);
                 ScriptTimer.Start(this, 700, (Action)PhaseTitle);
             };
         }
 
         void PhaseTitle()
         {
-            _phase = new TitlePhase(_surface);
+            _phase = new TitlePhase(this);
             _phase.Finished += (_, e) => FinishTitle();
         }
 
         protected override void OnDraw(ScriptSurface dstSurface)
         {
             _phase.OnDraw(dstSurface);
-            _surface.Draw(dstSurface, dstSurface.Width / 2 - 160, dstSurface.Height / 2 - 120);
+            Surface.Draw(dstSurface, dstSurface.Width / 2 - 160, dstSurface.Height / 2 - 120);
         }
 
         public override bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)

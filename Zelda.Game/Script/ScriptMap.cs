@@ -6,7 +6,7 @@ using Zelda.Game.Entities;
 
 namespace Zelda.Game.Script
 {
-    public class ScriptMap
+    public class ScriptMap : ITimerContext
     {
         public ScriptGame Game { get { return Map.Game.SaveGame.ScriptGame; } }
         public ScriptHero Hero { get { return Map.Game.Hero.AsScriptEntity<ScriptHero>(); } }

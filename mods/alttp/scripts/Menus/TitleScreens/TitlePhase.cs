@@ -7,7 +7,7 @@ namespace Alttp.Menus.TitleScreens
 {
     class TitlePhase : IPhase
     {
-        readonly ScriptSurface _surface;
+        readonly TitleScreen _titleScreen;
         readonly ScriptSurface _backgroundImg;
         readonly ScriptSurface _cloudsImg;
         readonly ScriptSurface _logoImg;
@@ -23,9 +23,9 @@ namespace Alttp.Menus.TitleScreens
 
         public event EventHandler Finished = delegate { };
 
-        public TitlePhase(ScriptSurface surface)
+        public TitlePhase(TitleScreen titleScreen)
         {
-            _surface = surface;
+            _titleScreen = titleScreen;
 
             ScriptAudio.PlayMusic("title_screen");
 
@@ -60,13 +60,13 @@ namespace Alttp.Menus.TitleScreens
                 textKey: "title_screen.press_space",
                 horizontalAlignment: TextHorizontalAlignment.Center);
 
-            ScriptTimer.Start(this, 5000, () =>
+            ScriptTimer.Start(_titleScreen, 5000, () =>
             {
                 ScriptAudio.PlaySound("ok");
                 _dxImg = ScriptSurface.Create("menus/title_dx.png");
             });
 
-            ScriptTimer.Start(this, 6000, () =>
+            ScriptTimer.Start(_titleScreen, 6000, () =>
             {
                 _starImg = ScriptSurface.Create("menus/title_star.png");
             });
@@ -75,9 +75,9 @@ namespace Alttp.Menus.TitleScreens
             switchPressSpace = () =>
             {
                 _showPressSpace = !_showPressSpace;
-                ScriptTimer.Start(this, 500, switchPressSpace);
+                ScriptTimer.Start(_titleScreen, 500, switchPressSpace);
             };
-            ScriptTimer.Start(this, 6500, switchPressSpace);
+            ScriptTimer.Start(_titleScreen, 6500, switchPressSpace);
 
             _cloudsXY = new Point(320, 240);
             Action moveClouds = null;
@@ -89,38 +89,38 @@ namespace Alttp.Menus.TitleScreens
                     _cloudsXY.X -= 535;
                 if (_cloudsXY.Y < 0)
                     _cloudsXY.Y += 299;
-                ScriptTimer.Start(this, 50, moveClouds);
+                ScriptTimer.Start(_titleScreen, 50, moveClouds);
             };
-            ScriptTimer.Start(this, 50, moveClouds);
+            ScriptTimer.Start(_titleScreen, 50, moveClouds);
 
-            _surface.FadeIn(30);
+            _titleScreen.Surface.FadeIn(30);
 
-            ScriptTimer.Start(this, 2000, () => _allowSkip = true);
+            ScriptTimer.Start(_titleScreen, 2000, () => _allowSkip = true);
         }
 
         public void OnDraw(ScriptSurface dstSurface)
         {
-            _surface.FillColor(Color.Black);
-            _backgroundImg.Draw(_surface);
+            _titleScreen.Surface.FillColor(Color.Black);
+            _backgroundImg.Draw(_titleScreen.Surface);
 
-            _cloudsImg.Draw(_surface, _cloudsXY.X, _cloudsXY.Y);
-            _cloudsImg.Draw(_surface, _cloudsXY.X - 535, _cloudsXY.Y);
-            _cloudsImg.Draw(_surface, _cloudsXY.X, _cloudsXY.Y - 299);
-            _cloudsImg.Draw(_surface, _cloudsXY.X - 535, _cloudsXY.Y - 299);
+            _cloudsImg.Draw(_titleScreen.Surface, _cloudsXY.X, _cloudsXY.Y);
+            _cloudsImg.Draw(_titleScreen.Surface, _cloudsXY.X - 535, _cloudsXY.Y);
+            _cloudsImg.Draw(_titleScreen.Surface, _cloudsXY.X, _cloudsXY.Y - 299);
+            _cloudsImg.Draw(_titleScreen.Surface, _cloudsXY.X - 535, _cloudsXY.Y - 299);
 
-            _bordersImg.Draw(_surface, 0, 0);
+            _bordersImg.Draw(_titleScreen.Surface, 0, 0);
 
-            _websiteImg.Draw(_surface, 160, 220);
-            _logoImg.Draw(_surface);
+            _websiteImg.Draw(_titleScreen.Surface, 160, 220);
+            _logoImg.Draw(_titleScreen.Surface);
 
             if (_dxImg != null)
-                _dxImg.Draw(_surface);
+                _dxImg.Draw(_titleScreen.Surface);
 
             if (_starImg != null)
-                _starImg.Draw(_surface);
+                _starImg.Draw(_titleScreen.Surface);
 
             if (_showPressSpace)
-                _pressSpaceImg.Draw(_surface, 160, 200);
+                _pressSpaceImg.Draw(_titleScreen.Surface, 160, 200);
         }
 
         public bool TryFinishTitle()
@@ -129,8 +129,8 @@ namespace Alttp.Menus.TitleScreens
             {
                 _finished = true;
 
-                _surface.FadeOut(30);
-                ScriptTimer.Start(this, 700, () => Finished(this, EventArgs.Empty));
+                _titleScreen.Surface.FadeOut(30);
+                ScriptTimer.Start(_titleScreen, 700, () => Finished(this, EventArgs.Empty));
                 return true;
             }
             return false;

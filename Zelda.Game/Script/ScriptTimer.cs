@@ -4,12 +4,14 @@ using System.Linq;
 
 namespace Zelda.Game.Script
 {
+    public interface ITimerContext {}
+
     public class ScriptTimer
     {
         readonly Timer _timer;
 
         [CLSCompliant(false)]
-        public static ScriptTimer Start(object context, uint delay, Func<bool> callback)
+        public static ScriptTimer Start(ITimerContext context, uint delay, Func<bool> callback)
         {
             return ScriptToCore.Call(() =>
             {
@@ -34,7 +36,7 @@ namespace Zelda.Game.Script
         }
 
         [CLSCompliant(false)]
-        public static ScriptTimer Start(object context, uint delay, Action callback)
+        public static ScriptTimer Start(ITimerContext context, uint delay, Action callback)
         {
             return Start(context, delay, () =>
             {
@@ -56,30 +58,20 @@ namespace Zelda.Game.Script
         #region 타이머 관리
         class ScriptTimerData
         {
-            Func<bool> _callback;
-            public Func<bool> Callback
-            {
-                get { return _callback; }
-                set { _callback = value; }
-            }
+            public Func<bool> Callback { get; set; }
+            public ITimerContext Context { get; private set; }
 
-            readonly object _context;
-            public object Context
+            public ScriptTimerData(Func<bool> callback, ITimerContext context)
             {
-                get { return _context; }
-            }
-
-            public ScriptTimerData(Func<bool> callback, object context)
-            {
-                _callback = callback;
-                _context = context;
+                Callback = callback;
+                Context = context;
             }
         }
 
         static readonly Dictionary<Timer, ScriptTimerData> _timers = new Dictionary<Timer, ScriptTimerData>();
         static readonly List<Timer> _timersToRemove = new List<Timer>();
 
-        internal static void AddTimer(Timer timer, object context, Func<bool> callback)
+        internal static void AddTimer(Timer timer, ITimerContext context, Func<bool> callback)
         {
             if (_timers.Values.Any(data => callback == data.Callback))
                 throw new InvalidOperationException("Callback already used by a timer");

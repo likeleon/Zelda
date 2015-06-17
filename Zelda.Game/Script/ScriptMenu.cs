@@ -5,7 +5,7 @@ using Zelda.Game.Engine;
 
 namespace Zelda.Game.Script
 {
-    public abstract class ScriptMenu : IInputEventHandler
+    public abstract class ScriptMenu : IInputEventHandler, ITimerContext
     {
         internal class ScriptMenuData
         {
