@@ -132,6 +132,9 @@ namespace Zelda.Game.Script
                 else if (input.IsKeyboardKeyReleased)
                     handled = OnKeyReleased(handler, input) || handled;
             }
+            else if (input.IsCharacterPressed)
+                handled = OnCharacterPressed(handler, input) || handled;
+
             return handled;
         }
 
@@ -148,6 +151,14 @@ namespace Zelda.Game.Script
             return CoreToScript.Call(() =>
             {
                 return handler.OnKeyReleased(input.KeyboardKey);
+            });
+        }
+
+        static bool OnCharacterPressed(IInputEventHandler handler, InputEvent input)
+        {
+            return CoreToScript.Call(() =>
+            {
+                return handler.OnCharacterPressed(input.Character);
             });
         }
         #endregion

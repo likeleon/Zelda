@@ -35,6 +35,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugConsole.cs" />
     <Compile Include="Items\RupeeBag.cs" />
     <Compile Include="Items\Tunic.cs" />
     <Compile Include="Fonts.cs" />

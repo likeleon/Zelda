@@ -11,6 +11,7 @@ namespace Alttp
     class Main : ScriptMain
     {
         bool _debugEnabled;
+        readonly DebugConsole _console = new DebugConsole();
 
         public PlayGame Game { get; set; }
 
@@ -64,13 +65,15 @@ namespace Alttp
         bool DebugOnKeyPressed(KeyboardKey key, Modifiers modifiers)
         {
             bool handled = true;
-            
+
             if (key == KeyboardKey.F1)
                 StartGameIfSaveExists(1);
             else if (key == KeyboardKey.F2)
                 StartGameIfSaveExists(2);
             else if (key == KeyboardKey.F3)
                 StartGameIfSaveExists(3);
+            else if (key == KeyboardKey.F12 && !_console.IsEnabled)
+                ScriptMenu.Start(this, _console);
             else
                 handled = false;
 

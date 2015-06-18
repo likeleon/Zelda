@@ -181,6 +181,11 @@ namespace Zelda.Game.Script
             return false;
         }
 
+        public virtual bool OnCharacterPressed(string character)
+        {
+            return false;
+        }
+
         internal static bool OnCommandPressed(IMenuContext context, GameCommand command)
         {
             bool handled = false;

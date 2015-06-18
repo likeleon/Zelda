@@ -53,6 +53,11 @@ namespace Zelda.Game.Script
             return false;
         }
 
+        public virtual bool OnCharacterPressed(string character)
+        {
+            return false;
+        }
+
         internal protected virtual void OnStarted()
         {
         }

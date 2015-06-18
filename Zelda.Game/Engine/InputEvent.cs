@@ -11,6 +11,18 @@ namespace Zelda.Game.Engine
             get { return _internalEvent.type == SDL.SDL_EventType.SDL_QUIT; }
         }
 
+        public string Character
+        {
+            get
+            {
+                unsafe
+                {
+                    var text = _internalEvent.text;
+                    return new string((sbyte*)text.text);
+                }
+            }
+        }
+
         [Description("KEYDOWN과 KEYUP의 이벤트들의 반복을 처리하려면 true로 설정합니다")]
         public bool KeyRepeat { set; private get; }
 
@@ -40,6 +52,11 @@ namespace Zelda.Game.Engine
                 return _internalEvent.type == SDL.SDL_EventType.SDL_KEYUP &&
                        (_internalEvent.key.repeat == 0 || KeyRepeat);
             }
+        }
+
+        public bool IsCharacterPressed
+        {
+            get { return _internalEvent.type == SDL.SDL_EventType.SDL_TEXTINPUT; }
         }
 
         public bool IsWithShift

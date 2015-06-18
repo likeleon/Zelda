@@ -20,5 +20,6 @@ namespace Zelda.Game.Script
     {
         bool OnKeyPressed(KeyboardKey key, Modifiers modifiers);
         bool OnKeyReleased(KeyboardKey key);
+        bool OnCharacterPressed(string character);
     }
 }
