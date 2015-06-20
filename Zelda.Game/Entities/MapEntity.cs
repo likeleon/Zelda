@@ -7,103 +7,49 @@ namespace Zelda.Game.Entities
 {
     abstract class MapEntity : DisposableObject
     {
-        #region 생성과 소멸
-        protected MapEntity(string name, Direction4 direction, Layer layer, Point xy, Size size)
+        static readonly int DefaultOptimizationDistance = 400;
+        static readonly Point[] _directionsToXyMoves = new Point[]
         {
-            Debug.CheckAssertion(size.Width % 8 == 0 && size.Height % 8 == 0,
-                "Invalid entity size: width and height must be multiple of 8");
+            new Point( 1,  0),
+            new Point( 1, -1),
+            new Point( 0, -1),
+            new Point(-1, -1),
+            new Point(-1,  0),
+            new Point(-1,  1),
+            new Point( 0,  1),
+            new Point( 1,  1),
+        };
 
-            Name = name;
-            _direction = direction;
-            _layer = layer;
-            _boundingBox = new Rectangle(xy, size);
-        }
+        readonly List<Sprite> _sprites = new List<Sprite>();
+        readonly List<Sprite> _oldSprites = new List<Sprite>();
+        readonly List<Movement> _oldMovements = new List<Movement>();
 
         bool _initialized;
+        Direction4 _direction;
+        MainLoop _mainLoop;
+        Point _origin;
+        Rectangle _boundingBox;
+        int _optimizationDistance = DefaultOptimizationDistance;
+        Detector _facingEntity;
 
-        protected override void OnDispose(bool disposing)
-        {
-            ClearSprites();
-            ClearOldSprites();
-            ClearMovement();
-            ClearOldMovements();
-        }
-
-        public void RemoveFromMap()
-        {
-            Map.Entities.RemoveEntity(this);
-        }
-
+        public Map Map { get; private set; }
+        public bool IsOnMap { get { return Map != null; } }
         public bool IsBeingRemoved { get; private set; }
-
-        public virtual void NotifyBeingRemoved()
+        public bool IsHero { get { return Type == EntityType.Hero; } }
+        public bool IsDrawnInYOrder { get; private set; }
+        public string Name { get; set; }
+        public Layer Layer { get; private set; }
+        public Ground GroundBelow { get; private set; }
+        
+        public Game Game
         {
-            IsBeingRemoved = true;
-        }
-        #endregion
-
-        #region 타입
-        public abstract EntityType Type { get; }
-
-        public virtual ScriptEntity ScriptEntity
-        {
-            get { return null; }
-        }
-
-        public bool IsHero
-        {
-            get { return Type == EntityType.Hero; }
-        }
-
-        public virtual bool IsDrawnAtItsPosition
-        {
-            get { return true; }
-        }
-
-        public virtual bool CanBeDrawn
-        {
-            get { return true; }
-        }
-
-        private bool _drawnInYOrder;
-        public bool IsDrawnInYOrder
-        {
-            get { return _drawnInYOrder; }
-        }
-
-        public bool IsDrawn()
-        {
-            bool far = (GetDistanceToCamera2() > _optimizationDistance2) &&
-                (_optimizationDistance > 0);
-            return IsVisible &&
-                (OverlapsCamera() || !far || !!IsDrawnAtItsPosition);
-        }
-
-        public void SetDrawnInYOrder(bool drawnInYOrder)
-        {
-            if (drawnInYOrder != _drawnInYOrder)
+            get
             {
-                _drawnInYOrder = drawnInYOrder;
-                if (IsOnMap)
-                    Entities.SetEntityDrawnInYOrder(this, drawnInYOrder);
+                Debug.CheckAssertion(Map != null, "No map was set");
+                return Map.Game;
             }
         }
-
-        public virtual bool CanBeObstacle
-        {
-            get { return true; }
-        }
-
-        public virtual bool IsDetector
-        {
-            get { return false; }
-        }
-        #endregion
-
-        #region 속성들
-        public string Name { get; set; }
-
-        Direction4 _direction;
+        
         public Direction4 Direction
         {
             get { return _direction; }
@@ -115,101 +61,7 @@ namespace Zelda.Game.Entities
                 }
             }
         }
-        #endregion
 
-        #region 맵에 추가
-        Map _map;
-        public Map Map
-        {
-            get { return _map; }
-        }
-
-        MainLoop _mainLoop;
-
-        public void SetMap(Map map)
-        {
-            _mainLoop = map.Game.MainLoop;
-            _map = map;
-            if (Game.CurrentMap == map)
-                NotifyTilesetChanged();
-
-            _groundBelow = Ground.Empty;
-
-            if (!_initialized && _map.IsLoaded)
-            {
-                // 엔티티가 이미 실행중인 맵에 생성된 경우로, 초기화를 지금 바료 완료할 수 있습니다
-                FinishInitialization();
-            }
-        }
-
-        void FinishInitialization()
-        {
-            Debug.CheckAssertion(!_initialized, "Entity is already initialized");
-            Debug.CheckAssertion(IsOnMap, "Missing map");
-            Debug.CheckAssertion(Map.IsLoaded, "Map is not ready");
-
-            _initialized = true;
-
-            NotifyCreating();
-            //ScriptContext.EntityOnCreated(this);
-            NotifyCreated();
-        }
-
-        public bool IsOnMap
-        {
-            get { return _map != null; }
-        }
-
-        public Game Game
-        {
-            get
-            {
-                Debug.CheckAssertion(Map != null, "No map was set");
-                return _map.Game;
-            }
-        }
-
-        public virtual void NotifyMapStarted()
-        {
-            if (!_initialized)
-                FinishInitialization();
-        }
-
-        public virtual void NotifyCreating()
-        {
-        }
-
-        public virtual void NotifyCreated()
-        {
-        }
-
-        public virtual void NotifyTilesetChanged()
-        {
-            foreach (Sprite sprite in _sprites)
-                sprite.SetTileset(_map.Tileset);
-        }
-        #endregion
-
-        #region 맵에서의 위치
-        Layer _layer;
-        public Layer Layer
-        {
-            get { return _layer; }
-        }
-
-        public void SetLayer(Layer layer)
-        {
-            _layer = layer;
-            NotifyLayerChanged();
-        }
-
-        Ground _groundBelow;
-        public Ground GroundBelow
-        {
-            get { return _groundBelow; }
-        }
-
-        Rectangle _boundingBox;
         public Rectangle BoundingBox
         {
             get { return _boundingBox; }
@@ -255,7 +107,6 @@ namespace Zelda.Game.Entities
             set { TopLeftX = value.X; TopLeftY = value.Y; }
         }
 
-        Point _origin;
         public Point Origin
         {
             get { return _origin; }
@@ -284,31 +135,182 @@ namespace Zelda.Game.Entities
             set { X = value.X; Y = value.Y; }
         }
 
-        private static int DefaultOptimizationDistance = 400;
+        public Point CenterPoint { get { return BoundingBox.Center; } }
 
-        int _optimizationDistance = DefaultOptimizationDistance;
         public int OptimizationDistance
         {
             get { return _optimizationDistance; }
             set
             {
                 _optimizationDistance = value;
-                _optimizationDistance2 = value * value;
+                OptimizationDistance2 = value * value;
             }
         }
 
-        int _optimizationDistance2 = DefaultOptimizationDistance * DefaultOptimizationDistance;
-        public int OptimizationDistance2
+        public Detector FacingEntity
         {
-            get { return _optimizationDistance2; }
+            get { return _facingEntity; }
+            set
+            {
+                _facingEntity = value;
+                NotifyFacingEntityChanged(value);
+            }
+        }
+
+        public int OptimizationDistance2 { get; private set; }
+
+        public bool IsAlignedToGrid { get { return IsAlignedToGridX && IsAlignedToGridY; } }
+        public bool IsAlignedToGridX { get { return TopLeftX % 8 == 0; } }
+        public bool IsAlignedToGridY { get { return TopLeftY % 8 == 0; } }
+        public bool IsVisible { get; private set; }
+        public IEnumerable<Sprite> Sprites { get { return _sprites; } }
+        public bool HasSprite { get { return _sprites.Count > 0; } }
+        public Sprite Sprite { get { return _sprites[0]; } }
+        public bool IsSuspended { get; private set; }
+        public Movement Movement { get; private set; }
+
+        public virtual ScriptEntity ScriptEntity { get { return null; } }
+        public virtual bool IsDrawnAtItsPosition { get { return true; } }
+        public virtual bool CanBeDrawn { get { return true; } }
+        public virtual bool CanBeObstacle { get { return true; } }
+        public virtual bool IsDetector { get { return false; } }
+        public virtual bool HasLayerIndependentCollisions { get { return false; } }
+
+        public virtual bool IsLowWallObstacle { get { return true; } }
+        public virtual bool IsShallowWaterObstacle { get { return IsDeepWaterObstacle; } }
+        public virtual bool IsDeepWaterObstacle { get { return true; } }
+        public virtual bool IsHoleObstacle { get { return true; } }
+        public virtual bool IsLavaObstacle { get { return true; } }
+        public virtual bool IsPrickleObstacle { get { return true; } }
+        public virtual bool IsLadderObstacle { get { return true; } }
+
+        public abstract EntityType Type { get; }
+
+        protected MapEntities Entities
+        {
+            get
+            {
+                Debug.CheckAssertion(Map != null, "No map was set");
+                return Map.Entities;
+            }
+        }
+
+        protected CommandsEffects CommandsEffects { get { return Game.CommandsEffects; } }
+        protected Equipment Equipment { get { return Game.Equipment; } }
+        protected Hero Hero { get { return Entities.Hero; } }
+        protected Savegame Savegame { get { return Game.SaveGame; } }
+        protected uint WhenSuspended { get; private set; }
+
+        protected MapEntity(string name, Direction4 direction, Layer layer, Point xy, Size size)
+        {
+            Debug.CheckAssertion(size.Width % 8 == 0 && size.Height % 8 == 0,
+                "Invalid entity size: width and height must be multiple of 8");
+
+            Name = name;
+            _direction = direction;
+            Layer = layer;
+            _boundingBox = new Rectangle(xy, size);
+            OptimizationDistance2 = DefaultOptimizationDistance * DefaultOptimizationDistance;
+            IsVisible = true;
+        }
+
+        protected override void OnDispose(bool disposing)
+        {
+            ClearSprites();
+            ClearOldSprites();
+            ClearMovement();
+            ClearOldMovements();
+        }
+
+        public void RemoveFromMap()
+        {
+            Map.Entities.RemoveEntity(this);
+        }
+
+        public virtual void NotifyBeingRemoved()
+        {
+            IsBeingRemoved = true;
+        }
+
+        public bool IsDrawn()
+        {
+            bool far = (GetDistanceToCamera2() > OptimizationDistance2) &&
+                (_optimizationDistance > 0);
+            return IsVisible &&
+                (OverlapsCamera() || !far || !!IsDrawnAtItsPosition);
+        }
+
+        public void SetDrawnInYOrder(bool drawnInYOrder)
+        {
+            if (drawnInYOrder != IsDrawnInYOrder)
+            {
+                IsDrawnInYOrder = drawnInYOrder;
+                if (IsOnMap)
+                    Entities.SetEntityDrawnInYOrder(this, drawnInYOrder);
+            }
+        }
+
+        public void SetMap(Map map)
+        {
+            _mainLoop = map.Game.MainLoop;
+            Map = map;
+            if (Game.CurrentMap == map)
+                NotifyTilesetChanged();
+
+            GroundBelow = Ground.Empty;
+
+            if (!_initialized && Map.IsLoaded)
+            {
+                // 엔티티가 이미 실행중인 맵에 생성된 경우로, 초기화를 지금 바료 완료할 수 있습니다
+                FinishInitialization();
+            }
+        }
+
+        void FinishInitialization()
+        {
+            Debug.CheckAssertion(!_initialized, "Entity is already initialized");
+            Debug.CheckAssertion(IsOnMap, "Missing map");
+            Debug.CheckAssertion(Map.IsLoaded, "Map is not ready");
+
+            _initialized = true;
+
+            NotifyCreating();
+            //ScriptContext.EntityOnCreated(this);
+            NotifyCreated();
+        }
+
+        public virtual void NotifyMapStarted()
+        {
+            if (!_initialized)
+                FinishInitialization();
+        }
+
+        public virtual void NotifyCreating()
+        {
+        }
+
+        public virtual void NotifyCreated()
+        {
+        }
+
+        public virtual void NotifyTilesetChanged()
+        {
+            foreach (Sprite sprite in _sprites)
+                sprite.SetTileset(Map.Tileset);
+        }
+
+        public void SetLayer(Layer layer)
+        {
+            Layer = layer;
+            NotifyLayerChanged();
         }
 
         public Point GetDisplayedXY()
         {
-            if (_movement == null)
+            if (Movement == null)
                 return XY;
 
-            return _movement.GetDisplayedXY();
+            return Movement.GetDisplayedXY();
         }
 
         // 엔티티가 바라보는 위치 좌표를 반환합니다.
@@ -354,54 +356,6 @@ namespace Zelda.Game.Entities
             return touchingPoint;
         }
 
-        public Point CenterPoint
-        {
-            get { return BoundingBox.Center; }
-        }
-
-        public bool IsAlignedToGrid
-        {
-            get { return IsAlignedToGridX && IsAlignedToGridY; }
-        }
-
-        public bool IsAlignedToGridX
-        {
-            get { return TopLeftX % 8 == 0; }
-        }
-
-        public bool IsAlignedToGridY
-        {
-            get { return TopLeftY % 8 == 0; }
-        }
-        #endregion
-
-        #region 속성
-        #endregion
-
-        #region 스프라이트
-        bool _isVisible = true;
-        public bool IsVisible
-        {
-            get { return _isVisible; }
-            set { _isVisible = value; }
-        }
-
-        readonly List<Sprite> _sprites = new List<Sprite>();
-        public IEnumerable<Sprite> Sprites
-        {
-            get { return _sprites; }
-        }
-
-        public bool HasSprite
-        {
-            get { return _sprites.Count > 0; }
-        }
-
-        public Sprite Sprite
-        {
-            get { return _sprites[0]; }
-        }
-
         public Sprite CreateSprite(string animationSetId, bool enablePixelCollisions = false)
         {
             Sprite sprite = new Sprite(animationSetId);
@@ -412,8 +366,6 @@ namespace Zelda.Game.Entities
             _sprites.Add(sprite);
             return sprite;
         }
-
-        readonly List<Sprite> _oldSprites = new List<Sprite>();
 
         public void RemoveSprite(Sprite sprite)
         {
@@ -442,64 +394,19 @@ namespace Zelda.Game.Entities
         public virtual void NotifySpriteAnimationFinished(Sprite sprite, string animation)
         {
         }
-        #endregion
-
-        #region 게임 오브젝트 접근용 (편의성)
-        protected MapEntities Entities
-        {
-            get
-            {
-                Debug.CheckAssertion(_map != null, "No map was set");
-                return _map.Entities;
-            }
-        }
-
-        protected CommandsEffects CommandsEffects
-        {
-            get { return Game.CommandsEffects; }
-        }
-
-        protected Equipment Equipment
-        {
-            get { return Game.Equipment; }
-        }
-
-        protected Hero Hero
-        {
-            get { return Entities.Hero; }
-        }
-
-        protected Savegame Savegame
-        {
-            get { return Game.SaveGame; }
-        }
-        #endregion
-
-        #region 게임 루프
-        bool _suspended;
-        public bool IsSuspended
-        {
-            get { return _suspended; }
-        }
-
-        uint _whenSuspended;
-        protected uint WhenSuspended
-        {
-            get { return _whenSuspended; }
-        }
 
         public virtual void SetSuspended(bool suspended)
         {
-            _suspended = suspended;
+            IsSuspended = suspended;
 
             if (suspended)
-                _whenSuspended = EngineSystem.Now;
+                WhenSuspended = EngineSystem.Now;
 
             foreach (Sprite sprite in _sprites)
                 sprite.SetSuspended(suspended);
 
-            if (_movement != null)
-                _movement.SetSuspended(suspended);
+            if (Movement != null)
+                Movement.SetSuspended(suspended);
         }
 
         public virtual void Update()
@@ -526,8 +433,8 @@ namespace Zelda.Game.Entities
             ClearOldSprites();
 
             // 이동 업데이트
-            if (_movement != null)
-                _movement.Update();
+            if (Movement != null)
+                Movement.Update();
             ClearOldMovements();
         }
 
@@ -537,11 +444,9 @@ namespace Zelda.Game.Entities
                 return;
 
             foreach (Sprite sprite in _sprites)
-                _map.DrawSprite(sprite, GetDisplayedXY());
+                Map.DrawSprite(sprite, GetDisplayedXY());
         }
-        #endregion
 
-        #region 기하
         public bool Overlaps(Rectangle rectangle)
         {
             return _boundingBox.Overlaps(rectangle);
@@ -569,39 +474,29 @@ namespace Zelda.Game.Entities
         {
             return rectangle.Contains(GetFacingPoint());
         }
-        #endregion
-
-        #region 이동
-        Movement _movement;
-        public Movement Movement
-        {
-            get { return _movement; }
-        }
 
         public void SetMovement(Movement movement)
         {
             ClearMovement();
-            _movement = movement;
+            Movement = movement;
 
-            if (_movement != null)
+            if (Movement != null)
             {
-                _movement.SetEntity(this);
+                Movement.SetEntity(this);
 
-                if (movement.IsSuspended != _suspended)
-                    movement.SetSuspended(_suspended);
+                if (movement.IsSuspended != IsSuspended)
+                    movement.SetSuspended(IsSuspended);
             }
         }
 
-        readonly List<Movement> _oldMovements = new List<Movement>();
-
         public void ClearMovement()
         {
-            if (_movement != null)
+            if (Movement != null)
             {
-                _movement.SetEntity(null);
-                _movement.ScriptMovement = null;
-                _oldMovements.Add(_movement);
-                _movement = null;
+                Movement.SetEntity(null);
+                Movement.ScriptMovement = null;
+                _oldMovements.Add(Movement);
+                Movement = null;
             }
         }
 
@@ -638,43 +533,13 @@ namespace Zelda.Game.Entities
                 CheckCollisionWithDetectors();
         }
 
-        Detector _facingEntity;
-        public Detector FacingEntity
-        {
-            get { return _facingEntity; }
-            set
-            {
-                _facingEntity = value;
-                NotifyFacingEntityChanged(value);
-            }
-        }
-
         public virtual void NotifyFacingEntityChanged(Detector facingEntity)
         {
         }
 
-        static readonly Point[] _directionsToXyMoves = new Point[]
-        {
-            new Point( 1,  0),
-            new Point( 1, -1),
-            new Point( 0, -1),
-            new Point(-1, -1),
-            new Point(-1,  0),
-            new Point(-1,  1),
-            new Point( 0,  1),
-            new Point( 1,  1),
-        };
-
         public static Point DirectionToXyMove(Direction8 direction8)
         {
             return _directionsToXyMoves[(int)direction8];
-        }
-        #endregion
-
-        #region 충돌
-        public virtual bool HasLayerIndependentCollisions
-        {
-            get { return false; }
         }
 
         public void CheckCollisionWithDetectors()
@@ -682,12 +547,12 @@ namespace Zelda.Game.Entities
             if (!IsOnMap)
                 return; // 초기화 중입니다
 
-            if (GetDistanceToCamera2() > _optimizationDistance2 &&
+            if (GetDistanceToCamera2() > OptimizationDistance2 &&
                 _optimizationDistance > 0)
                 return; // 가시 영역으로부터 멀리 떨어진 엔티티들은 체크하지 않습니다
 
             // 간단한 충돌 검사
-            _map.CheckCollisionWithDetectors(this);
+            Map.CheckCollisionWithDetectors(this);
 
             // 픽셀단위 충돌 검사
             foreach (Sprite sprite in _sprites)
@@ -697,11 +562,11 @@ namespace Zelda.Game.Entities
 
         public void CheckCollisionWithDetectors(Sprite sprite)
         {
-            if (GetDistanceToCamera2() > _optimizationDistance2 &&
+            if (GetDistanceToCamera2() > OptimizationDistance2 &&
                 _optimizationDistance > 0)
                 return;
 
-            _map.CheckCollisionWithDetectors(this, sprite);
+            Map.CheckCollisionWithDetectors(this, sprite);
         }
 
         public virtual void NotifyCollisionWithDestructible(Destructible destructible, CollisionMode collisionMode)
@@ -722,41 +587,6 @@ namespace Zelda.Game.Entities
 
         public virtual void NotifyCollisionWithExplosion(Explosion explosion, Sprite spriteOverlapping)
         {
-        }
-
-        public virtual bool IsLowWallObstacle
-        {
-            get { return true; }
-        }
-
-        public virtual bool IsShallowWaterObstacle
-        {
-            get { return IsDeepWaterObstacle; }
-        }
-
-        public virtual bool IsDeepWaterObstacle
-        {
-            get { return true; }
-        }
-
-        public virtual bool IsHoleObstacle
-        {
-            get { return true; }
-        }
-
-        public virtual bool IsLavaObstacle
-        {
-            get { return true; }
-        }
-
-        public virtual bool IsPrickleObstacle
-        {
-            get { return true; }
-        }
-
-        public virtual bool IsLadderObstacle
-        {
-            get { return true; }
         }
 
         public virtual bool IsObstacleFor(MapEntity other)
@@ -788,6 +618,5 @@ namespace Zelda.Game.Entities
         {
             return true;
         }
-        #endregion
     }
 }
