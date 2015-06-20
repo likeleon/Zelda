@@ -18,11 +18,7 @@ namespace Zelda.Game.Heroes
         }
 
         #region Tunic
-        string _tunicSpriteId;
-        public string TunicSpriteId
-        {
-            get { return _tunicSpriteId; }
-        }
+        public string TunicSpriteId { get; private set; }
 
         string GetDefaultTunicSpriteId()
         {
@@ -32,10 +28,10 @@ namespace Zelda.Game.Heroes
 
         public void SetTunicSpriteId(string spriteId)
         {
-            if (spriteId == _tunicSpriteId)
+            if (spriteId == TunicSpriteId)
                 return;
 
-            _tunicSpriteId = spriteId;
+            TunicSpriteId = spriteId;
 
             string animation = null;
             Direction4 direction = Direction4.None;

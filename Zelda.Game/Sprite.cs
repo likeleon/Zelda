@@ -313,17 +313,17 @@ namespace Zelda.Game
         #region 충돌
         public bool TestCollision(Sprite other, int x1, int y1, int x2, int y2)
         {
-            SpriteAnimationDirection direction1 = _currentAnimation.GetDirection(_currentDirection);
-            Point origin1 = direction1.Origin;
-            Point location1 = new Point(x1 - origin1.X, y1 - origin1.Y);
+            var direction1 = _currentAnimation.GetDirection(_currentDirection);
+            var origin1 = direction1.Origin;
+            var location1 = new Point(x1 - origin1.X, y1 - origin1.Y);
             location1 += XY;
-            PixelBits pixelBits1 = direction1.GetPixelBits(_currentFrame);
+            var pixelBits1 = direction1.GetPixelBits(_currentFrame);
 
-            SpriteAnimationDirection direction2 = other._currentAnimation.GetDirection(other._currentDirection);
-            Point origin2 = direction2.Origin;
-            Point location2 = new Point(x2 - origin2.X, y2 - origin2.Y);
+            var direction2 = other._currentAnimation.GetDirection(other._currentDirection);
+            var origin2 = direction2.Origin;
+            var location2 = new Point(x2 - origin2.X, y2 - origin2.Y);
             location2 += other.XY;
-            PixelBits pixelBits2 = direction2.GetPixelBits(other._currentFrame);
+            var pixelBits2 = direction2.GetPixelBits(other._currentFrame);
 
             return pixelBits1.TestCollision(pixelBits2, location1, location2);
         }

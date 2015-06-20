@@ -463,11 +463,13 @@ namespace Zelda.Game.Entities
                         Debug.Error("No valid destination on map '{0}'. Placing the hero at (0,0) instead.".F(map.Id));
                         SetMap(map, Direction4.Down);
                         TopLeftXY = new Point(0, 0);
+                        map.Entities.SetEntityLayer(this, Layer.High);
                     }
                     else
                     {
                         SetMap(map, destination.Direction);
                         XY = destination.XY;
+                        map.Entities.SetEntityLayer(this, destination.Layer);
                     }
 
                     CheckPosition();    // 예를 들면 수영 중인 상태로 시작하기 위해서 필요합니다
