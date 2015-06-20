@@ -42,4 +42,14 @@
     <Subtype>GeneralizedNpc</Subtype>
     <Sprite>entities/fresco</Sprite>
   </Npc>
+  <DynamicTile>
+    <Name>black_screen</Name>
+    <Layer>High</Layer>
+    <X>0</X>
+    <Y>0</Y>
+    <Pattern>3</Pattern>
+    <Width>320</Width>
+    <Height>240</Height>
+    <EnabledAtStart>true</EnabledAtStart>
+  </DynamicTile>
 </MapData>

@@ -3,7 +3,7 @@
 local converter = {}
 
 local layer_names = {
-  "Low", "Intermediate", "Hight", "NumLayers"
+  "Low", "Intermediate", "High", "NumLayers"
 }
 
 local direction_names = {
@@ -34,6 +34,7 @@ local function import_map(quest_path, map_id)
   map.chests = {}
   map.npcs = {}
   map.blocks = {}
+  map.dynamic_tiles = {}
 
   local env = {}
   function env.properties(properties)
@@ -56,6 +57,9 @@ local function import_map(quest_path, map_id)
   end
   function env.block(block)
     map.blocks[#map.blocks + 1] = block
+  end
+  function env.dynamic_tile(dynamic_tile)
+    map.dynamic_tiles[#map.dynamic_tiles + 1] = dynamic_tile
   end
 
   local file = quest_path .. "maps/" .. map_id .. ".dat"
@@ -214,6 +218,15 @@ local function export_map(quest_path, map_id, map)
     block_elem:append("Pushable")[1] = block.pushable
     block_elem:append("Pullable")[1] = block.pullable
     block_elem:append("MaximumMoves")[1] = block.maximum_moves
+  end
+
+  for _, dynamic_tile in ipairs(map.dynamic_tiles) do
+    local dynamic_tile_elem = root:append("DynamicTile")
+    export_map_entity(dynamic_tile, dynamic_tile_elem)
+    dynamic_tile_elem:append("Pattern")[1] = dynamic_tile.pattern
+    dynamic_tile_elem:append("Width")[1] = dynamic_tile.width
+    dynamic_tile_elem:append("Height")[1] = dynamic_tile.height
+    dynamic_tile_elem:append("EnabledAtStart")[1] = dynamic_tile.enabled_at_start
   end
 
   local file = quest_path .. "maps/" .. map_id .. ".xml"

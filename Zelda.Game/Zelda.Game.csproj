@@ -94,6 +94,7 @@
     <Compile Include="Entities\Destination.cs" />
     <Compile Include="Entities\Destructible.cs" />
     <Compile Include="Entities\Detector.cs" />
+    <Compile Include="Entities\DynamicTile.cs" />
     <Compile Include="Entities\EntityType.cs" />
     <Compile Include="Entities\EntityData.cs" />
     <Compile Include="Entities\Explosion.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Script\ScriptChest.cs" />
     <Compile Include="Script\ScriptDestination.cs" />
     <Compile Include="Script\ScriptDestructible.cs" />
+    <Compile Include="Script\ScriptDynamicTile.cs" />
     <Compile Include="Script\ScriptEntity.cs" />
     <Compile Include="Script\ScriptFile.cs" />
     <Compile Include="Script\ScriptHero.cs" />

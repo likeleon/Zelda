@@ -5,21 +5,10 @@ namespace Zelda.Game.Entities
 {
     public class EntityData
     {
-        readonly EntityType _type;
-        public EntityType Type
-        {
-            get { return _type; }
-        }
-
+        public EntityType Type { get; private set;  }
         public string Name { get; set; }
-        
-        public bool HasName
-        {
-            get { return !String.IsNullOrEmpty(Name); }
-        }
-
+        public bool HasName { get { return !String.IsNullOrEmpty(Name); } }
         public Layer Layer { get; set; }
-        
         public Point XY { get; set; }
 
         public static EntityData Create(EntityXmlData xmlData)
@@ -36,18 +25,20 @@ namespace Zelda.Game.Entities
                 return new NpcData(xmlData as NpcXmlData);
             else if (xmlData is BlockXmlData)
                 return new BlockData(xmlData as BlockXmlData);
+            else if (xmlData is DynamicTileXmlData)
+                return new DynamicTileData(xmlData as DynamicTileXmlData);
             else
                 throw new Exception("Unknown entity type");
         }
         
         public EntityData(EntityType type)
         {
-            _type = type;
+            Type = type;
         }
 
         public EntityData(EntityType type, EntityXmlData xmlData)
         {
-            _type = type;
+            Type = type;
             Name = xmlData.Name.OptField("");
             Layer = xmlData.Layer.CheckField<Layer>("Layer");
             XY = new Point(xmlData.X.CheckField("X"), xmlData.Y.CheckField("Y"));

@@ -42,7 +42,8 @@ namespace Zelda.Game.Script
             { EntityType.Destructible, CreateDestructible },
             { EntityType.Chest, CreateChest },
             { EntityType.Npc, CreateNpc },
-            { EntityType.Block, CreateBlock }
+            { EntityType.Block, CreateBlock },
+            { EntityType.DynamicTile, CreateDynamicTile }
         };
 
         internal static void CreateMapEntityFromData(Map map, EntityData entityData)
@@ -215,6 +216,27 @@ namespace Zelda.Game.Script
                 map.Entities.AddEntity(block);
 
                 return (map.IsStarted) ? block.AsScriptEntity<ScriptBlock>() : null;
+            });
+        }
+
+        internal static ScriptDynamicTile CreateDynamicTile(ScriptMap scriptMap, EntityData entityData)
+        {
+            return ScriptToCore.Call(() =>
+            {
+                var map = scriptMap.Map;
+                var data = entityData as DynamicTileData;
+
+                var dynamicTile = new DynamicTile(
+                    data.Name,
+                    data.Layer,
+                    data.XY,
+                    EntityCreationCheckSize(data.Width, data.Height),
+                    map.Tileset,
+                    data.Pattern,
+                    data.EnabledAtStart);
+                map.Entities.AddEntity(dynamicTile);
+
+                return (map.IsStarted) ? dynamicTile.AsScriptEntity<ScriptDynamicTile>() : null;
             });
         }
 

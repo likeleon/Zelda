@@ -176,6 +176,7 @@ namespace Zelda.Game
         [XmlElement("Chest", typeof(ChestXmlData))]
         [XmlElement("Npc", typeof(NpcXmlData))]
         [XmlElement("Block", typeof(BlockXmlData))]
+        [XmlElement("DynamicTile", typeof(DynamicTileXmlData))]
         public EntityXmlData[] Entities { get; set; }
 
         [XmlIgnore]
