@@ -91,7 +91,7 @@ namespace Alttp.Menus
         public DialogBox(ScriptGame game)
         {
             _game = game;
-            DialogPosition = DialogBoxVerticalPosition.Top;
+            DialogPosition = DialogBoxVerticalPosition.Auto;
         }
 
         public void Initialize()

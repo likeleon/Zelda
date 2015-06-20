@@ -1,4 +1,5 @@
 ﻿using Zelda.Game.Engine;
+using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
@@ -6,8 +7,10 @@ namespace Zelda.Game.Entities
     {
         readonly string _tilePatternId;
         readonly TilePattern _tilePattern;
+        readonly ScriptDynamicTile _scriptDynamicTile;
 
         public override EntityType Type { get { return EntityType.DynamicTile; } }
+        public override ScriptEntity ScriptEntity { get { return _scriptDynamicTile; } }
         // TODO: IsGroundModifier
         // TODO: GetModifiedGround
 
@@ -16,7 +19,8 @@ namespace Zelda.Game.Entities
         {
             _tilePatternId = tilePatternId;
             _tilePattern = tileset.GetTilePattern(tilePatternId);
-            // TODO: SetEnabled(enabled);
+            SetEnabled(enabled);
+            _scriptDynamicTile = new ScriptDynamicTile(this);
         }
 
         public override void DrawOnMap()

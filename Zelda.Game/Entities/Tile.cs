@@ -4,38 +4,20 @@ namespace Zelda.Game.Entities
 {
     class Tile : MapEntity
     {
-        public override EntityType Type
-        {
-            get { return EntityType.Tile; }
-        }
-
-        public bool IsAnimated
-        {
-            get { return _tilePattern.IsAnimated; }
-        }
-
         readonly string _tilePatternId;
-        public string TilePatternId
-        {
-            get { return _tilePatternId; }
-        }
+        
+        public bool IsAnimated { get { return Pattern.IsAnimated; } }
+        public string TilePatternId { get { return _tilePatternId; } }
+        public TilePattern Pattern { get; private set; }
 
-        readonly TilePattern _tilePattern;
-        public TilePattern Pattern
-        {
-            get { return _tilePattern; }
-        }
-
-        public override bool IsDrawnAtItsPosition
-        {
-            get { return _tilePattern.IsDrawnAtItsPosition; }
-        }
+        public override EntityType Type { get { return EntityType.Tile; } }
+        public override bool IsDrawnAtItsPosition { get { return Pattern.IsDrawnAtItsPosition; } }
 
         public Tile(Layer layer, Point xy, Size size, Tileset tileset, string tilePatternId)
             : base("", 0, layer, xy, size)
         {
             _tilePatternId = tilePatternId;
-            _tilePattern = tileset.GetTilePattern(tilePatternId);
+            Pattern = tileset.GetTilePattern(tilePatternId);
         }
 
         public void Draw(Surface dstSurface, Point viewport)
@@ -45,7 +27,7 @@ namespace Zelda.Game.Entities
                 TopLeftY - viewport.Y,
                 Width,
                 Height);
-            _tilePattern.FillSurface(
+            Pattern.FillSurface(
                 dstSurface,
                 dstPosition,
                 Map.Tileset,

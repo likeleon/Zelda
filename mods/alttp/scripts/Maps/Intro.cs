@@ -13,11 +13,13 @@ namespace Alttp.Maps
 
         protected override void OnStarted(ScriptDestination destination)
         {
-            var fresco = GetEntity<ScriptNpc>("fresco");
-            _frescoSprite = fresco.Sprite;
+            (Game as PlayGame).DialogBox.SetDialogStyle(DialogBoxStyle.Empty);
+
+            _frescoSprite = GetEntity<ScriptNpc>("fresco").Sprite;
             _frescoSprite.SetIgnoreSuspended(true);
             Game.StartDialog("intro0", null, (_) =>
             {
+                GetEntity<ScriptDynamicTile>("black_screen").SetEnabled(false);
                 ScriptAudio.PlayMusic("legend");
                 NextFresco();
             });
