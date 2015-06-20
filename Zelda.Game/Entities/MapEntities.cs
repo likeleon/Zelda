@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Zelda.Game.Entities
@@ -471,10 +472,10 @@ namespace Zelda.Game.Entities
                 // 애니메이션되지 않는 타일들을 그립니다
                 _nonAnimatedRegions[layer].DrawOnMap();
 
-                foreach (MapEntity entity in _entitiesDrawnFirst[layer])
+                foreach (var entity in _entitiesDrawnFirst[layer].Where(e => e.IsEnabled))
                     entity.DrawOnMap();
 
-                foreach (MapEntity entity in _entitiesDrawnYOrder[layer])
+                foreach (var entity in _entitiesDrawnYOrder[layer].Where(e => e.IsEnabled))
                     entity.DrawOnMap();
             }
         }

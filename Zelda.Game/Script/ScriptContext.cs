@@ -7,19 +7,15 @@ namespace Zelda.Game.Script
 {
     static partial class ScriptContext
     {
-        static MainLoop _mainLoop;
-        internal static MainLoop MainLoop
-        {
-            get { return _mainLoop; }
-        }
-
+        public static MainLoop MainLoop { get; private set; }
+        
         static ObjectCreator _objectCreator;
         static ScriptMain _scriptMain;
 
         #region 메인 루프
         public static void Initialize(MainLoop mainLoop)
         {
-            _mainLoop = mainLoop;
+            MainLoop = mainLoop;
             _objectCreator = new ObjectCreator(CurrentMod.Resources);
 
             CreateScriptMain();

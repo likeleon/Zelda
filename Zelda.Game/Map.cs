@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 using Zelda.Game.Script;
@@ -521,9 +522,10 @@ namespace Zelda.Game
         public bool TestCollisionWithEntities(Layer layer, Rectangle collisionBox, MapEntity entityToCheck)
         {
             var obstacleEntities = _entities.GetObstacleEntities(layer);
-            foreach (MapEntity entity in obstacleEntities)
+            foreach (var entity in obstacleEntities)
             {
                 if (entity != entityToCheck &&
+                    entity.IsEnabled &&
                     entity.Overlaps(collisionBox) &&
                     entity.IsObstacleFor(entityToCheck, collisionBox))
                 {
@@ -547,11 +549,8 @@ namespace Zelda.Game
             if (_suspended)
                 return;
 
-            foreach (Detector detector in _entities.Detectors)
-            {
-                if (!detector.IsBeingRemoved)
-                    detector.CheckCollision(entity);
-            }
+            foreach (var detector in _entities.Detectors.Where(d => d.IsEnabled && !d.IsBeingRemoved))
+                detector.CheckCollision(entity);
         }
 
         public void CheckCollisionWithDetectors(MapEntity entity, Sprite sprite)
@@ -559,11 +558,8 @@ namespace Zelda.Game
             if (_suspended)
                 return;
 
-            foreach (Detector detector in _entities.Detectors)
-            {
-                if (!detector.IsBeingRemoved)
-                    detector.CheckCollision(entity, sprite);
-            }
+            foreach (var detector in _entities.Detectors.Where(d => d.IsEnabled && !d.IsBeingRemoved))
+                detector.CheckCollision(entity, sprite);
         }
 
         public void CheckCollisionFromDetector(Detector detector)
@@ -573,11 +569,8 @@ namespace Zelda.Game
 
             detector.CheckCollision(Entities.Hero);
 
-            foreach (MapEntity entity in _entities.Entities)
-            {
-                if (!entity.IsBeingRemoved)
-                    detector.CheckCollision(entity);
-            }
+            foreach (var entity in _entities.Entities.Where(e => e.IsEnabled && !e.IsBeingRemoved))
+                detector.CheckCollision(entity);
         }
         #endregion
     }

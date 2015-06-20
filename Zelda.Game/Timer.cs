@@ -5,45 +5,50 @@ namespace Zelda.Game
 {
     class Timer
     {
-        [Description("타이머가 완료되는 시각")]
         uint _expirationDate;
+        uint _whenSuspended;
+
         public uint ExpirationDate
         {
             get { return _expirationDate; }
             set
             {
                 _expirationDate = value;
-                _finished = EngineSystem.Now >= _expirationDate;
+                IsFinished = EngineSystem.Now >= _expirationDate;
             }
         }
 
-        [Description("초기 지속 시간")]
-        readonly uint _duration;
-        public uint InitialDuration
-        {
-            get { return _duration; }
-        }
-
-        private bool _finished;
-        public bool IsFinished
-        {
-            get { return _finished; }
-        }
+        public uint InitialDuration { get; private set; }
+        public bool IsFinished { get; private set; }
+        public bool IsSuspended { get; private set; }
 
         public Timer(uint duration)
         {
             _expirationDate = EngineSystem.Now + duration;
-            _duration = duration;
-            _finished = (EngineSystem.Now >= _expirationDate);
+            InitialDuration = duration;
+            IsFinished = (EngineSystem.Now >= _expirationDate);
         }
 
         public void Update()
         {
-            if (IsFinished)
+            if (IsSuspended || IsFinished)
                 return;
 
-            uint now = EngineSystem.Now;
-            _finished = (EngineSystem.Now >= _expirationDate);
+            var now = EngineSystem.Now;
+            IsFinished = (now >= _expirationDate);
+        }
+
+        public void SetSuspended(bool suspended)
+        {
+            if (IsSuspended == suspended)
+                return;
+
+            var now = EngineSystem.Now;
+
+            if (suspended)
+                _whenSuspended = now;
+            else if (_whenSuspended != 0)
+                _expirationDate += now - _whenSuspended;
         }
     }
 }

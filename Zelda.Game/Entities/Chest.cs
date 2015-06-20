@@ -76,7 +76,8 @@ namespace Zelda.Game.Entities
 
         public override bool NotifyActionCommandPressed()
         {
-            if (!Hero.IsFree ||
+            if (!IsEnabled ||
+                !Hero.IsFree ||
                 CommandsEffects.ActionCommandEffect == ActionCommandEffect.None)
                 return false;
 

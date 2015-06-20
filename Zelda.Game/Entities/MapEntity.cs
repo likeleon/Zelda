@@ -31,6 +31,7 @@ namespace Zelda.Game.Entities
         Rectangle _boundingBox;
         int _optimizationDistance = DefaultOptimizationDistance;
         Detector _facingEntity;
+        bool _waitingEnabled;
 
         public Map Map { get; private set; }
         public bool IsOnMap { get { return Map != null; } }
@@ -163,6 +164,7 @@ namespace Zelda.Game.Entities
         public bool IsAlignedToGridX { get { return TopLeftX % 8 == 0; } }
         public bool IsAlignedToGridY { get { return TopLeftY % 8 == 0; } }
         public bool IsVisible { get; private set; }
+        public bool IsEnabled { get; private set; }
         public IEnumerable<Sprite> Sprites { get { return _sprites; } }
         public bool HasSprite { get { return _sprites.Count > 0; } }
         public Sprite Sprite { get { return _sprites[0]; } }
@@ -212,6 +214,7 @@ namespace Zelda.Game.Entities
             _boundingBox = new Rectangle(xy, size);
             OptimizationDistance2 = DefaultOptimizationDistance * DefaultOptimizationDistance;
             IsVisible = true;
+            IsEnabled = true;
         }
 
         protected override void OnDispose(bool disposing)
@@ -220,6 +223,34 @@ namespace Zelda.Game.Entities
             ClearOldSprites();
             ClearMovement();
             ClearOldMovements();
+        }
+
+        public void SetEnabled(bool enabled)
+        {
+            if (IsEnabled == enabled)
+                return;
+
+            if (enabled)
+            {
+                _waitingEnabled = true;
+                return;
+            }
+
+            IsEnabled = false;
+            _waitingEnabled = false;
+
+            if (!IsSuspended)
+            {
+                if (Movement != null)
+                    Movement.SetSuspended(true);
+
+                foreach (var sprite in _sprites)
+                    sprite.SetSuspended(true);
+
+                if (IsOnMap)
+                    ScriptTimer.SetEntityTimersSuspended(ScriptEntity, true);
+            }
+            // TODO: NotifyEnabled(false);
         }
 
         public void RemoveFromMap()
@@ -402,16 +433,21 @@ namespace Zelda.Game.Entities
             if (suspended)
                 WhenSuspended = EngineSystem.Now;
 
-            foreach (Sprite sprite in _sprites)
-                sprite.SetSuspended(suspended);
+            foreach (var sprite in _sprites)
+                sprite.SetSuspended(suspended || !IsEnabled);
 
             if (Movement != null)
-                Movement.SetSuspended(suspended);
+                Movement.SetSuspended(suspended || !IsEnabled);
+
+            if (IsOnMap)
+                ScriptTimer.SetEntityTimersSuspended(ScriptEntity, suspended || !IsEnabled);
         }
 
         public virtual void Update()
         {
             Debug.CheckAssertion(Type != EntityType.Tile, "Attempt to update a static tile");
+
+            EnableIfNecessary();
 
             if (_facingEntity != null && _facingEntity.IsBeingRemoved)
                 FacingEntity = null;
@@ -437,6 +473,31 @@ namespace Zelda.Game.Entities
                 Movement.Update();
             ClearOldMovements();
         }
+        
+        void EnableIfNecessary()
+        {
+            if (!_waitingEnabled)
+                return;
+
+            if (IsObstacleFor(Hero) && Overlaps(Hero))
+                return;
+
+            IsEnabled = true;
+            _waitingEnabled = false;
+            // TODO: NotifyEnabled(true);
+
+            if (IsSuspended)
+                return;
+
+            if (Movement != null)
+                Movement.SetSuspended(false);
+
+            foreach (var sprite in _sprites)
+                sprite.SetSuspended(false);
+
+            if (IsOnMap)
+                ScriptTimer.SetEntityTimersSuspended(ScriptEntity, false);
+        }
 
         public virtual void DrawOnMap()
         {
@@ -450,6 +511,11 @@ namespace Zelda.Game.Entities
         public bool Overlaps(Rectangle rectangle)
         {
             return _boundingBox.Overlaps(rectangle);
+        }
+
+        public bool Overlaps(MapEntity other)
+        {
+            return Overlaps(other.BoundingBox);
         }
 
         // 엔티티의 'origin' 지점과 맵 가시 영역의 중점사이의 거리의 제곱을 얻습니다
@@ -480,13 +546,13 @@ namespace Zelda.Game.Entities
             ClearMovement();
             Movement = movement;
 
-            if (Movement != null)
-            {
-                Movement.SetEntity(this);
+            if (Movement == null)
+                return;
+             
+            Movement.SetEntity(this);
 
-                if (movement.IsSuspended != IsSuspended)
-                    movement.SetSuspended(IsSuspended);
-            }
+            if (movement.IsSuspended != IsSuspended)
+                movement.SetSuspended(IsSuspended || !IsEnabled);
         }
 
         public void ClearMovement()
@@ -547,6 +613,9 @@ namespace Zelda.Game.Entities
             if (!IsOnMap)
                 return; // 초기화 중입니다
 
+            if (!IsEnabled)
+                return;
+
             if (GetDistanceToCamera2() > OptimizationDistance2 &&
                 _optimizationDistance > 0)
                 return; // 가시 영역으로부터 멀리 떨어진 엔티티들은 체크하지 않습니다
@@ -562,6 +631,9 @@ namespace Zelda.Game.Entities
 
         public void CheckCollisionWithDetectors(Sprite sprite)
         {
+            if (!IsEnabled)
+                return;
+
             if (GetDistanceToCamera2() > OptimizationDistance2 &&
                 _optimizationDistance > 0)
                 return;

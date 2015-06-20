@@ -44,6 +44,12 @@ namespace Zelda.Game.Script
                 return false;
             });
         }
+
+        public static void SetEntityTimersSuspended(ScriptEntity entity, bool suspended)
+        {
+            foreach (var kvp in _timers.Where(t => t.Value.Context == entity))
+                kvp.Key.SetSuspended(suspended);
+        }
         
         ScriptTimer(Timer timer)
         {
@@ -80,6 +86,8 @@ namespace Zelda.Game.Script
                 throw new InvalidOperationException("Duplicate timer in the system");
 
             _timers.Add(timer, new ScriptTimerData(callback, context));
+
+            // TODO: 타이머 컨텍스트에 따라 타이머를 일시정지해둘 필요가 있습니다.
         }
 
         internal static void RemoveTimer(Timer timer)
