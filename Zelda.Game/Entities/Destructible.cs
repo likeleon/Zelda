@@ -6,7 +6,63 @@ namespace Zelda.Game.Entities
 {
     class Destructible : Detector
     {
-        #region 생성
+        readonly Ground _modifiedGround;
+        readonly ScriptDestructible _scriptDestructible;
+        int _weight;
+        bool _canBeCut;
+
+        public string AnimationSetId { get; private set; }
+        public bool IsWaitingForRegeneration { get { return false; } }
+        public Treasure Treasure { get; set; }
+        public string DestructionSound { get; set; }
+        public bool CanExplode { get; set; }
+        public bool CanRegenerate { get; set; }
+        public int DamageOnEnemies { get; set; }
+
+        public bool CanBeCut
+        {
+            get { return _canBeCut; }
+            set
+            {
+                _canBeCut = value;
+                UpdateCollisionModes();
+            }
+        }
+
+        public int Weight
+        {
+            get { return _weight; }
+            set
+            {
+                _weight = value;
+                UpdateCollisionModes();
+            }
+        }
+
+        public override Ground ModifiedGround
+        {
+            get
+            {
+                if (IsWaitingForRegeneration)
+                    return Ground.Empty;
+                
+                return _modifiedGround;
+            }
+        }
+
+        public override EntityType Type { get { return EntityType.Destructible; } }
+        public override ScriptEntity ScriptEntity { get { return _scriptDestructible; } }
+
+        public override bool IsGroundModifier
+        {
+            get
+            {
+                return _modifiedGround != Ground.Wall &&
+                       _modifiedGround != Ground.Empty &&
+                       _modifiedGround != Ground.Traversable;
+            }
+        }
+
         public Destructible(
             string name,
             Layer layer,
@@ -17,49 +73,21 @@ namespace Zelda.Game.Entities
             : base((int)CollisionMode.None, name, layer, xy, new Size(16, 16))
         {
             _modifiedGround = modifiedGround;
-            _animationSetId = animationSetId;
+            AnimationSetId = animationSetId;
             Treasure = treasure;
             DamageOnEnemies = 1;
 
             Origin = new Point(8, 13);
-            CreateSprite(_animationSetId);
+            CreateSprite(AnimationSetId);
 
             UpdateCollisionModes();
 
             _scriptDestructible = new ScriptDestructible(this);
         }
-        #endregion
 
-        #region MapEntity 속성 재정의
-        public override EntityType Type
-        {
-            get { return EntityType.Destructible; }
-        }
-
-        readonly Ground _modifiedGround;
-        public Ground ModifiedGround
-        {
-            get { return _modifiedGround; }
-        }
-
-        readonly ScriptDestructible _scriptDestructible;
-        public override ScriptEntity ScriptEntity
-        {
-            get { return _scriptDestructible; }
-        }
-        #endregion
-
-        #region 상태
-        public bool IsWaitingForRegeneration
-        {
-            get {  return false; }
-        }
-        #endregion
-
-        #region 충돌
         public override bool IsObstacleFor(MapEntity other)
         {
-            return _modifiedGround == Ground.Wall &&
+            return ModifiedGround == Ground.Wall &&
                    other.IsDestructibleObstacle(this);
         }
 
@@ -113,42 +141,6 @@ namespace Zelda.Game.Entities
 
             return true;
         }
-        #endregion
-
-        #region Destructible 고유 특성들
-        readonly string _animationSetId;
-        public string AnimationSetId
-        {
-            get { return _animationSetId; }
-        }
-
-        int _weight;
-        public int Weight
-        {
-            get { return _weight; }
-            set 
-            { 
-                _weight = value;
-                UpdateCollisionModes();
-            }
-        }
-
-        bool _canBeCut;
-        public bool CanBeCut
-        {
-            get { return _canBeCut; }
-            set
-            {
-                _canBeCut = value;
-                UpdateCollisionModes();
-            }
-        }
-
-        public Treasure Treasure { get; set; }
-        public string DestructionSound { get; set; }
-        public bool CanExplode { get; set; }
-        public bool CanRegenerate { get; set; }
-        public int DamageOnEnemies { get; set; }
 
         void UpdateCollisionModes()
         {
@@ -157,7 +149,6 @@ namespace Zelda.Game.Entities
             if (ModifiedGround == Ground.Wall)
                 AddCollisionMode(CollisionMode.Facing);
         }
-        #endregion
     }
 
     class DestructibleData : EntityData

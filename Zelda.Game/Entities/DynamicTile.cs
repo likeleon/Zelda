@@ -11,8 +11,8 @@ namespace Zelda.Game.Entities
 
         public override EntityType Type { get { return EntityType.DynamicTile; } }
         public override ScriptEntity ScriptEntity { get { return _scriptDynamicTile; } }
-        // TODO: IsGroundModifier
-        // TODO: GetModifiedGround
+        public override bool IsGroundModifier { get { return true; } }
+        public override Ground ModifiedGround { get { return _tilePattern.Ground; } }
 
         public DynamicTile(string name, Layer layer, Point xy, Size size, Tileset tileset, string tilePatternId, bool enabled)
             : base(name, Direction4.Right, layer, xy, size)

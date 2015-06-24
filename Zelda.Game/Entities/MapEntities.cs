@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Zelda.Game.Entities
 {
@@ -14,8 +14,22 @@ namespace Zelda.Game.Entities
         readonly int _tilesGridSize;
         readonly NonAnimatedRegions[] _nonAnimatedRegions = new NonAnimatedRegions[(int)Layer.NumLayer];
         readonly List<Tile>[] _tilesInAnimatedRegions = new List<Tile>[(int)Layer.NumLayer];
+        readonly List<MapEntity>[] _obstacleEntities = new List<MapEntity>[(int)Layer.NumLayer];
+        readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
+        readonly List<MapEntity>[] _groundModifiers = new List<MapEntity>[(int)Layer.NumLayer];
+        readonly List<MapEntity>[] _entitiesDrawnFirst = new List<MapEntity>[(int)Layer.NumLayer];
+        readonly List<MapEntity>[] _entitiesDrawnYOrder = new List<MapEntity>[(int)Layer.NumLayer];
+        readonly List<MapEntity> _entitiesToAdd = new List<MapEntity>();
+        readonly List<MapEntity> _entitiesToRemove = new List<MapEntity>();
+        readonly List<Detector> _detectors = new List<Detector>();
+        readonly List<MapEntity> _allEntities = new List<MapEntity>();
+        readonly Ground[,] _tilesGround;
 
-        #region 생성
+        public Hero Hero { get; private set; }
+        public Destination DefaultDestination { get; private set; }
+        public IEnumerable<MapEntity> Entities { get { return _allEntities; } }
+        public IEnumerable<Detector> Detectors { get { return _detectors; } }
+
         public MapEntities(Game game, Map map)
         {
             _game = game;
@@ -23,7 +37,7 @@ namespace Zelda.Game.Entities
             _mapWidth8 = _map.Width8;
             _mapHeight8 = _map.Height8;
             _tilesGridSize = _mapWidth8 * _mapHeight8;
-            _hero = _game.Hero;
+            Hero = _game.Hero;
 
             _tilesGround = new Ground[(int)Layer.NumLayer, _tilesGridSize];
             for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
@@ -34,35 +48,16 @@ namespace Zelda.Game.Entities
 
                 _nonAnimatedRegions[layer] = new NonAnimatedRegions(_map, (Layer)layer);
                 _tilesInAnimatedRegions[layer] = new List<Tile>();
+                _groundModifiers[layer] = new List<MapEntity>();
                 _entitiesDrawnFirst[layer] = new List<MapEntity>();
                 _entitiesDrawnYOrder[layer] = new List<MapEntity>();
                 _obstacleEntities[layer] = new List<MapEntity>();
             }
 
-            Layer heroLayer = _hero.Layer;
-            _obstacleEntities[(int)heroLayer].Add(_hero);
-            _entitiesDrawnYOrder[(int)heroLayer].Add(_hero);
-            _namedEntities[_hero.Name] = _hero;
-        }
-        #endregion
-
-        #region 엔티티들
-        readonly Hero _hero;
-        public Hero Hero
-        {
-            get { return _hero; }
-        }
-
-        Destination _defaultDestination;
-        public Destination DefaultDestination
-        {
-            get { return _defaultDestination; }
-        }
-        
-        readonly List<MapEntity> _allEntities = new List<MapEntity>();
-        public IEnumerable<MapEntity> Entities
-        {
-            get { return _allEntities; }
+            Layer heroLayer = Hero.Layer;
+            _obstacleEntities[(int)heroLayer].Add(Hero);
+            _entitiesDrawnYOrder[(int)heroLayer].Add(Hero);
+            _namedEntities[Hero.Name] = Hero;
         }
 
         public MapEntity FindEntity(string name)
@@ -77,32 +72,20 @@ namespace Zelda.Game.Entities
             return entity;
         }
 
-        readonly Ground[,] _tilesGround;
-
         public Ground GetTileGround(Layer layer, int x, int y)
         {
             return _tilesGround[(int)layer, (y >> 3) * _mapWidth8 + (x >> 3)];
         }
 
-        readonly List<MapEntity>[] _obstacleEntities = new List<MapEntity>[(int)Layer.NumLayer];
         public IEnumerable<MapEntity> GetObstacleEntities(Layer layer)
         {
             return _obstacleEntities[(int)layer];
         }
 
-        readonly List<Detector> _detectors = new List<Detector>();
-        public IEnumerable<Detector> Detectors
+        public List<MapEntity> GetGroundModifiers(Layer layer)
         {
-            get { return _detectors; }
+            return _groundModifiers[(int)layer];
         }
-        #endregion
-
-        #region 엔티티 관리
-        readonly Dictionary<string, MapEntity> _namedEntities = new Dictionary<string, MapEntity>();
-        readonly List<MapEntity>[] _entitiesDrawnFirst = new List<MapEntity>[(int)Layer.NumLayer];
-        readonly List<MapEntity>[] _entitiesDrawnYOrder = new List<MapEntity>[(int)Layer.NumLayer];
-        readonly List<MapEntity> _entitiesToAdd = new List<MapEntity>();
-        readonly List<MapEntity> _entitiesToRemove = new List<MapEntity>();
 
         public void AddEntity(MapEntity entity)
         {
@@ -139,6 +122,9 @@ namespace Zelda.Game.Entities
                     }
                 }
 
+                if (entity.IsGroundModifier)
+                    _groundModifiers[(int)layer].Add(entity);
+
                 // 스프라이트 리스트를 갱신합니다
                 if (entity.IsDrawnInYOrder)
                     _entitiesDrawnYOrder[(int)layer].Add(entity);
@@ -151,8 +137,8 @@ namespace Zelda.Game.Entities
                     case EntityType.Destination:
                         {
                             Destination destination = entity as Destination;
-                            if (_defaultDestination == null || destination.IsDefault)
-                                _defaultDestination = destination;
+                            if (DefaultDestination == null || destination.IsDefault)
+                                DefaultDestination = destination;
                         }
                         break;
 
@@ -321,9 +307,9 @@ namespace Zelda.Game.Entities
 
         void RemoveMarkedEntities()
         {
-            foreach (MapEntity entity in _entitiesToRemove)
+            foreach (var entity in _entitiesToRemove)
             {
-                Layer layer = entity.Layer;
+                var layer = entity.Layer;
 
                 if (entity.CanBeObstacle)
                 {
@@ -338,6 +324,9 @@ namespace Zelda.Game.Entities
 
                 if (entity.IsDetector)
                     _detectors.Remove(entity as Detector);
+
+                if (entity.IsGroundModifier)
+                    _groundModifiers[(int)layer].Remove(entity);
 
                 if (entity.IsDrawnInYOrder)
                     _entitiesDrawnYOrder[(int)layer].Remove(entity);
@@ -386,6 +375,12 @@ namespace Zelda.Game.Entities
                 _obstacleEntities[(int)layer].Add(entity);
             }
 
+            if (entity.IsGroundModifier)
+            {
+                _groundModifiers[(int)oldLayer].Remove(entity);
+                _groundModifiers[(int)layer].Add(entity);
+            }
+
             if (entity.IsDrawnInYOrder)
             {
                 _entitiesDrawnYOrder[(int)oldLayer].Remove(entity);
@@ -399,9 +394,7 @@ namespace Zelda.Game.Entities
 
             entity.SetLayer(layer);
         }
-        #endregion
 
-        #region 맵 이벤트들
         // 맵의 모든 엔티티들에게 맵이 시작(활성화)되었음을 알립니다
         public void NotifyMapStarted()
         {
@@ -410,8 +403,8 @@ namespace Zelda.Game.Entities
                 entity.NotifyMapStarted();
                 entity.NotifyTilesetChanged();
             }
-            _hero.NotifyMapStarted();
-            _hero.NotifyTilesetChanged();
+            Hero.NotifyMapStarted();
+            Hero.NotifyTilesetChanged();
 
             // 애니메이션되지 않는 타일들의 pre-drawing 데이터들을 구성합니다
             for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
@@ -426,14 +419,12 @@ namespace Zelda.Game.Entities
 
             foreach (MapEntity entity in _allEntities)
                 entity.NotifyTilesetChanged();
-            _hero.NotifyTilesetChanged();
+            Hero.NotifyTilesetChanged();
         }
-        #endregion
 
-        #region 게임 루프
         public void SetSuspended(bool suspended)
         {
-            _hero.SetSuspended(suspended);
+            Hero.SetSuspended(suspended);
 
             foreach (MapEntity entity in _allEntities)
                 entity.SetSuspended(suspended);
@@ -447,7 +438,7 @@ namespace Zelda.Game.Entities
                 AddEntity(entity);
             _entitiesToAdd.Clear();
 
-            _hero.Update();
+            Hero.Update();
 
             for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
                 _entitiesDrawnYOrder[layer].Sort((a, b) => (b.TopLeftY + b.Height) - (a.TopLeftY + a.Height));
@@ -479,6 +470,5 @@ namespace Zelda.Game.Entities
                     entity.DrawOnMap();
             }
         }
-        #endregion
     }
 }

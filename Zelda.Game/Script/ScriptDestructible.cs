@@ -4,16 +4,14 @@ namespace Zelda.Game.Script
 {
     public class ScriptDestructible : ScriptEntity
     {
-        readonly Destructible _destructible;
-        internal Destructible Destructible
-        {
-            get { return _destructible; }
-        }
+        internal Destructible Destructible { get; private set; }
+
+        public Ground ModifiedGround { get { return Destructible.ModifiedGround; } }
 
         internal ScriptDestructible(Destructible destructible)
             : base(destructible)
         {
-            _destructible = destructible;
+            Destructible = destructible;
         }
     }
 }

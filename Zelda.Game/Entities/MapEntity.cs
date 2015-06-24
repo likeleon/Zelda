@@ -177,6 +177,8 @@ namespace Zelda.Game.Entities
         public virtual bool CanBeObstacle { get { return true; } }
         public virtual bool IsDetector { get { return false; } }
         public virtual bool HasLayerIndependentCollisions { get { return false; } }
+        public virtual bool IsGroundModifier { get { return false; } }
+        public virtual Ground ModifiedGround { get { return Ground.Empty; } }
 
         public virtual bool IsLowWallObstacle { get { return true; } }
         public virtual bool IsShallowWaterObstacle { get { return IsDeepWaterObstacle; } }
@@ -506,6 +508,16 @@ namespace Zelda.Game.Entities
 
             foreach (Sprite sprite in _sprites)
                 Map.DrawSprite(sprite, GetDisplayedXY());
+        }
+        
+        public bool Overlaps(Point point)
+        {
+            return _boundingBox.Contains(point);
+        }
+
+        public bool Overlaps(int x, int y)
+        {
+            return _boundingBox.Contains(x, y);
         }
 
         public bool Overlaps(Rectangle rectangle)

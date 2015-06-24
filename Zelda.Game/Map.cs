@@ -538,7 +538,18 @@ namespace Zelda.Game
 
         public Ground GetGround(Layer layer, int x, int y)
         {
-            // TODO: 그라운드를 변화시키는 다이나믹 엔티티들 처리
+            var groundModifiers = _entities.GetGroundModifiers(layer);
+            foreach (var groundModifier in groundModifiers)
+            {
+                if (groundModifier.IsEnabled &&
+                    !groundModifier.IsBeingRemoved &&
+                    groundModifier.Overlaps(x, y) &&
+                    groundModifier.ModifiedGround != Ground.Empty)
+                {
+                    return groundModifier.ModifiedGround;
+                }
+            }
+            
             return _entities.GetTileGround(layer, x, y);
         }
         #endregion
