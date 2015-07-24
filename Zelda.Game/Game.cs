@@ -50,7 +50,7 @@ namespace Zelda.Game
                 // 유효한 시작 맵이 없을 경우 리소스 목록에서 첫번째 맵을 사용합니다
                 var maps = CurrentMod.GetResources(ResourceType.Map);
                 if (maps.Count <= 0)
-                    Debug.Die("This quest has no map");
+                    Debug.Die("This mod has no map");
 
                 startingMapId = maps.First().Key;
                 startingDestinationName = String.Empty;

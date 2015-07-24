@@ -9,7 +9,7 @@ namespace Zelda.Editor.Modules.Shell.Commands
     [CommandHandler]
     public class ExitCommandHandler : CommandHandlerBase<ExitCommandDefinition>
     {
-        private readonly IShell _shell;
+        readonly IShell _shell;
 
         [ImportingConstructor]
         public ExitCommandHandler(IShell shell)

@@ -13,10 +13,10 @@ namespace Zelda.Editor.Core.Commands
     [Export(typeof(ICommandRouter))]
     public class CommandRouter : ICommandRouter
     {
-        private static readonly Type CommandHandlerInterfaceType = typeof(ICommandHandler<>);
+        static readonly Type CommandHandlerInterfaceType = typeof(ICommandHandler<>);
 
-        private readonly Dictionary<Type, CommandHandlerWrapper> _globalCommandHandlerWrappers = new Dictionary<Type, CommandHandlerWrapper>();
-        private readonly Dictionary<Type, HashSet<Type>> _commandHandlerTypeToCommandDefinitionTypesLookup = new Dictionary<Type, HashSet<Type>>();
+        readonly Dictionary<Type, CommandHandlerWrapper> _globalCommandHandlerWrappers = new Dictionary<Type, CommandHandlerWrapper>();
+        readonly Dictionary<Type, HashSet<Type>> _commandHandlerTypeToCommandDefinitionTypesLookup = new Dictionary<Type, HashSet<Type>>();
 
         [ImportingConstructor]
         public CommandRouter([ImportMany(typeof(ICommandHandler))] ICommandHandler[] globalCommandHandlers)
@@ -24,19 +24,19 @@ namespace Zelda.Editor.Core.Commands
             BuildCommandHandlerWrappers(globalCommandHandlers);
         }
 
-        private void BuildCommandHandlerWrappers(ICommandHandler[] commandHandlers)
+        void BuildCommandHandlerWrappers(ICommandHandler[] commandHandlers)
         {
-            foreach (ICommandHandler commandHandler in commandHandlers)
+            foreach (var commandHandler in commandHandlers)
             {
-                Type commandHandlerType = commandHandler.GetType();
+                var commandHandlerType = commandHandler.GetType();
                 EnsureCommandHandlerTypeToCommandDefinitionTypesPopulated(commandHandlerType);
                 var commandDefinitionTypes = _commandHandlerTypeToCommandDefinitionTypesLookup[commandHandlerType];
-                foreach (Type commandDefinitionType in commandDefinitionTypes)
+                foreach (var commandDefinitionType in commandDefinitionTypes)
                     _globalCommandHandlerWrappers[commandDefinitionType] = CreateCommandHandlerWrapper(commandDefinitionType, commandHandler);
             }
         }
 
-        private void EnsureCommandHandlerTypeToCommandDefinitionTypesPopulated(Type commandHandlerType)
+        void EnsureCommandHandlerTypeToCommandDefinitionTypesPopulated(Type commandHandlerType)
         {
             if (!_globalCommandHandlerWrappers.ContainsKey(commandHandlerType))
             {
@@ -47,9 +47,9 @@ namespace Zelda.Editor.Core.Commands
             }
         }
 
-        private static IEnumerable<Type> GetAllHandledCommandedDefinitionTypes(Type type, Type genericInterfaceType)
+        static IEnumerable<Type> GetAllHandledCommandedDefinitionTypes(Type type, Type genericInterfaceType)
         {
-            List<Type> result = new List<Type>();
+            var result = new List<Type>();
             while (type != null)
             {
                 result.AddRange(type.GetInterfaces()
@@ -62,7 +62,7 @@ namespace Zelda.Editor.Core.Commands
             return result;
         }
 
-        private static CommandHandlerWrapper CreateCommandHandlerWrapper(Type commandDefinitionType, object commandHandler)
+        static CommandHandlerWrapper CreateCommandHandlerWrapper(Type commandDefinitionType, object commandHandler)
         {
             if (typeof(CommandDefinition).IsAssignableFrom(commandDefinitionType))
                 return CommandHandlerWrapper.FromCommandHandler(CommandHandlerInterfaceType.MakeGenericType(commandDefinitionType), commandHandler);
@@ -94,7 +94,7 @@ namespace Zelda.Editor.Core.Commands
             return commandHandler;
         }
 
-        private CommandHandlerWrapper FindCommandHandlerInVisualTree(CommandDefinitionBase commandDefinition, IInputElement target)
+        CommandHandlerWrapper FindCommandHandlerInVisualTree(CommandDefinitionBase commandDefinition, IInputElement target)
         {
             var visualObject = target as DependencyObject;
             if (visualObject == null)
@@ -133,7 +133,7 @@ namespace Zelda.Editor.Core.Commands
             return null;
         }
 
-        private bool IsCommandHandlerForCommandDefinitionType(object commandHandler, Type commandDefinitionType)
+        bool IsCommandHandlerForCommandDefinitionType(object commandHandler, Type commandDefinitionType)
         {
             var commandHandlerType = commandHandler.GetType();
             EnsureCommandHandlerTypeToCommandDefinitionTypesPopulated(commandHandlerType);

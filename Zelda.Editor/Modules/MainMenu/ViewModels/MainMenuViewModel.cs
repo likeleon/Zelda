@@ -6,7 +6,7 @@ namespace Zelda.Editor.Modules.MainMenu.ViewModels
     [Export(typeof(IMenu))]
     public class MainMenuViewModel : MenuModel, IPartImportsSatisfiedNotification
     {
-        private readonly IMenuBuilder _menuBuilder;
+        readonly IMenuBuilder _menuBuilder;
 
         [ImportingConstructor]
         public MainMenuViewModel(IMenuBuilder menuBuilder)
