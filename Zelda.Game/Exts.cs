@@ -259,5 +259,11 @@ namespace Zelda.Game
 
             return entity.ScriptEntity as T;
         }
+
+        public static void Do<T>(this IEnumerable<T> e, Action<T> action)
+        {
+            foreach (var ee in e)
+                action(ee);
+        }
     }
 }

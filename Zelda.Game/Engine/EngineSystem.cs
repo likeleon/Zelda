@@ -23,14 +23,6 @@ namespace Zelda.Game.Engine
             get { return _ticks; }
         }
 
-        public static Version ZeldaVersion
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version;
-            }
-        }
-
         public static void Initialize(Arguments args)
         {
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
@@ -39,7 +31,7 @@ namespace Zelda.Game.Engine
             ModFiles.Initialize(args);
             Sound.Initialize(args);
             InputEvent.Initialize();
-            Video.Initialize(args, ZeldaVersion.ToString());
+            Video.Initialize(args, ZeldaVersion.Version.ToString());
             FontResource.Initialize();
             Sprite.Initialize();
         }

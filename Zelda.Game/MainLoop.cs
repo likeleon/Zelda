@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Zelda.Game.Engine;
 using Zelda.Game.Script;
 
@@ -170,11 +169,11 @@ namespace Zelda.Game
                 Debug.Die("No Zelda version is specified in your mod.xml file!");
 
             var requiredVersion = Version.Parse(zeldaRequiredVersion);
-            if (requiredVersion.Major != EngineSystem.ZeldaVersion.Major ||
-                requiredVersion.Minor != EngineSystem.ZeldaVersion.Minor)
+            if (requiredVersion.Major != ZeldaVersion.Version.Major ||
+                requiredVersion.Minor != ZeldaVersion.Version.Minor)
             {
                 string msg = "This mod is made for Zelda {0}.{1}".F(requiredVersion.Major, requiredVersion.Minor);
-                msg += ".x but you are running Zelda {0}".F(EngineSystem.ZeldaVersion.ToString());
+                msg += ".x but you are running Zelda {0}".F(ZeldaVersion.Version.ToString());
                 Debug.Die(msg);
             }
         }

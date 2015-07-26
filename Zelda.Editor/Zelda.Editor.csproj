@@ -214,10 +214,11 @@
       <DependentUpon>ErrorListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\ModEditor\MenuDefinitions.cs" />
-    <Compile Include="Modules\ModEditor\Services\IModService.cs" />
+    <Compile Include="Modules\ModEditor\Module.cs" />
+    <Compile Include="Modules\ModEditor\Services\IMod.cs" />
     <Compile Include="Modules\ModEditor\Services\ModPath.cs" />
     <Compile Include="Modules\ModEditor\Services\ModProperties.cs" />
-    <Compile Include="Modules\ModEditor\Services\ModService.cs" />
+    <Compile Include="Modules\ModEditor\Services\Mod.cs" />
     <Compile Include="Modules\Progress\Commands\ViewProgressCommandDefinition.cs" />
     <Compile Include="Modules\Progress\Commands\ViewProgressCommandHandler.cs" />
     <Compile Include="Modules\Progress\IJob.cs" />

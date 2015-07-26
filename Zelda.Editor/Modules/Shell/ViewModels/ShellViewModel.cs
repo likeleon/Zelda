@@ -10,6 +10,7 @@ using Zelda.Editor.Core.Services;
 using Zelda.Editor.Modules.MainMenu;
 using Zelda.Editor.Modules.Shell.Views;
 using Zelda.Editor.Modules.StatusBar;
+using Zelda.Game;
 
 namespace Zelda.Editor.Modules.Shell.ViewModels
 {
@@ -69,26 +70,23 @@ namespace Zelda.Editor.Modules.Shell.ViewModels
 
         protected override void OnViewLoaded(object view)
         {
-            foreach (IModule module in _modules)
+            foreach (var module in _modules)
                 foreach (var globalResourceDictionary in module.GlobalResourceDictionaries)
                     Application.Current.Resources.MergedDictionaries.Add(globalResourceDictionary);
 
-            foreach (IModule module in _modules)
-                module.PreInitialize();
-            foreach (IModule module in _modules)
-                module.Initialize();
+            _modules.Do(m => m.PreInitialize());
+            _modules.Do(m => m.Initialize());
 
             _shellView = view as IShellView;
             if (!HasPersistedState)
             {
-                foreach (IDocument defaultDocument in _modules.SelectMany(x => x.DefaultDocuments))
+                foreach (var defaultDocument in _modules.SelectMany(x => x.DefaultDocuments))
                     OpenDocument(defaultDocument);
-                foreach (Type defaultTool in _modules.SelectMany(x => x.DefaultTools))
+                foreach (var defaultTool in _modules.SelectMany(x => x.DefaultTools))
                     ShowTool(IoC.GetInstance(defaultTool, null) as ITool);
             }
 
-            foreach (IModule module in _modules)
-                module.PostInitialize();
+            _modules.Do(m => m.PostInitialize());
 
             base.OnViewLoaded(view);
         }

@@ -14,10 +14,10 @@ namespace Zelda.Editor.Modules.ModEditor.Commands
     class OpenModCommandHandler : CommandHandlerBase<OpenModCommandDefinition>
     {
         readonly IShell _shell;
-        readonly IModService _modService;
+        readonly IMod _modService;
 
         [ImportingConstructor]
-        public OpenModCommandHandler(IShell shell, IModService modService)
+        public OpenModCommandHandler(IShell shell, IMod modService)
         {
             _shell = shell;
             _modService = modService;
@@ -42,7 +42,7 @@ namespace Zelda.Editor.Modules.ModEditor.Commands
         {
             try
             {
-                _modService.LoadMod(modPath);
+                _modService.Load(modPath);
             }
             catch (Exception e)
             {

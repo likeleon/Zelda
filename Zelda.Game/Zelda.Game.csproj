@@ -203,6 +203,7 @@
     <Compile Include="SpriteAnimationSet.cs" />
     <Compile Include="Timer.cs" />
     <Compile Include="XmlData.cs" />
+    <Compile Include="ZeldaVersion.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

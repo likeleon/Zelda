@@ -5,7 +5,7 @@ namespace Zelda.Editor.Modules.ModEditor.Services
 {
     class ModProperties
     {
-        Zelda.Game.ModProperties _properties = new Game.ModProperties();
+        readonly Game.ModProperties _properties = new Game.ModProperties();
 
         public ModPath ModPath { get; private set; }
         public string ZeldaVersion {  get { return _properties.ZeldaVersion; } }

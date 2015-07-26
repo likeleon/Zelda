@@ -1,28 +1,30 @@
 ﻿using Caliburn.Micro;
 using System;
 using System.ComponentModel.Composition;
+using System.IO;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.ModEditor.Services
 {
-    [Export(typeof(IModService))]
-    class ModService : PropertyChangedBase, IModService
+    [Export(typeof(IMod))]
+    class Mod : PropertyChangedBase, IMod
     {
-        public event EventHandler ModLoaded;
-        public event EventHandler ModUnloaded;
+        public event EventHandler Loaded;
+        public event EventHandler Unloaded;
 
-        public bool IsLoaded { get; private set; }
+        public bool IsLoaded { get { return RootPath != string.Empty; } }
         public string RootPath { get; private set; }
+        public string Name { get { return Path.GetFileName(RootPath); } }
 
-        public ModService()
+        public Mod()
         {
             RootPath = string.Empty;
         }
 
-        public void LoadMod(string rootPath)
+        public void Load(string rootPath)
         {
             if (IsLoaded)
-                UnloadMod();
+                Unload();
 
             var modPath = new ModPath(rootPath);
             if (!modPath.Exists(modPath.PropertiesPath))
@@ -33,8 +35,8 @@ namespace Zelda.Editor.Modules.ModEditor.Services
 
             RootPath = rootPath;
 
-            if (ModLoaded != null)
-                ModLoaded(this, EventArgs.Empty);
+            if (Loaded != null)
+                Loaded(this, EventArgs.Empty);
         }
 
         static bool ModExists(string rootPath)
@@ -68,15 +70,15 @@ namespace Zelda.Editor.Modules.ModEditor.Services
             throw new Exception(msg);
         }
 
-        public void UnloadMod()
+        public void Unload()
         {
             if (!IsLoaded)
                 throw new InvalidOperationException("Mod not loaded");
 
             RootPath = string.Empty;
 
-            if (ModUnloaded != null)
-                ModUnloaded(this, EventArgs.Empty);
+            if (Unloaded != null)
+                Unloaded(this, EventArgs.Empty);
         }
     }
 }
