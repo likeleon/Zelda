@@ -19,6 +19,16 @@ namespace Zelda.Game
             return string.Format(fmt, args);
         }
 
+        public static bool IsNullOrEmpty(this string s)
+        {
+            return string.IsNullOrEmpty(s);
+        }
+
+        public static bool IsNullOrWhiteSpace(this string s)
+        {
+            return string.IsNullOrWhiteSpace(s);
+        }
+
         public static IEnumerable<string> GetNamespaces(this Assembly a)
         {
             return a.GetTypes().Select(t => t.Namespace).Distinct().Where(n => n != null);

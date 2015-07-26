@@ -24,26 +24,21 @@ namespace Zelda.Editor.Modules.Shell.ViewModels
         private IEnumerable<IModule> _modules;
 
         [Import]
-        private IMenu _mainMenu;
+        IMenu _mainMenu;
 
         [Import]
-        private IStatusBar _statusBar;
+        IStatusBar _statusBar;
 #pragma warning restore 649
 
-        private IShellView _shellView;
-        private bool _closing;
+        readonly BindableCollection<ITool> _tools = new BindableCollection<ITool>();
 
-        public IMenu MainMenu
-        {
-            get { return _mainMenu; }
-        }
+        IShellView _shellView;
+        bool _closing;
+        ILayoutItem _activeLayoutItem;
 
-        public IStatusBar StatusBar
-        {
-            get { return _statusBar; }
-        }
+        public IMenu MainMenu { get { return _mainMenu; } }
+        public IStatusBar StatusBar { get { return _statusBar; } }
 
-        public ILayoutItem _activeLayoutItem;
         public ILayoutItem ActiveLayoutItem
         {
             get { return _activeLayoutItem; }
@@ -61,31 +56,11 @@ namespace Zelda.Editor.Modules.Shell.ViewModels
             }
         }
 
-        public IDocument ActiveDocument
-        {
-            get { return ActiveItem; }
-        }
-
-        private readonly BindableCollection<ITool> _tools = new BindableCollection<ITool>();
-        public IObservableCollection<ITool> Tools
-        {
-            get { return _tools; }
-        }
-
-        public IObservableCollection<IDocument> Documents
-        {
-            get { return Items; }
-        }
-
-        public virtual string StateFile
-        {
-            get { return @".\ApplicationState.bin"; }
-        }
-
-        public bool HasPersistedState
-        {
-            get { return File.Exists(StateFile); }
-        }
+        public IDocument ActiveDocument { get { return ActiveItem; } }
+        public IObservableCollection<ITool> Tools { get { return _tools; } }
+        public IObservableCollection<IDocument> Documents { get { return Items; } }
+        public virtual string StateFile { get { return @".\ApplicationState.bin"; } }
+        public bool HasPersistedState { get { return File.Exists(StateFile); } }
         
         public ShellViewModel()
         {

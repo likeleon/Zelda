@@ -2,21 +2,25 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Zelda.Editor.Core;
 using Zelda.Editor.Core.Commands;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Core.Threading;
+using Zelda.Editor.Modules.ModEditor.Services;
 
-namespace Zelda.Editor.Modules.Shell.Commands
+namespace Zelda.Editor.Modules.ModEditor.Commands
 {
     [CommandHandler]
-    class NewModCommandHandler : CommandHandlerBase<NewModCommandDefinition>
+    class OpenModCommandHandler : CommandHandlerBase<OpenModCommandDefinition>
     {
         readonly IShell _shell;
+        readonly IModService _modService;
 
         [ImportingConstructor]
-        public NewModCommandHandler(IShell shell)
+        public OpenModCommandHandler(IShell shell, IModService modService)
         {
             _shell = shell;
+            _modService = modService;
         }
 
         public override Task Run(Command command)
@@ -30,7 +34,21 @@ namespace Zelda.Editor.Modules.Shell.Commands
             if (dlg.ShowDialog() != CommonFileDialogResult.Ok)
                 return TaskUtility.Completed;
 
+            OpenMod(dlg.FileName);
             return TaskUtility.Completed;
+        }
+
+        void OpenMod(string modPath)
+        {
+            try
+            {
+                _modService.LoadMod(modPath);
+            }
+            catch (Exception e)
+            {
+                e.ShowDialog();
+            }
         }
     }
 }
+    

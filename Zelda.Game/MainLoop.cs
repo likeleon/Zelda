@@ -7,22 +7,13 @@ namespace Zelda.Game
 {
     class MainLoop : DisposableObject
     {
-        public bool Exiting { get; set; }
-
-        Game _game;
-        public Game Game
-        {
-            get { return _game; }
-        }
-
-        bool IsResetting
-        {
-            get { return _game != null && _nextGame == null; }
-        }
-
         readonly Surface _rootSurface;
         readonly ScriptSurface _rootScriptSurface;
         Game _nextGame;
+
+        public bool Exiting { get; set; }
+        public Game Game { get; private set; }
+        bool IsResetting { get { return Game != null && _nextGame == null; } }
 
         public MainLoop(Arguments args)
         {
@@ -44,8 +35,8 @@ namespace Zelda.Game
 
         protected override void OnDispose(bool disposing)
         {
-            if (_game != null)
-                _game.Stop();
+            if (Game != null)
+                Game.Stop();
 
             ScriptContext.Exit();
             EngineSystem.Quit();
@@ -101,21 +92,21 @@ namespace Zelda.Game
             }
         }
 
-        private void Update()
+        void Update()
         {
-            if (_game != null)
-                _game.Update();
+            if (Game != null)
+                Game.Update();
 
             ScriptContext.Update();
             EngineSystem.Update();
 
-            if (_nextGame != _game)
+            if (_nextGame != Game)
             {
-                _game = _nextGame;
+                Game = _nextGame;
 
-                if (_game != null)
+                if (Game != null)
                 {
-                    _game.Start();
+                    Game.Start();
                 }
                 else
                 {
@@ -125,9 +116,9 @@ namespace Zelda.Game
             }
         }
 
-        private void CheckInput()
+        void CheckInput()
         {
-            InputEvent inputEvent = InputEvent.GetEvent();
+            var inputEvent = InputEvent.GetEvent();
             while (inputEvent != null)
             {
                 NotifyInput(inputEvent);
@@ -135,32 +126,32 @@ namespace Zelda.Game
             }
         }
 
-        private void NotifyInput(InputEvent inputEvent)
+        void NotifyInput(InputEvent inputEvent)
         {
             if (inputEvent.IsWindowClosing)
                 Exiting = true;
 
-            bool handled = ScriptContext.MainOnInput(inputEvent);
-            if (!handled && _game != null)
-                _game.NotifyInput(inputEvent);
+            var handled = ScriptContext.MainOnInput(inputEvent);
+            if (!handled && Game != null)
+                Game.NotifyInput(inputEvent);
         }
 
-        private void Draw()
+        void Draw()
         {
             _rootSurface.Clear();
 
-            if (_game != null)
-                _game.Draw(_rootSurface);
+            if (Game != null)
+                Game.Draw(_rootSurface);
             ScriptContext.MainOnDraw(_rootScriptSurface);
             Video.Render(_rootSurface);
         }
 
-        private void LoadModProperties()
+        void LoadModProperties()
         {
             // 모드 속성 파일을 읽습니다
-            string fileName = "mod.xml";
-
-            ModProperties modProperties = ModProperties.ImportFrom(fileName);
+            var fileName = "mod.xml";
+            var modProperties = new ModProperties();
+            modProperties.ImportFromModFile(fileName);
 
             CheckVersionCompatibility(modProperties.ZeldaVersion);
             ModFiles.SetModWriteDir(modProperties.ModWriteDir);
@@ -173,12 +164,12 @@ namespace Zelda.Game
                 modProperties.MaxModSize);
         }
 
-        private void CheckVersionCompatibility(string zeldaRequiredVersion)
+        void CheckVersionCompatibility(string zeldaRequiredVersion)
         {
-            if (String.IsNullOrWhiteSpace(zeldaRequiredVersion))
+            if (string.IsNullOrWhiteSpace(zeldaRequiredVersion))
                 Debug.Die("No Zelda version is specified in your mod.xml file!");
 
-            Version requiredVersion = Version.Parse(zeldaRequiredVersion);
+            var requiredVersion = Version.Parse(zeldaRequiredVersion);
             if (requiredVersion.Major != EngineSystem.ZeldaVersion.Major ||
                 requiredVersion.Minor != EngineSystem.ZeldaVersion.Minor)
             {
@@ -195,8 +186,8 @@ namespace Zelda.Game
 
         public void SetResetting()
         {
-            if (_game != null)
-                _game.Stop();
+            if (Game != null)
+                Game.Stop();
             
             SetGame(null);
         }

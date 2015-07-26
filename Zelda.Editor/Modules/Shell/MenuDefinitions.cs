@@ -7,9 +7,6 @@ namespace Zelda.Editor.Modules.Shell
     public static class MenuDefinitions
     {
         [Export]
-        public static MenuItemDefinition NewModMenuItem = new CommandMenuItemDefinition<NewModCommandDefinition>(MainMenu.MenuDefinitions.FileNewOpenMenuGroup, 0);
-
-        [Export]
         public static MenuItemDefinition FileExitMenuItem = new CommandMenuItemDefinition<ExitCommandDefinition>(MainMenu.MenuDefinitions.FileExitOpenMenuGroup, 0);
     }
 }

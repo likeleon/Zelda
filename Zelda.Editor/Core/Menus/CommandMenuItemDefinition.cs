@@ -7,27 +7,12 @@ namespace Zelda.Editor.Core.Menus
 {
     public class CommandMenuItemDefinition<T> : MenuItemDefinition where T : CommandDefinitionBase
     {
-        private readonly CommandDefinitionBase _commandDefinition;
+        readonly CommandDefinitionBase _commandDefinition;
 
-        public override string Text
-        {
-            get { return _commandDefinition.Text; }
-        }
-
-        public override Uri IconSource
-        {
-            get { return _commandDefinition.IconSource; }
-        }
-
-        public override KeyGesture KeyGesture
-        {
-            get { return _commandDefinition.KeyGesture; }
-        }
-
-        public override CommandDefinitionBase CommandDefinition
-        {
-            get { return _commandDefinition; }
-        }
+        public override string Text { get { return _commandDefinition.Text; } }
+        public override Uri IconSource { get { return _commandDefinition.IconSource; } }
+        public override KeyGesture KeyGesture { get { return _commandDefinition.KeyGesture; } }
+        public override CommandDefinitionBase CommandDefinition { get { return _commandDefinition; } }
 
         public CommandMenuItemDefinition(MenuItemGroupDefinition group, int sortOrder)
             : base(group, sortOrder)

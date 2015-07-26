@@ -22,6 +22,9 @@ namespace Zelda.Editor.Core.Services
         void ShowTool<TTool>() where TTool : ITool;
         void ShowTool(ITool tool);
 
+        void OpenDocument(IDocument document);
+        void CloseDocument(IDocument document);
+
         void Close();
     }
 }

@@ -178,6 +178,7 @@
     <Compile Include="Core\Commands\ICommandService.cs" />
     <Compile Include="Core\Commands\TargetableCommand.cs" />
     <Compile Include="Core\Controls\DynamicStyle.cs" />
+    <Compile Include="Core\ExceptionExtensions.cs" />
     <Compile Include="Core\IDocument.cs" />
     <Compile Include="Core\ILayoutItem.cs" />
     <Compile Include="Core\IModule.cs" />
@@ -212,6 +213,11 @@
     <Compile Include="Modules\ErrorList\Views\ErrorListView.xaml.cs">
       <DependentUpon>ErrorListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Modules\ModEditor\MenuDefinitions.cs" />
+    <Compile Include="Modules\ModEditor\Services\IModService.cs" />
+    <Compile Include="Modules\ModEditor\Services\ModPath.cs" />
+    <Compile Include="Modules\ModEditor\Services\ModProperties.cs" />
+    <Compile Include="Modules\ModEditor\Services\ModService.cs" />
     <Compile Include="Modules\Progress\Commands\ViewProgressCommandDefinition.cs" />
     <Compile Include="Modules\Progress\Commands\ViewProgressCommandHandler.cs" />
     <Compile Include="Modules\Progress\IJob.cs" />
@@ -263,8 +269,8 @@
     <Compile Include="Core\Commands\CommandDefinitionBase.cs" />
     <Compile Include="Modules\Shell\Commands\ExitCommandDefinition.cs" />
     <Compile Include="Modules\Shell\Commands\ExitCommandHandler.cs" />
-    <Compile Include="Modules\Shell\Commands\NewModCommandDefinition.cs" />
-    <Compile Include="Modules\Shell\Commands\NewModCommandHandler.cs" />
+    <Compile Include="Modules\ModEditor\Commands\OpenModCommandDefinition.cs" />
+    <Compile Include="Modules\ModEditor\Commands\OpenModCommandHandler.cs" />
     <Compile Include="Modules\Shell\Controls\LayoutInitializer.cs" />
     <Compile Include="Modules\Shell\Controls\PanesStyleSelector.cs" />
     <Compile Include="Modules\Shell\Controls\PanesTemplateSelector.cs" />
@@ -331,6 +337,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Icons\BuildErrorList_7237.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Zelda.Game\Zelda.Game.csproj">
+      <Project>{6bbf1ed2-d7c7-4c6d-b1e4-5d6f98672507}</Project>
+      <Name>Zelda.Game</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
