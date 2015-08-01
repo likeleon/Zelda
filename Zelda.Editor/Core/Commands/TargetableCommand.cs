@@ -6,8 +6,8 @@ namespace Zelda.Editor.Core.Commands
 {
     public class TargetableCommand : ICommand
     {
-        private readonly Command _command;
-        private readonly ICommandRouter _commandRouter;
+        readonly Command _command;
+        readonly ICommandRouter _commandRouter;
 
         public TargetableCommand(Command command)
         {
@@ -17,7 +17,7 @@ namespace Zelda.Editor.Core.Commands
 
         public bool CanExecute(object parameter)
         {
-            CommandHandlerWrapper commandHandler = _commandRouter.GetCommandHandler(_command.CommandDefinition);
+            var commandHandler = _commandRouter.GetCommandHandler(_command.CommandDefinition);
             if (commandHandler == null)
                 return false;
 
@@ -28,7 +28,7 @@ namespace Zelda.Editor.Core.Commands
 
         public async void Execute(object parameter)
         {
-            CommandHandlerWrapper commandHandler = _commandRouter.GetCommandHandler(_command.CommandDefinition);
+            var commandHandler = _commandRouter.GetCommandHandler(_command.CommandDefinition);
             if (commandHandler == null)
                 return;
 

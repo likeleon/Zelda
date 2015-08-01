@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.IO;
+using Zelda.Editor.Core;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.ModEditor.Services
@@ -12,8 +13,22 @@ namespace Zelda.Editor.Modules.ModEditor.Services
         public event EventHandler Loaded;
         public event EventHandler Unloaded;
 
+        string _rootPath;
+
+        public string RootPath
+        {
+            get { return _rootPath; }
+            set
+            {
+                if (this.SetProperty(ref _rootPath, value))
+                {
+                    NotifyOfPropertyChange("IsLoaded");
+                    NotifyOfPropertyChange("Name");
+                }
+            }
+        }
+
         public bool IsLoaded { get { return RootPath != string.Empty; } }
-        public string RootPath { get; private set; }
         public string Name { get { return Path.GetFileName(RootPath); } }
 
         public Mod()

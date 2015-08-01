@@ -6,6 +6,7 @@ using Zelda.Editor.Core;
 using Zelda.Editor.Modules.ErrorList;
 using Zelda.Editor.Modules.Output;
 using Zelda.Editor.Modules.Progress;
+using Zelda.Editor.Modules.ResourceBrowser;
 
 namespace Zelda.Editor.Modules.Startup
 {
@@ -21,6 +22,7 @@ namespace Zelda.Editor.Modules.Startup
                 yield return typeof(IOutput);
                 yield return typeof(IErrorList);
                 yield return typeof(IProgressTool); 
+                yield return typeof(IResourceBrowser);
             }
         }
 
@@ -32,8 +34,6 @@ namespace Zelda.Editor.Modules.Startup
 
         public override void Initialize()
         {
-            MainWindow.Title = "Zelda Editor";
-
             Shell.StatusBar.AddItem("Ready", new GridLength(1, GridUnitType.Star));
 
             _output.AppendLine("Started up");

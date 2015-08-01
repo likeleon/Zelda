@@ -10,17 +10,13 @@ namespace Zelda.Editor.Modules.ErrorList.ViewModels
     [Export(typeof(IErrorList))]
     public class ErrorListViewModel : Tool, IErrorList
     {
-        private readonly BindableCollection<ErrorListItem> _items = new BindableCollection<ErrorListItem>();
+        readonly BindableCollection<ErrorListItem> _items = new BindableCollection<ErrorListItem>();
+        bool _showErrors = true;
+        bool _showWarnings = true;
+        bool _showMessages = true;
 
-        public override PaneLocation PreferredLocation
-        {
-            get { return PaneLocation.Bottom; }
-        }
-
-        public IObservableCollection<ErrorListItem> Items
-        {
-            get { return _items; }
-        }
+        public override PaneLocation PreferredLocation { get { return PaneLocation.Bottom; } }
+        public IObservableCollection<ErrorListItem> Items { get { return _items; } }
 
         public IEnumerable<ErrorListItem> FilteredItems
         {
@@ -37,7 +33,6 @@ namespace Zelda.Editor.Modules.ErrorList.ViewModels
             }
         }
 
-        private bool _showErrors = true;
         public bool ShowErrors
         {
             get { return _showErrors; }
@@ -48,7 +43,6 @@ namespace Zelda.Editor.Modules.ErrorList.ViewModels
             }
         }
 
-        private bool _showWarnings = true;
         public bool ShowWarnings
         {
             get { return _showWarnings; }
@@ -59,7 +53,6 @@ namespace Zelda.Editor.Modules.ErrorList.ViewModels
             }
         }
 
-        private bool _showMessages = true;
         public bool ShowMessages
         {
             get { return _showMessages; }

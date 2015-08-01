@@ -13,13 +13,11 @@ namespace Zelda.Editor.Modules.ModEditor.Commands
     [CommandHandler]
     class OpenModCommandHandler : CommandHandlerBase<OpenModCommandDefinition>
     {
-        readonly IShell _shell;
         readonly IMod _modService;
 
         [ImportingConstructor]
         public OpenModCommandHandler(IShell shell, IMod modService)
         {
-            _shell = shell;
             _modService = modService;
         }
 

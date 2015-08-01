@@ -21,8 +21,10 @@ namespace Zelda.Editor.Modules.ModEditor
         {
             _mod.Loaded += OnModLoaded;
             _mod.Unloaded += OnModUnloaded;
+
+            UpdateTitle();
         }
-        
+
         void OnModLoaded(object sender, EventArgs e)
         {
             UpdateTitle();
