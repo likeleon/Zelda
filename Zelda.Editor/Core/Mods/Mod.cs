@@ -5,7 +5,7 @@ using System.IO;
 using Zelda.Editor.Core;
 using Zelda.Game;
 
-namespace Zelda.Editor.Modules.ModEditor.Services
+namespace Zelda.Editor.Core.Mods
 {
     [Export(typeof(IMod))]
     class Mod : PropertyChangedBase, IMod

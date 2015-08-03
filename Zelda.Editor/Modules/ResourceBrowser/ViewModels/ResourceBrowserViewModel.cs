@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using Zelda.Editor.Core;
+using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
-using Zelda.Editor.Modules.ModEditor.Services;
 
 namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 {

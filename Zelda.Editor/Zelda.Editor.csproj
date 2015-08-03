@@ -217,12 +217,10 @@
     <Compile Include="Modules\ErrorList\Views\ErrorListView.xaml.cs">
       <DependentUpon>ErrorListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Modules\ModEditor\MenuDefinitions.cs" />
-    <Compile Include="Modules\ModEditor\Module.cs" />
-    <Compile Include="Modules\ModEditor\Services\IMod.cs" />
-    <Compile Include="Modules\ModEditor\Services\ModPath.cs" />
-    <Compile Include="Modules\ModEditor\Services\ModProperties.cs" />
-    <Compile Include="Modules\ModEditor\Services\Mod.cs" />
+    <Compile Include="Core\Mods\IMod.cs" />
+    <Compile Include="Core\Mods\ModPath.cs" />
+    <Compile Include="Core\Mods\ModProperties.cs" />
+    <Compile Include="Core\Mods\Mod.cs" />
     <Compile Include="Modules\Progress\Commands\ViewProgressCommandDefinition.cs" />
     <Compile Include="Modules\Progress\Commands\ViewProgressCommandHandler.cs" />
     <Compile Include="Modules\Progress\IJob.cs" />
@@ -279,8 +277,8 @@
     </Compile>
     <Compile Include="Modules\Shell\Commands\ExitCommandDefinition.cs" />
     <Compile Include="Modules\Shell\Commands\ExitCommandHandler.cs" />
-    <Compile Include="Modules\ModEditor\Commands\OpenModCommandDefinition.cs" />
-    <Compile Include="Modules\ModEditor\Commands\OpenModCommandHandler.cs" />
+    <Compile Include="Modules\Shell\Commands\OpenModCommandDefinition.cs" />
+    <Compile Include="Modules\Shell\Commands\OpenModCommandHandler.cs" />
     <Compile Include="Modules\Shell\Controls\LayoutInitializer.cs" />
     <Compile Include="Modules\Shell\Controls\PanesStyleSelector.cs" />
     <Compile Include="Modules\Shell\Controls\PanesTemplateSelector.cs" />
@@ -326,9 +324,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <SplashScreen Include="Resources\Splash.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Icons\BackgroundWorker_6235.png" />
   </ItemGroup>
   <ItemGroup>
@@ -354,7 +349,9 @@
       <Name>Zelda.Game</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Modules\ResourceBrowser\Models\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

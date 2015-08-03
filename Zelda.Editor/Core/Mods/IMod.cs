@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Zelda.Editor.Modules.ModEditor.Services
+namespace Zelda.Editor.Core.Mods
 {
     interface IMod
     {

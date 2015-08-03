@@ -1,7 +1,7 @@
 ﻿using System;
 using Zelda.Game;
 
-namespace Zelda.Editor.Modules.ModEditor.Services
+namespace Zelda.Editor.Core.Mods
 {
     class ModProperties
     {

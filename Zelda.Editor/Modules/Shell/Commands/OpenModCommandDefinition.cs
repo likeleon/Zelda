@@ -1,7 +1,7 @@
 ﻿using System.Windows.Input;
 using Zelda.Editor.Core.Commands;
 
-namespace Zelda.Editor.Modules.ModEditor.Commands
+namespace Zelda.Editor.Modules.Shell.Commands
 {
     [CommandDefinition]
     class OpenModCommandDefinition : CommandDefinition

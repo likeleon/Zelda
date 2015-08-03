@@ -4,21 +4,21 @@ using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Commands;
+using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Core.Threading;
-using Zelda.Editor.Modules.ModEditor.Services;
 
-namespace Zelda.Editor.Modules.ModEditor.Commands
+namespace Zelda.Editor.Modules.Shell.Commands
 {
     [CommandHandler]
     class OpenModCommandHandler : CommandHandlerBase<OpenModCommandDefinition>
     {
-        readonly IMod _modService;
+        readonly IMod _mod;
 
         [ImportingConstructor]
-        public OpenModCommandHandler(IShell shell, IMod modService)
+        public OpenModCommandHandler(IMod mod)
         {
-            _modService = modService;
+            _mod = mod;
         }
 
         public override Task Run(Command command)
@@ -40,7 +40,7 @@ namespace Zelda.Editor.Modules.ModEditor.Commands
         {
             try
             {
-                _modService.Load(modPath);
+                _mod.Load(modPath);
             }
             catch (Exception e)
             {
