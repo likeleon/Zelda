@@ -196,6 +196,11 @@
     <Compile Include="Core\Menus\MenuItemDefinition.cs" />
     <Compile Include="Core\Menus\MenuItemGroupDefinition.cs" />
     <Compile Include="Core\Menus\TextMenuItemDefinition.cs" />
+    <Compile Include="Core\Mods\IModFile.cs" />
+    <Compile Include="Core\Mods\ModFiles\ModFileBase.cs" />
+    <Compile Include="Core\Mods\ModFileFactory.cs" />
+    <Compile Include="Core\Mods\ModFiles\ModRootDirectory.cs" />
+    <Compile Include="Core\Mods\ModFileType.cs" />
     <Compile Include="Core\ModuleBase.cs" />
     <Compile Include="Core\PropertyChangedBaseExtensions.cs" />
     <Compile Include="Core\RelayCommand.cs" />
@@ -270,7 +275,10 @@
       <DependentUpon>OutputView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Commands\CommandDefinitionBase.cs" />
+    <Compile Include="Modules\ResourceBrowser\Commands\ViewResourceBrowserCommandDefinition.cs" />
+    <Compile Include="Modules\ResourceBrowser\Commands\ViewResourceBrowserCommandHandler.cs" />
     <Compile Include="Modules\ResourceBrowser\IResourceBrowser.cs" />
+    <Compile Include="Modules\ResourceBrowser\MenuDefinitions.cs" />
     <Compile Include="Modules\ResourceBrowser\ViewModels\ResourceBrowserViewModel.cs" />
     <Compile Include="Modules\ResourceBrowser\Views\ResourceBrowserView.xaml.cs">
       <DependentUpon>ResourceBrowserView.xaml</DependentUpon>
@@ -349,8 +357,9 @@
       <Name>Zelda.Game</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Modules\ResourceBrowser\Models\" />
+    <Resource Include="Resources\Icons\icon_solarus.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

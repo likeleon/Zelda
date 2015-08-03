@@ -2,7 +2,6 @@
 using System;
 using System.ComponentModel.Composition;
 using System.IO;
-using Zelda.Editor.Core;
 using Zelda.Game;
 
 namespace Zelda.Editor.Core.Mods
@@ -14,22 +13,33 @@ namespace Zelda.Editor.Core.Mods
         public event EventHandler Unloaded;
 
         string _rootPath;
+        string _name;
+        bool _isLoaded;
+        IModFile _rootDirectory;
 
         public string RootPath
         {
             get { return _rootPath; }
-            set
-            {
-                if (this.SetProperty(ref _rootPath, value))
-                {
-                    NotifyOfPropertyChange("IsLoaded");
-                    NotifyOfPropertyChange("Name");
-                }
-            }
+            set { this.SetProperty(ref _rootPath, value); }
         }
 
-        public bool IsLoaded { get { return RootPath != string.Empty; } }
-        public string Name { get { return Path.GetFileName(RootPath); } }
+        public bool IsLoaded
+        {
+            get { return _isLoaded; }
+            set { this.SetProperty(ref _isLoaded, value); }
+        }
+
+        public string Name
+        {
+            get { return _name; }
+            set { this.SetProperty(ref _name, value); }
+        }
+
+        public IModFile RootDirectory
+        {
+            get { return _rootDirectory; }
+            set { this.SetProperty(ref _rootDirectory, value); }
+        }
 
         public Mod()
         {
@@ -49,7 +59,10 @@ namespace Zelda.Editor.Core.Mods
             CheckVersion(modProperties);
 
             RootPath = rootPath;
+            Name = Path.GetFileName(rootPath);
+            RootDirectory = ModFileFactory.Create(this, rootPath);
 
+            IsLoaded = true;
             if (Loaded != null)
                 Loaded(this, EventArgs.Empty);
         }
@@ -90,8 +103,11 @@ namespace Zelda.Editor.Core.Mods
             if (!IsLoaded)
                 throw new InvalidOperationException("Mod not loaded");
 
-            RootPath = string.Empty;
+            RootPath = null;
+            Name = null;
+            RootDirectory = null;
 
+            IsLoaded = false;
             if (Unloaded != null)
                 Unloaded(this, EventArgs.Empty);
         }

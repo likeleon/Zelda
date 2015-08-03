@@ -6,5 +6,5 @@
              xmlns:local="clr-namespace:Zelda.Editor.Modules.ResourceBrowser.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <TextBlock Text="{Binding Mod.Name}" />
+    <TextBlock Text="{Binding Mod.RootDirectory.Name}" />
 </UserControl>

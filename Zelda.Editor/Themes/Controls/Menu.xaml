@@ -154,7 +154,7 @@
                         </Border>
                     </Grid>
                 </Border>
-                <Border Grid.Column="1" Padding="6 2 0 2">
+                <Border Grid.Column="1" Padding="6 2 30 2">
                     <ContentPresenter x:Name="HeaderHost" 
                                       VerticalAlignment="Center" 
                                       ContentSource="Header"
@@ -209,7 +209,7 @@
                                           ContentSource="Icon" />
                     </Grid>
                 </Border>
-                <Border Grid.Column="1" Padding="6 2 0 2">
+                <Border Grid.Column="1" Padding="6 2 30 2">
                     <ContentPresenter x:Name="HeaderHost" 
                                       VerticalAlignment="Center" 
                                       ContentSource="Header"

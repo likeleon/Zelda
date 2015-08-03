@@ -13,5 +13,7 @@ namespace Zelda.Editor.Core.Mods
 
         void Load(string modPath);
         void Unload();
+
+        IModFile RootDirectory { get; }
     }
 }

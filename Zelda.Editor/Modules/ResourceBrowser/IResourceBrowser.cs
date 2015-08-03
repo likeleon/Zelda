@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Zelda.Editor.Core;
 
 namespace Zelda.Editor.Modules.ResourceBrowser
 {
-    interface IResourceBrowser
+    interface IResourceBrowser : ITool
     {
     }
 }

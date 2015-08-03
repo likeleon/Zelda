@@ -8,15 +8,15 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
     [Export(typeof(IResourceBrowser))]
     class ResourceBrowserViewModel : Tool, IResourceBrowser
     {
-        readonly IMod _mod;
+        public IMod Mod { get; private set; }
 
         public override PaneLocation PreferredLocation { get { return PaneLocation.Left; } }
-        public IMod Mod { get { return _mod; } }
 
         [ImportingConstructor]
         public ResourceBrowserViewModel(IMod mod)
         {
-            _mod = mod;
+            Mod = mod;
+            DisplayName = "Resource Browser";
         }
     }
 }
