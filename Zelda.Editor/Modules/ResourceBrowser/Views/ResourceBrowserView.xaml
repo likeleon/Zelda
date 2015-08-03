@@ -4,7 +4,76 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Zelda.Editor.Modules.ResourceBrowser.Views"
+             xmlns:mods="clr-namespace:Zelda.Editor.Core.Mods"
+             xmlns:converters="clr-namespace:Zelda.Editor.Modules.ResourceBrowser.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <TextBlock Text="{Binding Mod.RootDirectory.Name}" />
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+    
+    <Grid Grid.IsSharedSizeScope="True" 
+          DataContext="{Binding Mod}"
+          Visibility="{Binding IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <converters:LevelConverter x:Key="LevelConverter" />
+            
+            <HierarchicalDataTemplate ItemsSource="{Binding Children}"
+                                      DataType="{x:Type mods:IModFile}">
+                <Grid ShowGridLines="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="rowHeaderColumn" />
+                        <ColumnDefinition />
+                        <ColumnDefinition SharedSizeGroup="column1" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Name}" />
+                    <Rectangle Grid.Column="1">
+                        <Rectangle.Width>
+                            <MultiBinding Converter="{StaticResource LevelConverter}">
+                                <Binding Path="Level" />
+                                <Binding Path="ActualWidth" ElementName="treeViewItemToMeasure" />
+                            </MultiBinding>
+                        </Rectangle.Width>
+                    </Rectangle>
+                    <TextBox Grid.Column="2" Text="{Binding ToolTip}" />
+                </Grid>
+            </HierarchicalDataTemplate>
+        </Grid.Resources>
+
+        <TreeView BorderThickness="0"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  DataContext="{Binding RootDirectories}">
+            <TreeViewItem>
+                <TreeViewItem.Header>
+                    <Grid ShowGridLines="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="rowHeaderColumn" />
+                            <ColumnDefinition />
+                            <ColumnDefinition SharedSizeGroup="column1" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Name" />
+                        <TreeViewItem Grid.Column="1">
+                            <TreeViewItem.Header>
+                                <TreeViewItem Name="treeViewItemToMeasure" Padding="0" />
+                            </TreeViewItem.Header>
+                            <TreeViewItem.Width>
+                                <MultiBinding Converter="{StaticResource LevelConverter}">
+                                    <Binding Path="Level" />
+                                    <Binding Path="ActualWidth" ElementName="treeViewItemToMeasure" />
+                                </MultiBinding>
+                            </TreeViewItem.Width>
+                        </TreeViewItem>
+                        <TextBlock Grid.Column="1" Text="Description" />
+                    </Grid>
+                </TreeViewItem.Header>
+            </TreeViewItem>
+        </TreeView>
+
+        <TreeView Grid.Row="1" BorderThickness="0"
+                  ItemsSource="{Binding RootDirectories}" />
+    </Grid>
 </UserControl>

@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using Zelda.Game;
@@ -41,6 +42,8 @@ namespace Zelda.Editor.Core.Mods
             set { this.SetProperty(ref _rootDirectory, value); }
         }
 
+        public List<IModFile> RootDirectories { get; private set; }
+
         public Mod()
         {
             RootPath = string.Empty;
@@ -60,7 +63,9 @@ namespace Zelda.Editor.Core.Mods
 
             RootPath = rootPath;
             Name = Path.GetFileName(rootPath);
-            RootDirectory = ModFileFactory.Create(this, rootPath);
+            RootDirectory = ModFileBuilder.Build(this);
+            RootDirectories = new List<IModFile>() { RootDirectory };
+            NotifyOfPropertyChange("RootDirectories");
 
             IsLoaded = true;
             if (Loaded != null)
@@ -106,6 +111,8 @@ namespace Zelda.Editor.Core.Mods
             RootPath = null;
             Name = null;
             RootDirectory = null;
+            RootDirectories = null;
+            NotifyOfPropertyChange("RootDirectories");
 
             IsLoaded = false;
             if (Unloaded != null)
