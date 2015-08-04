@@ -11,6 +11,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
         public IMod Mod { get; private set; }
 
         public override PaneLocation PreferredLocation { get { return PaneLocation.Left; } }
+        public override double PreferredWidth { get { return 400.0; } }
 
         [ImportingConstructor]
         public ResourceBrowserViewModel(IMod mod)

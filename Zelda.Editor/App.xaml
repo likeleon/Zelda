@@ -8,6 +8,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.AvalonDock.Themes.VS2013;component/LightTheme.xaml"/>
                 <ResourceDictionary Source="Themes/LightTheme.xaml"/>
+                <ResourceDictionary Source="Core/Controls/TreeListViewStyles.xaml"/>
                 <ResourceDictionary>
                     <l:AppBootstrapper x:Key="bootstrapper" />
                 </ResourceDictionary>

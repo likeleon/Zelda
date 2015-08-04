@@ -96,6 +96,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Page Include="Core\Controls\TreeListViewStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Modules\ErrorList\Views\ErrorListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -182,6 +186,7 @@
     <Compile Include="Core\Commands\ICommandService.cs" />
     <Compile Include="Core\Commands\TargetableCommand.cs" />
     <Compile Include="Core\Controls\DynamicStyle.cs" />
+    <Compile Include="Core\Controls\TreeListView.cs" />
     <Compile Include="Core\ExceptionExtensions.cs" />
     <Compile Include="Core\IDocument.cs" />
     <Compile Include="Core\ILayoutItem.cs" />
@@ -278,7 +283,6 @@
     <Compile Include="Core\Commands\CommandDefinitionBase.cs" />
     <Compile Include="Modules\ResourceBrowser\Commands\ViewResourceBrowserCommandDefinition.cs" />
     <Compile Include="Modules\ResourceBrowser\Commands\ViewResourceBrowserCommandHandler.cs" />
-    <Compile Include="Modules\ResourceBrowser\Converters\LevelConverter.cs" />
     <Compile Include="Modules\ResourceBrowser\IResourceBrowser.cs" />
     <Compile Include="Modules\ResourceBrowser\MenuDefinitions.cs" />
     <Compile Include="Modules\ResourceBrowser\ViewModels\ResourceBrowserViewModel.cs" />
