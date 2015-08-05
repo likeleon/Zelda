@@ -225,7 +225,7 @@ namespace Zelda.Game
                     return false;
             }
         }
-        
+
         // length가 문자열보다 크면 가능한 만큼만 잘라냅니다 (c++ std::string::substr()과 동일)
         public static string SafeSubstring(this string str, int startIndex, int length)
         {
@@ -252,7 +252,7 @@ namespace Zelda.Game
             return source ?? Enumerable.Empty<T>();
         }
 
-        internal static T AsScriptEntity<T>(this MapEntity entity) where T: ScriptEntity
+        internal static T AsScriptEntity<T>(this MapEntity entity) where T : ScriptEntity
         {
             if (entity == null)
                 return null;
@@ -264,6 +264,23 @@ namespace Zelda.Game
         {
             foreach (var ee in e)
                 action(ee);
+        }
+
+        public static bool TryFirstOrDefault<T>(this IEnumerable<T> source, out T found)
+        {
+            using (var iterator = source.GetEnumerator())
+            {
+                if (iterator.MoveNext())
+                {
+                    found = iterator.Current;
+                    return true;
+                }
+                else
+                {
+                    found = default(T);
+                    return false;
+                }
+            }
         }
     }
 }

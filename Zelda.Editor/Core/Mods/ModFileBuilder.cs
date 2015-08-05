@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Zelda.Editor.Core.Mods.ModFiles;
+using Zelda.Game;
 
 namespace Zelda.Editor.Core.Mods
 {
@@ -24,41 +25,41 @@ namespace Zelda.Editor.Core.Mods
 
         IModFile BuildRecursive(string dirPath, ModFileBase parent)
         {
-            var fileType = GetFileType(dirPath);
-            if (fileType != ModFileType.RootDirectory && parent == null)
-                throw new ArgumentNullException("parent");
+            var directory = CreateModFile(dirPath, parent);
 
-            var file = Create(dirPath, parent, fileType);
-            foreach (var subDirPath in Directory.EnumerateDirectories(dirPath))
+            foreach (var childDirPath in Directory.EnumerateDirectories(dirPath))
             {
-                var subFile = BuildRecursive(subDirPath, file);
-                file.AddChild(subFile);
+                var childDir = BuildRecursive(childDirPath, directory);
+                directory.AddChild(childDir);
             }
 
-            return file;
+            foreach (var filePath in Directory.EnumerateFiles(dirPath))
+            {
+                var file = CreateModFile(filePath, parent);
+                directory.AddChild(file);
+            }
+
+            return directory;
         }
 
-        ModFileBase Create(string path, ModFileBase parent, ModFileType fileType)
+        ModFileBase CreateModFile(string path, ModFileBase parent)
         {
-            switch (fileType)
-            {
-                case ModFileType.RootDirectory:
-                    return new RootDirectory(_mod.Name, path, parent);
+            ResourceType resourceType = ResourceType.Map;
+            string elementId = string.Empty;
 
-                case ModFileType.NormalDirectory:
+            if (_mod.IsModRootDirectory(path))
+                return new RootDirectory(_mod.Name, path, parent);
+            if (_mod.IsResourceElement(path, ref resourceType, ref elementId))
+                return new ResourceElement(resourceType, path, parent);
+            else if (_mod.IsDirectory(path))
+            {                
+                if (_mod.IsResourceDirectory(path, ref resourceType))
+                    return new ResourceDirectory(resourceType, path, parent);
+                else
                     return new NormalDirectory(path, parent);
-
-                default:
-                    throw new NotImplementedException();
             }
-        }
-
-        ModFileType GetFileType(string path)
-        {
-            if (path == _mod.RootPath)
-                return ModFileType.RootDirectory;
             else
-                return ModFileType.NormalDirectory;
+                return new UnknownFile(path, parent);
         }
     }
 }

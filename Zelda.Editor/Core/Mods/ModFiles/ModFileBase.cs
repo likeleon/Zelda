@@ -15,7 +15,7 @@ namespace Zelda.Editor.Core.Mods.ModFiles
         public IModFile Parent { get; private set; }
         public IEnumerable<IModFile> Children { get { return _children; } }
 
-        public abstract string Name { get; }
+        public virtual string Name { get { return System.IO.Path.GetFileName(Path); } }
         public abstract Uri Icon { get; }
         public virtual string ToolTip { get { return string.Empty; } }
 

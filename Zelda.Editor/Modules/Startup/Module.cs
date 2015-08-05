@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
 using System.Windows;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
@@ -45,6 +46,9 @@ namespace Zelda.Editor.Modules.Startup
 
             Shell.StatusBar.AddItem("Ready", new GridLength(1, GridUnitType.Star));
             _output.AppendLine("Started up");
+
+            var sampleModPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\mods\sample"));
+            _mod.Load(sampleModPath);
         }
 
         void OnModLoaded(object sender, EventArgs e)

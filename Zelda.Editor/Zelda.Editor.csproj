@@ -205,7 +205,10 @@
     <Compile Include="Core\Mods\ModFiles\ModFileBase.cs" />
     <Compile Include="Core\Mods\ModFileBuilder.cs" />
     <Compile Include="Core\Mods\ModFiles\NormalDirectory.cs" />
+    <Compile Include="Core\Mods\ModFiles\ResourceDirectory.cs" />
+    <Compile Include="Core\Mods\ModFiles\ResourceElement.cs" />
     <Compile Include="Core\Mods\ModFiles\RootDirectory.cs" />
+    <Compile Include="Core\Mods\ModFiles\UnknownFile.cs" />
     <Compile Include="Core\Mods\ModFileType.cs" />
     <Compile Include="Core\ModuleBase.cs" />
     <Compile Include="Core\PropertyChangedBaseExtensions.cs" />
@@ -368,6 +371,43 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Icons\icon_solarus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\icon_resource_enemy.png" />
+    <Resource Include="Resources\Icons\icon_resource_enemy_missing.png" />
+    <Resource Include="Resources\Icons\icon_resource_entity.png" />
+    <Resource Include="Resources\Icons\icon_resource_entity_missing.png" />
+    <Resource Include="Resources\Icons\icon_resource_font.png" />
+    <Resource Include="Resources\Icons\icon_resource_font_missing.png" />
+    <Resource Include="Resources\Icons\icon_resource_item.png" />
+    <Resource Include="Resources\Icons\icon_resource_item_missing.png" />
+    <Resource Include="Resources\Icons\icon_resource_language.png" />
+    <Resource Include="Resources\Icons\icon_resource_language_missing.png" />
+    <Resource Include="Resources\Icons\icon_resource_map.png" />
+    <Resource Include="Resources\Icons\icon_resource_map_missing.png" />
+    <Resource Include="Resources\Icons\icon_resource_music.png" />
+    <Resource Include="Resources\Icons\icon_resource_music_missing.png" />
+    <Resource Include="Resources\Icons\icon_resource_sound.png" />
+    <Resource Include="Resources\Icons\icon_resource_sound_missing.png" />
+    <Resource Include="Resources\Icons\icon_resource_sprite.png" />
+    <Resource Include="Resources\Icons\icon_resource_sprite_missing.png" />
+    <Resource Include="Resources\Icons\icon_resource_tileset.png" />
+    <Resource Include="Resources\Icons\icon_resource_tileset_missing.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\icon_file_unknown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\icon_folder_open_enemy.png" />
+    <Resource Include="Resources\Icons\icon_folder_open_entity.png" />
+    <Resource Include="Resources\Icons\icon_folder_open_font.png" />
+    <Resource Include="Resources\Icons\icon_folder_open_item.png" />
+    <Resource Include="Resources\Icons\icon_folder_open_language.png" />
+    <Resource Include="Resources\Icons\icon_folder_open_map.png" />
+    <Resource Include="Resources\Icons\icon_folder_open_music.png" />
+    <Resource Include="Resources\Icons\icon_folder_open_sound.png" />
+    <Resource Include="Resources\Icons\icon_folder_open_sprite.png" />
+    <Resource Include="Resources\Icons\icon_folder_open_tileset.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
