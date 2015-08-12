@@ -12,7 +12,7 @@
     <UserControl.Resources>
         <HierarchicalDataTemplate x:Key="ModFileTemplate" ItemsSource="{Binding Children}" />
     </UserControl.Resources>
-    <controls:TreeListView ItemsSource="{Binding Mod.RootDirectories}"
+    <controls:TreeListView ItemsSource="{Binding ModRootFiles}"
                            ItemTemplate="{StaticResource ModFileTemplate}">
         <controls:TreeListView.Columns>
             <GridViewColumn Header="Resource" Width="150">

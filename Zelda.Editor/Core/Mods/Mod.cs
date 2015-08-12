@@ -39,6 +39,10 @@ namespace Zelda.Editor.Core.Mods
             set { this.SetProperty(ref _rootPath, value); }
         }
 
+        public ModResources Resources { get; private set; }
+
+        public string ResourceListPath { get { return Path.Combine(RootPath, "project_db.xml"); } }
+
         public bool IsLoaded
         {
             get { return _isLoaded; }
@@ -56,8 +60,6 @@ namespace Zelda.Editor.Core.Mods
             get { return _rootDirectory; }
             set { this.SetProperty(ref _rootDirectory, value); }
         }
-
-        public List<IModFile> RootDirectories { get; private set; }
 
         public Mod()
         {
@@ -78,9 +80,8 @@ namespace Zelda.Editor.Core.Mods
 
             RootPath = rootPath;
             Name = Path.GetFileName(rootPath);
+            Resources = ModResources.Load(ResourceListPath);
             RootDirectory = ModFileBuilder.Build(this);
-            RootDirectories = new List<IModFile>() { RootDirectory };
-            NotifyOfPropertyChange("RootDirectories");
 
             IsLoaded = true;
             if (Loaded != null)
@@ -126,8 +127,7 @@ namespace Zelda.Editor.Core.Mods
             RootPath = null;
             Name = null;
             RootDirectory = null;
-            RootDirectories = null;
-            NotifyOfPropertyChange("RootDirectories");
+            Resources = null;
 
             IsLoaded = false;
             if (Unloaded != null)
@@ -191,8 +191,7 @@ namespace Zelda.Editor.Core.Mods
             if (!IsPotentialResourceElement(path, ref resourceType, ref elementId))
                 return false;
 
-            // TODO: resources.Exists()로 리소스 리스트에 포함되어 있는지 확인
-            return true;
+            return Resources.Exists(resourceType, elementId);
         }
 
         public bool IsPotentialResourceElement(string path, ref ResourceType resourceType, ref string elementId)
@@ -211,7 +210,7 @@ namespace Zelda.Editor.Core.Mods
         bool GetElementId(string path, ResourceType resourceType, ref string elementId)
         {
             var resourceDir = GetResourceDirectory(resourceType);
-            var pathFromResource = path.Substring(resourceDir.Length + 2);
+            var pathFromResource = path.Substring(resourceDir.Length + 1);
             var extensions = new List<string>();
             switch (resourceType)
             {

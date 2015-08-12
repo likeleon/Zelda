@@ -210,6 +210,7 @@
     <Compile Include="Core\Mods\ModFiles\RootDirectory.cs" />
     <Compile Include="Core\Mods\ModFiles\UnknownFile.cs" />
     <Compile Include="Core\Mods\ModFileType.cs" />
+    <Compile Include="Core\Mods\ModResources.cs" />
     <Compile Include="Core\ModuleBase.cs" />
     <Compile Include="Core\PropertyChangedBaseExtensions.cs" />
     <Compile Include="Core\RelayCommand.cs" />
