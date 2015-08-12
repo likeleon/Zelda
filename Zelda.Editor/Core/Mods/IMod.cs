@@ -5,17 +5,10 @@ namespace Zelda.Editor.Core.Mods
 {
     interface IMod
     {
-        event EventHandler Loaded;
-        event EventHandler Unloaded;
-
-        bool IsLoaded { get; }
         string RootPath { get; }
         string ResourceListPath { get; }
         string Name { get; }
         IModFile RootDirectory { get; }
-
-        void Load(string modPath);
-        void Unload();
 
         bool IsDirectory(string path);
         bool IsModRootDirectory(string path);

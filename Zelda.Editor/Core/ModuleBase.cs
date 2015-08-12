@@ -11,41 +11,23 @@ namespace Zelda.Editor.Core
     {
 #pragma warning disable 649
         [Import]
-        private IMainWindow _mainWindow;
+        IMainWindow _mainWindow;
 
         [Import]
-        private IShell _shell;
+        IShell _shell;
 #pragma warning restore 649
 
-        protected IMainWindow MainWindow
-        {
-            get { return _mainWindow; }
-        }
+        protected IMainWindow MainWindow { get { return _mainWindow; } }
 
-        protected IShell Shell
-        {
-            get { return _shell; }
-        }
+        protected IShell Shell { get { return _shell; } }
 
-        protected IMenu MainMenu
-        {
-            get { return _shell.MainMenu; }
-        }
+        protected IMenu MainMenu { get { return _shell.MainMenu; } }
 
-        public virtual IEnumerable<ResourceDictionary> GlobalResourceDictionaries
-        {
-            get { yield break; }
-        }
+        public virtual IEnumerable<ResourceDictionary> GlobalResourceDictionaries { get { yield break; } }
 
-        public virtual IEnumerable<IDocument> DefaultDocuments
-        {
-            get { yield break; }
-        }
+        public virtual IEnumerable<IDocument> DefaultDocuments { get { yield break; } }
 
-        public virtual IEnumerable<Type> DefaultTools
-        {
-            get { yield break; }
-        }
+        public virtual IEnumerable<Type> DefaultTools { get { yield break; } }
 
         public virtual void PreInitialize()
         {

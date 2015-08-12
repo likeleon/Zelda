@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
@@ -10,29 +11,31 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
     [Export(typeof(IResourceBrowser))]
     class ResourceBrowserViewModel : Tool, IResourceBrowser
     {
-        public IMod Mod { get; private set; }
+        readonly IModService _modService;
 
         public override PaneLocation PreferredLocation { get { return PaneLocation.Left; } }
         public override double PreferredWidth { get { return 400.0; } }
-        public IEnumerable<IModFile> ModRootFiles { get { return Mod.RootDirectory.Yield(); } }
+        public IEnumerable<IModFile> ModRootFiles { get; private set; }
 
         [ImportingConstructor]
-        public ResourceBrowserViewModel(IMod mod)
+        public ResourceBrowserViewModel(IModService modService)
         {
-            Mod = mod;
+            _modService = modService;
             DisplayName = "Resource Browser";
 
-            Mod.Loaded += Mod_Loaded;
-            Mod.Unloaded += Mod_Unloaded;
+            _modService.Loaded += ModService_Loaded;
+            _modService.Unloaded += ModService_Unloaded;
         }
 
-        void Mod_Loaded(object sender, System.EventArgs e)
+        void ModService_Loaded(object sender, EventArgs e)
         {
+            ModRootFiles = _modService.Mod.RootDirectory.Yield();
             NotifyOfPropertyChange(() => ModRootFiles);
         }
 
-        void Mod_Unloaded(object sender, System.EventArgs e)
+        void ModService_Unloaded(object sender, EventArgs e)
         {
+            ModRootFiles = null;
             NotifyOfPropertyChange(() => ModRootFiles);
         }
     }

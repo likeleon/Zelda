@@ -16,7 +16,7 @@ namespace Zelda.Editor.Modules.Startup
     [Export(typeof(IModule))]
     class Module : ModuleBase
     {
-        readonly IMod _mod;
+        readonly IModService _modService;
         readonly IOutput _output;
 
         public override IEnumerable<Type> DefaultTools
@@ -31,27 +31,30 @@ namespace Zelda.Editor.Modules.Startup
         }
 
         [ImportingConstructor]
-        public Module(IMod mod, IOutput output)
+        public Module(IModService modService, IOutput output)
         {
-            _mod = mod;
+            _modService = modService;
             _output = output;
         }
 
         public override void Initialize()
         {
-            _mod.Loaded += OnModLoaded;
-            _mod.Unloaded += OnModUnloaded;
+            _modService.Loaded += ModService_Loaded;
+            _modService.Unloaded += ModService_Unloaded;
 
             UpdateTitle();
 
             Shell.StatusBar.AddItem("Ready", new GridLength(1, GridUnitType.Star));
             _output.AppendLine("Started up");
-
-            var sampleModPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\mods\sample"));
-            _mod.Load(sampleModPath);
         }
 
-        void OnModLoaded(object sender, EventArgs e)
+        public override void PostInitialize()
+        {
+            var sampleModPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\mods\sample"));
+            _modService.Load(sampleModPath);
+        }
+
+        void ModService_Loaded(object sender, EventArgs e)
         {
             UpdateTitle();
         }
@@ -60,13 +63,13 @@ namespace Zelda.Editor.Modules.Startup
         {
             var version = ZeldaVersion.Version;
             var title = "Zelda Mod Editor {0}".F(version);
-            if (_mod.IsLoaded)
-                title = _mod.Name + " - " + title;
+            if (_modService.IsLoaded)
+                title = _modService.Mod.Name + " - " + title;
 
             MainWindow.Title = title;
         }
 
-        void OnModUnloaded(object sender, EventArgs e)
+        void ModService_Unloaded(object sender, EventArgs e)
         {
             UpdateTitle();
         }
