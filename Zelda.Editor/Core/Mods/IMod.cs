@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Zelda.Game;
 
 namespace Zelda.Editor.Core.Mods
@@ -10,6 +10,20 @@ namespace Zelda.Editor.Core.Mods
         string Name { get; }
         IModFile RootDirectory { get; }
         ModResources Resources { get; }
+
+        bool Exists(string path);
+
+        string GetResourceElementPath(ResourceType resourceType, string elementId);
+        IEnumerable<string> GetResourceElementPaths(ResourceType resourceType, string elementId);
+        string GetFontPath(string fontId);
+        string GetSoundPath(string soundId);
+        string GetLanguagePath(string languageId);
+        string GetMapDataFilePath(string mapId);
+        string GetTilesetDataFilePath(string tilesetId);
+        string GetTilesetTilesImagePath(string tilesetId);
+        string GetTilesetEntitiesImagePath(string tilesetId);
+        string GetSpritePath(string spriteId);
+        string GetMusicPath(string musicId);
 
         bool IsDirectory(string path);
         bool IsModRootDirectory(string path);

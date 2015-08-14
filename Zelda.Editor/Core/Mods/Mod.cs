@@ -45,13 +45,13 @@ namespace Zelda.Editor.Core.Mods
             var modPath = new ModPath(rootPath);
             return modPath.Exists(modPath.PropertiesPath);
         }
-        
+
         public bool IsDirectory(string path)
         {
             return Exists(path) && File.GetAttributes(path).HasFlag(FileAttributes.Directory);
         }
 
-        bool Exists(string path)
+        public bool Exists(string path)
         {
             return IsInRootPath(path) && (File.Exists(path) || Directory.Exists(path));
         }
@@ -167,6 +167,124 @@ namespace Zelda.Editor.Core.Mods
             }
             else
                 return false;
+        }
+
+        public string GetResourceElementPath(ResourceType resourceType, string elementId)
+        {
+            return GetResourceElementPaths(resourceType, elementId).FirstOrDefault();
+        }
+
+        public IEnumerable<string> GetResourceElementPaths(ResourceType resourceType, string elementId)
+        {
+            switch (resourceType)
+            {
+                case ResourceType.Language:
+                    yield return GetLanguagePath(elementId);
+                    break;
+
+                case ResourceType.Map:
+                    yield return GetMapDataFilePath(elementId);
+                    //yield return GetMapScriptPath(elementId);
+                    break;
+
+                case ResourceType.TileSet:
+                    yield return GetTilesetDataFilePath(elementId);
+                    yield return GetTilesetTilesImagePath(elementId);
+                    yield return GetTilesetEntitiesImagePath(elementId);
+                    break;
+
+                case ResourceType.Sprite:
+                    yield return GetSpritePath(elementId);
+                    break;
+
+                case ResourceType.Music:
+                    yield return GetMusicPath(elementId);
+                    break;
+
+                case ResourceType.Sound:
+                    yield return GetSoundPath(elementId);
+                    break;
+
+                case ResourceType.Item:
+                    //yield return GetItemScriptPath(elementId);
+                    break;
+
+                case ResourceType.Enemy:
+                    //yield return GetEnemyScriptPath(elementId);
+                    break;
+
+                case ResourceType.Entity:
+                    //yield return GetEntityScriptPath(elementId);
+                    break;
+
+                case ResourceType.Font:
+                    yield return GetFontPath(elementId);
+                    break;
+
+                default:
+                    yield break;
+            }
+        }
+
+        public string GetFontPath(string fontId)
+        {
+            var prefix = Path.Combine(RootPath, "fonts", fontId);
+            var extensions = new[] { ".png", ".ttf", ".ttc", ".fon" };
+            foreach (var extension in extensions)
+            {
+                var path = prefix + extension;
+                if (File.Exists(path))
+                    return path;
+            }
+            return prefix + extensions.First();
+        }
+
+        public string GetSoundPath(string soundId)
+        {
+            return Path.Combine(RootPath, "sounds", "{0}.ogg".F(soundId));
+        }
+
+        public string GetLanguagePath(string languageId)
+        {
+            return Path.Combine(RootPath, "languages", languageId);
+        }
+
+        public string GetMapDataFilePath(string mapId)
+        {
+            return Path.Combine(RootPath, "maps", "{0}.xml".F(mapId));
+        }
+
+        public string GetTilesetDataFilePath(string tilesetId)
+        {
+            return Path.Combine(RootPath, "tilesets", "{0}.xml".F(tilesetId));
+        }
+
+        public string GetTilesetTilesImagePath(string tilesetId)
+        {
+            return Path.Combine(RootPath, "tilesets", "{0}.tiles.pngs".F(tilesetId));
+        }
+
+        public string GetTilesetEntitiesImagePath(string tilesetId)
+        {
+            return Path.Combine(RootPath, "tilesets", "{0}.entities.png".F(tilesetId));
+        }
+
+        public string GetSpritePath(string spriteId)
+        {
+            return Path.Combine(RootPath, "sprites", "{0}.xml".F(spriteId));
+        }
+
+        public string GetMusicPath(string musicId)
+        {
+            var prefix = Path.Combine(RootPath, "musics", musicId);
+            var extensions = new[] { ".ogg", ".it", ".spc" };
+            foreach (var extension in extensions)
+            {
+                var path = prefix + extension;
+                if (File.Exists(path))
+                    return path;
+            }
+            return prefix + extensions.First();
         }
     }
 }

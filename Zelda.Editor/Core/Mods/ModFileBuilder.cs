@@ -72,7 +72,7 @@ namespace Zelda.Editor.Core.Mods
         {
             if (!IsScriptFile(path))
                 throw new InvalidOperationException("Should be script file: '{0}'".F(path));
-            
+
             var filePathXml = Path.ChangeExtension(path, ".xml");
             var resourceType = ResourceType.Map;
             var elementId = "";
@@ -84,22 +84,73 @@ namespace Zelda.Editor.Core.Mods
             var resourceType = ResourceType.Map;
             var elementId = string.Empty;
 
+            ModFileBase modFile = null;
+
             if (_mod.IsModRootDirectory(path))
-                return new RootDirectory(_mod.Name, path, parent);
-            if (_mod.IsResourceElement(path, ref resourceType, ref elementId))
-            {
-                var description = _mod.Resources.GetDescription(resourceType, elementId);
-                return new ResourceElement(resourceType, path, parent, description);
-            }
+                modFile = CreateRootDirectory();
+            else if (_mod.IsResourceElement(path, ref resourceType, ref elementId))
+                modFile = CreateResourceElement(resourceType, elementId);
             else if (_mod.IsDirectory(path))
             {
                 if (_mod.IsResourceDirectory(path, ref resourceType))
-                    return new ResourceDirectory(resourceType, path, parent);
+                    modFile = CreateResourceDictionary(resourceType);
                 else
-                    return new NormalDirectory(path, parent);
+                    modFile = CreateNormalDirectory();
             }
             else
-                return new UnknownFile(path, parent);
+                modFile = CreateUnknownFile();
+
+            modFile.Path = path;
+            modFile.Parent = parent;
+            modFile.ToolTip = GetToolTip(path);
+
+            return modFile;
+        }
+
+        RootDirectory CreateRootDirectory()
+        {
+            return new RootDirectory(_mod.Name);
+        }
+
+        ResourceElement CreateResourceElement(ResourceType resourceType, string elementId)
+        {
+            var description = _mod.Resources.GetDescription(resourceType, elementId);
+            return new ResourceElement(resourceType, description);
+        }
+
+        ResourceDirectory CreateResourceDictionary(ResourceType resourceType)
+        {
+            return new ResourceDirectory(resourceType);
+        }
+
+        NormalDirectory CreateNormalDirectory()
+        {
+            return new NormalDirectory();
+        }
+
+        UnknownFile CreateUnknownFile()
+        {
+            return new UnknownFile();
+        }
+
+        string GetToolTip(string path)
+        {
+            var resourceType = ResourceType.Map;
+            var elementId = string.Empty;
+
+            if (!_mod.IsPotentialResourceElement(path, ref resourceType, ref elementId))
+                return string.Empty;
+
+            var fileName = Path.GetFileName(path);
+            if (_mod.Resources.Exists(resourceType, elementId))
+            {
+                if (_mod.Exists(_mod.GetResourceElementPath(resourceType, elementId)))
+                    return fileName;
+                else
+                    return "{0} (file not found)".F(fileName);
+            }
+            else
+                return "{0} (not in the mod)".F(fileName);
         }
     }
 }

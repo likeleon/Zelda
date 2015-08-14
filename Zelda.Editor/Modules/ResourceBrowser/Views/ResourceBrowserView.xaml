@@ -18,7 +18,7 @@
             <GridViewColumn Header="Resource" Width="150">
                 <GridViewColumn.CellTemplate>
                     <DataTemplate>
-                        <DockPanel Height="18">
+                        <DockPanel Height="18" ToolTip="{Binding ToolTip}">
                             <ToggleButton Style="{StaticResource ExpandCollapseToggleStyle}" VerticalAlignment="Center" />
                             <Image Source="{Binding Icon}" Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
                             <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />

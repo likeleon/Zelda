@@ -10,16 +10,16 @@ namespace Zelda.Editor.Core.Mods.ModFiles
         readonly List<IModFile> _children = new List<IModFile>();
         string _description;
 
-        public ModFileType FileType { get; private set; }
-        public string Path { get; private set; }
+        public abstract ModFileType FileType { get; }
+        public string Path { get; set; }
 
-        public IModFile Parent { get; private set; }
+        public IModFile Parent { get; set; }
         public IEnumerable<IModFile> Children { get { return _children; } }
 
         public virtual string Name { get { return System.IO.Path.GetFileName(Path); } }
         public abstract Uri Icon { get; }
         public virtual string Description { get { return string.Empty; } }
-        public virtual string ToolTip { get { return string.Empty; } }
+        public string ToolTip { get; set; }
 
         public int Depth
         {
@@ -39,13 +39,6 @@ namespace Zelda.Editor.Core.Mods.ModFiles
                 else
                     return Parent.Level - 1;
             }
-        }
-
-        protected ModFileBase(ModFileType fileType, string path, IModFile parent)
-        {
-            FileType = fileType;
-            Path = path;
-            Parent = parent;
         }
 
         public void AddChild(IModFile child)
