@@ -1,13 +1,14 @@
 ﻿using Caliburn.Micro;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Zelda.Editor.Core.Mods.ModFiles
 {
     abstract class ModFileBase : PropertyChangedBase, IModFile
     {
         readonly List<IModFile> _children = new List<IModFile>();
+        string _description;
 
         public ModFileType FileType { get; private set; }
         public string Path { get; private set; }
@@ -17,6 +18,7 @@ namespace Zelda.Editor.Core.Mods.ModFiles
 
         public virtual string Name { get { return System.IO.Path.GetFileName(Path); } }
         public abstract Uri Icon { get; }
+        public virtual string Description { get { return string.Empty; } }
         public virtual string ToolTip { get { return string.Empty; } }
 
         public int Depth

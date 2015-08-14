@@ -18,5 +18,10 @@ namespace Zelda.Editor.Core.Mods
         {
             return _resources.Exists(type, id);
         }
+
+        public string GetDescription(ResourceType type, string id)
+        {
+            return _resources.GetDescription(type, id);
+        }
     }
 }

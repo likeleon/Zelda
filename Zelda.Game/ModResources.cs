@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -107,6 +106,14 @@ namespace Zelda.Game
         public ResourceMap GetElements(ResourceType resourceType)
         {
             return _resourceMaps[resourceType];
+        }
+
+        public string GetDescription(ResourceType resourceType, string id)
+        {
+            var resource = GetElements(resourceType);
+            if (!resource.ContainsKey(id))
+                return string.Empty;
+            return resource[id];
         }
     }
 }

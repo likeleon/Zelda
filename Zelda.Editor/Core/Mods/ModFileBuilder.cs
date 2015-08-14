@@ -81,15 +81,18 @@ namespace Zelda.Editor.Core.Mods
 
         ModFileBase CreateModFile(string path, ModFileBase parent)
         {
-            ResourceType resourceType = ResourceType.Map;
-            string elementId = string.Empty;
+            var resourceType = ResourceType.Map;
+            var elementId = string.Empty;
 
             if (_mod.IsModRootDirectory(path))
                 return new RootDirectory(_mod.Name, path, parent);
             if (_mod.IsResourceElement(path, ref resourceType, ref elementId))
-                return new ResourceElement(resourceType, path, parent);
+            {
+                var description = _mod.Resources.GetDescription(resourceType, elementId);
+                return new ResourceElement(resourceType, path, parent, description);
+            }
             else if (_mod.IsDirectory(path))
-            {                
+            {
                 if (_mod.IsResourceDirectory(path, ref resourceType))
                     return new ResourceDirectory(resourceType, path, parent);
                 else
