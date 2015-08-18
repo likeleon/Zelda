@@ -102,6 +102,7 @@ namespace Zelda.Editor.Core.Mods
 
             modFile.Path = path;
             modFile.Parent = parent;
+            modFile.Type = GetType(path);
             modFile.ToolTip = GetToolTip(path);
 
             return modFile;
@@ -151,6 +152,28 @@ namespace Zelda.Editor.Core.Mods
             }
             else
                 return "{0} (not in the mod)".F(fileName);
+        }
+
+        string GetType(string path)
+        {
+            if (_mod.IsModRootDirectory(path))
+                return "Mod";
+
+            if (path == _mod.MainScriptPath)
+                return "Main C# script";
+
+            var resourceType = ResourceType.Map;
+            if (_mod.IsResourceDirectory(path, ref resourceType))
+                return _mod.Resources.GetDirectoryFriendlyName(resourceType);
+
+            var elementId = string.Empty;
+            if (_mod.IsResourceElement(path, ref resourceType, ref elementId))
+                return _mod.Resources.GetFriendlyName(resourceType);
+
+            if (_mod.IsScript(path))
+                return "C# script";
+
+            return string.Empty;
         }
     }
 }

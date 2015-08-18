@@ -5,9 +5,10 @@ namespace Zelda.Editor.Core.Mods
 {
     interface IMod
     {
+        string Name { get; }
         string RootPath { get; }
         string ResourceListPath { get; }
-        string Name { get; }
+        string MainScriptPath { get; }
         IModFile RootDirectory { get; }
         ModResources Resources { get; }
 
@@ -29,6 +30,7 @@ namespace Zelda.Editor.Core.Mods
         bool IsModRootDirectory(string path);
         bool IsResourceDirectory(string path, ref ResourceType resourceType);
         bool IsInResourceDirectory(string path, ref ResourceType resourceType);
+        bool IsScript(string path);
         bool IsResourceElement(string path, ref ResourceType resourceType, ref string elementId);
         bool IsPotentialResourceElement(string path, ref ResourceType resourceType, ref string elementId);
     }

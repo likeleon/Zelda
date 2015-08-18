@@ -19,6 +19,7 @@ namespace Zelda.Editor.Core.Mods.ModFiles
         public virtual string Name { get { return System.IO.Path.GetFileName(Path); } }
         public abstract Uri Icon { get; }
         public virtual string Description { get { return string.Empty; } }
+        public string Type { get; set; }
         public string ToolTip { get; set; }
 
         public int Depth

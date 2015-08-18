@@ -27,7 +27,7 @@
                 </GridViewColumn.CellTemplate>
             </GridViewColumn>
             <GridViewColumn Header="Description" Width="150" DisplayMemberBinding="{Binding Description}" />
-            <GridViewColumn Header="Type" Width="50" />
+            <GridViewColumn Header="Type" Width="100" DisplayMemberBinding="{Binding Type}" />
         </controls:TreeListView.Columns>
     </controls:TreeListView>
 </UserControl>

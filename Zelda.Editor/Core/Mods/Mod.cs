@@ -22,11 +22,12 @@ namespace Zelda.Editor.Core.Mods
             { ResourceType.Font,     "fonts"     },
         };
 
-        public string RootPath { get; private set; }
-
         public ModResources Resources { get; private set; }
 
+        public string RootPath { get; private set; }
         public string ResourceListPath { get { return Path.Combine(RootPath, "project_db.xml"); } }
+        // TODO: 어셈블리를 열어서 "ScriptMain"을 상속한 클래스가 정의된 파일에 대한 경로를 반환해야 한다
+        public string MainScriptPath {  get { return Path.Combine(RootPath, "scripts", "Main.cs"); } }
 
         public string Name { get; private set; }
 
@@ -96,6 +97,11 @@ namespace Zelda.Editor.Core.Mods
                 }
             }
             return false;
+        }
+
+        public bool IsScript(string path)
+        {
+            return IsInRootPath(path) && path.EndsWith(".cs");
         }
 
         public bool IsResourceElement(string path, ref ResourceType resourceType, ref string elementId)

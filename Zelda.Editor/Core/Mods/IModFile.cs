@@ -12,6 +12,7 @@ namespace Zelda.Editor.Core.Mods
         string Name { get; }
         Uri Icon { get; }
         string Description { get; }
+        string Type { get; }
         string ToolTip { get; }
         int Depth { get; }
         int Level { get; }
