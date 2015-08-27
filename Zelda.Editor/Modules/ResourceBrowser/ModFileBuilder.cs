@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Zelda.Editor.Core.Mods.ModFiles;
+using Zelda.Editor.Core.Mods;
 using Zelda.Game;
 
-namespace Zelda.Editor.Core.Mods
+namespace Zelda.Editor.Modules.ResourceBrowser
 {
     class ModFileBuilder
     {

@@ -31,14 +31,11 @@ namespace Zelda.Editor.Core.Mods
 
         public string Name { get; private set; }
 
-        public IModFile RootDirectory { get; private set; }
-
         public Mod(string rootPath)
         {
             RootPath = rootPath;
             Name = Path.GetFileName(rootPath);
             Resources = ModResources.Load(ResourceListPath);
-            RootDirectory = ModFileBuilder.Build(this);
         }
 
         static bool ModExists(string rootPath)

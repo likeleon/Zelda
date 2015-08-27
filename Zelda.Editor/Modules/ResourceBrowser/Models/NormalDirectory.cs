@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Zelda.Editor.Core.Mods.ModFiles
+namespace Zelda.Editor.Modules.ResourceBrowser
 {
     class NormalDirectory : ModFileBase
     {

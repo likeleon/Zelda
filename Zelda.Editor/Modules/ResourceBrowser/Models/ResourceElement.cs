@@ -1,7 +1,8 @@
 ﻿using System;
+using Zelda.Editor.Core;
 using Zelda.Game;
 
-namespace Zelda.Editor.Core.Mods.ModFiles
+namespace Zelda.Editor.Modules.ResourceBrowser
 {
     class ResourceElement : ModFileBase
     {

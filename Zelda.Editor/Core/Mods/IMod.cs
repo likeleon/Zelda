@@ -9,7 +9,6 @@ namespace Zelda.Editor.Core.Mods
         string RootPath { get; }
         string ResourceListPath { get; }
         string MainScriptPath { get; }
-        IModFile RootDirectory { get; }
         ModResources Resources { get; }
 
         bool Exists(string path);

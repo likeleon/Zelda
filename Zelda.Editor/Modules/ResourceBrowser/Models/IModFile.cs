@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Zelda.Editor.Core.Mods
+namespace Zelda.Editor.Modules.ResourceBrowser
 {
     interface IModFile
     {

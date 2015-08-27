@@ -29,7 +29,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 
         void ModService_Loaded(object sender, EventArgs e)
         {
-            ModRootFiles = _modService.Mod.RootDirectory.Yield();
+            ModRootFiles = ModFileBuilder.Build(_modService.Mod).Yield();
             NotifyOfPropertyChange(() => ModRootFiles);
         }
 

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Zelda.Editor.Core.Mods.ModFiles
+namespace Zelda.Editor.Modules.ResourceBrowser
 {
     abstract class ModFileBase : PropertyChangedBase, IModFile
     {

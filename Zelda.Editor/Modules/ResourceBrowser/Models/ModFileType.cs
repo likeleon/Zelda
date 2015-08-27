@@ -1,4 +1,4 @@
-﻿namespace Zelda.Editor.Core.Mods
+﻿namespace Zelda.Editor.Modules.ResourceBrowser
 {
     enum ModFileType
     {

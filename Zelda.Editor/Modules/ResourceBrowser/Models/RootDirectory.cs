@@ -1,7 +1,7 @@
 ﻿using System;
 using Zelda.Game;
 
-namespace Zelda.Editor.Core.Mods.ModFiles
+namespace Zelda.Editor.Modules.ResourceBrowser
 {
     class RootDirectory : ModFileBase
     {
