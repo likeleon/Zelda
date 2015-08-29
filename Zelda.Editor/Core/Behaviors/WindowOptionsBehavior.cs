@@ -54,7 +54,7 @@ namespace Zelda.Editor.Core.Behaviors
             ((WindowOptionsBehavior)d).UpdateWindowStyle();
         }
 
-        private void UpdateWindowStyle()
+        void UpdateWindowStyle()
         {
             if (AssociatedObject == null)
                 return;
@@ -122,12 +122,12 @@ namespace Zelda.Editor.Core.Behaviors
             base.OnDetaching();
         }
 
-        private void OnSourceInitialized(object sender, EventArgs e)
+        void OnSourceInitialized(object sender, EventArgs e)
         {
             UpdateWindowStyle();
         }
 
-        private void OnClosing(object sender, CancelEventArgs e)
+        void OnClosing(object sender, CancelEventArgs e)
         {
             if (!AllowClose)
                 e.Cancel = true;

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Zelda.Editor.Modules.MainMenu.Models;
 
 namespace Zelda.Editor.Modules.ResourceBrowser
 {
@@ -41,6 +42,8 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                     return Parent.Level - 1;
             }
         }
+
+        public IEnumerable<CommandMenuItem> ContextMenuItems {  get { return ModFileContextMenuBuilder.Build(this); } }
 
         public void AddChild(IModFile child)
         {

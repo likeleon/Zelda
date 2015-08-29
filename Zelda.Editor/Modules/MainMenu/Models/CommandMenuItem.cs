@@ -8,18 +8,10 @@ namespace Zelda.Editor.Modules.MainMenu.Models
 {
     public class CommandMenuItem : StandardMenuItem
     {
-        private readonly Command _command;
-        private readonly StandardMenuItem _parent;
+        readonly Command _command;
 
-        public override string Text
-        {
-            get { return _command.Text; }
-        }
-
-        public override Uri IconSource
-        {
-            get { return _command.IconSource; }
-        }
+        public override string Text { get { return _command.Text; } }
+        public override Uri IconSource { get { return _command.IconSource; } }
 
         public override string InputGestureText
         {
@@ -36,20 +28,12 @@ namespace Zelda.Editor.Modules.MainMenu.Models
             get { return IoC.Get<ICommandService>().GetTargetableCommand(_command); }
         }
 
-        public override bool IsChecked
-        {
-            get { return _command.Checked; }
-        }
+        public override bool IsChecked { get { return _command.Checked; } }
+        public override bool IsVisible { get { return _command.Visible; } }
 
-        public override bool IsVisible
-        {
-            get { return _command.Visible; }
-        }
-
-        public CommandMenuItem(Command command, StandardMenuItem parent)
+        public CommandMenuItem(Command command)
         {
             _command = command;
-            _parent = parent;
         }
     }
 }

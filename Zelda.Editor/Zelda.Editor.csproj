@@ -170,6 +170,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Behaviors\TreeViewBindableSelectedItemBehavior.cs" />
     <Compile Include="Core\Behaviors\WindowOptionsBehavior.cs" />
     <Compile Include="Core\Commands\Command.cs" />
     <Compile Include="Core\Commands\CommandDefinition.cs" />
@@ -201,6 +202,7 @@
     <Compile Include="Core\Menus\MenuItemDefinition.cs" />
     <Compile Include="Core\Menus\MenuItemGroupDefinition.cs" />
     <Compile Include="Core\Menus\TextMenuItemDefinition.cs" />
+    <Compile Include="Core\Primitives\BindingProxy.cs" />
     <Compile Include="Modules\ResourceBrowser\Models\IModFile.cs" />
     <Compile Include="Core\Mods\IModService.cs" />
     <Compile Include="Modules\ResourceBrowser\Models\ModFileBase.cs" />
@@ -291,6 +293,7 @@
     <Compile Include="Modules\ResourceBrowser\Commands\ViewResourceBrowserCommandHandler.cs" />
     <Compile Include="Modules\ResourceBrowser\IResourceBrowser.cs" />
     <Compile Include="Modules\ResourceBrowser\MenuDefinitions.cs" />
+    <Compile Include="Modules\ResourceBrowser\ModFileContextMenuBuilder.cs" />
     <Compile Include="Modules\ResourceBrowser\ViewModels\ResourceBrowserViewModel.cs" />
     <Compile Include="Modules\ResourceBrowser\Views\ResourceBrowserView.xaml.cs">
       <DependentUpon>ResourceBrowserView.xaml</DependentUpon>

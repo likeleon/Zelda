@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Zelda.Editor.Modules.MainMenu.Models;
 
 namespace Zelda.Editor.Modules.ResourceBrowser
 {
@@ -16,5 +17,6 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         string ToolTip { get; }
         int Depth { get; }
         int Level { get; }
+        IEnumerable<CommandMenuItem> ContextMenuItems { get; }
     }
 }

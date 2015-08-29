@@ -62,7 +62,7 @@ namespace Zelda.Editor.Modules.MainMenu
                 foreach (MenuItemDefinition menuItem in menuItems)
                 {
                     StandardMenuItem menuItemModel = (menuItem.CommandDefinition != null)
-                        ? new CommandMenuItem(_commandService.GetCommand(menuItem.CommandDefinition), menuModel)
+                        ? new CommandMenuItem(_commandService.GetCommand(menuItem.CommandDefinition))
                         : new TextMenuItem(menuItem) as StandardMenuItem;
                     AddGroupsRecursive(menuItem, menuItemModel);
                     menuModel.Add(menuItemModel);

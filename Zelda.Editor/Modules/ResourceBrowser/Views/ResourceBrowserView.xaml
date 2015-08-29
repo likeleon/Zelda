@@ -3,14 +3,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.ResourceBrowser.Views"
+             xmlns:behaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
              xmlns:mods="clr-namespace:Zelda.Editor.Core.Mods"
              xmlns:controls="clr-namespace:Zelda.Editor.Core.Controls"
+             xmlns:primitives="clr-namespace:Zelda.Editor.Core.Primitives"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              Width="400">
     <UserControl.Resources>
         <HierarchicalDataTemplate x:Key="ModFileTemplate" ItemsSource="{Binding Children}" />
+        <ContextMenu x:Key="ModFileContextMenu" 
+                     ItemsSource="{Binding ContextMenuItems}">
+            <ContextMenu.ItemContainerStyle>
+                <Style TargetType="MenuItem">
+                    <Setter Property="Header" Value="{Binding Text}" />
+                    <Setter Property="Command" Value="{Binding Command}" />
+                </Style>
+            </ContextMenu.ItemContainerStyle>
+        </ContextMenu>
     </UserControl.Resources>
     <controls:TreeListView ItemsSource="{Binding ModRootFiles}"
                            ItemTemplate="{StaticResource ModFileTemplate}">
@@ -18,7 +30,8 @@
             <GridViewColumn Header="Resource" Width="150">
                 <GridViewColumn.CellTemplate>
                     <DataTemplate>
-                        <DockPanel Height="18" ToolTip="{Binding ToolTip}">
+                        <DockPanel Height="18" ToolTip="{Binding ToolTip}"
+                                   ContextMenu="{StaticResource ModFileContextMenu}">
                             <ToggleButton Style="{StaticResource ExpandCollapseToggleStyle}" VerticalAlignment="Center" />
                             <Image Source="{Binding Icon}" Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
                             <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
@@ -29,5 +42,8 @@
             <GridViewColumn Header="Description" Width="150" DisplayMemberBinding="{Binding Description}" />
             <GridViewColumn Header="Type" Width="100" DisplayMemberBinding="{Binding Type}" />
         </controls:TreeListView.Columns>
+        <i:Interaction.Behaviors>
+            <behaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedModFile, Mode=TwoWay}" />
+        </i:Interaction.Behaviors>
     </controls:TreeListView>
 </UserControl>
