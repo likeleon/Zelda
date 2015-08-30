@@ -21,7 +21,8 @@ namespace Zelda.Editor.Modules.ResourceBrowser.Converters
                 return Enumerable.Empty<IModFile>();
 
             var mod = IoC.Get<IModService>().Mod;
-            return ModFileContextMenuBuilder.Build(mod, modFile.Path);
+            var builder = new ModFileContextMenuBuilder(mod, modFile.Path);
+            return builder.Build();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
