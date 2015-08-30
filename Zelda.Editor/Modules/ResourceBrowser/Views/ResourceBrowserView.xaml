@@ -6,6 +6,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.ResourceBrowser.Views"
              xmlns:behaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
+             xmlns:converters="clr-namespace:Zelda.Editor.Modules.ResourceBrowser.Converters"
              xmlns:mods="clr-namespace:Zelda.Editor.Core.Mods"
              xmlns:controls="clr-namespace:Zelda.Editor.Core.Controls"
              xmlns:primitives="clr-namespace:Zelda.Editor.Core.Primitives"
@@ -14,12 +15,14 @@
              Width="400">
     <UserControl.Resources>
         <HierarchicalDataTemplate x:Key="ModFileTemplate" ItemsSource="{Binding Children}" />
+        <converters:ModFileContextMenuItemsConverter x:Key="ModFileContextMenuItemsConverter" />
         <ContextMenu x:Key="ModFileContextMenu" 
-                     ItemsSource="{Binding ContextMenuItems}">
+                     ItemsSource="{Binding Converter={StaticResource ModFileContextMenuItemsConverter}}">
             <ContextMenu.ItemContainerStyle>
                 <Style TargetType="MenuItem">
                     <Setter Property="Header" Value="{Binding Text}" />
                     <Setter Property="Command" Value="{Binding Command}" />
+                    <Setter Property="CommandParameter" Value="{Binding CommandParameter}" />
                 </Style>
             </ContextMenu.ItemContainerStyle>
         </ContextMenu>

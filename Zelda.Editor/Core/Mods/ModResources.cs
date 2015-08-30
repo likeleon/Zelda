@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Zelda.Game;
 
 namespace Zelda.Editor.Core.Mods
@@ -35,6 +36,20 @@ namespace Zelda.Editor.Core.Mods
             { ResourceType.Font,     "Font folder"          },
         };
 
+        static readonly Dictionary<ResourceType, string> _resourceTypeCreateFriendlyNames = new Dictionary<ResourceType, string>()
+        {
+            { ResourceType.Map,      "New map..."                 },
+            { ResourceType.TileSet,  "New tileset..."             },
+            { ResourceType.Sprite,   "New sprite..."              },
+            { ResourceType.Music,    "New music..."               },
+            { ResourceType.Sound,    "New sound..."               },
+            { ResourceType.Item,     "New item..."                },
+            { ResourceType.Enemy,    "New enemy breed..."         },
+            { ResourceType.Entity,   "New custom entity model..." },
+            { ResourceType.Language, "New language..."            },
+            { ResourceType.Font,     "New font..."                },
+        };
+
         public static ModResources Load(string rootPath)
         {
             var modResources = new ModResources();
@@ -65,6 +80,11 @@ namespace Zelda.Editor.Core.Mods
         public string GetFriendlyName(ResourceType resourceType)
         {
             return _resourceTypeFriendlyNames[resourceType];
+        }
+
+        public string GetCreateFriendlyName(ResourceType resourceType)
+        {
+            return _resourceTypeCreateFriendlyNames[resourceType];
         }
     }
 }

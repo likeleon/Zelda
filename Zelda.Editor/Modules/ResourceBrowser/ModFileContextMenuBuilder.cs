@@ -1,59 +1,79 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Zelda.Editor.Core.Commands;
-using Zelda.Editor.Modules.MainMenu.Models;
+﻿using System.Collections.Generic;
+using Zelda.Editor.Core;
+using Zelda.Editor.Core.Mods;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.ResourceBrowser
 {
     class ModFileContextMenuBuilder
     {
-        [CommandDefinition]
-        public class AddToModAsCommandDefinition : CommandDefinition
+        public static IEnumerable<ContextMenuItem> Build(IMod mod, string path)
         {
-            public const string CommandName = "ResourceBrowser.AddTomodAs";
-            public override string Name { get { return CommandName; } }
-            public override string Text { get {  return "Add to mod as {0}".F()} }
+            foreach (var menuItem in BuildOpenMenu(mod, path))
+                yield return menuItem;
         }
 
-        readonly IModFile _modFile;
-
-        public static IEnumerable<CommandMenuItem> Build(IModFile modFile)
+        static IEnumerable<ContextMenuItem> BuildOpenMenu(IMod mod, string path)
         {
-            yield return BuildOpenMenu();
-        }
-
-        ModFileContextMenuBuilder(IModFile modFile)
-        {
-            _modFile = modFile;
-        }
-
-        IEnumerable<CommandMenuItem> BuildOpenMenu()
-        {
-            var mod = _modFile.Mod;
             var resources = mod.Resources;
 
             var resourceType = ResourceType.Map;
             var elementId = "";
-            var isPotentialResourceElement = mod.IsPotentialResourceElement(_modFile.Path, ref resourceType, ref elementId);
+            var isPotentialResourceElement = mod.IsPotentialResourceElement(path, ref resourceType, ref elementId);
             var isDeclaredResourceElement = isPotentialResourceElement && resources.Exists(resourceType, elementId);
-            var isDir = mod.IsDirectory(_modFile.Path);
+            var isDir = mod.IsDirectory(path);
 
-            Command newResourceElementCommand = null;
+            ContextMenuItem newResourceElementMenuItem = null;
 
             if (isPotentialResourceElement)
             {
                 if (isDeclaredResourceElement)
-                    return Enumerable.Empty<CommandMenuItem>();
+                    yield break;
 
                 var resourceTypeFriendlyName = resources.GetFriendlyName(resourceType);
                 var resourceTypeName = resources.GetTypeName(resourceType);
 
-                newResourceElementCommand = new Command(CommandDefinition)
+                newResourceElementMenuItem = new ContextMenuItem()
                 {
-                }
+                    Text = "Add to mod as {0}".F(resourceTypeFriendlyName),
+                    Command = new RelayCommand(OnNewResourceElementExecute),
+                    CommandParameter = path
+                };
             }
+            else if (mod.IsResourceDirectory(path, ref resourceType) ||
+                     (isDir && mod.IsInResourceDirectory(path, ref resourceType)))
+            {
+                var resourceTypeCreateFriendlyName = resources.GetCreateFriendlyName(resourceType);
+                var resourceTypeName = resources.GetTypeName(resourceType);
+
+                newResourceElementMenuItem = new ContextMenuItem()
+                {
+                    Text = resourceTypeCreateFriendlyName,
+                    Command = new RelayCommand(OnNewResourceElementExecute),
+                    CommandParameter = path
+                };
+            }
+
+            if (newResourceElementMenuItem != null)
+                yield return newResourceElementMenuItem;
+
+            if (isDir)
+            {
+                yield return new ContextMenuItem()
+                {
+                    Text = "New folder...",
+                    Command = new RelayCommand(OnNewDirectoryExecute),
+                    CommandParameter = path
+                };
+            }
+        }
+
+        static void OnNewResourceElementExecute(object param)
+        {
+        }
+
+        static void OnNewDirectoryExecute(object param)
+        {
         }
     }
 }

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Zelda.Editor.Core.Mods;
-using Zelda.Editor.Modules.MainMenu.Models;
 
 namespace Zelda.Editor.Modules.ResourceBrowser
 {
     interface IModFile
     {
-        IMod Mod { get; }
         string Path { get; }
         ModFileType FileType { get; }
         IModFile Parent { get; }
@@ -19,6 +16,5 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         string ToolTip { get; }
         int Depth { get; }
         int Level { get; }
-        IEnumerable<CommandMenuItem> ContextMenuItems { get; }
     }
 }
