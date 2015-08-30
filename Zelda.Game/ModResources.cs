@@ -43,13 +43,24 @@ namespace Zelda.Game
         {
         }
 
-        string[] _assemblies;
+
         public IEnumerable<string> Assemblies
         {
             get { return _assemblies; }
         }
    
+        readonly static Dictionary<ResourceType, string> _resourceTypeNames;
+
         readonly Dictionary<ResourceType, ResourceMap> _resourceMaps;
+
+        string[] _assemblies;
+
+        static ModResources()
+        {
+            _resourceTypeNames = Enum.GetValues(typeof(ResourceType))
+                .Cast<ResourceType>()
+                .ToDictionary(t => t, t => t.ToString().ToLower());
+        }
 
         public ModResources()
         {
@@ -80,7 +91,7 @@ namespace Zelda.Game
             return true;
         }
 
-        private void FillResourceMap(ResourceType resourceType, ProjectDB.Resource[] resources)
+        void FillResourceMap(ResourceType resourceType, ProjectDB.Resource[] resources)
         {
             if (resources == null)
                 return;
@@ -114,6 +125,11 @@ namespace Zelda.Game
             if (!resource.ContainsKey(id))
                 return string.Empty;
             return resource[id];
+        }
+
+        public static string GetResourceTypeName(ResourceType resourceType)
+        {
+            return _resourceTypeNames[resourceType];
         }
     }
 }

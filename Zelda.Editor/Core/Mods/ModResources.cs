@@ -57,6 +57,11 @@ namespace Zelda.Editor.Core.Mods
             return _resourceTypeDirectoryFriendlyNames[resourceType];
         }
 
+        public string GetTypeName(ResourceType resourceType)
+        {
+            return Game.ModResources.GetResourceTypeName(resourceType);
+        }
+
         public string GetFriendlyName(ResourceType resourceType)
         {
             return _resourceTypeFriendlyNames[resourceType];

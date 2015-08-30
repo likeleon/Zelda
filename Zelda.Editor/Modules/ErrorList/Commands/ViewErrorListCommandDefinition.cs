@@ -8,7 +8,6 @@ namespace Zelda.Editor.Modules.ErrorList.Commands
     {
         public const string CommandName = "View.ErrorList";
         public override string Name
-
         {
             get { return CommandName; }
         }
