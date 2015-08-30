@@ -37,7 +37,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 newResourceElementMenuItem = new ContextMenuItem()
                 {
                     Text = "Add to mod as {0}".F(resourceTypeFriendlyName),
-                    IconSource = "Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
+                    IconSource = "/Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
                     Command = new RelayCommand(OnNewResourceElementExecute),
                     CommandParameter = path
                 };
