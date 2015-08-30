@@ -5,6 +5,6 @@ namespace Zelda.Editor.Modules.ResourceBrowser
     class UnknownFile : ModFileBase
     {
         public override ModFileType FileType { get { return ModFileType.Unknown; } }
-        public override Uri Icon { get { return new Uri("/Resources/Icons/icon_file_unknown.png", UriKind.Relative); } }
+        public override Uri Icon { get { return "/Resources/Icons/icon_file_unknown.png".ToIconUri(); } }
     }
 }

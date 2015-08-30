@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
 using Zelda.Game;
@@ -36,6 +37,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 newResourceElementMenuItem = new ContextMenuItem()
                 {
                     Text = "Add to mod as {0}".F(resourceTypeFriendlyName),
+                    IconSource = "Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
                     Command = new RelayCommand(OnNewResourceElementExecute),
                     CommandParameter = path
                 };
@@ -49,6 +51,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 newResourceElementMenuItem = new ContextMenuItem()
                 {
                     Text = resourceTypeCreateFriendlyName,
+                    IconSource = "/Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
                     Command = new RelayCommand(OnNewResourceElementExecute),
                     CommandParameter = path
                 };
@@ -62,6 +65,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 yield return new ContextMenuItem()
                 {
                     Text = "New folder...",
+                    IconSource = "/Resources/Icons/icon_folder_closed.png".ToIconUri(),
                     Command = new RelayCommand(OnNewDirectoryExecute),
                     CommandParameter = path
                 };

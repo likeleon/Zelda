@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Zelda.Game;
 
 namespace Zelda.Editor.Core.Controls
 {
@@ -15,7 +14,7 @@ namespace Zelda.Editor.Core.Controls
 
         public TreeListViewItem()
         {
-            _level = Exts.Lazy(() =>
+            _level = Game.Exts.Lazy(() =>
             {
                 var parent = ItemsControl.ItemsControlFromItemContainer(this) as TreeListViewItem;
                 return (parent != null) ? parent.Level + 1 : 0;
@@ -35,7 +34,7 @@ namespace Zelda.Editor.Core.Controls
 
     class TreeListView : TreeView
     {
-        readonly Lazy<GridViewColumnCollection> _columns = Exts.Lazy(() => new GridViewColumnCollection());
+        readonly Lazy<GridViewColumnCollection> _columns = Game.Exts.Lazy(() => new GridViewColumnCollection());
 
         public GridViewColumnCollection Columns { get { return _columns.Value; } }
 

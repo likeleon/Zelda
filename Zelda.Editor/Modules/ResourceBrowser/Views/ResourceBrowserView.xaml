@@ -16,11 +16,15 @@
     <UserControl.Resources>
         <HierarchicalDataTemplate x:Key="ModFileTemplate" ItemsSource="{Binding Children}" />
         <converters:ModFileContextMenuItemsConverter x:Key="ModFileContextMenuItemsConverter" />
+        <converters:NullableValueConverter x:Key="NullableValueConverter" />
+        <Image x:Key="MenuItemIcon" x:Shared="false" Width="16" Height="16" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased"
+               Source="{Binding IconSource, Converter={StaticResource NullableValueConverter}}" />
         <ContextMenu x:Key="ModFileContextMenu" 
                      ItemsSource="{Binding Converter={StaticResource ModFileContextMenuItemsConverter}}">
             <ContextMenu.ItemContainerStyle>
                 <Style TargetType="MenuItem">
                     <Setter Property="Header" Value="{Binding Text}" />
+                    <Setter Property="Icon" Value="{StaticResource MenuItemIcon}" />
                     <Setter Property="Command" Value="{Binding Command}" />
                     <Setter Property="CommandParameter" Value="{Binding CommandParameter}" />
                 </Style>
