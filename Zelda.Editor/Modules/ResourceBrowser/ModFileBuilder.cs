@@ -16,6 +16,14 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             return builder.BuildRecursive(builder._mod.RootPath, null);
         }
 
+        public static IModFile Create(IMod mod, string path, IModFile parent)
+        {
+            var builder = new ModFileBuilder(mod);
+            var child = builder.CreateModFile(path, parent);
+            parent.AddChild(child);
+            return child;
+        }
+
         ModFileBuilder(IMod mod)
         {
             if (mod == null)
@@ -24,7 +32,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             _mod = mod;
         }
 
-        IModFile BuildRecursive(string dirPath, ModFileBase parent)
+        IModFile BuildRecursive(string dirPath, IModFile parent)
         {
             var directory = CreateModFile(dirPath, parent);
 
@@ -79,7 +87,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             return (_mod.IsResourceElement(filePathXml, ref resourceType, ref elementId) && resourceType == ResourceType.Map);
         }
 
-        ModFileBase CreateModFile(string path, ModFileBase parent)
+        ModFileBase CreateModFile(string path, IModFile parent)
         {
             var resourceType = ResourceType.Map;
             var elementId = string.Empty;

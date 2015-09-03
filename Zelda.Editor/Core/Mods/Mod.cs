@@ -311,7 +311,20 @@ namespace Zelda.Editor.Core.Mods
 
         public void CreateResourceElement(ResourceType resourceType, string elementId, string description)
         {
-            throw new NotImplementedException();
+            CheckValidFileName(elementId);
+
+            CreateDirectoryIfNotExists(GetResourceDirectory(resourceType));
+        }
+
+        void CheckValidFileName(string name)
+        {
+            if (!IsValidFileName(name))
+            {
+                if (name.IsNullOrEmpty())
+                    throw new Exception("Empty file name");
+                else
+                    throw new Exception("Invalid file name: {0}".F(name));
+            }
         }
     }
 }

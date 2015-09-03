@@ -1,10 +1,10 @@
-﻿using Caliburn.Micro;
-using System;
+﻿using System;
 using System.Collections;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
-using Zelda.Editor.Core.Mods;
+using Zelda.Editor.Core.Primitives;
+using Zelda.Editor.Modules.ResourceBrowser.ViewModels;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.ResourceBrowser.Converters
@@ -20,8 +20,11 @@ namespace Zelda.Editor.Modules.ResourceBrowser.Converters
             if (modFile == null)
                 return Enumerable.Empty<IModFile>();
 
-            var mod = IoC.Get<IModService>().Mod;
-            var builder = new ModFileContextMenuBuilder(mod, modFile.Path);
+            var browser = (parameter as BindingProxy).Data as ResourceBrowserViewModel;
+            if (browser == null)
+                throw new ArgumentNullException("parameter", "parameter should be ResourceBrowserViewModel");
+
+            var builder = new ModFileContextMenuBuilder(browser, modFile);
             return builder.Build();
         }
 

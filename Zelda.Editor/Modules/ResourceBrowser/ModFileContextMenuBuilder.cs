@@ -15,18 +15,18 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         const ContextMenuItem Separator = null;
 
         readonly List<ContextMenuItem> _items = new List<ContextMenuItem>();
-        readonly IMod _mod;
-        readonly string _path;
+        readonly ResourceBrowserViewModel _browser;
+        readonly IModFile _modFile;
 
-        public ModFileContextMenuBuilder(IMod mod, string path)
+        public ModFileContextMenuBuilder(ResourceBrowserViewModel browser, IModFile modFile)
         {
-            if (mod == null)
-                throw new ArgumentNullException("mod");
-            if (path == null)
-                throw new ArgumentNullException("path");
+            if (browser == null)
+                throw new ArgumentNullException("browser");
+            if (modFile == null)
+                throw new ArgumentNullException("modFile");
 
-            _mod = mod;
-            _path = path;
+            _browser = browser;
+            _modFile = modFile;
         }
 
         public List<ContextMenuItem> Build()
@@ -37,13 +37,15 @@ namespace Zelda.Editor.Modules.ResourceBrowser
 
         void BuildNewMenus()
         {
-            var resources = _mod.Resources;
+            var mod = _browser.Mod;
+            var resources = mod.Resources;
+            var path = _modFile.Path;
 
             var resourceType = ResourceType.Map;
             var elementId = "";
-            var isPotentialResourceElement = _mod.IsPotentialResourceElement(_path, ref resourceType, ref elementId);
+            var isPotentialResourceElement = mod.IsPotentialResourceElement(path, ref resourceType, ref elementId);
             var isDeclaredResourceElement = isPotentialResourceElement && resources.Exists(resourceType, elementId);
-            var isDir = _mod.IsDirectory(_path);
+            var isDir = mod.IsDirectory(path);
 
             ContextMenuItem newResourceElementMenuItem = null;
 
@@ -60,11 +62,10 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                     Text = "Add to mod as {0}".F(resourceTypeFriendlyName),
                     IconSource = "/Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
                     Command = new RelayCommand(OnNewResourceElementExecute),
-                    CommandParameter = _path
                 };
             }
-            else if (_mod.IsResourceDirectory(_path, ref resourceType) ||
-                     (isDir && _mod.IsInResourceDirectory(_path, ref resourceType)))
+            else if (mod.IsResourceDirectory(path, ref resourceType) ||
+                     (isDir && mod.IsInResourceDirectory(path, ref resourceType)))
             {
                 var resourceTypeCreateFriendlyName = resources.GetCreateFriendlyName(resourceType);
                 var resourceTypeName = resources.GetTypeName(resourceType);
@@ -73,8 +74,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 {
                     Text = resourceTypeCreateFriendlyName,
                     IconSource = "/Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
-                    Command = new RelayCommand(OnNewResourceElementExecute),
-                    CommandParameter = _path
+                    Command = new RelayCommand(OnNewResourceElementExecute)
                 };
             }
 
@@ -90,58 +90,14 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 {
                     Text = "New folder...",
                     IconSource = "/Resources/Icons/icon_folder_closed.png".ToIconUri(),
-                    Command = new RelayCommand(OnNewDirectoryExecute),
-                    CommandParameter = _path
+                    Command = new RelayCommand(OnNewDirectoryExecute)
                 });
             }
         }
 
         void OnNewResourceElementExecute(object param)
         {
-            var path = param as string;
-            if (path.IsNullOrEmpty())
-                return;
-
-            var resources = _mod.Resources;
-            var resourceType = ResourceType.Map;
-            var initialIdValue = "";
-
-            if (_mod.IsPotentialResourceElement(path, ref resourceType, ref initialIdValue))
-            {
-                if (resources.Exists(resourceType, initialIdValue))
-                    return;
-            }
-            else
-            {
-                if (!_mod.IsResourceDirectory(path, ref resourceType) &&
-                    !_mod.IsInResourceDirectory(path, ref resourceType))
-                    return;
-
-                var resourceDir = _mod.GetResourceDirectory(resourceType);
-                if (path != resourceDir)
-                    initialIdValue = path.Substring(resourceDir.Length + 1) + '/';
-                else
-                    initialIdValue = "";
-
-                var resourceTypeName = _mod.Resources.GetFriendlyName(resourceType);
-                var dialog = new NewResourceElementViewModel(resourceTypeName, _mod) { Id = initialIdValue };
-                dynamic settings = new ExpandoObject();
-                settings.Title = "Create resource";
-                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) != true)
-                    return;
-
-                var elementId = dialog.Id;
-                var description = dialog.Description;
-
-                
-
-                var createdPath = _mod.GetResourceElementPath(resourceType, elementId);
-                if (_mod.Exists(createdPath))
-                {
-                    // SetSelected, open it
-                }
-            }
+            _browser.NewResourceElement(_modFile);
         }
 
         static void OnNewDirectoryExecute(object param)
