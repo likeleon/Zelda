@@ -52,7 +52,7 @@ namespace Zelda.Game.Entities
             get { return _patterns; }
         }
 
-        protected override bool ImportFromStream(byte[] buffer)
+        protected override bool ImportFromBuffer(byte[] buffer)
         {
             try
             {

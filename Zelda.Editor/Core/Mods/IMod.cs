@@ -7,13 +7,13 @@ namespace Zelda.Editor.Core.Mods
     {
         string Name { get; }
         string RootPath { get; }
-        string ResourceListPath { get; }
         string MainScriptPath { get; }
         ModResources Resources { get; }
 
         bool Exists(string path);
 
-        string GetResourceDirectory(ResourceType resourceType);
+        string GetResourceListPath();
+        string GetResourcePath(ResourceType resourceType);
         string GetResourceElementPath(ResourceType resourceType, string elementId);
         IEnumerable<string> GetResourceElementPaths(ResourceType resourceType, string elementId);
         string GetFontPath(string fontId);

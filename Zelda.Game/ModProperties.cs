@@ -13,7 +13,7 @@ namespace Zelda.Game
         internal Size MinModSize { get; set; }
         internal Size MaxModSize { get; set; }
 
-        protected override bool ImportFromStream(byte[] buffer)
+        protected override bool ImportFromBuffer(byte[] buffer)
         {
             try
             {

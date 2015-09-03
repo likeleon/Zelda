@@ -9,10 +9,12 @@ namespace Zelda.Editor.Core.Mods
 {
     class Mod : PropertyChangedBase, IMod
     {
+        public event EventHandler<string> FileCreated;
+
         static readonly Dictionary<ResourceType, string> _resourceDirs = new Dictionary<ResourceType, string>()
         {
             { ResourceType.Map,      "maps"      },
-            { ResourceType.TileSet,  "tilesets"  },
+            { ResourceType.Tileset,  "tilesets"  },
             { ResourceType.Sprite,   "sprites"   },
             { ResourceType.Music,    "musics"    },
             { ResourceType.Sound,    "sounds"    },
@@ -25,155 +27,23 @@ namespace Zelda.Editor.Core.Mods
 
         public ModResources Resources { get; private set; }
 
+        public Mod(string rootPath)
+        {
+            RootPath = rootPath;
+            Name = Path.GetFileName(rootPath);
+            Resources = ModResources.Load(GetResourceListPath(), this);
+        }
+
+        #region Get paths
         public string RootPath { get; private set; }
-        public string ResourceListPath { get { return Path.Combine(RootPath, "project_db.xml"); } }
         // TODO: 어셈블리를 열어서 "ScriptMain"을 상속한 클래스가 정의된 파일에 대한 경로를 반환해야 한다
         public string MainScriptPath {  get { return Path.Combine(RootPath, "scripts", "Main.cs"); } }
 
         public string Name { get; private set; }
 
-        public Mod(string rootPath)
+        public string GetResourceListPath()
         {
-            RootPath = rootPath;
-            Name = Path.GetFileName(rootPath);
-            Resources = ModResources.Load(ResourceListPath);
-        }
-
-        static bool ModExists(string rootPath)
-        {
-            var modPath = new ModPath(rootPath);
-            return modPath.Exists(modPath.PropertiesPath);
-        }
-
-        public bool IsDirectory(string path)
-        {
-            return Exists(path) && File.GetAttributes(path).HasFlag(FileAttributes.Directory);
-        }
-
-        public bool Exists(string path)
-        {
-            return IsInRootPath(path) && (File.Exists(path) || Directory.Exists(path));
-        }
-
-        bool IsInRootPath(string path)
-        {
-            return path.StartsWith(RootPath);
-        }
-
-        public bool IsModRootDirectory(string path)
-        {
-            return path == RootPath;
-        }
-
-        public bool IsResourceDirectory(string path, ref ResourceType resourceType)
-        {
-            foreach (var type in _resourceDirs.Keys)
-            {
-                if (path == GetResourceDirectory(type))
-                {
-                    resourceType = type;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public string GetResourceDirectory(ResourceType resourceType)
-        {
-            string dirName;
-            if (!_resourceDirs.TryGetValue(resourceType, out dirName))
-                return "";
-
-            return Path.Combine(RootPath, dirName);
-        }
-
-        public bool IsInResourceDirectory(string path, ref ResourceType resourceType)
-        {
-            foreach (var type in _resourceDirs.Keys)
-            {
-                if (path.StartsWith(GetResourceDirectory(type) + Path.DirectorySeparatorChar))
-                {
-                    resourceType = type;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public bool IsScript(string path)
-        {
-            return IsInRootPath(path) && path.EndsWith(".cs");
-        }
-
-        public bool IsResourceElement(string path, ref ResourceType resourceType, ref string elementId)
-        {
-            if (!IsPotentialResourceElement(path, ref resourceType, ref elementId))
-                return false;
-
-            return Resources.Exists(resourceType, elementId);
-        }
-
-        public bool IsPotentialResourceElement(string path, ref ResourceType resourceType, ref string elementId)
-        {
-            elementId = string.Empty;
-
-            if (!IsInResourceDirectory(path, ref resourceType))
-                return false;
-
-            if (IsResourceDirectory(path, ref resourceType))
-                return false;
-
-            return GetElementId(path, resourceType, ref elementId);
-        }
-
-        bool GetElementId(string path, ResourceType resourceType, ref string elementId)
-        {
-            var resourceDir = GetResourceDirectory(resourceType);
-            var pathFromResource = path.Substring(resourceDir.Length + 1);
-            var extensions = new List<string>();
-            switch (resourceType)
-            {
-                case ResourceType.Map:
-                case ResourceType.TileSet:
-                case ResourceType.Sprite:
-                    extensions.Add(".xml");
-                    break;
-
-                case ResourceType.Music:
-                    extensions.AddRange(new[] { ".ogg", ".it", ".spc" });
-                    break;
-
-                case ResourceType.Sound:
-                    extensions.Add(".ogg");
-                    break;
-
-                case ResourceType.Item:
-                case ResourceType.Enemy:
-                case ResourceType.Entity:
-                    extensions.Add(".cs");
-                    break;
-
-                case ResourceType.Font:
-                    extensions.AddRange(new[] { ".png", ".ttf", ".ttc", "fon" });
-                    break;
-
-                case ResourceType.Language:
-                    // No extension
-                    break;
-            }
-
-            if (resourceType == ResourceType.Language)
-            {
-                elementId = pathFromResource;
-                return true;
-            }
-            else if (extensions.Any(x => pathFromResource.EndsWith(x)))
-            {
-                elementId = pathFromResource.Remove(pathFromResource.IndexOf('.'));
-                return true;
-            }
-            else
-                return false;
+            return Path.Combine(RootPath, "project_db.xml");
         }
 
         public string GetResourceElementPath(ResourceType resourceType, string elementId)
@@ -194,7 +64,7 @@ namespace Zelda.Editor.Core.Mods
                     //yield return GetMapScriptPath(elementId);
                     break;
 
-                case ResourceType.TileSet:
+                case ResourceType.Tileset:
                     yield return GetTilesetDataFilePath(elementId);
                     yield return GetTilesetTilesImagePath(elementId);
                     yield return GetTilesetEntitiesImagePath(elementId);
@@ -256,6 +126,16 @@ namespace Zelda.Editor.Core.Mods
             return Path.Combine(RootPath, "languages", languageId);
         }
 
+        public string GetLanguageImagesPath(string languageId)
+        {
+            return Path.Combine(GetLanguagePath(languageId), "images");
+        }
+
+        public string GetLanguageTextPath(string languageId)
+        {
+            return Path.Combine(GetLanguagePath(languageId), "text");
+        }
+
         public string GetMapDataFilePath(string mapId)
         {
             return Path.Combine(RootPath, "maps", "{0}.xml".F(mapId));
@@ -281,6 +161,16 @@ namespace Zelda.Editor.Core.Mods
             return Path.Combine(RootPath, "sprites", "{0}.xml".F(spriteId));
         }
 
+        public string GetDialogsPath(string languageId)
+        {
+            return Path.Combine(GetLanguagePath(languageId), "text", "dialogs.xml");
+        }
+
+        public string GetStringsPath(string languageId)
+        {
+            return Path.Combine(GetLanguagePath(languageId), "text", "strings.xml");
+        }
+
         public string GetMusicPath(string musicId)
         {
             var prefix = Path.Combine(RootPath, "musics", musicId);
@@ -292,6 +182,181 @@ namespace Zelda.Editor.Core.Mods
                     return path;
             }
             return prefix + extensions.First();
+        }
+
+        public string GetResourcePath(ResourceType resourceType)
+        {
+            string dirName;
+            if (!_resourceDirs.TryGetValue(resourceType, out dirName))
+                return "";
+
+            return Path.Combine(RootPath, dirName);
+        }
+        #endregion
+
+        #region Check path properties
+        static bool ModExists(string rootPath)
+        {
+            var modPath = new ModPath(rootPath);
+            return modPath.Exists(modPath.PropertiesPath);
+        }
+
+        public bool IsDirectory(string path)
+        {
+            return Exists(path) && File.GetAttributes(path).HasFlag(FileAttributes.Directory);
+        }
+
+        public void CheckIsDirectory(string path)
+        {
+            CheckExists(path);
+
+            if (!Directory.Exists(path))
+                throw new Exception("File '{0}' is not a folder".F(path));
+        }
+
+        public void CheckNotIsDirectory(string path)
+        {
+            CheckExists(path);
+
+            if (Directory.Exists(path))
+                throw new Exception("File '{0}' is a folder".F(path));
+        }
+
+        public bool Exists(string path)
+        {
+            return IsInRootPath(path) && (File.Exists(path) || Directory.Exists(path));
+        }
+
+        public void CheckExists(string path)
+        {
+            if (!Exists(path))
+                throw new Exception("File '{0}' does not exist".F(path));
+        }
+
+        public void CheckNotExists(string path)
+        {
+            CheckIsInRootPath(path);
+
+            if (Exists(path))
+                throw new Exception("File '{0}' already exists".F(path));
+        }
+
+        public bool IsInRootPath(string path)
+        {
+            return path.StartsWith(RootPath);
+        }
+
+        public void CheckIsInRootPath(string path)
+        {
+            if (!IsInRootPath(path))
+                throw new Exception("File '{0}' is not in this mod".F(path));
+        }
+
+        public bool IsModRootDirectory(string path)
+        {
+            return path == RootPath;
+        }
+
+        public bool IsResourceDirectory(string path, ref ResourceType resourceType)
+        {
+            foreach (var type in _resourceDirs.Keys)
+            {
+                if (path == GetResourcePath(type))
+                {
+                    resourceType = type;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool IsInResourceDirectory(string path, ref ResourceType resourceType)
+        {
+            foreach (var type in _resourceDirs.Keys)
+            {
+                if (path.StartsWith(GetResourcePath(type) + Path.DirectorySeparatorChar))
+                {
+                    resourceType = type;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool IsScript(string path)
+        {
+            return IsInRootPath(path) && path.EndsWith(".cs");
+        }
+
+        public bool IsResourceElement(string path, ref ResourceType resourceType, ref string elementId)
+        {
+            if (!IsPotentialResourceElement(path, ref resourceType, ref elementId))
+                return false;
+
+            return Resources.Exists(resourceType, elementId);
+        }
+
+        public bool IsPotentialResourceElement(string path, ref ResourceType resourceType, ref string elementId)
+        {
+            elementId = string.Empty;
+
+            if (!IsInResourceDirectory(path, ref resourceType))
+                return false;
+
+            if (IsResourceDirectory(path, ref resourceType))
+                return false;
+
+            return GetElementId(path, resourceType, ref elementId);
+        }
+
+        bool GetElementId(string path, ResourceType resourceType, ref string elementId)
+        {
+            var resourceDir = GetResourcePath(resourceType);
+            var pathFromResource = path.Substring(resourceDir.Length + 1);
+            var extensions = new List<string>();
+            switch (resourceType)
+            {
+                case ResourceType.Map:
+                case ResourceType.Tileset:
+                case ResourceType.Sprite:
+                    extensions.Add(".xml");
+                    break;
+
+                case ResourceType.Music:
+                    extensions.AddRange(new[] { ".ogg", ".it", ".spc" });
+                    break;
+
+                case ResourceType.Sound:
+                    extensions.Add(".ogg");
+                    break;
+
+                case ResourceType.Item:
+                case ResourceType.Enemy:
+                case ResourceType.Entity:
+                    extensions.Add(".cs");
+                    break;
+
+                case ResourceType.Font:
+                    extensions.AddRange(new[] { ".png", ".ttf", ".ttc", "fon" });
+                    break;
+
+                case ResourceType.Language:
+                    // No extension
+                    break;
+            }
+
+            if (resourceType == ResourceType.Language)
+            {
+                elementId = pathFromResource;
+                return true;
+            }
+            else if (extensions.Any(x => pathFromResource.EndsWith(x)))
+            {
+                elementId = pathFromResource.Remove(pathFromResource.IndexOf('.'));
+                return true;
+            }
+            else
+                return false;
         }
 
         public bool IsValidFileName(string name)
@@ -309,14 +374,7 @@ namespace Zelda.Editor.Core.Mods
             return true;
         }
 
-        public void CreateResourceElement(ResourceType resourceType, string elementId, string description)
-        {
-            CheckValidFileName(elementId);
-
-            CreateDirectoryIfNotExists(GetResourceDirectory(resourceType));
-        }
-
-        void CheckValidFileName(string name)
+        public void CheckValidFileName(string name)
         {
             if (!IsValidFileName(name))
             {
@@ -326,5 +384,127 @@ namespace Zelda.Editor.Core.Mods
                     throw new Exception("Invalid file name: {0}".F(name));
             }
         }
+        #endregion
+
+        #region Create, Rename and Delete paths
+        public void CreateFile(string path)
+        {
+            CheckIsInRootPath(path);
+            CheckNotExists(path);
+
+            File.Create(path);
+
+            if (FileCreated != null)
+                FileCreated(this, path);
+        }
+
+        public bool CreateFileIfNotExists(string path)
+        {
+            if (Exists(path))
+            {
+                CheckNotIsDirectory(path);
+                return false;
+            }
+
+            CreateFile(path);
+            return true;
+        }
+
+        public void CreateMapDataFile(string mapId)
+        {
+            var path = GetMapDataFilePath(mapId);
+            CheckIsInRootPath(path);
+            CheckNotExists(path);
+            CreateFile(path);
+
+            throw new NotImplementedException("Set initial values");
+        }
+
+        public bool CreateMapDataFileIfNotExists(string mapId)
+        {
+            var path = GetMapDataFilePath(mapId);
+            if (Exists(path))
+            {
+                CheckNotIsDirectory(path);
+                return false;
+            }
+
+            CreateMapDataFile(mapId);
+            return true;
+        }
+
+        public void CreateDirectory(string path)
+        {
+            CheckIsInRootPath(path);
+            CheckNotExists(path);
+
+            Directory.CreateDirectory(path);
+        }
+
+        public bool CreateDirectoryIfNotExists(string path)
+        {
+            if (Exists(path))
+            {
+                CheckIsDirectory(path);
+                return false;
+            }
+
+            CreateDirectory(path);
+            return true;
+        }
+
+        public void CreateResourceElement(ResourceType resourceType, string elementId, string description)
+        {
+            CheckValidFileName(elementId);
+
+            CreateDirectoryIfNotExists(GetResourcePath(resourceType));
+
+            var doneOnFilesystem = false;
+            var paths = GetResourceElementPaths(resourceType, elementId);
+
+            switch (resourceType)
+            {
+                case ResourceType.Map:
+                    CreateMapDataFileIfNotExists(elementId);
+                    break;
+
+                case ResourceType.Item:
+                case ResourceType.Sprite:
+                case ResourceType.Enemy:
+                case ResourceType.Entity:
+                    foreach (var path in paths)
+                        doneOnFilesystem |= CreateFileIfNotExists(path);
+                    break;
+
+                case ResourceType.Tileset:
+                    doneOnFilesystem |= CreateFileIfNotExists(GetTilesetDataFilePath(elementId));
+                    break;
+
+                case ResourceType.Language:
+                    doneOnFilesystem |= CreateDirectoryIfNotExists(GetLanguagePath(elementId));
+                    doneOnFilesystem |= CreateDirectoryIfNotExists(GetLanguageImagesPath(elementId));
+                    doneOnFilesystem |= CreateDirectoryIfNotExists(GetLanguageTextPath(elementId));
+                    doneOnFilesystem |= CreateFileIfNotExists(GetDialogsPath(elementId));
+                    doneOnFilesystem |= CreateFileIfNotExists(GetStringsPath(elementId));
+                    break;
+
+                case ResourceType.Music:
+                case ResourceType.Sound:
+                case ResourceType.Font:
+                    break;
+            }
+
+            bool doneInResourceList = false;
+            if (!Resources.Exists(resourceType, elementId))
+            {
+                doneInResourceList = true;
+                Resources.Add(resourceType, elementId, description);
+                Resources.Save();
+            }
+
+            if (!doneOnFilesystem && !doneInResourceList)
+                throw new Exception("Resource '{0}' already exists".F(elementId));
+        }
+        #endregion
     }
 }

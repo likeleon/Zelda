@@ -1,13 +1,14 @@
 ﻿using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Zelda.Editor.Modules.ResourceBrowser
 {
     abstract class ModFileBase : PropertyChangedBase, IModFile
     {
-        readonly List<IModFile> _children = new List<IModFile>();
+        readonly ObservableCollection<IModFile> _children = new ObservableCollection<IModFile>();
         string _description;
 
         public abstract ModFileType FileType { get; }
@@ -48,8 +49,6 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 throw new ArgumentNullException("child");
 
             _children.Add(child);
-
-            NotifyOfPropertyChange("Children");
         }
     }
 }

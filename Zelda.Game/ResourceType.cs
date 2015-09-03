@@ -4,7 +4,7 @@ namespace Zelda.Game
     public enum ResourceType
     {
         Map,
-        TileSet,
+        Tileset,
         Sprite,
         Music,
         Sound,

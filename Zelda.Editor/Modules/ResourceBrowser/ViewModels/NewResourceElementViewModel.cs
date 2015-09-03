@@ -15,6 +15,9 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 
         public string Error { get { return null; } }
 
+        public RelayCommand OkCommand { get; private set; }
+        public RelayCommand CancelCommand { get; private set; }
+
         string IDataErrorInfo.this[string columnName]
         {
             get
@@ -48,6 +51,9 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 
             Title = "New {0}".F(resourceTypeName.ToLower());
             IdLabel = "{0} id (filename):".F(resourceTypeName);
+
+            OkCommand = new RelayCommand(o => TryClose(true));
+            CancelCommand = new RelayCommand(o => TryClose(false));
         }
     }
 }

@@ -86,7 +86,7 @@ namespace Zelda.Game
                 _entities[(int)layer] = new List<EntityData>();
         }
 
-        protected override bool ImportFromStream(byte[] buffer)
+        protected override bool ImportFromBuffer(byte[] buffer)
         {
             try
             {

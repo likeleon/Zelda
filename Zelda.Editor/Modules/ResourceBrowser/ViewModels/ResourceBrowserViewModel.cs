@@ -74,7 +74,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                         !mod.IsInResourceDirectory(path, ref resourceType))
                         return;
 
-                    var resourceDir = mod.GetResourceDirectory(resourceType);
+                    var resourceDir = mod.GetResourcePath(resourceType);
                     if (path != resourceDir)
                         initialIdValue = path.Substring(resourceDir.Length + 1) + '/';
                     else

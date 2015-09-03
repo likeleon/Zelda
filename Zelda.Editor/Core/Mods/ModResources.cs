@@ -6,12 +6,15 @@ namespace Zelda.Editor.Core.Mods
 {
     class ModResources
     {
+        public event EventHandler<ElementAddedEventArgs> ElementAdded;
+
         readonly Game.ModResources _resources = new Game.ModResources();
+        readonly IMod _mod;
 
         static readonly Dictionary<ResourceType, string> _resourceTypeFriendlyNames = new Dictionary<ResourceType, string>()
         {
             { ResourceType.Map,      "Map"                  },
-            { ResourceType.TileSet,  "Tileset"              },
+            { ResourceType.Tileset,  "Tileset"              },
             { ResourceType.Sprite,   "Sprite"               },
             { ResourceType.Music,    "Music"                },
             { ResourceType.Sound,    "Sound"                },
@@ -25,7 +28,7 @@ namespace Zelda.Editor.Core.Mods
         static readonly Dictionary<ResourceType, string> _resourceTypeDirectoryFriendlyNames = new Dictionary<ResourceType, string>()
         {
             { ResourceType.Map,      "Map folder"           },
-            { ResourceType.TileSet,  "Tileset folder"       },
+            { ResourceType.Tileset,  "Tileset folder"       },
             { ResourceType.Sprite,   "Sprite folder"        },
             { ResourceType.Music,    "Music folder"         },
             { ResourceType.Sound,    "Sound folder"         },
@@ -39,7 +42,7 @@ namespace Zelda.Editor.Core.Mods
         static readonly Dictionary<ResourceType, string> _resourceTypeCreateFriendlyNames = new Dictionary<ResourceType, string>()
         {
             { ResourceType.Map,      "New map..."                 },
-            { ResourceType.TileSet,  "New tileset..."             },
+            { ResourceType.Tileset,  "New tileset..."             },
             { ResourceType.Sprite,   "New sprite..."              },
             { ResourceType.Music,    "New music..."               },
             { ResourceType.Sound,    "New sound..."               },
@@ -50,11 +53,37 @@ namespace Zelda.Editor.Core.Mods
             { ResourceType.Font,     "New font..."                },
         };
 
-        public static ModResources Load(string rootPath)
+        public static ModResources Load(string rootPath, IMod mod)
         {
-            var modResources = new ModResources();
+            var modResources = new ModResources(mod);
             modResources._resources.ImportFromFile(rootPath);
             return modResources;
+        }
+
+        ModResources(IMod mod)
+        {
+            if (mod == null)
+                throw new ArgumentNullException("mod");
+
+            _mod = mod;
+        }
+
+        public bool Add(ResourceType resourceType, string id, string description)
+        {
+            if (!_resources.Add(resourceType, id, description))
+                return false;
+
+            if (ElementAdded != null)
+                ElementAdded(this, new ElementAddedEventArgs(resourceType, id, description));
+
+            return true;
+        }
+
+        public void Save()
+        {
+            var fileName = _mod.GetResourceListPath();
+            if (!_resources.ExportToFile(fileName))
+                throw new Exception("Cannot write file '{0}'".F(fileName));
         }
 
         public bool Exists(ResourceType type, string id)
