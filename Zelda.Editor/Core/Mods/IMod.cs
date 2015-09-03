@@ -13,6 +13,7 @@ namespace Zelda.Editor.Core.Mods
 
         bool Exists(string path);
 
+        string GetResourceDirectory(ResourceType resourceType);
         string GetResourceElementPath(ResourceType resourceType, string elementId);
         IEnumerable<string> GetResourceElementPaths(ResourceType resourceType, string elementId);
         string GetFontPath(string fontId);
@@ -25,6 +26,7 @@ namespace Zelda.Editor.Core.Mods
         string GetSpritePath(string spriteId);
         string GetMusicPath(string musicId);
 
+        bool IsValidFileName(string fileName);
         bool IsDirectory(string path);
         bool IsModRootDirectory(string path);
         bool IsResourceDirectory(string path, ref ResourceType resourceType);
@@ -32,5 +34,7 @@ namespace Zelda.Editor.Core.Mods
         bool IsScript(string path);
         bool IsResourceElement(string path, ref ResourceType resourceType, ref string elementId);
         bool IsPotentialResourceElement(string path, ref ResourceType resourceType, ref string elementId);
+
+        void CreateResourceElement(ResourceType resourceType, string elementId, string description);
     }
 }

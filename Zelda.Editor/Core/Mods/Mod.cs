@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -77,9 +78,12 @@ namespace Zelda.Editor.Core.Mods
             return false;
         }
 
-        string GetResourceDirectory(ResourceType resourceType)
+        public string GetResourceDirectory(ResourceType resourceType)
         {
-            var dirName = _resourceDirs[resourceType];
+            string dirName;
+            if (!_resourceDirs.TryGetValue(resourceType, out dirName))
+                return "";
+
             return Path.Combine(RootPath, dirName);
         }
 
@@ -288,6 +292,26 @@ namespace Zelda.Editor.Core.Mods
                     return path;
             }
             return prefix + extensions.First();
+        }
+
+        public bool IsValidFileName(string name)
+        {
+            if (name.IsNullOrEmpty() ||
+                name.Contains('\\') ||
+                name == "." ||
+                name == ".." ||
+                name.StartsWith("../") ||
+                name.EndsWith("/..") ||
+                name.Contains("/../") ||
+                name.Trim() != name)
+                return false;
+
+            return true;
+        }
+
+        public void CreateResourceElement(ResourceType resourceType, string elementId, string description)
+        {
+            throw new NotImplementedException();
         }
     }
 }

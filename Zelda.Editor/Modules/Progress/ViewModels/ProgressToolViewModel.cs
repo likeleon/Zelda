@@ -11,18 +11,11 @@ namespace Zelda.Editor.Modules.Progress.ViewModels
     [Export(typeof(IProgressTool))]
     public class ProgressToolViewModel : Tool, IProgressService, IProgressTool
     {
-        public IObservableCollection<JobViewModel> Items
-        {
-            get { return _items; }
-        }
+        public IObservableCollection<JobViewModel> Items { get { return _items; } }
+        public override PaneLocation PreferredLocation { get { return PaneLocation.Bottom; } }
 
-        public override PaneLocation PreferredLocation
-        {
-            get { return PaneLocation.Bottom; }
-        }
-
-        private readonly IObservableCollection<JobViewModel> _items = new BindableCollection<JobViewModel>();
-        private readonly IWindowManager _windowManager;
+        readonly IObservableCollection<JobViewModel> _items = new BindableCollection<JobViewModel>();
+        readonly IWindowManager _windowManager;
 
         [ImportingConstructor]
         public ProgressToolViewModel(IWindowManager windowManager)

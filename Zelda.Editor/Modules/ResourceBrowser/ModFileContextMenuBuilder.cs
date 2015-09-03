@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Dynamic;
+using System.Windows;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
+using Zelda.Editor.Modules.ResourceBrowser.ViewModels;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.ResourceBrowser
@@ -93,26 +96,56 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             }
         }
 
-        static void OnNewResourceElementExecute(object param)
+        void OnNewResourceElementExecute(object param)
         {
+            var path = param as string;
+            if (path.IsNullOrEmpty())
+                return;
+
+            var resources = _mod.Resources;
+            var resourceType = ResourceType.Map;
+            var initialIdValue = "";
+
+            if (_mod.IsPotentialResourceElement(path, ref resourceType, ref initialIdValue))
+            {
+                if (resources.Exists(resourceType, initialIdValue))
+                    return;
+            }
+            else
+            {
+                if (!_mod.IsResourceDirectory(path, ref resourceType) &&
+                    !_mod.IsInResourceDirectory(path, ref resourceType))
+                    return;
+
+                var resourceDir = _mod.GetResourceDirectory(resourceType);
+                if (path != resourceDir)
+                    initialIdValue = path.Substring(resourceDir.Length + 1) + '/';
+                else
+                    initialIdValue = "";
+
+                var resourceTypeName = _mod.Resources.GetFriendlyName(resourceType);
+                var dialog = new NewResourceElementViewModel(resourceTypeName, _mod) { Id = initialIdValue };
+                dynamic settings = new ExpandoObject();
+                settings.Title = "Create resource";
+                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) != true)
+                    return;
+
+                var elementId = dialog.Id;
+                var description = dialog.Description;
+
+                
+
+                var createdPath = _mod.GetResourceElementPath(resourceType, elementId);
+                if (_mod.Exists(createdPath))
+                {
+                    // SetSelected, open it
+                }
+            }
         }
 
         static void OnNewDirectoryExecute(object param)
         {
-        }
-    }
-
-    static class ModFileContextMenuBuilderExtensions
-    {
-        public static IEnumerable<ContextMenuItem> AddSeparatorIfNotEmpty(this IEnumerable<ContextMenuItem> e)
-        {
-            if (e.Any())
-            {
-                const ContextMenuItem separator = null;
-                return e.Concat(separator.Yield());
-            }
-            else
-                return e;
         }
     }
 }

@@ -38,6 +38,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon_quest_editor_48.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Caliburn.Micro">
       <HintPath>..\packages\Caliburn.Micro.Core.2.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
@@ -129,6 +132,10 @@
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
     <Page Include="Modules\Output\Views\OutputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\ResourceBrowser\Views\NewResourceElementView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -298,7 +305,11 @@
     <Compile Include="Modules\ResourceBrowser\IResourceBrowser.cs" />
     <Compile Include="Modules\ResourceBrowser\MenuDefinitions.cs" />
     <Compile Include="Modules\ResourceBrowser\ModFileContextMenuBuilder.cs" />
+    <Compile Include="Modules\ResourceBrowser\ViewModels\NewResourceElementViewModel.cs" />
     <Compile Include="Modules\ResourceBrowser\ViewModels\ResourceBrowserViewModel.cs" />
+    <Compile Include="Modules\ResourceBrowser\Views\NewResourceElementView.xaml.cs">
+      <DependentUpon>NewResourceElementView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Modules\ResourceBrowser\Views\ResourceBrowserView.xaml.cs">
       <DependentUpon>ResourceBrowserView.xaml</DependentUpon>
     </Compile>
@@ -526,6 +537,9 @@
     <Resource Include="Resources\Icons\icon_undo.png" />
     <Resource Include="Resources\Icons\icon_web.png" />
     <Resource Include="Resources\Icons\icon_zoom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icon_quest_editor_48.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
