@@ -5,7 +5,7 @@ using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
-    abstract class MapEntity : DisposableObject
+    public abstract class MapEntity : DisposableObject
     {
         static readonly int DefaultOptimizationDistance = 400;
         static readonly Point[] _directionsToXyMoves = new Point[]

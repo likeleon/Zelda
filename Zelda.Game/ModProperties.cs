@@ -9,9 +9,9 @@ namespace Zelda.Game
         public string ZeldaVersion { get; set; }
         public string ModWriteDir { get; set; }
         public string TitleBar { get; set; }
-        internal Size NormalModSize { get; set; }
-        internal Size MinModSize { get; set; }
-        internal Size MaxModSize { get; set; }
+        public Size NormalModSize { get; set; }
+        public Size MinModSize { get; set; }
+        public Size MaxModSize { get; set; }
 
         protected override bool ImportFromBuffer(byte[] buffer)
         {

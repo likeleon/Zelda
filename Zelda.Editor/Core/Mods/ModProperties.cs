@@ -1,5 +1,6 @@
 ﻿using System;
 using Zelda.Game;
+using Zelda.Game.Engine;
 
 namespace Zelda.Editor.Core.Mods
 {
@@ -8,8 +9,9 @@ namespace Zelda.Editor.Core.Mods
         readonly Game.ModProperties _properties = new Game.ModProperties();
 
         public ModPath ModPath { get; private set; }
-        public string ZeldaVersion {  get { return _properties.ZeldaVersion; } }
-        public string WriteDir {  get { return _properties.ModWriteDir; } }
+        public string ZeldaVersion { get { return _properties.ZeldaVersion; } }
+        public string WriteDir { get { return _properties.ModWriteDir; } }
+        public Size NormalModSize { get { return _properties.NormalModSize; } } 
 
         public ModProperties(ModPath modPath)
         {

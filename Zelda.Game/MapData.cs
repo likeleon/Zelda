@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 
 namespace Zelda.Game
 {
-    class EntityIndex
+    public class EntityIndex
     {
         public Layer Layer { get; set; }
         
@@ -56,21 +55,13 @@ namespace Zelda.Game
         }
     }
 
-    class MapData : XmlData
+    public class MapData : XmlData
     {
-        // 맵의 크기, 픽셀 단위
-        public Size Size { get; private set; }
-
-        // 맵의 월드
+        public Size Size { get; set; }
         public string World { get; private set; }
-
-        // 월드 상에서의 이 맵의 좌측 최상단 좌표
         public Point Location { get; private set; }
-
         public int Floor { get; private set; }
-
-        public string TilesetId { get; private set; }
-
+        public string TilesetId { get; set; }
         public bool HasMusic { get { return MusicId != Music.None; } }
         public string MusicId { get; private set; }
 
@@ -81,9 +72,9 @@ namespace Zelda.Game
 
         public MapData()
         {
-            World = String.Empty;
+            World = string.Empty;
             for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
-                _entities[(int)layer] = new List<EntityData>();
+                _entities[layer] = new List<EntityData>();
         }
 
         protected override bool ImportFromBuffer(byte[] buffer)

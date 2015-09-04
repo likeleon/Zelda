@@ -3,7 +3,7 @@ using Zelda.Game.Engine;
 
 namespace Zelda.Game.Entities
 {
-    class Tileset
+    public class Tileset
     {
         readonly string _id;
         public string Id

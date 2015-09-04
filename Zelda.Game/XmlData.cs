@@ -36,7 +36,10 @@ namespace Zelda.Game
                 }
             }
 
-            File.Copy(tmpFileName, fileName, true);
+            if (File.Exists(fileName))
+                File.Delete(fileName);
+            File.Move(tmpFileName, fileName);
+
             return true;
         }
 

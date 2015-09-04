@@ -2,7 +2,7 @@
 
 namespace Zelda.Game
 {
-    abstract class DisposableObject : IDisposable
+    public abstract class DisposableObject : IDisposable
     {
         public bool IsDisposed { get; private set; }
 

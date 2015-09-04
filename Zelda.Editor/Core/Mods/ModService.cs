@@ -26,7 +26,7 @@ namespace Zelda.Editor.Core.Mods
             var modProperties = new ModProperties(modPath);
             CheckVersion(modProperties);
 
-            Mod = new Mod(rootPath);
+            Mod = new Mod(modProperties);
 
             if (Loaded != null)
                 Loaded(this, EventArgs.Empty);

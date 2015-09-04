@@ -26,12 +26,14 @@ namespace Zelda.Editor.Core.Mods
         };
 
         public ModResources Resources { get; private set; }
+        public ModProperties Properties { get; private set; }
 
-        public Mod(string rootPath)
+        public Mod(ModProperties properties)
         {
-            RootPath = rootPath;
-            Name = Path.GetFileName(rootPath);
+            RootPath = properties.ModPath.RootPath;
+            Name = Path.GetFileName(RootPath);
             Resources = ModResources.Load(GetResourceListPath(), this);
+            Properties = properties;
         }
 
         #region Get paths
@@ -417,7 +419,12 @@ namespace Zelda.Editor.Core.Mods
             CheckNotExists(path);
             CreateFile(path);
 
-            throw new NotImplementedException("Set initial values");
+            var map = new MapModel(this, mapId);
+            var tilesetIds = Resources.GetElements(ResourceType.Tileset);
+            if (tilesetIds.Any())
+                map.SetTilesetId(tilesetIds.First());
+            map.SetSize(Properties.NormalModSize);
+            map.Save();
         }
 
         public bool CreateMapDataFileIfNotExists(string mapId)

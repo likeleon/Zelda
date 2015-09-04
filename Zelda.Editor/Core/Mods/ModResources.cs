@@ -115,5 +115,10 @@ namespace Zelda.Editor.Core.Mods
         {
             return _resourceTypeCreateFriendlyNames[resourceType];
         }
+
+        public IEnumerable<string> GetElements(ResourceType resourceType)
+        {
+            return _resources.GetElements(resourceType).Keys;
+        }
     }
 }
