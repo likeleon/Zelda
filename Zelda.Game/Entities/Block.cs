@@ -224,5 +224,7 @@ namespace Zelda.Game.Entities
         public bool? Pushable { get; set; }
         public bool? Pullable { get; set; }
         public int? MaximumMoves { get; set; }
+
+        public bool ShouldSerializeDirection() { return Direction != Direction4.None; }
     }
 }

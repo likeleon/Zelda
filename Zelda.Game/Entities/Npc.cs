@@ -249,5 +249,8 @@ namespace Zelda.Game.Entities
         public NpcSubtype? Subtype { get; set; }
         public string Sprite { get; set; }
         public string Behavior { get; set; }
+
+        public bool ShouldSerializeSprite() { return !Sprite.IsNullOrEmpty(); }
+        public bool ShouldSerializeBehavior() { return Behavior != "map"; }
     }
 }

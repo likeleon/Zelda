@@ -222,5 +222,16 @@ namespace Zelda.Game.Entities
         public bool? CanRegenerate { get; set; }
         public int? DamageOnEnemies { get; set; }
         public Ground? Ground { get; set; }
+
+        public bool ShouldSerializeTreasureName() { return !TreasureName.IsNullOrEmpty(); }
+        public bool ShouldSerializeTreasureVariant() { return TreasureVariant != -1; }
+        public bool ShouldSerializeTreasureSavegameVariable() { return !TreasureSavegameVariable.IsNullOrEmpty(); }
+        public bool ShouldSerializeDestructionSound() { return !DestructionSound.IsNullOrEmpty(); }
+        public bool ShouldSerializeWeight() { return Weight != 0; }
+        public bool ShouldSerializeCanBeCut() { return CanBeCut == true; }
+        public bool ShouldSerializeCanExplode() { return CanExplode == true; }
+        public bool ShouldSerializeCanRegenerate() { return CanRegenerate == true; }
+        public bool ShouldSerializeDamageOnEnemies() { return DamageOnEnemies != -1; }
+        public bool ShouldSerializeGround() { return Ground != Entities.Ground.Wall; }
     }
 }

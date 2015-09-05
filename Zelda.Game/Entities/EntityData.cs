@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Xml.Serialization;
 using Zelda.Game.Engine;
 
 namespace Zelda.Game.Entities
@@ -69,5 +70,7 @@ namespace Zelda.Game.Entities
         public Layer? Layer { get; set; }
         public int? X { get; set; }
         public int? Y { get; set; }
+
+        public bool ShouldSerializeName() { return !Name.IsNullOrEmpty(); } 
     }
 }

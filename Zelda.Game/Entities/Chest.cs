@@ -239,5 +239,13 @@ namespace Zelda.Game.Entities
         public string OpeningCondition { get; set; }
         public bool? OpeningConditionConsumed { get; set; }
         public string CannotOpenDialog { get; set; }
+
+        public bool ShouldSerializeTreasureName() { return !TreasureName.IsNullOrEmpty(); }
+        public bool ShouldSerializeTreasureVariant() { return TreasureVariant != 1; }
+        public bool ShouldSerializeTreasureSavegameVariable() { return !TreasureSavegameVariable.IsNullOrEmpty(); }
+        public bool ShouldSerializeOpeningMethod() { return OpeningMethod != ChestOpeningMethod.ByInteraction; }
+        public bool ShouldSerializeOpeningCondition() { return !OpeningCondition.IsNullOrEmpty(); }
+        public bool ShouldSerializeOpeningConditionConsumed() { return OpeningConditionConsumed == true; }
+        public bool ShouldSerializeCannotOpenDialog() { return !CannotOpenDialog.IsNullOrEmpty(); }
     }
 }

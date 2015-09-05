@@ -75,5 +75,8 @@ namespace Zelda.Game.Entities
         public Direction4? Direction { get; set; }
         public string Sprite { get; set; }
         public bool? Default { get; set; }
+
+        public bool ShouldSerializeSprite() { return !Sprite.IsNullOrEmpty(); }
+        public bool ShouldSerializeDefault() { return Default == true; }
     }
 }
