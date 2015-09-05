@@ -16,6 +16,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         string ToolTip { get; }
         int Depth { get; }
         int Level { get; }
+        bool IsExpanded { get; set; }
 
         void AddChild(IModFile child);
     }

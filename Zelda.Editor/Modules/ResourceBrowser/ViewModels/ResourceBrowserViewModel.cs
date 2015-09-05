@@ -9,6 +9,7 @@ using Zelda.Editor.Core.Commands;
 using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
 using Zelda.Game;
+using System.Linq;
 
 namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 {
@@ -45,6 +46,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
         {
             ModRootFiles = ModFileBuilder.Build(_modService.Mod).Yield();
             NotifyOfPropertyChange(() => ModRootFiles);
+            ModRootFiles.Where(f => f.Children.Any()).Do(f => f.IsExpanded = true);
         }
 
         void ModService_Unloaded(object sender, EventArgs e)

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Zelda.Editor.Core;
 
 namespace Zelda.Editor.Modules.ResourceBrowser
 {
@@ -10,6 +11,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
     {
         readonly ObservableCollection<IModFile> _children = new ObservableCollection<IModFile>();
         string _description;
+        bool _isExpanded;
 
         public abstract ModFileType FileType { get; }
         public string Path { get; set; }
@@ -41,6 +43,12 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 else
                     return Parent.Level - 1;
             }
+        }
+
+        public bool IsExpanded
+        {
+            get { return _isExpanded; }
+            set { this.SetProperty(ref _isExpanded, value); }
         }
 
         public void AddChild(IModFile child)

@@ -42,6 +42,11 @@
     </UserControl.Resources>
     <controls:TreeListView ItemsSource="{Binding ModRootFiles}"
                            ItemTemplate="{StaticResource ModFileTemplate}">
+        <controls:TreeListView.Resources>
+            <Style TargetType="controls:TreeListViewItem" BasedOn="{StaticResource {x:Type controls:TreeListViewItem}}">
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+            </Style>
+        </controls:TreeListView.Resources>
         <controls:TreeListView.Columns>
             <GridViewColumn Header="Resource" Width="150">
                 <GridViewColumn.CellTemplate>
@@ -55,8 +60,20 @@
                     </DataTemplate>
                 </GridViewColumn.CellTemplate>
             </GridViewColumn>
-            <GridViewColumn Header="Description" Width="150" DisplayMemberBinding="{Binding Description}" />
-            <GridViewColumn Header="Type" Width="100" DisplayMemberBinding="{Binding Type}" />
+            <GridViewColumn Header="Description" Width="150">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Description}" VerticalAlignment="Center" />
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+            </GridViewColumn>
+            <GridViewColumn Header="Type" Width="100">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Type}" VerticalAlignment="Center" />
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+            </GridViewColumn>
         </controls:TreeListView.Columns>
         <i:Interaction.Behaviors>
             <behaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedModFile, Mode=TwoWay}" />
