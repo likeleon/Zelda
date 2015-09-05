@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 using Zelda.Game.Engine;
 
 namespace Zelda.Game.Entities
 {
-    public class EntityData
+    public abstract class EntityData
     {
         public EntityType Type { get; private set;  }
         public string Name { get; set; }
@@ -42,6 +43,11 @@ namespace Zelda.Game.Entities
             Name = xmlData.Name.OptField("");
             Layer = xmlData.Layer.CheckField<Layer>("Layer");
             XY = new Point(xmlData.X.CheckField("X"), xmlData.Y.CheckField("Y"));
+        }
+
+        public bool ExportToStream(Stream stream)
+        {
+            return false;
         }
     }
 

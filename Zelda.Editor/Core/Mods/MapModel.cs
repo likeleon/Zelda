@@ -16,7 +16,7 @@ namespace Zelda.Editor.Core.Mods
         readonly IMod _mod;
         readonly MapData _map = new MapData();
         TilesetModel _tilesetModel;
-        readonly List<MapEntity>[] _entities = new List<MapEntity>[(int)Layer.NumLayer];
+        readonly List<EntityModel>[] _entities = new List<EntityModel>[(int)Layer.NumLayer];
 
         public MapModel(IMod mod, string mapId)
         {
@@ -29,7 +29,7 @@ namespace Zelda.Editor.Core.Mods
             MapId = mapId;
 
             for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
-                _entities[layer] = new List<MapEntity>();
+                _entities[layer] = new List<EntityModel>();
         }
 
         public void SetTilesetId(string tilesetId)
@@ -61,7 +61,7 @@ namespace Zelda.Editor.Core.Mods
         public void Save()
         {
             var path = _mod.GetMapDataFilePath(MapId);
-            if (_map.ExportToFile(path))
+            if (!_map.ExportToFile(path))
                 throw new Exception("Cannot save map data file '{0}'".F(path));
         }
     }

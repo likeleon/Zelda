@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml.Serialization;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
@@ -58,8 +59,10 @@ namespace Zelda.Game
     public class MapData : XmlData
     {
         public Size Size { get; set; }
+        public bool HasWorld { get { return !World.IsNullOrEmpty(); } }
         public string World { get; private set; }
         public Point Location { get; private set; }
+        public bool HasFloor { get { return Floor != NoFloor; } }
         public int Floor { get; private set; }
         public string TilesetId { get; set; }
         public bool HasMusic { get { return MusicId != Music.None; } }
@@ -140,6 +143,44 @@ namespace Zelda.Game
         {
             Debug.CheckAssertion(EntityExists(index), "Entity index out of range");
             return _entities[(int)index.Layer][index.Index];
+        }
+
+        protected override bool ExportToStream(Stream stream)
+        {
+            try
+            {
+                var data = new MapXmlData();
+                data.Properties = new MapXmlData.PropertiesData()
+                {
+                    X = Location.X,
+                    Y = Location.Y,
+                    Width = Size.Width,
+                    Height = Size.Height,
+                    Tileset = TilesetId
+                };
+                if (HasWorld)
+                    data.Properties.World = World;
+                if (HasFloor)
+                    data.Properties.Floor = Floor;
+                if (HasMusic)
+                    data.Properties.Music = MusicId;
+
+                for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
+                {
+                    foreach (var entity in _entities[layer])
+                    {
+                        var success = entity.ExportToStream(stream);
+                        Debug.CheckAssertion(success, "Entity export failed");
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.Error("Failed to load map: {0}".F(ex.Message));
+                return false;
+            }
         }
     }
 

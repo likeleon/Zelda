@@ -1,5 +1,4 @@
-﻿using System;
-using Zelda.Game.Engine;
+﻿using Zelda.Game.Engine;
 
 namespace Zelda.Game.Entities
 {

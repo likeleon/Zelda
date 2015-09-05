@@ -6,7 +6,7 @@ using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
-    public class Map
+    class Map
     {
         #region 생성
         public Map(string id)
@@ -35,7 +35,7 @@ namespace Zelda.Game
         #endregion
 
         #region 현재 도착 위치
-        public string DestinationName { get;  private set; }
+        public string DestinationName { get; set; }
 
         public Destination GetDestination()
         {
@@ -108,7 +108,7 @@ namespace Zelda.Game
             Width8 = data.Size.Width / 8;
             Height8 = data.Size.Height / 8;
             MusicId = data.MusicId;
-            _world = data.World;
+            World = data.World;
             Floor = data.Floor;
             TilesetId = data.TilesetId;
             Tileset = new Tileset(data.TilesetId);
