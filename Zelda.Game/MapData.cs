@@ -173,7 +173,7 @@ namespace Zelda.Game
                         Debug.CheckAssertion(success, "Entity export failed");
                     }
                 }
-
+                data.XmlSerialize(stream);
                 return true;
             }
             catch (Exception ex)

@@ -180,6 +180,33 @@ namespace Zelda.Game.Entities
             DamageOnEnemies = xmlData.DamageOnEnemies.OptField(1);
             Ground = xmlData.Ground.OptField("Ground", Ground.Wall);
         }
+
+        protected override EntityXmlData ExportXmlData()
+        {
+            var data = new DestructibleXmlData();
+            if (!TreasureName.IsNullOrEmpty())
+                data.TreasureName = TreasureName;
+            if (TreasureVariant != 1)
+                data.TreasureVariant = TreasureVariant;
+            if (!TreasureSavegameVariable.IsNullOrEmpty())
+                data.TreasureSavegameVariable = TreasureSavegameVariable;
+            data.Sprite = Sprite;
+            if (!DestructionSound.IsNullOrEmpty())
+                data.DestructionSound = DestructionSound;
+            if (Weight != 0)
+                data.Weight = Weight;
+            if (CanBeCut != false)
+                data.CanBeCut = CanBeCut;
+            if (CanExplode != false)
+                data.CanExplode = CanExplode;
+            if (CanRegenerate != false)
+                data.CanRegenerate = CanRegenerate;
+            if (DamageOnEnemies != 1)
+                data.DamageOnEnemies = DamageOnEnemies;
+            if (Ground != Ground.Wall)
+                data.Ground = Ground;
+            return data;
+        }
     }
 
     public class DestructibleXmlData : EntityXmlData

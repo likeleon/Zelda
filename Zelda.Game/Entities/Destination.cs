@@ -1,5 +1,4 @@
-﻿using System;
-using Zelda.Game.Engine;
+﻿using Zelda.Game.Engine;
 using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
@@ -23,10 +22,7 @@ namespace Zelda.Game.Entities
         }
 
         readonly ScriptDestination _scriptDestination;
-        public override ScriptEntity ScriptEntity
-        {
-            get { return _scriptDestination; }
-        }
+        public override ScriptEntity ScriptEntity { get { return _scriptDestination; } }
 
         public Destination(
             string name,
@@ -41,7 +37,7 @@ namespace Zelda.Game.Entities
             
             Origin = new Point(8, 13);
 
-            if (!String.IsNullOrEmpty(spriteName))
+            if (!spriteName.IsNullOrEmpty())
                 CreateSprite(spriteName);
 
             _scriptDestination = new ScriptDestination(this);
@@ -60,6 +56,17 @@ namespace Zelda.Game.Entities
             Direction = xmlData.Direction.CheckField("Direction");
             Sprite = xmlData.Sprite.OptField("");
             Default = xmlData.Default.OptField(false);
+        }
+
+        protected override EntityXmlData ExportXmlData()
+        {
+            var data = new DestinationXmlData();
+            data.Direction = Direction;
+            if (!Sprite.IsNullOrEmpty())
+                data.Sprite = Sprite;
+            if (Default)
+                data.Default = true;
+            return data;
         }
     }
 

@@ -226,8 +226,20 @@ namespace Zelda.Game.Entities
         {
             Direction = xmlData.Direction.CheckField("Direction");
             Subtype = xmlData.Subtype.CheckField("Subtype");
-            Sprite = xmlData.Sprite.OptField(String.Empty);
+            Sprite = xmlData.Sprite.OptField(string.Empty);
             Behavior = xmlData.Behavior.OptField("map");
+        }
+
+        protected override EntityXmlData ExportXmlData()
+        {
+            var data = new NpcXmlData();
+            data.Direction = Direction;
+            data.Subtype = Subtype;
+            if (!Sprite.IsNullOrEmpty())
+                data.Sprite = Sprite;
+            if (Behavior != "map")
+                data.Behavior = Behavior;
+            return data;
         }
     }
 

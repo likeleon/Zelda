@@ -203,6 +203,18 @@ namespace Zelda.Game.Entities
             Pullable = xmlData.Pullable.CheckField("Pullable");
             MaximumMoves = xmlData.MaximumMoves.CheckField("MaximumMoves");
         }
+
+        protected override EntityXmlData ExportXmlData()
+        {
+            var data = new BlockXmlData();
+            if (Direction != Direction4.None)
+                data.Direction = Direction;
+            data.Sprite = Sprite;
+            data.Pushable = Pushable;
+            data.Pullable = Pullable;
+            data.MaximumMoves = MaximumMoves;
+            return data;
+        }
     }
 
     public class BlockXmlData : EntityXmlData

@@ -8,7 +8,7 @@ namespace Zelda.Game.Entities
     {
         public EntityType Type { get; private set;  }
         public string Name { get; set; }
-        public bool HasName { get { return !String.IsNullOrEmpty(Name); } }
+        public bool HasName { get { return !Name.IsNullOrEmpty(); } }
         public Layer Layer { get; set; }
         public Point XY { get; set; }
 
@@ -47,11 +47,23 @@ namespace Zelda.Game.Entities
 
         public bool ExportToStream(Stream stream)
         {
-            return false;
+            var data = ExportXmlData();
+            if (HasName)
+                data.Name = Name;
+            data.Layer = Layer;
+            data.X = XY.X;
+            data.Y = XY.Y;
+            data.XmlSerialize(stream);
+            return true;
+        }
+
+        protected virtual EntityXmlData ExportXmlData()
+        {
+            return new EntityXmlData();
         }
     }
 
-    public abstract class EntityXmlData
+    public class EntityXmlData
     {
         public string Name { get; set; }
         public Layer? Layer { get; set; }

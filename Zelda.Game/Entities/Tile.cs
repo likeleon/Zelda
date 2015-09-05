@@ -58,6 +58,16 @@ namespace Zelda.Game.Entities
             Height = xmlData.Height.CheckField("Height");
             Pattern = xmlData.Pattern.CheckField("Pattern");
         }
+
+        protected override EntityXmlData ExportXmlData()
+        {
+            return new TileXmlData()
+            {
+                Width = Width,
+                Height = Height,
+                Pattern = Pattern
+            };
+        }
     }
 
     public class TileXmlData : EntityXmlData

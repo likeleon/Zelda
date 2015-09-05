@@ -206,6 +206,27 @@ namespace Zelda.Game.Entities
             OpeningConditionConsumed = xmlData.OpeningConditionConsumed.OptField(false);
             CannotOpenDialog = xmlData.CannotOpenDialog.OptField("");
         }
+
+        protected override EntityXmlData ExportXmlData()
+        {
+            var data = new ChestXmlData();
+            if (!TreasureName.IsNullOrEmpty())
+                data.TreasureName = TreasureName;
+            if (TreasureVariant != 1)
+                data.TreasureVariant = TreasureVariant;
+            if (!TreasureSavegameVariable.IsNullOrEmpty())
+                data.TreasureSavegameVariable = TreasureSavegameVariable;
+            data.Sprite = Sprite;
+            if (OpeningMethod != ChestOpeningMethod.ByInteraction)
+                data.OpeningMethod = OpeningMethod;
+            if (!OpeningCondition.IsNullOrEmpty())
+                data.OpeningCondition = OpeningCondition;
+            if (OpeningConditionConsumed)
+                data.OpeningConditionConsumed = OpeningConditionConsumed;
+            if (!CannotOpenDialog.IsNullOrEmpty())
+                data.CannotOpenDialog = CannotOpenDialog;
+            return data;
+        }
     }
 
     public class ChestXmlData : EntityXmlData

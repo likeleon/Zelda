@@ -394,7 +394,8 @@ namespace Zelda.Editor.Core.Mods
             CheckIsInRootPath(path);
             CheckNotExists(path);
 
-            File.Create(path);
+            var file = File.Create(path);
+            file.Close();
 
             if (FileCreated != null)
                 FileCreated(this, path);

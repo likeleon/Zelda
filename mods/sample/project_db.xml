@@ -6,9 +6,9 @@
   <Maps>
     <Map Id="first_map" Description="First map" />
   </Maps>
-  <TileSets>
+  <Tilesets>
     <Tileset Id="castle" Description="Castle" />
-  </TileSets>
+  </Tilesets>
   <Items>
     <Item Id="bomb" Description="Bomb" />
   </Items>

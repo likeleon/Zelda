@@ -49,6 +49,17 @@ namespace Zelda.Game.Entities
             Height = xmlData.Height.CheckField("Height");
             EnabledAtStart = xmlData.EnabledAtStart.CheckField("EnabledAtStart");
         }
+
+        protected override EntityXmlData ExportXmlData()
+        {
+            return new DynamicTileXmlData()
+            {
+                Pattern = Pattern,
+                Width = Width,
+                Height = Height,
+                EnabledAtStart = EnabledAtStart
+            };
+        }
     }
 
     public class DynamicTileXmlData : EntityXmlData
