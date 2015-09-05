@@ -50,7 +50,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             var acceptableFilePaths = Directory.EnumerateFiles(dirPath).Where(path => IsAcceptableFile(path));
             foreach (var filePath in acceptableFilePaths)
             {
-                var file = CreateModFile(filePath, parent);
+                var file = CreateModFile(filePath, directory);
                 directory.AddChild(file);
             }
 

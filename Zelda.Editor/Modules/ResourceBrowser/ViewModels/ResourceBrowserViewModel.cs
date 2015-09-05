@@ -81,27 +81,31 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                         initialIdValue = path.Substring(resourceDir.Length + 1) + '/';
                     else
                         initialIdValue = "";
+                }
 
-                    var resourceTypeName = mod.Resources.GetFriendlyName(resourceType);
-                    var dialog = new NewResourceElementViewModel(resourceTypeName, mod) { Id = initialIdValue };
-                    dynamic settings = new ExpandoObject();
-                    settings.Title = "Create resource";
-                    settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                    if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) != true)
-                        return;
+                var resourceTypeName = mod.Resources.GetFriendlyName(resourceType);
+                var dialog = new NewResourceElementViewModel(resourceTypeName, mod) { Id = initialIdValue };
+                dynamic settings = new ExpandoObject();
+                settings.Title = "Create resource";
+                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) != true)
+                    return;
 
-                    var elementId = dialog.Id;
-                    var description = dialog.Description;
+                var elementId = dialog.Id;
+                var description = dialog.Description;
 
-                    mod.CreateResourceElement(resourceType, elementId, description);
+                mod.CreateResourceElement(resourceType, elementId, description);
 
-                    var createdPath = mod.GetResourceElementPath(resourceType, elementId);
-                    if (mod.Exists(createdPath))
-                    {
-                        var file = ModFileBuilder.Create(mod, createdPath, parent);
-                        SelectedModFile = file;
-                        // TODO: Open file
-                    }
+                var createdPath = mod.GetResourceElementPath(resourceType, elementId);
+                if (mod.Exists(createdPath))
+                {
+                    var isReplace = (createdPath == path);
+                    var file = ModFileBuilder.Create(mod, createdPath, isReplace ? parent.Parent : parent);
+                    if (isReplace)
+                        parent.RemoveFromParent();
+
+                    SelectedModFile = file;
+                    // TODO: Open file
                 }
             }
             catch (Exception e)

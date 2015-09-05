@@ -19,5 +19,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         bool IsExpanded { get; set; }
 
         void AddChild(IModFile child);
+        void RemoveChild(IModFile child);
+        void RemoveFromParent();
     }
 }
