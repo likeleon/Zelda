@@ -103,6 +103,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Controls\Views\TextInputView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Modules\ErrorList\Views\ErrorListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -195,6 +199,10 @@
     <Compile Include="Core\Commands\TargetableCommand.cs" />
     <Compile Include="Core\Controls\DynamicStyle.cs" />
     <Compile Include="Core\Controls\TreeListView.cs" />
+    <Compile Include="Core\Controls\ViewModels\TextInputViewModel.cs" />
+    <Compile Include="Core\Controls\Views\TextInputView.xaml.cs">
+      <DependentUpon>TextInputView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Core\ExceptionExtensions.cs" />
     <Compile Include="Core\IDocument.cs" />
     <Compile Include="Core\ILayoutItem.cs" />

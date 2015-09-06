@@ -27,6 +27,7 @@ namespace Zelda.Editor.Core.Mods
         string GetMusicPath(string musicId);
 
         bool IsValidFileName(string fileName);
+        void CheckValidFileName(string fileName);
         bool IsDirectory(string path);
         bool IsModRootDirectory(string path);
         bool IsResourceDirectory(string path, ref ResourceType resourceType);
@@ -36,5 +37,8 @@ namespace Zelda.Editor.Core.Mods
         bool IsPotentialResourceElement(string path, ref ResourceType resourceType, ref string elementId);
 
         void CreateResourceElement(ResourceType resourceType, string elementId, string description);
+        void CreateDirectory(string path);
+        bool CreateDirectoryIfNotExists(string path);
+        void CreateDirectory(string parentPath, string dirName);
     }
 }

@@ -3,13 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Dynamic;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Commands;
+using Zelda.Editor.Core.Controls.ViewModels;
 using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
 using Zelda.Game;
-using System.Linq;
 
 namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 {
@@ -86,7 +88,6 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                 var resourceTypeName = mod.Resources.GetFriendlyName(resourceType);
                 var dialog = new NewResourceElementViewModel(resourceTypeName, mod) { Id = initialIdValue };
                 dynamic settings = new ExpandoObject();
-                settings.Title = "Create resource";
                 settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) != true)
                     return;
@@ -111,6 +112,30 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             catch (Exception e)
             {
                 e.ShowDialog();
+            }
+        }
+
+        public void NewDirectory(IModFile parent)
+        {
+            try
+            {
+                var dialog = new TextInputViewModel() { Title = "New folder", Label = "Folder name:" };
+                dynamic settings = new ExpandoObject();
+                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) != true)
+                    return;
+
+                var dirName = dialog.Text;
+                var mod = _modService.Mod;
+                mod.CheckValidFileName(dirName);
+                mod.CreateDirectory(parent.Path, dirName);
+
+                var dirPath = Path.Combine(parent.Path, dirName);
+                SelectedModFile = ModFileBuilder.Create(mod, dirPath, parent);
+            }
+            catch (Exception ex)
+            {
+                ex.ShowDialog();
             }
         }
     }

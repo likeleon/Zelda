@@ -461,6 +461,16 @@ namespace Zelda.Editor.Core.Mods
             return true;
         }
 
+        public void CreateDirectory(string parentPath, string dirName)
+        {
+            CheckValidFileName(dirName);
+            CheckExists(parentPath);
+            CheckIsDirectory(parentPath);
+
+            var path = Path.Combine(parentPath, dirName);
+            CreateDirectory(path);
+        }
+
         public void CreateResourceElement(ResourceType resourceType, string elementId, string description)
         {
             CheckValidFileName(elementId);

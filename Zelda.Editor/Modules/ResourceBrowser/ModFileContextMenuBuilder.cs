@@ -100,8 +100,9 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             _browser.NewResourceElement(_modFile);
         }
 
-        static void OnNewDirectoryExecute(object param)
+        void OnNewDirectoryExecute(object param)
         {
+            _browser.NewDirectory(_modFile);            
         }
     }
 }
