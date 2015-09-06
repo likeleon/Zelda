@@ -28,6 +28,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         public List<ContextMenuItem> Build()
         {
             BuildNewMenus();
+            BuildRenameMenus();
             BuildDeleteMenus();
             return _items;
         }
@@ -58,7 +59,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 {
                     Text = "Add to mod as {0}".F(resourceTypeFriendlyName),
                     IconSource = "/Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
-                    Command = new RelayCommand(OnNewResourceElementExecute),
+                    Command = new RelayCommand(_ => _browser.NewResourceElement(_modFile)),
                 };
             }
             else if (mod.IsResourceDirectory(path, ref resourceType) ||
@@ -71,7 +72,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 {
                     Text = resourceTypeCreateFriendlyName,
                     IconSource = "/Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
-                    Command = new RelayCommand(OnNewResourceElementExecute)
+                    Command = new RelayCommand(_ => _browser.NewResourceElement(_modFile))
                 };
             }
 
@@ -84,19 +85,41 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 {
                     Text = "New folder...",
                     IconSource = "/Resources/Icons/icon_folder_closed.png".ToIconUri(),
-                    Command = new RelayCommand(OnNewDirectoryExecute)
+                    Command = new RelayCommand(_ => _browser.NewDirectory(_modFile))
                 });
             }
         }
 
-        void OnNewResourceElementExecute(object param)
+        void BuildRenameMenus()
         {
-            _browser.NewResourceElement(_modFile);
-        }
+            var mod = _browser.Mod;
+            var path = _modFile.Path;
+            if (path == mod.RootPath)
+                return;
 
-        void OnNewDirectoryExecute(object param)
-        {
-            _browser.NewDirectory(_modFile);            
+            var resourceType = ResourceType.Map;
+            if (mod.IsResourceDirectory(path, ref resourceType))
+                return;
+
+            if (_items.Count > 0)
+                _items.Add(Separator);
+
+            _items.Add(new ContextMenuItem()
+            {
+                Text = "Rename...",
+                IconSource = "/Resources/Icons/icon_rename.png".ToIconUri(),
+                Command = new RelayCommand(_ => _browser.Rename(_modFile))
+            });
+
+            var elementId = "";
+            if (mod.IsResourceElement(path, ref resourceType, ref elementId))
+            {
+                _items.Add(new ContextMenuItem()
+                {
+                    Text = "Change description...",
+                    Command = new RelayCommand(_ => _browser.ChangeDescription(_modFile))
+                });
+            }
         }
 
         void BuildDeleteMenus()
@@ -117,13 +140,8 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             {
                 Text = "Delete...",
                 IconSource = "/Resources/Icons/icon_delete.png".ToIconUri(),
-                Command = new RelayCommand(OnDeleteExecute)
+                Command = new RelayCommand(_ => _browser.Delete(_modFile))
             });
-        }
-
-        void OnDeleteExecute(object param)
-        {
-            _browser.Delete(_modFile);
         }
     }
 }

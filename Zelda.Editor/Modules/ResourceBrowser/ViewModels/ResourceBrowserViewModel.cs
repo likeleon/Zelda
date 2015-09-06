@@ -122,6 +122,8 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
         {
             try
             {
+                string dirName;
+                if (TextInputViewModel)
                 var dialog = new TextInputViewModel() { Title = "New folder", Label = "Folder name:" };
                 dynamic settings = new ExpandoObject();
                 settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -198,6 +200,39 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                         mod.DeleteFile(path);
                         file.RemoveFromParent();
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowDialog();
+            }
+        }
+
+        public void Rename(IModFile file)
+        {
+            var path = file.Path;
+            var mod = _modService.Mod;
+            if (path == mod.RootPath)
+                return;
+
+            // TODO: Warn if unsaved
+
+            var resourceType = ResourceType.Map;
+            if (mod.IsResourceDirectory(path, ref resourceType))
+                return;
+
+            try
+            {
+                var resources = mod.Resources;
+                var elementId = "";
+                if (mod.IsResourceElement(path, ref resourceType, ref elementId))
+                {
+                    var resourceFriendlyName = resources.GetFriendlyName(resourceType);
+                    var dialog = new TextInputViewModel() { Title = "New folder", Label = "Folder name:" };
+                    dynamic settings = new ExpandoObject();
+                    settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) != true)
+                        return;
                 }
             }
             catch (Exception ex)
