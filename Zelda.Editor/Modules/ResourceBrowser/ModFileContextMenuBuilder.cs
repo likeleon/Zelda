@@ -1,10 +1,6 @@
-﻿using Caliburn.Micro;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Windows;
 using Zelda.Editor.Core;
-using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Modules.ResourceBrowser.ViewModels;
 using Zelda.Game;
 
@@ -80,10 +76,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             }
 
             if (newResourceElementMenuItem != null)
-            {
                 _items.Add(newResourceElementMenuItem);
-                _items.Add(Separator);
-            }
 
             if (isDir)
             {
@@ -108,9 +101,6 @@ namespace Zelda.Editor.Modules.ResourceBrowser
 
         void BuildDeleteMenus()
         {
-            if (_items.Count > 0)
-                _items.Add(Separator);
-
             var mod = _browser.Mod;
             var path = _modFile.Path;
             if (path == mod.RootPath)
@@ -119,6 +109,9 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             var resourceType = ResourceType.Map;
             if (mod.IsResourceDirectory(path, ref resourceType))
                 return;
+
+            if (_items.Count > 0)
+                _items.Add(Separator);
 
             _items.Add(new ContextMenuItem()
             {

@@ -78,5 +78,8 @@
         <i:Interaction.Behaviors>
             <behaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedModFile, Mode=TwoWay}" />
         </i:Interaction.Behaviors>
+        <controls:TreeListView.InputBindings>
+            <KeyBinding Key="Delete" Command="{Binding DeleteCommand}" />
+        </controls:TreeListView.InputBindings>
     </controls:TreeListView>
 </UserControl>

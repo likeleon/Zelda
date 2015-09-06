@@ -32,6 +32,8 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
         }
         public IMod Mod { get { return _modService.Mod; } }
 
+        public RelayCommand DeleteCommand { get; private set; }
+
         [ImportingConstructor]
         public ResourceBrowserViewModel(IModService modService, ICommandService commandService)
         {
@@ -39,6 +41,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             _commandService = commandService;
 
             DisplayName = "Resource Browser";
+            DeleteCommand = new RelayCommand(_ => Delete(SelectedModFile), _ => SelectedModFile != null);
 
             _modService.Loaded += ModService_Loaded;
             _modService.Unloaded += ModService_Unloaded;
