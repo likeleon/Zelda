@@ -32,6 +32,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         public List<ContextMenuItem> Build()
         {
             BuildNewMenus();
+            BuildDeleteMenus();
             return _items;
         }
 
@@ -103,6 +104,33 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         void OnNewDirectoryExecute(object param)
         {
             _browser.NewDirectory(_modFile);            
+        }
+
+        void BuildDeleteMenus()
+        {
+            if (_items.Count > 0)
+                _items.Add(Separator);
+
+            var mod = _browser.Mod;
+            var path = _modFile.Path;
+            if (path == mod.RootPath)
+                return;
+
+            var resourceType = ResourceType.Map;
+            if (mod.IsResourceDirectory(path, ref resourceType))
+                return;
+
+            _items.Add(new ContextMenuItem()
+            {
+                Text = "Delete...",
+                IconSource = "/Resources/Icons/icon_delete.png".ToIconUri(),
+                Command = new RelayCommand(OnDeleteExecute)
+            });
+        }
+
+        void OnDeleteExecute(object param)
+        {
+            _browser.Delete(_modFile);
         }
     }
 }

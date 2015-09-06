@@ -138,5 +138,69 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                 ex.ShowDialog();
             }
         }
+
+        public void Delete(IModFile file)
+        {
+            var path = file.Path;
+            var mod = _modService.Mod;
+            if (path == mod.RootPath)
+                return;
+
+            var resourceType = ResourceType.Map;
+            if (mod.IsResourceDirectory(path, ref resourceType))
+                return;
+
+            try
+            {
+                var pathFromRoot = path.Substring(0, mod.RootPath.Length);
+                var elementId = "";
+                if (mod.IsResourceElement(path, ref resourceType, ref elementId))
+                {
+                    var resources = mod.Resources;
+                    var resourceFriendlyName = resources.GetFriendlyName(resourceType);
+                    var question = "Do you really want to delete {0} '{1}'?".F(resourceFriendlyName, elementId);
+                    var answer = MessageBox.Show(question, "Delete confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (answer != MessageBoxResult.Yes)
+                        return;
+
+                    mod.DeleteResourceElement(resourceType, elementId);
+                    file.RemoveFromParent();
+                }
+                else
+                {
+                    if (Directory.Exists(path))
+                    {
+                        if (Directory.EnumerateFileSystemEntries(path).Any())
+                        {
+                            MessageBox.Show("Folder is not empty", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                        else
+                        {
+                            var question = "Do you really want to delete folder '{0}'?".F(pathFromRoot);
+                            var answer = MessageBox.Show(question, "Delete confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                            if (answer != MessageBoxResult.Yes)
+                                return;
+
+                            mod.DeleteDirectory(path);
+                            file.RemoveFromParent();
+                        }
+                    }
+                    else
+                    {
+                        var question = "Do you really want to delete file '{0}'?".F(pathFromRoot);
+                        var answer = MessageBox.Show(question, "Delete confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (answer != MessageBoxResult.Yes)
+                            return;
+
+                        mod.DeleteFile(path);
+                        file.RemoveFromParent();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowDialog();
+            }
+        }
     }
 }

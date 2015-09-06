@@ -40,5 +40,12 @@ namespace Zelda.Editor.Core.Mods
         void CreateDirectory(string path);
         bool CreateDirectoryIfNotExists(string path);
         void CreateDirectory(string parentPath, string dirName);
+
+        void DeleteFile(string path);
+        bool DeleteFileIfExists(string path);
+        void DeleteDirectory(string path);
+        bool DeleteDirectoryIfExists(string path);
+        void DeleteDirectoryRecursive(string path);
+        void DeleteResourceElement(ResourceType resourceType, string elementId);
     }
 }

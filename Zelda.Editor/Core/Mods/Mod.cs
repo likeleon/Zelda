@@ -10,6 +10,7 @@ namespace Zelda.Editor.Core.Mods
     class Mod : PropertyChangedBase, IMod
     {
         public event EventHandler<string> FileCreated;
+        public event EventHandler<string> FileDeleted;
 
         static readonly Dictionary<ResourceType, string> _resourceDirs = new Dictionary<ResourceType, string>()
         {
@@ -522,6 +523,74 @@ namespace Zelda.Editor.Core.Mods
 
             if (!doneOnFilesystem && !doneInResourceList)
                 throw new Exception("Resource '{0}' already exists".F(elementId));
+        }
+
+        public void DeleteFile(string path)
+        {
+            CheckNotIsDirectory(path);
+            File.Delete(path);
+            if (FileDeleted != null)
+                FileDeleted(this, path);
+        }
+
+        public bool DeleteFileIfExists(string path)
+        {
+            if (!Exists(path))
+                return false;
+
+            DeleteFile(path);
+            return true;
+        }
+
+        public void DeleteDirectory(string path)
+        {
+            CheckIsDirectory(path);
+            Directory.Delete(path);
+        }
+
+        public bool DeleteDirectoryIfExists(string path)
+        {
+            if (!Exists(path))
+                return false;
+
+            DeleteDirectory(path);
+            return true;
+        }
+
+        public void DeleteDirectoryRecursive(string path)
+        {
+            CheckIsDirectory(path);
+            Directory.Delete(path, true);
+        }
+
+        public void DeleteResourceElement(ResourceType resourceType, string elementId)
+        {
+            var foundInFilesystem = false;
+            var paths = GetResourceElementPaths(resourceType, elementId);
+            foreach (var path in paths)
+            {
+                if (IsDirectory(path))
+                {
+                    foundInFilesystem = true;
+                    DeleteDirectoryRecursive(path);
+                }
+                else if (Exists(path))
+                {
+                    foundInFilesystem = true;
+                    DeleteFile(path);
+                }
+            }
+
+            var foundInResourceList = false;
+            if (Resources.Exists(resourceType, elementId))
+            {
+                foundInResourceList = true;
+                Resources.Remove(resourceType, elementId);
+                Resources.Save();
+            }
+
+            if (!foundInFilesystem && !foundInResourceList)
+                throw new InvalidOperationException("No such resource: '{0}'".F(elementId));
         }
         #endregion
     }

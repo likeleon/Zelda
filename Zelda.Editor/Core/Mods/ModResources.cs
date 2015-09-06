@@ -7,6 +7,7 @@ namespace Zelda.Editor.Core.Mods
     class ModResources
     {
         public event EventHandler<ElementAddedEventArgs> ElementAdded;
+        public event EventHandler<ElementRemovedEventArgs> ElementRemoved;
 
         readonly Game.ModResources _resources = new Game.ModResources();
         readonly IMod _mod;
@@ -75,6 +76,17 @@ namespace Zelda.Editor.Core.Mods
 
             if (ElementAdded != null)
                 ElementAdded(this, new ElementAddedEventArgs(resourceType, id, description));
+
+            return true;
+        }
+
+        public bool Remove(ResourceType resourceType, string id)
+        {
+            if (!_resources.Remove(resourceType, id))
+                return false;
+
+            if (ElementRemoved != null)
+                ElementRemoved(this, new ElementRemovedEventArgs(resourceType, id));
 
             return true;
         }

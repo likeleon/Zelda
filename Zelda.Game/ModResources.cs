@@ -166,6 +166,12 @@ namespace Zelda.Game
             return true;
         }
 
+        public bool Remove(ResourceType resourceType, string id)
+        {
+            var resource = GetElements(resourceType);
+            return resource.Remove(id);
+        }
+
         public void Clear()
         {
             foreach (var resourceMap in _resourceMaps)
