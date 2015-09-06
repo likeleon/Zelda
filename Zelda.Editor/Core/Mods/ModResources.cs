@@ -8,6 +8,8 @@ namespace Zelda.Editor.Core.Mods
     {
         public event EventHandler<ElementAddedEventArgs> ElementAdded;
         public event EventHandler<ElementRemovedEventArgs> ElementRemoved;
+        public event EventHandler<ElementRenamedEventArgs> ElementRenamed;
+        public event EventHandler<ElementDescriptionChangedEventArgs> ElementDescriptionChanged;
 
         readonly Game.ModResources _resources = new Game.ModResources();
         readonly IMod _mod;
@@ -88,6 +90,26 @@ namespace Zelda.Editor.Core.Mods
             if (ElementRemoved != null)
                 ElementRemoved(this, new ElementRemovedEventArgs(resourceType, id));
 
+            return true;
+        }
+
+        public bool Rename(ResourceType type, string oldId, string newId)
+        {
+            if (!_resources.Rename(type, oldId, newId))
+                return false;
+
+            if (ElementRenamed != null)
+                ElementRenamed(this, new ElementRenamedEventArgs(type, oldId, newId));
+            return true;
+        }
+
+        public bool SetDescription(ResourceType type, string id, string description)
+        {
+            if (!_resources.SetDescription(type, id, description))
+                return false;
+
+            if (ElementDescriptionChanged != null)
+                ElementDescriptionChanged(this, new ElementDescriptionChangedEventArgs(type, id, description));
             return true;
         }
 

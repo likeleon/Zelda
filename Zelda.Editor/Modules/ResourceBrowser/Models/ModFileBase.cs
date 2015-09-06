@@ -15,7 +15,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         bool _isExpanded;
 
         public abstract ModFileType FileType { get; }
-        public string Path { get; set; }
+        public string Path { get; private set; }
 
         public IModFile Parent { get; set; }
         public IEnumerable<IModFile> Children { get { return _children; } }
@@ -75,6 +75,21 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 throw new InvalidOperationException("Parent is null");
 
             Parent.RemoveChild(this);
+        }
+
+        public void ChangePath(string newPath)
+        {
+            if (newPath == Path)
+                return;
+
+            var oldPath = Path;
+            Path = newPath;
+            OnPathChanged(oldPath);
+        }
+
+        protected virtual void OnPathChanged(string oldPath)
+        {
+            NotifyOfPropertyChange(() => Name);
         }
 
         public override string ToString()

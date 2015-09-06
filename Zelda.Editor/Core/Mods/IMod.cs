@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Zelda.Game;
 
 namespace Zelda.Editor.Core.Mods
 {
     interface IMod
     {
+        event EventHandler<string> FileCreated;
+        event EventHandler<string> FileDeleted;
+        event EventHandler<FileRenamedEventArgs> FileRenamed;
+
         string Name { get; }
         string RootPath { get; }
         string MainScriptPath { get; }
@@ -40,6 +45,10 @@ namespace Zelda.Editor.Core.Mods
         void CreateDirectory(string path);
         bool CreateDirectoryIfNotExists(string path);
         void CreateDirectory(string parentPath, string dirName);
+
+        void RenameFile(string oldPath, string newPath);
+        bool RenameFileIfExists(string oldPath, string newPath);
+        void RenameResourceElement(ResourceType resourceType, string oldId, string newId);
 
         void DeleteFile(string path);
         bool DeleteFileIfExists(string path);

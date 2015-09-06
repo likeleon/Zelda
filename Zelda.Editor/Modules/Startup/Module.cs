@@ -54,7 +54,7 @@ namespace Zelda.Editor.Modules.Startup
             _modService.Load(sampleModPath);
         }
 
-        void ModService_Loaded(object sender, EventArgs e)
+        void ModService_Loaded(object sender, IMod loadedMod)
         {
             UpdateTitle();
         }
@@ -69,7 +69,7 @@ namespace Zelda.Editor.Modules.Startup
             MainWindow.Title = title;
         }
 
-        void ModService_Unloaded(object sender, EventArgs e)
+        void ModService_Unloaded(object sender, IMod unloadedMod)
         {
             UpdateTitle();
         }

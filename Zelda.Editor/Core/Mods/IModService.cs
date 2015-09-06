@@ -4,8 +4,8 @@ namespace Zelda.Editor.Core.Mods
 {
     interface IModService
     {
-        event EventHandler Loaded;
-        event EventHandler Unloaded;
+        event EventHandler<IMod> Loaded;
+        event EventHandler<IMod> Unloaded;
 
         bool IsLoaded { get; }
         IMod Mod { get; }

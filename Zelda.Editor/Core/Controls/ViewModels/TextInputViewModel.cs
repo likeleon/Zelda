@@ -19,21 +19,15 @@ namespace Zelda.Editor.Core.Controls.ViewModels
             CancelCommand = new RelayCommand(o => TryClose(false));
         }
 
-        public static bool GetText(string title, string label, out string text)
+        public static string GetText(string title, string label, string text)
         {
-            var dialog = new TextInputViewModel() { Title = title, Label = label };
+            var dialog = new TextInputViewModel() { Title = title, Label = label, Text = text };
             dynamic settings = new ExpandoObject();
             settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) == true)
-            {
-                text = dialog.Text;
-                return true;
-            }
-            else
-            {
-                text = null;
-                return false;
-            }
+            if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) != true)
+                return null;
+
+            return dialog.Text;
         }
     }
 }

@@ -47,15 +47,23 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             _modService.Unloaded += ModService_Unloaded;
         }
 
-        void ModService_Loaded(object sender, EventArgs e)
+        void ModService_Loaded(object sender, IMod loadedMod)
         {
-            ModRootFiles = ModFileBuilder.Build(_modService.Mod).Yield();
+            ModRootFiles = ModFileBuilder.Build(loadedMod).Yield();
             NotifyOfPropertyChange(() => ModRootFiles);
             ModRootFiles.Where(f => f.Children.Any()).Do(f => f.IsExpanded = true);
+
+            loadedMod.Resources.ElementRenamed += Resources_ElementRenamed;
         }
 
-        void ModService_Unloaded(object sender, EventArgs e)
+        void Resources_ElementRenamed(object sender, ElementRenamedEventArgs e)
         {
+            throw new NotImplementedException();
+        }
+
+        void ModService_Unloaded(object sender, IMod unloadedMod)
+        {
+            unloadedMod.Resources.ElementRenamed -= Resources_ElementRenamed;
             ModRootFiles = null;
             NotifyOfPropertyChange(() => ModRootFiles);
         }
@@ -122,15 +130,10 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
         {
             try
             {
-                string dirName;
-                if (TextInputViewModel)
-                var dialog = new TextInputViewModel() { Title = "New folder", Label = "Folder name:" };
-                dynamic settings = new ExpandoObject();
-                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) != true)
+                var dirName = TextInputViewModel.GetText("New folder", "Folder name:", "");
+                if (dirName == null)
                     return;
 
-                var dirName = dialog.Text;
                 var mod = _modService.Mod;
                 mod.CheckValidFileName(dirName);
                 mod.CreateDirectory(parent.Path, dirName);
@@ -228,12 +231,62 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                 if (mod.IsResourceElement(path, ref resourceType, ref elementId))
                 {
                     var resourceFriendlyName = resources.GetFriendlyName(resourceType);
-                    var dialog = new TextInputViewModel() { Title = "New folder", Label = "Folder name:" };
-                    dynamic settings = new ExpandoObject();
-                    settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                    if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) != true)
+                    var label = "New id for {0} '{1}'".F(resourceFriendlyName, elementId);
+                    var newId = TextInputViewModel.GetText("Rename resource", label, elementId);
+                    if (newId == null)
                         return;
+
+                    if (newId != elementId)
+                    {
+                        mod.CheckValidFileName(newId);
+                        mod.RenameResourceElement(resourceType, elementId, newId);
+                    }
                 }
+                else
+                {
+                    var fileName = Path.GetFileName(path);
+                    var label = "New name for file '{0}'".F(fileName);
+                    var newFileName = TextInputViewModel.GetText("Rename file", label, fileName);
+                    if (newFileName == null)
+                        return;
+
+                    if (newFileName != fileName)
+                    {
+                        mod.CheckValidFileName(fileName);
+                        var newPath = Path.Combine(Path.GetDirectoryName(path), newFileName);
+                        mod.RenameFile(path, newPath);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowDialog();
+            }
+        }
+
+        public void ChangeDescription(IModFile file)
+        {
+            var path = file.Path;
+            var mod = _modService.Mod;
+            var resourceType = ResourceType.Map;
+            var elementId = "";
+            if (!mod.IsResourceElement(path, ref resourceType, ref elementId))
+                return;
+
+            var resources = mod.Resources;
+            var resourceFriendlyTypeName = resources.GetFriendlyName(resourceType);
+            var oldDescription = resources.GetDescription(resourceType, elementId);
+            var label = "New description for {0} '{1}':".F(resourceFriendlyTypeName, elementId);
+            var newDescription = TextInputViewModel.GetText("Change description", label, oldDescription);
+            if (newDescription == null)
+                return;
+
+            try
+            {
+                if (newDescription.Length <= 0)
+                    throw new Exception("Empty description");
+                resources.SetDescription(resourceType, elementId, newDescription);
+                resources.Save();
             }
             catch (Exception ex)
             {

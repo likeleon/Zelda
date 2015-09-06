@@ -218,8 +218,11 @@
     <Compile Include="Core\Menus\MenuItemGroupDefinition.cs" />
     <Compile Include="Core\Menus\TextMenuItemDefinition.cs" />
     <Compile Include="Core\Mods\ElementAddedEventArgs.cs" />
+    <Compile Include="Core\Mods\ElementDescriptionChangedEventArgs.cs" />
     <Compile Include="Core\Mods\ElementRemovedEventArgs.cs" />
+    <Compile Include="Core\Mods\ElementRenamedEventArgs.cs" />
     <Compile Include="Core\Mods\EntityModel.cs" />
+    <Compile Include="Core\Mods\FileRenamedEventArgs.cs" />
     <Compile Include="Core\Mods\MapModel.cs" />
     <Compile Include="Core\Mods\TilesetModel.cs" />
     <Compile Include="Core\Primitives\BindingProxy.cs" />

@@ -172,6 +172,29 @@ namespace Zelda.Game
             return resource.Remove(id);
         }
 
+        public bool Rename(ResourceType resourceType, string oldId, string newId)
+        {
+            if (!Exists(resourceType, oldId))
+                return false;
+            if (Exists(resourceType, oldId))
+                return false;
+
+            var description = GetDescription(resourceType, oldId);
+            Remove(resourceType, oldId);
+            Add(resourceType, newId, description);
+            return true;
+        }
+
+        public bool SetDescription(ResourceType resourceType, string id, string description)
+        {
+            if (!Exists(resourceType, id))
+                return false;
+
+            var resources = GetElements(resourceType);
+            resources[id] = description;
+            return true;
+        }
+
         public void Clear()
         {
             foreach (var resourceMap in _resourceMaps)

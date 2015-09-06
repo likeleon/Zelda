@@ -11,8 +11,8 @@ namespace Zelda.Editor.Core.Mods
 
         public IMod Mod { get; private set; }
 
-        public event EventHandler Loaded;
-        public event EventHandler Unloaded;
+        public event EventHandler<IMod> Loaded;
+        public event EventHandler<IMod> Unloaded;
 
         public void Load(string rootPath)
         {
@@ -29,7 +29,7 @@ namespace Zelda.Editor.Core.Mods
             Mod = new Mod(modProperties);
 
             if (Loaded != null)
-                Loaded(this, EventArgs.Empty);
+                Loaded(this, Mod);
         }
 
         static void CheckVersion(ModProperties properties)
@@ -62,9 +62,10 @@ namespace Zelda.Editor.Core.Mods
             if (Mod == null)
                 throw new InvalidOperationException("Mod not loaded");
 
+            var unloadedMod = Mod;
             Mod = null;
             if (Unloaded != null)
-                Unloaded(this, EventArgs.Empty);
+                Unloaded(this, unloadedMod);
         }
     }
 }

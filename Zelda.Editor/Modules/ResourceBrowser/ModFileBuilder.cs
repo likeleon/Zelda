@@ -108,7 +108,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             else
                 modFile = CreateUnknownFile();
 
-            modFile.Path = path;
+            modFile.ChangePath(path);
             modFile.Parent = parent;
             modFile.Type = GetType(path);
             modFile.ToolTip = GetToolTip(path);

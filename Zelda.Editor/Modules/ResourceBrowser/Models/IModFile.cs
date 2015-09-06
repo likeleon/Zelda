@@ -21,5 +21,6 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         void AddChild(IModFile child);
         void RemoveChild(IModFile child);
         void RemoveFromParent();
+        void ChangePath(string newPath);
     }
 }

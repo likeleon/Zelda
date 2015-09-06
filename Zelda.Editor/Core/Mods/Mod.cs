@@ -11,6 +11,7 @@ namespace Zelda.Editor.Core.Mods
     {
         public event EventHandler<string> FileCreated;
         public event EventHandler<string> FileDeleted;
+        public event EventHandler<FileRenamedEventArgs> FileRenamed;
 
         static readonly Dictionary<ResourceType, string> _resourceDirs = new Dictionary<ResourceType, string>()
         {
@@ -40,7 +41,7 @@ namespace Zelda.Editor.Core.Mods
         #region Get paths
         public string RootPath { get; private set; }
         // TODO: 어셈블리를 열어서 "ScriptMain"을 상속한 클래스가 정의된 파일에 대한 경로를 반환해야 한다
-        public string MainScriptPath {  get { return Path.Combine(RootPath, "scripts", "Main.cs"); } }
+        public string MainScriptPath { get { return Path.Combine(RootPath, "scripts", "Main.cs"); } }
 
         public string Name { get; private set; }
 
@@ -523,6 +524,75 @@ namespace Zelda.Editor.Core.Mods
 
             if (!doneOnFilesystem && !doneInResourceList)
                 throw new Exception("Resource '{0}' already exists".F(elementId));
+        }
+
+        public void RenameFile(string oldPath, string newPath)
+        {
+            CheckExists(oldPath);
+            CheckNotExists(newPath);
+
+            File.Move(oldPath, newPath);
+            if (FileRenamed != null)
+                FileRenamed(this, new FileRenamedEventArgs(oldPath, newPath));
+        }
+
+        public bool RenameFileIfExists(string oldPath, string newPath)
+        {
+            if (!Exists(oldPath))
+            {
+                CheckExists(newPath);
+                return false;
+            }
+
+            CheckNotExists(newPath);
+            RenameFile(oldPath, newPath);
+            return true;
+        }
+
+        public void RenameResourceElement(ResourceType resourceType, string oldId, string newId)
+        {
+            if (newId == oldId)
+                throw new ArgumentException("Same source and destination id: {0}".F(newId));
+
+            CheckValidFileName(newId);
+
+            if (Resources.Exists(resourceType, oldId) &&
+                Resources.Exists(resourceType, newId))
+                throw new ArgumentException("A resource with id '{0}' already exists".F(newId));
+
+            if (!Resources.Exists(resourceType, oldId) &&
+                !Resources.Exists(resourceType, newId))
+                throw new ArgumentException("No such resource: '{0}'".F(oldId));
+
+            var renamedOnFilesystem = false;
+            var oldPaths = GetResourceElementPaths(resourceType, oldId).ToArray();
+            var newPaths = GetResourceElementPaths(resourceType, newId).ToArray();
+            for (int i = 0; i < oldPaths.Length; ++i)
+            {
+                var oldPath = oldPaths[i];
+                var newPath = newPaths[i];
+
+                var extension = Path.GetExtension(oldPath);
+                if (Path.GetExtension(newPath) != extension)
+                    newPath = Path.ChangeExtension(newPath, extension);
+
+                if (Exists(oldPath))
+                {
+                    renamedOnFilesystem = true;
+                    RenameFile(oldPath, newPath);
+                }
+            }
+
+            var renamedInResourceList = false;
+            if (Resources.Exists(resourceType, oldId))
+            {
+                renamedInResourceList = true;
+                Resources.Rename(resourceType, oldId, newId);
+                Resources.Save();
+            }
+
+            if (!renamedOnFilesystem && !renamedInResourceList)
+                throw new InvalidOperationException("No such resource: '{0}'".F(oldId));
         }
 
         public void DeleteFile(string path)
