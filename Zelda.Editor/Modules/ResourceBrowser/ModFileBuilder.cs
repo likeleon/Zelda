@@ -108,7 +108,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             else
                 modFile = CreateUnknownFile();
 
-            modFile.ChangePath(path);
+            modFile.Path = path;
             modFile.Parent = parent;
             modFile.Type = GetType(path);
             modFile.ToolTip = GetToolTip(path);
@@ -123,8 +123,10 @@ namespace Zelda.Editor.Modules.ResourceBrowser
 
         ResourceElement CreateResourceElement(ResourceType resourceType, string elementId)
         {
-            var description = _mod.Resources.GetDescription(resourceType, elementId);
-            return new ResourceElement(resourceType, description);
+            return new ResourceElement(resourceType)
+            {
+                Description = _mod.Resources.GetDescription(resourceType, elementId)
+            };
         }
 
         ResourceDirectory CreateResourceDictionary(ResourceType resourceType)

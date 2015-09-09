@@ -53,17 +53,29 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             NotifyOfPropertyChange(() => ModRootFiles);
             ModRootFiles.Where(f => f.Children.Any()).Do(f => f.IsExpanded = true);
 
-            loadedMod.Resources.ElementRenamed += Resources_ElementRenamed;
+            loadedMod.FileRenamed += LoadedMod_FileRenamed;
         }
 
-        void Resources_ElementRenamed(object sender, ElementRenamedEventArgs e)
+        void LoadedMod_FileRenamed(object sender, FileRenamedEventArgs e)
         {
-            throw new NotImplementedException();
+            var file = FindFile(e.OldPath);
+            if (file != null)
+                file.Path = e.NewPath;
+        }
+
+        static IEnumerable<IModFile> GetDescendants(IModFile file)
+        {
+            return file.Yield().Concat(file.Children.SelectMany(c => GetDescendants(c)));
+        }
+
+        IModFile FindFile(string path)
+        {
+            return GetDescendants(ModRootFiles.Single()).FirstOrDefault(f => f.Path == path);
         }
 
         void ModService_Unloaded(object sender, IMod unloadedMod)
         {
-            unloadedMod.Resources.ElementRenamed -= Resources_ElementRenamed;
+            unloadedMod.FileRenamed -= LoadedMod_FileRenamed;
             ModRootFiles = null;
             NotifyOfPropertyChange(() => ModRootFiles);
         }
@@ -285,8 +297,11 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             {
                 if (newDescription.Length <= 0)
                     throw new Exception("Empty description");
+
                 resources.SetDescription(resourceType, elementId, newDescription);
                 resources.Save();
+
+                file.Description = newDescription;
             }
             catch (Exception ex)
             {

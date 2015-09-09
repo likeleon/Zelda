@@ -13,16 +13,37 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         readonly ObservableCollection<IModFile> _children = new ObservableCollection<IModFile>();
         string _description;
         bool _isExpanded;
+        string _path;
+        string _name;
 
         public abstract ModFileType FileType { get; }
-        public string Path { get; private set; }
+        public string Path
+        {
+            get { return _path; }
+            set
+            {
+                if (this.SetProperty(ref _path, value))
+                    OnPathChanged();
+            }
+        }
 
         public IModFile Parent { get; set; }
         public IEnumerable<IModFile> Children { get { return _children; } }
 
-        public virtual string Name { get { return System.IO.Path.GetFileName(Path); } }
+        public string Name
+        {
+            get { return _name; }
+            protected set { this.SetProperty(ref _name, value); }
+        }
+
         public abstract Uri Icon { get; }
-        public virtual string Description { get { return string.Empty; } }
+
+        public string Description
+        {
+            get { return _description; }
+            set { this.SetProperty(ref _description, value); }
+        }
+
         public string Type { get; set; }
         public string ToolTip { get; set; }
 
@@ -77,19 +98,9 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             Parent.RemoveChild(this);
         }
 
-        public void ChangePath(string newPath)
+        protected virtual void OnPathChanged()
         {
-            if (newPath == Path)
-                return;
-
-            var oldPath = Path;
-            Path = newPath;
-            OnPathChanged(oldPath);
-        }
-
-        protected virtual void OnPathChanged(string oldPath)
-        {
-            NotifyOfPropertyChange(() => Name);
+            Name = System.IO.Path.GetFileName(Path);
         }
 
         public override string ToString()

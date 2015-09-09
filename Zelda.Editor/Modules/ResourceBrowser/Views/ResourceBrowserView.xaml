@@ -45,14 +45,14 @@
         <controls:TreeListView.Resources>
             <Style TargetType="controls:TreeListViewItem" BasedOn="{StaticResource {x:Type controls:TreeListViewItem}}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="ContextMenu" Value="{StaticResource ModFileContextMenu}" />
             </Style>
         </controls:TreeListView.Resources>
         <controls:TreeListView.Columns>
             <GridViewColumn Header="Resource" Width="150">
                 <GridViewColumn.CellTemplate>
                     <DataTemplate>
-                        <DockPanel Height="18" ToolTip="{Binding ToolTip}"
-                                   ContextMenu="{StaticResource ModFileContextMenu}">
+                        <DockPanel Height="18" ToolTip="{Binding ToolTip}">
                             <ToggleButton Style="{StaticResource ExpandCollapseToggleStyle}" VerticalAlignment="Center" />
                             <Image Source="{Binding Icon}" Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
                             <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
