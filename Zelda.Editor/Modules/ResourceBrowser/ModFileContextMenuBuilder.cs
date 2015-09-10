@@ -27,10 +27,42 @@ namespace Zelda.Editor.Modules.ResourceBrowser
 
         public List<ContextMenuItem> Build()
         {
+            BuildOpenMenus();
             BuildNewMenus();
             BuildRenameMenus();
             BuildDeleteMenus();
             return _items;
+        }
+
+        void BuildOpenMenus()
+        {
+            var mod = _browser.Mod;
+            var resources = mod.Resources;
+            var path = _modFile.Path;
+
+            var openMenuItem = new ContextMenuItem()
+            {
+                Text = "Open",
+                Command = new RelayCommand(_ => _browser.Open(_modFile))
+            };
+
+            var resourceType = ResourceType.Map;
+            var elementId = "";
+            if (mod.IsResourceElement(path, ref resourceType, ref elementId))
+            {
+                var resourceTypeName = resources.GetTypeName(resourceType);
+                openMenuItem.IconSource = "/Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri();
+            }
+            else if (mod.IsScript(path))
+            {
+                openMenuItem.IconSource = "/Resources/Icons/icon_script.png".ToIconUri();
+                _items.Add(openMenuItem);
+            }
+            else if (mod.IsModRootDirectory(path))
+            {
+                openMenuItem.Text = "Open properties";
+                _items.Add(openMenuItem);
+            }
         }
 
         void BuildNewMenus()
@@ -75,12 +107,20 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                     Command = new RelayCommand(_ => _browser.NewResourceElement(_modFile))
                 };
             }
-
+            
             if (newResourceElementMenuItem != null)
+            {
+                if (_items.Count > 0)
+                    _items.Add(Separator);
+
                 _items.Add(newResourceElementMenuItem);
+            }
 
             if (isDir)
             {
+                if (_items.Count > 0 && newResourceElementMenuItem == null)
+                    _items.Add(Separator);
+
                 _items.Add(new ContextMenuItem()
                 {
                     Text = "New folder...",
