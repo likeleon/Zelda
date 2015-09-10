@@ -80,6 +80,7 @@
         </i:Interaction.Behaviors>
         <controls:TreeListView.InputBindings>
             <KeyBinding Key="Delete" Command="{Binding DeleteCommand}" />
+            <KeyBinding Key="F2" Command="{Binding RenameCommand}" />
         </controls:TreeListView.InputBindings>
     </controls:TreeListView>
 </UserControl>
