@@ -65,7 +65,7 @@ namespace Zelda.Editor.Core.Mods
 
                 case ResourceType.Map:
                     yield return GetMapDataFilePath(elementId);
-                    //yield return GetMapScriptPath(elementId);
+                    yield return GetMapScriptPath(elementId);
                     break;
 
                 case ResourceType.Tileset:
@@ -143,6 +143,12 @@ namespace Zelda.Editor.Core.Mods
         public string GetMapDataFilePath(string mapId)
         {
             return Path.Combine(RootPath, "maps", "{0}.xml".F(mapId));
+        }
+
+        public string GetMapScriptPath(string mapId)
+        {
+            // TODO
+            return string.Empty;
         }
 
         public string GetTilesetDataFilePath(string tilesetId)
@@ -254,6 +260,42 @@ namespace Zelda.Editor.Core.Mods
         {
             if (!IsInRootPath(path))
                 throw new Exception("File '{0}' is not in this mod".F(path));
+        }
+
+        public bool IsDialogsFile(string path, string languageId)
+        {
+            var languagesPath = GetResourcePath(ResourceType.Language);
+            if (!path.StartsWith(languagesPath + Path.DirectorySeparatorChar))
+                return false;
+
+            var expectedPathEnd = Path.Combine("text", "dialogs.xml");
+            if (!path.EndsWith(expectedPathEnd))
+                return false;
+
+            var pathFromLanguages = path.Substring(languagesPath.Length + 1);
+            languageId = pathFromLanguages.Substring(0, pathFromLanguages.Length - expectedPathEnd.Length - 1);
+            if (!Resources.Exists(ResourceType.Language, languageId))
+                return false;
+
+            return true;
+        }
+
+        public bool IsStringsFile(string path, string languageId)
+        {
+            var languagesPath = GetResourcePath(ResourceType.Language);
+            if (!path.StartsWith(languagesPath + Path.DirectorySeparatorChar))
+                return false;
+
+            var expectedPathEnd = Path.Combine("text", "strings.xml");
+            if (!path.EndsWith(expectedPathEnd))
+                return false;
+
+            var pathFromLanguages = path.Substring(languagesPath.Length + 1);
+            languageId = pathFromLanguages.Substring(pathFromLanguages.Length - expectedPathEnd.Length);
+            if (!Resources.Exists(ResourceType.Language, languageId))
+                return false;
+
+            return true;
         }
 
         public bool IsModRootDirectory(string path)

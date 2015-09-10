@@ -105,7 +105,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 
                     var resourceDir = mod.GetResourcePath(resourceType);
                     if (path != resourceDir)
-                        initialIdValue = path.Substring(resourceDir.Length + 1) + '/';
+                        initialIdValue = path.Substring(resourceDir.Length + 1) + Path.DirectorySeparatorChar;
                     else
                         initialIdValue = "";
                 }
@@ -309,6 +309,52 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             {
                 ex.ShowDialog();
             }
+        }
+
+        public void Open(string path)
+        {
+            var absolutePath = Path.GetFullPath(path);
+            var mod = _modService.Mod;
+            if (!mod.IsInRootPath(absolutePath))
+                return;
+
+            var resourceType = ResourceType.Map;
+            var elementId = "";
+            if (mod.IsResourceElement(absolutePath, ref resourceType, ref elementId))
+                OpenResource(resourceType, elementId);
+            else if (mod.IsDialogsFile(absolutePath, elementId))
+                OpenDialogsEditor(elementId);
+            else if (mod.IsStringsFile(absolutePath, elementId))
+                OpenStringsEditor(absolutePath, elementId);
+            else if (mod.IsScript(absolutePath))
+                OpenTextEditor(absolutePath);
+            else if (mod.IsModRootDirectory(absolutePath))
+                OpenModPropertiesEditor();
+        }
+
+        void OpenResource(ResourceType resourceType, string elementId)
+        {
+            throw new NotImplementedException();
+        }
+
+        void OpenModPropertiesEditor()
+        {
+            throw new NotImplementedException();
+        }
+
+        void OpenTextEditor(string absolutePath)
+        {
+            throw new NotImplementedException();
+        }
+
+        void OpenStringsEditor(string absolutePath, string elementId)
+        {
+            throw new NotImplementedException();
+        }
+
+        void OpenDialogsEditor(string elementId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

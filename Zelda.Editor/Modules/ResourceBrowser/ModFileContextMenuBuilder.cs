@@ -43,7 +43,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             var openMenuItem = new ContextMenuItem()
             {
                 Text = "Open",
-                Command = new RelayCommand(_ => _browser.Open(_modFile))
+                Command = new RelayCommand(_ => _browser.Open(_modFile.Path))
             };
 
             var resourceType = ResourceType.Map;
@@ -52,6 +52,43 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             {
                 var resourceTypeName = resources.GetTypeName(resourceType);
                 openMenuItem.IconSource = "/Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri();
+
+                switch (resourceType)
+                {
+                    case ResourceType.Map:
+                        _items.Add(openMenuItem);
+                        _items.Add(new ContextMenuItem()
+                        {
+                            Text = "Open Script",
+                            IconSource = "/Resources/Icons/icon_script.png".ToIconUri(),
+                            Command = new RelayCommand(_ => _browser.Open(mod.GetMapScriptPath(path)))
+                        });
+                        break;
+
+                    case ResourceType.Language:
+                        openMenuItem.Text = "Open Dialogs";
+                        _items.Add(openMenuItem);
+                        _items.Add(new ContextMenuItem()
+                        {
+                            Text = "Open Strings",
+                            IconSource = openMenuItem.IconSource,
+                            Command = new RelayCommand(_ => _browser.Open(mod.GetStringsPath(path)))
+                        });
+                        break;
+
+                    case ResourceType.Tileset:
+                    case ResourceType.Sprite:
+                    case ResourceType.Item:
+                    case ResourceType.Enemy:
+                    case ResourceType.Entity:
+                        _items.Add(openMenuItem);
+                        break;
+
+                    case ResourceType.Music:
+                    case ResourceType.Sound:
+                    case ResourceType.Font:
+                        break;
+                }
             }
             else if (mod.IsScript(path))
             {

@@ -16,6 +16,8 @@ namespace Zelda.Editor.Core.Mods
         ModResources Resources { get; }
 
         bool Exists(string path);
+        void CheckExists(string path);
+        void CheckNotExists(string path);
 
         string GetResourceListPath();
         string GetResourcePath(ResourceType resourceType);
@@ -25,16 +27,23 @@ namespace Zelda.Editor.Core.Mods
         string GetSoundPath(string soundId);
         string GetLanguagePath(string languageId);
         string GetMapDataFilePath(string mapId);
+        string GetMapScriptPath(string mapId);
         string GetTilesetDataFilePath(string tilesetId);
         string GetTilesetTilesImagePath(string tilesetId);
         string GetTilesetEntitiesImagePath(string tilesetId);
         string GetSpritePath(string spriteId);
         string GetMusicPath(string musicId);
+        string GetDialogsPath(string languageId);
+        string GetStringsPath(string languageId);
 
         bool IsValidFileName(string fileName);
         void CheckValidFileName(string fileName);
-        bool IsDirectory(string path);
+        bool IsInRootPath(string path);
+        void CheckIsInRootPath(string path);
         bool IsModRootDirectory(string path);
+        bool IsDialogsFile(string path, string languageId);
+        bool IsStringsFile(string path, string languageId);
+        bool IsDirectory(string path);
         bool IsResourceDirectory(string path, ref ResourceType resourceType);
         bool IsInResourceDirectory(string path, ref ResourceType resourceType);
         bool IsScript(string path);
