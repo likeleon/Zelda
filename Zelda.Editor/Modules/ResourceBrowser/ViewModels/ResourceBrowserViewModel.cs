@@ -5,9 +5,9 @@ using System.ComponentModel.Composition;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using Zelda.Editor.Core;
-using Zelda.Editor.Core.Commands;
 using Zelda.Editor.Core.Controls.ViewModels;
 using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
@@ -19,7 +19,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
     class ResourceBrowserViewModel : Tool, IResourceBrowser
     {
         readonly IModService _modService;
-        readonly ICommandService _commandService;
+        readonly IShell _shell;
         IModFile _selectedModFile;
 
         public override PaneLocation PreferredLocation { get { return PaneLocation.Left; } }
@@ -36,10 +36,10 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
         public RelayCommand RenameCommand { get; private set; }
 
         [ImportingConstructor]
-        public ResourceBrowserViewModel(IModService modService, ICommandService commandService)
+        public ResourceBrowserViewModel(IModService modService, IShell shell)
         {
             _modService = modService;
-            _commandService = commandService;
+            _shell = shell;
 
             DisplayName = "Resource Browser";
             DeleteCommand = new RelayCommand(_ => Delete(SelectedModFile), _ => SelectedModFile != null);
@@ -332,9 +332,19 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                 OpenModPropertiesEditor();
         }
 
-        void OpenResource(ResourceType resourceType, string elementId)
+        void OpenResource(ResourceType resourceType, string id)
         {
-            throw new NotImplementedException();
+            switch (resourceType)
+            {
+                case ResourceType.Language:
+                    OpenDialogsEditor(id);
+                    break;
+
+                case ResourceType.Music:
+                case ResourceType.Sound:
+                case ResourceType.Font:
+                    break;
+            }
         }
 
         void OpenModPropertiesEditor()
@@ -352,9 +362,34 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             throw new NotImplementedException();
         }
 
-        void OpenDialogsEditor(string elementId)
+        void OpenDialogsEditor(string languageId)
         {
-            throw new NotImplementedException();
+            var mod = _modService.Mod;
+            var path = mod.GetDialogsPath(languageId);
+            if (!mod.IsInRootPath(path))
+                return;
+
+            _shell.OpenDocument(GetEditor(path));
+        }
+
+        static IDocument GetEditor(string path)
+        {
+            var provider = IoC.GetAllInstances(typeof(IEditorProvider))
+                .Cast<IEditorProvider>()
+                .FirstOrDefault(p => p.Handles(path));
+            if (provider == null)
+                return null;
+
+            var editor = provider.Create();
+
+            var viewAware = (IViewAware)editor;
+            viewAware.ViewAttached += (sender, e) =>
+            {
+                var frameworkElement = (FrameworkElement)e.View;
+                frameworkElement.Loaded += async (sender2, e2) => await provider.Open(editor, path);
+            };
+
+            return editor;
         }
     }
 }

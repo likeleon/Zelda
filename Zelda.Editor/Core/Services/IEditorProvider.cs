@@ -4,7 +4,7 @@ namespace Zelda.Editor.Core.Services
 {
     interface IEditorProvider
     {
-        bool Handled(string path);
+        bool Handles(string path);
 
         IDocument Create();
 
