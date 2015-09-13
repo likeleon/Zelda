@@ -41,8 +41,8 @@ namespace Zelda.Editor.Core.Mods
         bool IsInRootPath(string path);
         void CheckIsInRootPath(string path);
         bool IsModRootDirectory(string path);
-        bool IsDialogsFile(string path, string languageId);
-        bool IsStringsFile(string path, string languageId);
+        bool IsDialogsFile(string path, ref string languageId);
+        bool IsStringsFile(string path, ref string languageId);
         bool IsDirectory(string path);
         bool IsResourceDirectory(string path, ref ResourceType resourceType);
         bool IsInResourceDirectory(string path, ref ResourceType resourceType);

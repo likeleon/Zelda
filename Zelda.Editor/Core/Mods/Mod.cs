@@ -262,7 +262,7 @@ namespace Zelda.Editor.Core.Mods
                 throw new Exception("File '{0}' is not in this mod".F(path));
         }
 
-        public bool IsDialogsFile(string path, string languageId)
+        public bool IsDialogsFile(string path, ref string languageId)
         {
             var languagesPath = GetResourcePath(ResourceType.Language);
             if (!path.StartsWith(languagesPath + Path.DirectorySeparatorChar))
@@ -280,7 +280,7 @@ namespace Zelda.Editor.Core.Mods
             return true;
         }
 
-        public bool IsStringsFile(string path, string languageId)
+        public bool IsStringsFile(string path, ref string languageId)
         {
             var languagesPath = GetResourcePath(ResourceType.Language);
             if (!path.StartsWith(languagesPath + Path.DirectorySeparatorChar))

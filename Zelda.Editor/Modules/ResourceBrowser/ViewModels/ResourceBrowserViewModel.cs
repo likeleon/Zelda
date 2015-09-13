@@ -322,9 +322,9 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             var elementId = "";
             if (mod.IsResourceElement(absolutePath, ref resourceType, ref elementId))
                 OpenResource(resourceType, elementId);
-            else if (mod.IsDialogsFile(absolutePath, elementId))
+            else if (mod.IsDialogsFile(absolutePath, ref elementId))
                 OpenDialogsEditor(elementId);
-            else if (mod.IsStringsFile(absolutePath, elementId))
+            else if (mod.IsStringsFile(absolutePath, ref elementId))
                 OpenStringsEditor(absolutePath, elementId);
             else if (mod.IsScript(absolutePath))
                 OpenTextEditor(absolutePath);
