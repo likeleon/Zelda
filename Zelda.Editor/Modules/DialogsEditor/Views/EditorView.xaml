@@ -26,6 +26,27 @@
             </DockPanel>
         </GroupBox>
         <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Margin="5 0">
+                    <Button Width="32" Height="32" ToolTip="Add dialog">
+                        <Image Source="/Resources/Icons/icon_add.png" Stretch="None" />
+                    </Button>
+                    <Button Width="32" Height="32" ToolTip="Change dialog id" Margin="0 5">
+                        <Image Source="/Resources/Icons/icon_rename.png" Stretch="None" />
+                    </Button>
+                    <Button Width="32" Height="32" ToolTip="Delete dialog">
+                        <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
+                    </Button>
+                </StackPanel>
+                <TreeView />
+            </DockPanel>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
+            <GroupBox Header="Dialog properties" Grid.Column="2" />
         </Grid>
     </DockPanel>
 </UserControl>
