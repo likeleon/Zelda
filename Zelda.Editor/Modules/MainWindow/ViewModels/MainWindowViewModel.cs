@@ -5,18 +5,22 @@ using System.Windows.Media;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Commands;
 using Zelda.Editor.Core.Services;
+using System;
 
 namespace Zelda.Editor.Modules.MainWindow.ViewModels
 {
     [Export(typeof(IMainWindow))]
-    public class MainWindowViewModel : Conductor<IShell>, IMainWindow
+    public class MainWindowViewModel : Conductor<IShell>, IMainWindow, IPartImportsSatisfiedNotification
     {
 #pragma warning disable 649
         [Import]
-        private IShell _shell;
+        IShell _shell;
 
         [Import]
-        private ICommandKeyGestureService _commandKeyGestureService;
+        IResourceManager _resourceManager;
+
+        [Import]
+        ICommandKeyGestureService _commandKeyGestureService;
 #pragma warning restore 649
 
         private WindowState _windowState = WindowState.Normal;
@@ -63,6 +67,13 @@ namespace Zelda.Editor.Modules.MainWindow.ViewModels
         {
             _commandKeyGestureService.BindKeyGestures(view as UIElement);
             base.OnViewLoaded(view);
+        }
+
+        void IPartImportsSatisfiedNotification.OnImportsSatisfied()
+        {
+            if (_icon == null)
+                _icon = _resourceManager.GetBitmap("/Resources/Icons/icon_quest_editor_48.ico");
+            ActivateItem(_shell);
         }
     }
 }

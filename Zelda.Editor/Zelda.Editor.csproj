@@ -233,7 +233,10 @@
     <Compile Include="Core\Mods\TilesetModel.cs" />
     <Compile Include="Core\PersistedDocument.cs" />
     <Compile Include="Core\Primitives\BindingProxy.cs" />
+    <Compile Include="Core\Services\ExtensionMethods.cs" />
     <Compile Include="Core\Services\IEditorProvider.cs" />
+    <Compile Include="Core\Services\IResourceManager.cs" />
+    <Compile Include="Core\Services\ResourceManager.cs" />
     <Compile Include="Exts.cs" />
     <Compile Include="Modules\DialogsEditor\EditorProvider.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\EditorViewModel.cs" />
