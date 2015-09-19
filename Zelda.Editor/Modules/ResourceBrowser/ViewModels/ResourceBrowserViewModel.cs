@@ -56,7 +56,9 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             ModRootFiles.Where(f => f.Children.Any()).Do(f => f.IsExpanded = true);
 
             loadedMod.FileRenamed += LoadedMod_FileRenamed;
+            loadedMod.Resources.ElementDescriptionChanged += Resources_ElementDescriptionChanged;
         }
+
 
         void LoadedMod_FileRenamed(object sender, FileRenamedEventArgs e)
         {
@@ -75,8 +77,17 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             return GetDescendants(ModRootFiles.Single()).FirstOrDefault(f => f.Path == path);
         }
 
+        void Resources_ElementDescriptionChanged(object sender, ElementDescriptionChangedEventArgs e)
+        {
+            var path = Mod.GetResourceElementPath(e.ResourceType, e.Id);
+            var file = FindFile(path);
+            if (file != null)
+                file.Description = e.Description;
+        }
+
         void ModService_Unloaded(object sender, IMod unloadedMod)
         {
+            unloadedMod.Resources.ElementDescriptionChanged -= Resources_ElementDescriptionChanged;
             unloadedMod.FileRenamed -= LoadedMod_FileRenamed;
             ModRootFiles = null;
             NotifyOfPropertyChange(() => ModRootFiles);
@@ -194,7 +205,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                     {
                         if (Directory.EnumerateFileSystemEntries(path).Any())
                         {
-                            MessageBox.Show("Folder is not empty", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            "Folder is not empty".ShowWarningDialog();
                         }
                         else
                         {

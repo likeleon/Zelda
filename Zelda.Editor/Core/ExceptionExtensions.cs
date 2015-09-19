@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Windows;
+using Zelda.Editor.Core.Services;
 
 namespace Zelda.Editor.Core
 {
@@ -7,7 +7,7 @@ namespace Zelda.Editor.Core
     {
         public static void ShowDialog(this Exception ex)
         {
-            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            ex.Message.ShowErrorDialog();
         }
     }
 }

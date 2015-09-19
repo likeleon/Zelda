@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Zelda.Editor.Core;
+using Zelda.Editor.Core.Services;
 using Zelda.Editor.Modules.ResourceBrowser.ViewModels;
 using Zelda.Game;
 

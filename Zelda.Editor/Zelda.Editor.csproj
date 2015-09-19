@@ -237,7 +237,6 @@
     <Compile Include="Core\Services\IEditorProvider.cs" />
     <Compile Include="Core\Services\IResourceManager.cs" />
     <Compile Include="Core\Services\ResourceManager.cs" />
-    <Compile Include="Exts.cs" />
     <Compile Include="Modules\DialogsEditor\EditorProvider.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\EditorViewModel.cs" />
     <Compile Include="Modules\DialogsEditor\Views\EditorView.xaml.cs">

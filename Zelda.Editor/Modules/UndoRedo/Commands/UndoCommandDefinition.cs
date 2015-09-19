@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using Zelda.Editor.Core.Commands;
+using Zelda.Editor.Core.Services;
 
 namespace Zelda.Editor.Modules.UndoRedo.Commands
 {

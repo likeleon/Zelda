@@ -1,4 +1,5 @@
 ﻿using System;
+using Zelda.Editor.Core.Services;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.ResourceBrowser
