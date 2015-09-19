@@ -21,6 +21,12 @@ namespace Zelda.Editor.Modules.MainMenu
         public static MenuItemGroupDefinition FileExitOpenMenuGroup = new MenuItemGroupDefinition(FileMenu, 10);
 
         [Export]
+        public static MenuDefinition EditMenu = new MenuDefinition(MainMenuBar, 1, "_Edit");
+
+        [Export]
+        public static MenuItemGroupDefinition EditUndoRedoMenuGroup = new MenuItemGroupDefinition(EditMenu, 0);
+
+        [Export]
         public static MenuDefinition ViewMenu = new MenuDefinition(MainMenuBar, 2, "_View");
 
         [Export]

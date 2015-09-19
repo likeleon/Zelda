@@ -361,6 +361,12 @@
     <Compile Include="Modules\StatusBar\Views\StatusBarView.xaml.cs">
       <DependentUpon>StatusBarView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Modules\UndoRedo\Commands\UndoCommandDefinition.cs" />
+    <Compile Include="Modules\UndoRedo\Commands\RedoCommandDefinition.cs" />
+    <Compile Include="Modules\UndoRedo\IUndoableAction.cs" />
+    <Compile Include="Modules\UndoRedo\IUndoRedoManager.cs" />
+    <Compile Include="Modules\UndoRedo\MenuDefinitions.cs" />
+    <Compile Include="Modules\UndoRedo\Services\UndoRedoManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -568,7 +574,12 @@
   <ItemGroup>
     <Resource Include="icon_quest_editor_48.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Icons\Open.png" />
+    <Resource Include="Resources\Icons\Redo.png" />
+    <Resource Include="Resources\Icons\Save.png" />
+    <Resource Include="Resources\Icons\Undo.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
