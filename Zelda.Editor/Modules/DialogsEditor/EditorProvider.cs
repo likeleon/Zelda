@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
-using Zelda.Editor.Core.Threading;
 using Zelda.Editor.Modules.DialogsEditor.ViewModels;
 
 namespace Zelda.Editor.Modules.DialogsEditor
@@ -13,7 +12,7 @@ namespace Zelda.Editor.Modules.DialogsEditor
     {
         readonly IModService _modService;
 
-        public IDocument Create() { return new EditorViewModel(); }
+        public IDocument Create() { return new EditorViewModel(_modService.Mod); }
 
         [ImportingConstructor]
         public EditorProvider(IModService modService)
@@ -33,8 +32,7 @@ namespace Zelda.Editor.Modules.DialogsEditor
 
         public async Task Open(IDocument document, string path)
         {
-            //await ((EditorViewModel)document).Load(path);
-            await TaskUtility.Completed;
+            await ((EditorViewModel)document).Load(path);
         }
     }
 }

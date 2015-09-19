@@ -212,6 +212,7 @@
     <Compile Include="Core\IDocument.cs" />
     <Compile Include="Core\ILayoutItem.cs" />
     <Compile Include="Core\IModule.cs" />
+    <Compile Include="Core\IPersistedDocument.cs" />
     <Compile Include="Core\ITool.cs" />
     <Compile Include="Core\IWindow.cs" />
     <Compile Include="Core\LayoutItemBase.cs" />
@@ -230,6 +231,7 @@
     <Compile Include="Core\Mods\FileRenamedEventArgs.cs" />
     <Compile Include="Core\Mods\MapModel.cs" />
     <Compile Include="Core\Mods\TilesetModel.cs" />
+    <Compile Include="Core\PersistedDocument.cs" />
     <Compile Include="Core\Primitives\BindingProxy.cs" />
     <Compile Include="Core\Services\IEditorProvider.cs" />
     <Compile Include="Exts.cs" />

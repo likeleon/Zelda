@@ -78,6 +78,14 @@
                     </xcad:LayoutPanel>
                 </xcad:LayoutPanel>
             </xcad:LayoutRoot>
+            <xcad:DockingManager.DocumentHeaderTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding IconSource}" Width="16" Height="16" Margin="0 0 4 0" />
+                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </DataTemplate>
+            </xcad:DockingManager.DocumentHeaderTemplate>
         </xcad:DockingManager>
     </DockPanel>
 </UserControl>
