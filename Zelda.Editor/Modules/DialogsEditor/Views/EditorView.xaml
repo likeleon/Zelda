@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="400" d:DesignWidth="600">
     <UserControl.Resources>
         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
             <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -32,6 +33,16 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0 2">
+                    <Label Content="Compare to language" />
+                    <ComboBox x:Name="languageComboBox" Margin="5 0" SelectedIndex="0"
+                              VerticalAlignment="Center" VerticalContentAlignment="Center">
+                        <sys:String>&lt;No language&gt;</sys:String>
+                    </ComboBox>
+                    <Button ToolTip="Refresh language" Height="{Binding ActualHeight, ElementName=languageComboBox}">
+                        <Image Source="/Resources/Icons/icon_refresh.png" Stretch="None" />
+                    </Button>
+                </StackPanel>
                 <StackPanel DockPanel.Dock="Right" Margin="5 0">
                     <Button Width="32" Height="32" ToolTip="Add dialog">
                         <Image Source="/Resources/Icons/icon_add.png" Stretch="None" />
@@ -46,7 +57,7 @@
                 <TreeView />
             </DockPanel>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
-            <GroupBox Header="Dialog properties" Grid.Column="2" />
+            <GroupBox Header="Dialog properties" Grid.Column="2" Margin="0 2" />
         </Grid>
     </DockPanel>
 </UserControl>

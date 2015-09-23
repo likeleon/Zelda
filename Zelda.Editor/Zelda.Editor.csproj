@@ -238,6 +238,10 @@
     <Compile Include="Core\Services\IResourceManager.cs" />
     <Compile Include="Core\Services\ResourceManager.cs" />
     <Compile Include="Modules\DialogsEditor\EditorProvider.cs" />
+    <Compile Include="Modules\DialogsEditor\Models\Dialog.cs" />
+    <Compile Include="Modules\DialogsEditor\Models\DialogsModel.cs" />
+    <Compile Include="Modules\DialogsEditor\Models\NodeTree.cs" />
+    <Compile Include="Modules\DialogsEditor\Models\Node.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\EditorViewModel.cs" />
     <Compile Include="Modules\DialogsEditor\Views\EditorView.xaml.cs">
       <DependentUpon>EditorView.xaml</DependentUpon>
