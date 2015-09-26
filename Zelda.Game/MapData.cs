@@ -80,7 +80,7 @@ namespace Zelda.Game
                 _entities[layer] = new List<EntityData>();
         }
 
-        protected override bool ImportFromBuffer(byte[] buffer)
+        protected override bool OnImportFromBuffer(byte[] buffer)
         {
             try
             {
@@ -145,7 +145,7 @@ namespace Zelda.Game
             return _entities[(int)index.Layer][index.Index];
         }
 
-        protected override bool ExportToStream(Stream stream)
+        protected override bool OnExportToStream(Stream stream)
         {
             try
             {
@@ -178,7 +178,7 @@ namespace Zelda.Game
             }
             catch (Exception ex)
             {
-                Debug.Error("Failed to load map: {0}".F(ex.Message));
+                Debug.Error("Failed to export map: {0}".F(ex));
                 return false;
             }
         }

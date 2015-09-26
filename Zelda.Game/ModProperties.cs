@@ -13,7 +13,7 @@ namespace Zelda.Game
         public Size MinModSize { get; set; }
         public Size MaxModSize { get; set; }
 
-        protected override bool ImportFromBuffer(byte[] buffer)
+        protected override bool OnImportFromBuffer(byte[] buffer)
         {
             try
             {

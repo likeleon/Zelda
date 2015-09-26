@@ -67,8 +67,6 @@ namespace Zelda.Game.Engine
             ZeldaWriteDir = null;
             ModWriteDir = null;
 
-            DialogResource.Quit();
-            StringResource.Quit();
             FileSystem.PHYSFS_deinit();
         }
 
@@ -79,9 +77,10 @@ namespace Zelda.Game.Engine
             string fullFileName;
             if (languageSpecific)
             {
-                if (String.IsNullOrEmpty(Language.LanguageCode))
+                if (CurrentMod.Language.IsNullOrEmpty())
                     return false;
-                fullFileName = "Languages/" + Language.LanguageCode + "/" + fileName;
+
+                fullFileName = "Languages/" + CurrentMod.Language + "/" + fileName;
             }
             else
             {
@@ -96,9 +95,9 @@ namespace Zelda.Game.Engine
             string fullFileName;
             if (languageSpecific)
             {
-                Debug.CheckAssertion(!String.IsNullOrEmpty(Language.LanguageCode),
+                Debug.CheckAssertion(!CurrentMod.Language.IsNullOrEmpty(),
                     "Cannot open language-specific file '{0}': no language was set".F(fileName));
-                fullFileName = "Languages/" + Language.LanguageCode + "/" + fileName;
+                fullFileName = "Languages/" + CurrentMod.Language + "/" + fileName;
             }
             else
             {

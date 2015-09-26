@@ -36,7 +36,7 @@ namespace Zelda.Game
             Debug.CheckAssertion(!IsEnabled, "A dialog is already active");
 
             DialogId = dialogId;
-            _dialog = DialogResource.GetDialog(dialogId);
+            _dialog = CurrentMod.GetDialog(dialogId);
             _callback = callback;
 
             CommandsEffects commandsEffects = _game.CommandsEffects;

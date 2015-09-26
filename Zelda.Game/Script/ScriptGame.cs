@@ -203,7 +203,7 @@ namespace Zelda.Game.Script
         {
             ScriptToCore.Call(() =>
             {
-                if (!DialogResource.Exists(dialogId))
+                if (!CurrentMod.DialogExists(dialogId))
                     throw new ArgumentException("No such dialog: '{0}'".F(dialogId));
 
                 var game = _savegame.Game;

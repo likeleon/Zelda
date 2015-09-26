@@ -70,7 +70,7 @@
     <Compile Include="Debug.cs" />
     <Compile Include="Dialog.cs" />
     <Compile Include="DialogBoxSystem.cs" />
-    <Compile Include="DialogResource.cs" />
+    <Compile Include="DialogResources.cs" />
     <Compile Include="Directions.cs" />
     <Compile Include="DisposableObject.cs" />
     <Compile Include="Engine\Color.cs" />
@@ -159,7 +159,7 @@
     <Compile Include="Script\ScriptVideo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SpriteData.cs" />
-    <Compile Include="StringResource.cs" />
+    <Compile Include="StringResources.cs" />
     <Compile Include="Transition.cs" />
     <Compile Include="TransitionFade.cs" />
     <Compile Include="Treasure.cs" />
@@ -183,7 +183,6 @@
     <Compile Include="Engine\Video.cs" />
     <Compile Include="Exts.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="Language.cs" />
     <Compile Include="MainLoop.cs" />
     <Compile Include="ModProperties.cs" />
     <Compile Include="ModResources.cs" />

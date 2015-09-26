@@ -85,7 +85,7 @@ namespace Zelda.Game
                 .ToDictionary(t => t, t => new ResourceMap());
         }
 
-        protected override bool ImportFromBuffer(byte[] buffer)
+        protected override bool OnImportFromBuffer(byte[] buffer)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace Zelda.Game
                 _resourceMaps[resourceType].Add(resource.Id, resource.Description);
         }
 
-        protected override bool ExportToStream(Stream stream)
+        protected override bool OnExportToStream(Stream stream)
         {
             try
             {

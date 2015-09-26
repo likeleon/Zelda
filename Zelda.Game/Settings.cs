@@ -18,8 +18,8 @@ namespace Zelda.Game
             var settings = ModFiles.DataFileRead(fileName).XmlDeserialize<SettingsXmlData>();
 
             var language = settings.Language;
-            if (!String.IsNullOrEmpty(language) && Language.HasLanguage(language))
-                Language.SetLanguage(language);
+            if (!language.IsNullOrEmpty() && CurrentMod.HasLanguage(language))
+                CurrentMod.SetLanguage(language);
 
             return true;
         }
@@ -30,8 +30,8 @@ namespace Zelda.Game
                 "Cannot save settings: no mod write directory was specified in mod.xml");
 
             var settings = new SettingsXmlData();
-            if (!String.IsNullOrEmpty(Language.LanguageCode))
-                settings.Language = Language.LanguageCode;
+            if (!CurrentMod.Language.IsNullOrEmpty())
+                settings.Language = CurrentMod.Language;
             
             var stream = new MemoryStream();
             settings.XmlSerialize(stream);

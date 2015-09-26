@@ -227,7 +227,7 @@ namespace Zelda.Game
 
         public void StartDialog(string dialogId, object info, Action<object> callback)
         {
-            if (!DialogResource.Exists(dialogId))
+            if (!CurrentMod.DialogExists(dialogId))
                 Debug.Error("No such dialog: '{0}'".F(dialogId));
             else
                 _dialogBox.Open(dialogId, info, callback);

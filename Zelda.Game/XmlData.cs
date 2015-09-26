@@ -11,15 +11,20 @@ namespace Zelda.Game
             if (!File.Exists(fileName))
                 Debug.Error("Failed to load data file '{0}'".F(fileName));
 
-            return ImportFromBuffer(File.ReadAllBytes(fileName));
+            return OnImportFromBuffer(File.ReadAllBytes(fileName));
         }
 
-        public bool ImportFromModFile(string modFileName)
+        public bool ImportFromModFile(string modFileName, bool languageSpecific = false)
         {
             if (!ModFiles.DataFileExists(modFileName))
                 Debug.Error("Cannot find mod file '{0}'".F(modFileName));
 
-            return ImportFromBuffer(ModFiles.DataFileRead(modFileName));
+            return OnImportFromBuffer(ModFiles.DataFileRead(modFileName, languageSpecific));
+        }
+
+        public bool ImportFromBuffer(byte[] buffer)
+        {
+            return OnImportFromBuffer(buffer);
         }
 
         public bool ExportToFile(string fileName)
@@ -28,7 +33,7 @@ namespace Zelda.Game
 
             using (var outFile = File.OpenWrite(tmpFileName))
             {
-                if (!ExportToStream(outFile))
+                if (!OnExportToStream(outFile))
                 {
                     outFile.Close();
                     File.Delete(tmpFileName);
@@ -43,9 +48,9 @@ namespace Zelda.Game
             return true;
         }
 
-        protected abstract bool ImportFromBuffer(byte[] buffer);
+        protected abstract bool OnImportFromBuffer(byte[] buffer);
 
-        protected virtual bool ExportToStream(Stream stream)
+        protected virtual bool OnExportToStream(Stream stream)
         {
             return false;
         }

@@ -38,10 +38,10 @@ namespace Zelda.Game.Script
                     textSurface.SetText(text);
                 else if (!String.IsNullOrEmpty(textKey))
                 {
-                    if (!StringResource.Exists(textKey))
-                        throw new ArgumentException("No value with key '{0}' in strings.xml for language '{1}'"
-                            .F(textKey, Language.LanguageCode));
-                    textSurface.SetText(StringResource.GetString(textKey));
+                    if (!CurrentMod.StringExists(textKey))
+                        throw new ArgumentException("No value with key '{0}' in strings.xml for language '{1}'".F(textKey, CurrentMod.Language));
+
+                    textSurface.SetText(CurrentMod.GetString(textKey));
                 }
             
                 AddDrawable(textSurface);
@@ -69,11 +69,10 @@ namespace Zelda.Game.Script
         {
             ScriptToCore.Call(() =>
             {
-                if (!StringResource.Exists(key))
-                    throw new ArgumentException("No value with key '{0}' in strings.xml for language '{1}'"
-                        .F(key, Language.LanguageCode));
+                if (!CurrentMod.StringExists(key))
+                    throw new ArgumentException("No value with key '{0}' in strings.xml for language '{1}'".F(key, CurrentMod.Language));
                 
-                _textSurface.SetText(StringResource.GetString(key));
+                _textSurface.SetText(CurrentMod.GetString(key));
             });
         }
         

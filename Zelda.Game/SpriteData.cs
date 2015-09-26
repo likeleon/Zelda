@@ -111,7 +111,7 @@ namespace Zelda.Game
 
         public string DefaultAnimationName { get; private set; }
 
-        protected override bool ImportFromBuffer(byte[] buffer)
+        protected override bool OnImportFromBuffer(byte[] buffer)
         {
             try
             {
