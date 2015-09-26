@@ -25,7 +25,7 @@ namespace Zelda.Game
         public Dialog[] Dialogs { get; set; }
     }
 
-    class DialogData
+    public class DialogData
     {
         readonly Dictionary<string, string> _properties = new Dictionary<string, string>();
 
@@ -61,7 +61,7 @@ namespace Zelda.Game
         }
     }
 
-    class DialogResources : XmlData
+    public class DialogResources : XmlData
     {
         Dictionary<string, DialogData> _dialogs = new Dictionary<string, DialogData>();
 

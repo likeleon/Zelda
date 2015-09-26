@@ -4,6 +4,7 @@ using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Core.Threading;
+using Zelda.Editor.Modules.DialogsEditor.Models;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
@@ -18,6 +19,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             get { return _languageId; }
             private set { this.SetProperty(ref _languageId, value); }
         }
+
+        public DialogsModel Model { get; private set; }
 
         public string Description
         {
@@ -50,6 +53,10 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             DisplayName = "Dialogs {0}".F(languageId);
             LanguageId = languageId;
             NotifyOfPropertyChange(() => Description);
+
+            Model = new DialogsModel(_mod, languageId);
+            NotifyOfPropertyChange(() => Model);
+
             return TaskUtility.Completed;
         }
 

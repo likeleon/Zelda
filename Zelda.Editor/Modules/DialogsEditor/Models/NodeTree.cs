@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Zelda.Game;
 
 namespace Zelda.Editor.Modules.DialogsEditor.Models
 {
@@ -12,30 +13,28 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
     class NodeTree<T> where T : Node, new()
     {
-        class Root : Node
-        {
-        }
-
         readonly string _separator;
-        readonly Node _root = new Root();
+        readonly T _root = new T();
+
+        public T Root { get { return _root; } }
 
         public NodeTree(string separator)
         {
             _separator = separator;
         }
 
-        public Node AddKey(string key)
+        public T AddKey(string key)
         {
-            Node parent;
+            T parent;
             return AddKey(key, out parent);
         }
 
-        public Node AddKey(string key, out Node parent)
+        public T AddKey(string key, out T parent)
         {
             return AddChild(key, NodeType.RealKey, out parent);
         }
 
-        Node AddChild(string key, NodeType type, out Node outParent)
+        T AddChild(string key, NodeType type, out T outParent)
         {
             var keyList = key.Split(new[] { _separator }, StringSplitOptions.None).ToList();
 
@@ -43,7 +42,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             var node = parent;
             while (node != null && keyList.Count > 0)
             {
-                node = parent.GetChild(keyList.First());
+                node = parent.GetChild(keyList.First()) as T;
                 if (node != null)
                 {
                     parent = node;
@@ -66,10 +65,11 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
                 var subKey = keyList.First();
                 node = new T();
                 node.Parent = parent;
-                if (parent.Key.Length > 0)
+                if (!parent.Key.IsNullOrEmpty())
                     node.Key = parent.Key + _separator + subKey;
                 else
                     node.Key = subKey;
+                parent.AddChild(subKey, node);
 
                 parent = node;
                 keyList.RemoveAt(0);
@@ -77,6 +77,17 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
             node.Type = type;
             return node;
+        }
+
+        public void Clear()
+        {
+            ClearChildren(_root);
+        }
+
+        void ClearChildren(T node)
+        {
+            node.Children.Cast<T>().Do(child => ClearChildren(child));
+            node.ClearChildren();
         }
     }
 }

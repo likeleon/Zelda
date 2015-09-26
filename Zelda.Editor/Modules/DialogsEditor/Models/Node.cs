@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Zelda.Editor.Core;
+using Zelda.Game;
 
 namespace Zelda.Editor.Modules.DialogsEditor.Models
 {
@@ -38,6 +39,17 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             Node child;
             _children.TryGetValue(subKey, out child);
             return child;
+        }
+
+        public void ClearChildren()
+        {
+            _children.Clear();
+            NotifyOfPropertyChange(() => Children);
+        }
+
+        public override string ToString()
+        {
+            return "{0} ({1})".F(Key, Type);
         }
     }
 }

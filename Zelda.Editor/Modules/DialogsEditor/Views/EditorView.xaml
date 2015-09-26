@@ -5,9 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Views"
+             xmlns:controls="clr-namespace:Zelda.Editor.Core.Controls"
+             xmlns:conveters="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="600">
     <UserControl.Resources>
+        <conveters:DialogNameConverter x:Key="DialogNameConverter" />
+        <conveters:DialogIconConverter x:Key="DialogIconConverter" />
         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Height" Value="23" />
@@ -54,7 +58,30 @@
                         <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
                     </Button>
                 </StackPanel>
-                <TreeView />
+                <controls:TreeListView ItemsSource="{Binding Model.Root.Children}">
+                    <controls:TreeListView.Resources>
+                        <Style TargetType="GridViewColumnHeader">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Style>
+                    </controls:TreeListView.Resources>
+                    <controls:TreeListView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                        </HierarchicalDataTemplate>
+                    </controls:TreeListView.ItemTemplate>
+                    <controls:TreeListView.Columns>
+                        <GridViewColumn Header="">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <DockPanel Height="18">
+                                        <ToggleButton Style="{StaticResource ExpandCollapseToggleStyle}" VerticalAlignment="Center" />
+                                        <Image Source="{Binding Converter={StaticResource DialogIconConverter}}" Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Converter={StaticResource DialogNameConverter}}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </controls:TreeListView.Columns>
+                </controls:TreeListView>
             </DockPanel>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
             <GroupBox Header="Dialog properties" Grid.Column="2" Margin="0 2" />
