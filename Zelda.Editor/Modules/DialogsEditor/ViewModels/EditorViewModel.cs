@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
@@ -13,14 +14,33 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
     {
         readonly IMod _mod;
         string _languageId;
+        Node _selectedNode;
 
         public string LanguageId
         {
             get { return _languageId; }
-            private set { this.SetProperty(ref _languageId, value); }
+            private set
+            {
+                if (this.SetProperty(ref _languageId, value))
+                    NotifyOfPropertyChange(() => Description);
+            }
         }
 
-        public DialogsModel Model { get; private set; }
+        public DialogsModel DialogsModel { get; private set; }
+
+        public Node SelectedNode
+        {
+            get { return _selectedNode; }
+            set
+            {
+                if (this.SetProperty(ref _selectedNode, value))
+                {
+                    NotifyOfPropertyChange(() => DialogExists);
+                    NotifyOfPropertyChange(() => DialogId);
+                    NotifyOfPropertyChange(() => DialogText);
+                }
+            }
+        }
 
         public string Description
         {
@@ -35,6 +55,14 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         }
 
         public override Uri IconSource { get { return "/Resources/Icons/icon_resource_language.png".ToIconUri(); } }
+
+        public bool DialogExists { get { return SelectedNode != null && DialogsModel.DialogExists(SelectedNode); } }
+        public string DialogId { get { return DialogExists ? SelectedNode.Key : ""; } }
+        public string DialogText
+        {
+            get { return DialogExists ? DialogsModel.GetDialogText(SelectedNode) : ""; }
+            set { /* TODO: SetDialogTextCommand */ }
+        }
 
         Core.Mods.ModResources Resources { get { return _mod.Resources; } }
 
@@ -52,10 +80,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
             DisplayName = "Dialogs {0}".F(languageId);
             LanguageId = languageId;
-            NotifyOfPropertyChange(() => Description);
 
-            Model = new DialogsModel(_mod, languageId);
-            NotifyOfPropertyChange(() => Model);
+            DialogsModel = new DialogsModel(_mod, languageId);
+            NotifyOfPropertyChange(() => DialogsModel);
 
             return TaskUtility.Completed;
         }

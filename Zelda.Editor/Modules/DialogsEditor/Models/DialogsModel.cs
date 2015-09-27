@@ -56,5 +56,13 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         {
             return _resources.HasDialog(node.Key);
         }
+
+        public string GetDialogText(Node node)
+        {
+            if (!DialogExists(node))
+                return "";
+
+            return _resources.GetDialog(node.Key).Text;
+        }
     }
 }

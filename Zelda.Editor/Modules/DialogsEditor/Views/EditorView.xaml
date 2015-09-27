@@ -3,20 +3,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Views"
+             xmlns:behaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
              xmlns:controls="clr-namespace:Zelda.Editor.Core.Controls"
              xmlns:conveters="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Converters"
              xmlns:primitives="clr-namespace:Zelda.Editor.Core.Primitives"
              mc:Ignorable="d" 
-             d:DesignHeight="400" d:DesignWidth="600">
+             d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
-        <primitives:BindingProxy x:Key="ModelProxy" Data="{Binding Model}" />
+        <primitives:BindingProxy x:Key="ModelProxy" Data="{Binding DialogsModel}" />
         <conveters:DialogNameConverter x:Key="DialogNameConverter" />
         <conveters:DialogIconConverter x:Key="DialogIconConverter" />
-        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Height" Value="23" />
+        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="MultilineTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="FontFamily" Value="Courier New" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="AcceptsReturn" Value="True" />
         </Style>
     </UserControl.Resources>
     <DockPanel Margin="10">
@@ -28,7 +37,7 @@
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Language description" Width="150" />
-                    <TextBox Text="{Binding Description}" />
+                    <TextBox VerticalContentAlignment="Center" Height="23" Text="{Binding Description}" />
                 </DockPanel>
             </DockPanel>
         </GroupBox>
@@ -39,7 +48,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <DockPanel>
-                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0 2">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0 5">
                     <Label Content="Compare to language" />
                     <ComboBox x:Name="languageComboBox" Margin="5 0" SelectedIndex="0"
                               VerticalAlignment="Center" VerticalContentAlignment="Center">
@@ -60,7 +69,7 @@
                         <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
                     </Button>
                 </StackPanel>
-                <controls:TreeListView ItemsSource="{Binding Model.Root.Children}">
+                <controls:TreeListView ItemsSource="{Binding DialogsModel.Root.Children}">
                     <controls:TreeListView.Resources>
                         <Style TargetType="GridViewColumnHeader">
                             <Setter Property="Visibility" Value="Collapsed" />
@@ -85,10 +94,64 @@
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
                     </controls:TreeListView.Columns>
+                    <i:Interaction.Behaviors>
+                        <behaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedNode, Mode=TwoWay}" />
+                    </i:Interaction.Behaviors>
                 </controls:TreeListView>
             </DockPanel>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
-            <GroupBox Header="Dialog properties" Grid.Column="2" Margin="0 2" />
+            <GroupBox Grid.Column="2" Margin="0 2 0 0" Header="Dialog properties" IsEnabled="{Binding DialogExists}" >
+                <Grid Margin="0 10 0 0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                        <Label Content="Dialog id:" Width="80" />
+                        <TextBlock Text="{Binding DialogId}" />
+                    </StackPanel>
+                    <DockPanel Grid.Row="1">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <CheckBox x:Name="displayMarginCheckBox" Margin="5 0" Content="Display right margin at column:" VerticalAlignment="Center"/>
+                            <xctk:IntegerUpDown VerticalAlignment="Center"
+                                                IsEnabled="{Binding IsChecked, ElementName=displayMarginCheckBox}"/>
+                        </StackPanel>
+                        <Label DockPanel.Dock="Left" Content="Text:" />
+                    </DockPanel>
+                    <TextBox Grid.Row="2" Margin="0 5" Style="{StaticResource MultilineTextBox}" 
+                             Text="{Binding DialogText}" />
+                    <Label Grid.Row="3" Content="Translation: " />
+                    <TextBox Grid.Row="4" Style="{StaticResource MultilineTextBox}" 
+                             Text="{Binding TranslationText}" />
+                    <Label Grid.Row="5" Content="Properties: " />
+                    <DockPanel Grid.Row="6">
+                        <StackPanel DockPanel.Dock="Right" Margin="5 0">
+                            <Button Width="32" Height="32" ToolTip="Add property">
+                                <Image Source="/Resources/Icons/icon_add.png" Stretch="None" />
+                            </Button>
+                            <Button Width="32" Height="32" ToolTip="Change property key" Margin="0 5">
+                                <Image Source="/Resources/Icons/icon_rename.png" Stretch="None" />
+                            </Button>
+                            <Button Width="32" Height="32" ToolTip="Delete property">
+                                <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
+                            </Button>
+                        </StackPanel>
+                        <ListView>
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Key" Width="100" />
+                                    <GridViewColumn Header="Value" Width="200" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>
+                </Grid>
+            </GroupBox>
         </Grid>
     </DockPanel>
 </UserControl>
