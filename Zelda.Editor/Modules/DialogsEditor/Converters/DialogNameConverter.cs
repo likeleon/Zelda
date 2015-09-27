@@ -10,11 +10,11 @@ namespace Zelda.Editor.Modules.DialogsEditor.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var dialog = value as Dialog;
-            if (dialog == null)
-                throw new ArgumentNullException("dialog");
+            var node = value as Node;
+            if (node == null)
+                throw new ArgumentNullException("value");
 
-            return dialog.Key.Split('.').Last();
+            return node.Key.Split('.').Last();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

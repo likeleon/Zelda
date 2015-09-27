@@ -11,30 +11,30 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         RefKey
     }
 
-    class NodeTree<T> where T : Node, new()
+    class NodeTree
     {
         readonly string _separator;
-        readonly T _root = new T();
+        readonly Node _root = new Node();
 
-        public T Root { get { return _root; } }
+        public Node Root { get { return _root; } }
 
         public NodeTree(string separator)
         {
             _separator = separator;
         }
 
-        public T AddKey(string key)
+        public Node AddKey(string key)
         {
-            T parent;
+            Node parent;
             return AddKey(key, out parent);
         }
 
-        public T AddKey(string key, out T parent)
+        public Node AddKey(string key, out Node parent)
         {
             return AddChild(key, NodeType.RealKey, out parent);
         }
 
-        T AddChild(string key, NodeType type, out T outParent)
+        Node AddChild(string key, NodeType type, out Node outParent)
         {
             var keyList = key.Split(new[] { _separator }, StringSplitOptions.None).ToList();
 
@@ -42,7 +42,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             var node = parent;
             while (node != null && keyList.Count > 0)
             {
-                node = parent.GetChild(keyList.First()) as T;
+                node = parent.GetChild(keyList.First()) as Node;
                 if (node != null)
                 {
                     parent = node;
@@ -63,7 +63,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             while (keyList.Count > 0)
             {
                 var subKey = keyList.First();
-                node = new T();
+                node = new Node();
                 node.Parent = parent;
                 if (!parent.Key.IsNullOrEmpty())
                     node.Key = parent.Key + _separator + subKey;
@@ -84,9 +84,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             ClearChildren(_root);
         }
 
-        void ClearChildren(T node)
+        void ClearChildren(Node node)
         {
-            node.Children.Cast<T>().Do(child => ClearChildren(child));
+            node.Children.Cast<Node>().Do(child => ClearChildren(child));
             node.ClearChildren();
         }
     }

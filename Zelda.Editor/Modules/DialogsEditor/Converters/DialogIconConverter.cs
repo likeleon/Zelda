@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using System.Windows.Data;
-using Zelda.Editor.Core.Services;
+using Zelda.Editor.Core.Primitives;
 using Zelda.Editor.Modules.DialogsEditor.Models;
 
 namespace Zelda.Editor.Modules.DialogsEditor.Converters
@@ -11,17 +10,15 @@ namespace Zelda.Editor.Modules.DialogsEditor.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var dialog = value as Dialog;
-            if (dialog == null)
-                throw new ArgumentNullException("dialog");
+            var node = value as Node;
+            if (node == null)
+                throw new ArgumentNullException("value");
 
-            if (dialog.Type == NodeType.Container)
-                return "/Resources/Icons/icon_folder_open.png".ToIconUri();
+            var model = (parameter as BindingProxy).Data as DialogsModel;
+            if (model == null)
+                throw new ArgumentNullException("parameter");
 
-            if (dialog.Children.Any())
-                return "/Resources/Icons/icon_dialogs.png".ToIconUri();
-            else
-                return "/Resources/Icons/icon_dialog.png".ToIconUri();
+            return model.GetIcon(node);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

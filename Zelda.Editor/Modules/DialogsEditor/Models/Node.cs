@@ -6,7 +6,7 @@ using Zelda.Game;
 
 namespace Zelda.Editor.Modules.DialogsEditor.Models
 {
-    abstract class Node : PropertyChangedBase
+    class Node : PropertyChangedBase
     {
         readonly Dictionary<string, Node> _children = new Dictionary<string, Node>(StringComparer.CurrentCulture);
         string _key;

@@ -7,9 +7,11 @@
              xmlns:local="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Views"
              xmlns:controls="clr-namespace:Zelda.Editor.Core.Controls"
              xmlns:conveters="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Converters"
+             xmlns:primitives="clr-namespace:Zelda.Editor.Core.Primitives"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="600">
     <UserControl.Resources>
+        <primitives:BindingProxy x:Key="ModelProxy" Data="{Binding Model}" />
         <conveters:DialogNameConverter x:Key="DialogNameConverter" />
         <conveters:DialogIconConverter x:Key="DialogIconConverter" />
         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -74,8 +76,10 @@
                                 <DataTemplate>
                                     <DockPanel Height="18">
                                         <ToggleButton Style="{StaticResource ExpandCollapseToggleStyle}" VerticalAlignment="Center" />
-                                        <Image Source="{Binding Converter={StaticResource DialogIconConverter}}" Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Converter={StaticResource DialogNameConverter}}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                        <Image Source="{Binding Converter={StaticResource DialogIconConverter}, ConverterParameter={StaticResource ModelProxy}}" 
+                                               Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Converter={StaticResource DialogNameConverter}, ConverterParameter={StaticResource ModelProxy}}" 
+                                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                     </DockPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>

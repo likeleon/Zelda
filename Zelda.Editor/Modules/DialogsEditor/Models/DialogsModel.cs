@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Zelda.Editor.Core.Mods;
+using Zelda.Editor.Core.Services;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.DialogsEditor.Models
@@ -9,9 +11,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         readonly IMod _mod;
         readonly string _languageId;
         readonly DialogResources _resources = new DialogResources();
-        readonly NodeTree<Dialog> _dialogTree = new NodeTree<Dialog>(".");
+        readonly NodeTree _nodeTree = new NodeTree(".");
 
-        public Dialog Root { get { return _dialogTree.Root; } }
+        public Node Root { get { return _nodeTree.Root; } }
 
         public DialogsModel(IMod mod, string languageId)
         {
@@ -33,8 +35,26 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         void BuildDialogTree()
         {
-            _dialogTree.Clear();
-            _resources.Dialogs.Keys.Do(id => _dialogTree.AddKey(id));
+            _nodeTree.Clear();
+            _resources.Dialogs.Keys.Do(id => _nodeTree.AddKey(id));
+        }
+
+        public Uri GetIcon(Node node)
+        {
+            if (!DialogExists(node))
+                return "/Resources/Icons/icon_folder_open.png".ToIconUri();
+            else
+            {
+                if (node.Children.Any())
+                    return "/Resources/Icons/icon_dialogs.png".ToIconUri();
+                else
+                    return "/Resources/Icons/icon_dialog.png".ToIconUri();
+            }
+        }
+
+        public bool DialogExists(Node node)
+        {
+            return _resources.HasDialog(node.Key);
         }
     }
 }
