@@ -1,5 +1,6 @@
 ﻿using System;
 using Zelda.Editor.Core.Commands;
+using Zelda.Editor.Core.Services;
 
 namespace Zelda.Editor.Modules.ErrorList.Commands
 {
@@ -26,7 +27,7 @@ namespace Zelda.Editor.Modules.ErrorList.Commands
         {
             get
             {
-                return new Uri("/Resources/Icons/BuildErrorList_7237.png", UriKind.Relative);
+                return "BuildErrorList_7237.png".ToIconUri();
             }
         }
     }

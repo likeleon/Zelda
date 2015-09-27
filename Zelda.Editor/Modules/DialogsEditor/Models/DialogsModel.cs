@@ -42,13 +42,13 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         public Uri GetIcon(Node node)
         {
             if (!DialogExists(node))
-                return "/Resources/Icons/icon_folder_open.png".ToIconUri();
+                return "icon_folder_open.png".ToIconUri();
             else
             {
                 if (node.Children.Any())
-                    return "/Resources/Icons/icon_dialogs.png".ToIconUri();
+                    return "icon_dialogs.png".ToIconUri();
                 else
-                    return "/Resources/Icons/icon_dialog.png".ToIconUri();
+                    return "icon_dialog.png".ToIconUri();
             }
         }
 

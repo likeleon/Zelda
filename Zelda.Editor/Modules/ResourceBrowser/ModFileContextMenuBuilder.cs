@@ -52,7 +52,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             if (mod.IsResourceElement(path, ref resourceType, ref elementId))
             {
                 var resourceTypeName = resources.GetTypeName(resourceType);
-                openMenuItem.IconSource = "/Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri();
+                openMenuItem.IconSource = "icon_resource_{0}.png".F(resourceTypeName).ToIconUri();
 
                 switch (resourceType)
                 {
@@ -61,7 +61,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                         _items.Add(new ContextMenuItem()
                         {
                             Text = "Open Script",
-                            IconSource = "/Resources/Icons/icon_script.png".ToIconUri(),
+                            IconSource = "icon_script.png".ToIconUri(),
                             Command = new RelayCommand(_ => _browser.Open(mod.GetMapScriptPath(path)))
                         });
                         break;
@@ -93,7 +93,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             }
             else if (mod.IsScript(path))
             {
-                openMenuItem.IconSource = "/Resources/Icons/icon_script.png".ToIconUri();
+                openMenuItem.IconSource = "icon_script.png".ToIconUri();
                 _items.Add(openMenuItem);
             }
             else if (mod.IsModRootDirectory(path))
@@ -128,7 +128,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 newResourceElementMenuItem = new ContextMenuItem()
                 {
                     Text = "Add to mod as {0}".F(resourceTypeFriendlyName),
-                    IconSource = "/Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
+                    IconSource = "icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
                     Command = new RelayCommand(_ => _browser.NewResourceElement(_modFile)),
                 };
             }
@@ -141,7 +141,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 newResourceElementMenuItem = new ContextMenuItem()
                 {
                     Text = resourceTypeCreateFriendlyName,
-                    IconSource = "/Resources/Icons/icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
+                    IconSource = "icon_resource_{0}.png".F(resourceTypeName).ToIconUri(),
                     Command = new RelayCommand(_ => _browser.NewResourceElement(_modFile))
                 };
             }
@@ -162,7 +162,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
                 _items.Add(new ContextMenuItem()
                 {
                     Text = "New folder...",
-                    IconSource = "/Resources/Icons/icon_folder_closed.png".ToIconUri(),
+                    IconSource = "icon_folder_closed.png".ToIconUri(),
                     Command = new RelayCommand(_ => _browser.NewDirectory(_modFile))
                 });
             }
@@ -185,7 +185,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             _items.Add(new ContextMenuItem()
             {
                 Text = "Rename...",
-                IconSource = "/Resources/Icons/icon_rename.png".ToIconUri(),
+                IconSource = "icon_rename.png".ToIconUri(),
                 Command = new RelayCommand(_ => _browser.Rename(_modFile))
             });
 
@@ -217,7 +217,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             _items.Add(new ContextMenuItem()
             {
                 Text = "Delete...",
-                IconSource = "/Resources/Icons/icon_delete.png".ToIconUri(),
+                IconSource = "icon_delete.png".ToIconUri(),
                 Command = new RelayCommand(_ => _browser.Delete(_modFile))
             });
         }

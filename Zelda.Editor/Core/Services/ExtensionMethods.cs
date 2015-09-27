@@ -23,8 +23,9 @@ namespace Zelda.Editor.Core.Services
             return property.GetMemberInfo().Name;
         }
 
-        public static Uri ToIconUri(this string path)
+        public static Uri ToIconUri(this string iconFile)
         {
+            var path = "/Resources/Icons/" + iconFile;
             return new Uri(path, UriKind.Relative);
         }
 

@@ -7,7 +7,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
     class RootDirectory : ModFileBase
     {
         public override ModFileType FileType { get { return ModFileType.RootDirectory; } }
-        public override Uri Icon { get { return "/Resources/Icons/icon_solarus.png".ToIconUri(); } }
+        public override Uri Icon { get { return "icon_solarus.png".ToIconUri(); } }
 
         public RootDirectory(string modName)
         {

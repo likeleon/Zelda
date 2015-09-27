@@ -54,7 +54,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             set { SetDescription(value); }
         }
 
-        public override Uri IconSource { get { return "/Resources/Icons/icon_resource_language.png".ToIconUri(); } }
+        public override Uri IconSource { get { return "icon_resource_language.png".ToIconUri(); } }
 
         public bool DialogExists { get { return SelectedNode != null && DialogsModel.DialogExists(SelectedNode); } }
         public string DialogId { get { return DialogExists ? SelectedNode.Key : ""; } }

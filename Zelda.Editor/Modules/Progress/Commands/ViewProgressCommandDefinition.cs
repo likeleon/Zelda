@@ -1,5 +1,6 @@
 ﻿using System;
 using Zelda.Editor.Core.Commands;
+using Zelda.Editor.Core.Services;
 
 namespace Zelda.Editor.Modules.Progress.Commands
 {
@@ -8,24 +9,9 @@ namespace Zelda.Editor.Modules.Progress.Commands
     {
         public const string CommandName = "View.Progress";
 
-        public override string Name
-        {
-            get { return CommandName; }
-        }
-
-        public override string Text
-        {
-            get { return "_Progress"; }
-        }
-
-        public override string ToolTip
-        {
-            get { return "Progress"; }
-        }
-
-        public override Uri IconSource
-        {
-            get { return new Uri("/Resources/Icons/KPI_32xLG.png", UriKind.Relative); }
-        }
+        public override string Name { get { return CommandName; } }
+        public override string Text { get { return "_Progress"; } }
+        public override string ToolTip { get { return "Progress"; } }
+        public override Uri IconSource { get { return "KPI_32xLG.png".ToIconUri(); } }
     }
 }

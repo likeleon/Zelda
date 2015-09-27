@@ -1,4 +1,5 @@
 ﻿using System;
+using Zelda.Editor.Core.Services;
 
 namespace Zelda.Editor.Modules.Progress
 {
@@ -52,7 +53,7 @@ namespace Zelda.Editor.Modules.Progress
             TotalWork = 100;
             IsSystem = false;
             IsUser = false;
-            IconSource = new Uri("/Resources/Icons/BackgroundWorker_6235.png", UriKind.Relative);
+            IconSource = "BackgroundWorker_6235.png".ToIconUri();
         }
     }
 }
