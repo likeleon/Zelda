@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Zelda.Editor.Core.Mods;
+using Zelda.Editor.Core.Services;
 using Zelda.Game;
 using ModResources = Zelda.Editor.Core.Mods.ModResources;
 
@@ -149,6 +150,12 @@ namespace Zelda.Editor.Modules.ResourceSelector.Models
                 return null;
 
             return item as T;
+        }
+
+        public Uri GetIcon(ElementItem item)
+        {
+            var resourceTypeName = Resources.GetTypeName(ResourceType);
+            return "icon_resource_{0}.png".F(resourceTypeName).ToIconUri();
         }
     }
 }

@@ -353,6 +353,7 @@
     <Compile Include="Modules\ResourceBrowser\Views\ResourceBrowserView.xaml.cs">
       <DependentUpon>ResourceBrowserView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Modules\ResourceSelector\Converters\ElementItemIconConverter.cs" />
     <Compile Include="Modules\ResourceSelector\Models\Items.cs" />
     <Compile Include="Modules\ResourceSelector\ItemDataTemplateSelector.cs" />
     <Compile Include="Modules\ResourceSelector\Models\ResourceModel.cs" />
