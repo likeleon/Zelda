@@ -1,19 +1,27 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Linq;
+using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.DialogsEditor.Models
 {
-    class DialogsModel
+    class DialogsModel : PropertyChangedBase
     {
         readonly IMod _mod;
         readonly string _languageId;
         readonly DialogResources _resources = new DialogResources();
         readonly NodeTree _nodeTree = new NodeTree(".");
+        string _translationId;
 
         public Node Root { get { return _nodeTree.Root; } }
+        public string TranslationId
+        {
+            get { return _translationId; }
+            set { this.SetProperty(ref _translationId, value); }
+        }
 
         public DialogsModel(IMod mod, string languageId)
         {
@@ -63,6 +71,21 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
                 return "";
 
             return _resources.GetDialog(node.Key).Text;
+        }
+
+        public void SetTranslation(string languageId)
+        {
+            TranslationId = languageId;
+            ReloadTranslation();
+        }
+
+        public void ClearTranslation()
+        {
+            TranslationId = null;
+        }
+
+        public void ReloadTranslation()
+        {
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
@@ -9,13 +10,22 @@ namespace Zelda.Editor.Modules.ResourceSelector.ViewModels
 {
     class SelectorViewModel : PropertyChangedBase
     {
+        public event EventHandler<Item> SelectedItemChanged;
+
         Item _selectedItem;
 
         public ResourceModel Model { get; private set; }
         public Item SelectedItem
         {
             get { return _selectedItem; }
-            set { this.SetProperty(ref _selectedItem, value); }
+            set
+            {
+                if (this.SetProperty(ref _selectedItem, value))
+                {
+                    if (SelectedItemChanged != null)
+                        SelectedItemChanged(this, value);
+                }
+            }
         }
 
         public IEnumerable<Item> RootItems { get { return Model.InvisibleRootItem.Children; } }
@@ -41,6 +51,5 @@ namespace Zelda.Editor.Modules.ResourceSelector.ViewModels
             if (item != null)
                 SelectedItem = item;
         }
-
     }
 }

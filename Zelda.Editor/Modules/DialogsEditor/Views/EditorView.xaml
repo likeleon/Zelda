@@ -18,6 +18,7 @@
         <primitives:BindingProxy x:Key="ModelProxy" Data="{Binding DialogsModel}" />
         <conveters:DialogNameConverter x:Key="DialogNameConverter" />
         <conveters:DialogIconConverter x:Key="DialogIconConverter" />
+        <conveters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
@@ -54,7 +55,9 @@
                     <resourceSelectorView:SelectorView x:Name="translateLanguageSelector" Margin="5 0"
                                                        VerticalAlignment="Center" VerticalContentAlignment="Center"
                                                        DataContext="{Binding TranslationSelector}" />
-                    <Button ToolTip="Refresh language" Height="{Binding ActualHeight, ElementName=translateLanguageSelector}">
+                    <Button ToolTip="Refresh language" Height="{Binding ActualHeight, ElementName=translateLanguageSelector}"
+                            Command="{Binding RefreshTranslationCommand}"
+                            IsEnabled="{Binding DialogsModel.TranslationId, Converter={StaticResource NullToBooleanConverter}}">
                         <Image Source="/Resources/Icons/icon_refresh.png" Stretch="None" />
                     </Button>
                 </StackPanel>

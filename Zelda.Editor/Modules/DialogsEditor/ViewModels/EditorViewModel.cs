@@ -5,6 +5,7 @@ using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Core.Threading;
 using Zelda.Editor.Modules.DialogsEditor.Models;
+using Zelda.Editor.Modules.ResourceSelector.Models;
 using Zelda.Editor.Modules.ResourceSelector.ViewModels;
 using Zelda.Game;
 
@@ -65,12 +66,16 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         }
         public SelectorViewModel TranslationSelector { get; private set; }
 
+        public RelayCommand RefreshTranslationCommand { get; private set; }
+
         Core.Mods.ModResources Resources { get { return _mod.Resources; } }
 
         public EditorViewModel(IMod mod)
         {
             _mod = mod;
             Resources.ElementDescriptionChanged += (_, e) => NotifyOfPropertyChange(() => Description);
+
+            RefreshTranslationCommand = new RelayCommand(_ => DialogsModel.ReloadTranslation());
         }
 
         protected override Task DoLoad(string filePath)
@@ -89,9 +94,19 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             TranslationSelector.RemoveId(languageId);
             TranslationSelector.AddSpecialValue("", "<No language>", 0);
             TranslationSelector.SetSelectedId("");
+            TranslationSelector.SelectedItemChanged += TranslationSelector_SelectedItemChanged;
             NotifyOfPropertyChange(() => TranslationSelector);
 
             return TaskUtility.Completed;
+        }
+
+        void TranslationSelector_SelectedItemChanged(object sender, Item e)
+        {
+            var newLanguage = e as ElementItem;
+            if (newLanguage == null)
+                DialogsModel.ClearTranslation();
+            else
+                DialogsModel.SetTranslation(newLanguage.Id);
         }
 
         void SetDescription(string description)

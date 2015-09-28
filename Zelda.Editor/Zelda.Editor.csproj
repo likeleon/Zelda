@@ -243,6 +243,7 @@
     <Compile Include="Core\Services\ResourceManager.cs" />
     <Compile Include="Modules\DialogsEditor\Converters\DialogIconConverter.cs" />
     <Compile Include="Modules\DialogsEditor\Converters\DialogNameConverter.cs" />
+    <Compile Include="Modules\DialogsEditor\Converters\NullToBooleanConverter.cs" />
     <Compile Include="Modules\DialogsEditor\EditorProvider.cs" />
     <Compile Include="Modules\DialogsEditor\Models\DialogsModel.cs" />
     <Compile Include="Modules\DialogsEditor\Models\NodeTree.cs" />
