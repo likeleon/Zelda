@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Zelda.Editor.Core;
 
-namespace Zelda.Editor.Modules.ResourceSelector
+namespace Zelda.Editor.Modules.ResourceSelector.Models
 {
     abstract class Item : PropertyChangedBase
     {

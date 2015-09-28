@@ -353,10 +353,10 @@
     <Compile Include="Modules\ResourceBrowser\Views\ResourceBrowserView.xaml.cs">
       <DependentUpon>ResourceBrowserView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Modules\ResourceSelector\Items.cs" />
+    <Compile Include="Modules\ResourceSelector\Models\Items.cs" />
     <Compile Include="Modules\ResourceSelector\ItemDataTemplateSelector.cs" />
-    <Compile Include="Modules\ResourceSelector\ResourceModel.cs" />
-    <Compile Include="Modules\ResourceSelector\Selector.cs" />
+    <Compile Include="Modules\ResourceSelector\Models\ResourceModel.cs" />
+    <Compile Include="Modules\ResourceSelector\ViewModels\SelectorViewModel.cs" />
     <Compile Include="Modules\ResourceSelector\Views\SelectorView.xaml.cs">
       <DependentUpon>SelectorView.xaml</DependentUpon>
     </Compile>

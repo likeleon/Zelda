@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Zelda.Editor.Modules.ResourceSelector.Models;
 
 namespace Zelda.Editor.Modules.ResourceSelector
 {

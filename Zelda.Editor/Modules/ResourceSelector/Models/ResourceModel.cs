@@ -4,7 +4,7 @@ using Zelda.Editor.Core.Mods;
 using Zelda.Game;
 using ModResources = Zelda.Editor.Core.Mods.ModResources;
 
-namespace Zelda.Editor.Modules.ResourceSelector
+namespace Zelda.Editor.Modules.ResourceSelector.Models
 {
     class ResourceModel
     {

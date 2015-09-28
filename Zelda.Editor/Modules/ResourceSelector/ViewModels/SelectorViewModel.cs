@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
+using Zelda.Editor.Modules.ResourceSelector.Models;
 using Zelda.Game;
 
-namespace Zelda.Editor.Modules.ResourceSelector
+namespace Zelda.Editor.Modules.ResourceSelector.ViewModels
 {
-    class Selector : PropertyChangedBase
+    class SelectorViewModel : PropertyChangedBase
     {
         Item _selectedItem;
 
@@ -19,7 +20,7 @@ namespace Zelda.Editor.Modules.ResourceSelector
 
         public IEnumerable<Item> RootItems { get { return Model.InvisibleRootItem.Children; } }
 
-        public Selector(IMod mod, ResourceType resourceType)
+        public SelectorViewModel(IMod mod, ResourceType resourceType)
         {
             Model = new ResourceModel(mod, resourceType);
         }
@@ -40,5 +41,6 @@ namespace Zelda.Editor.Modules.ResourceSelector
             if (item != null)
                 SelectedItem = item;
         }
+
     }
 }
