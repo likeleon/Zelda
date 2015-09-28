@@ -6,6 +6,7 @@ using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Core.Threading;
 using Zelda.Editor.Modules.DialogsEditor.Models;
+using Zelda.Editor.Modules.ResourceSelector;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
@@ -63,6 +64,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             get { return DialogExists ? DialogsModel.GetDialogText(SelectedNode) : ""; }
             set { /* TODO: SetDialogTextCommand */ }
         }
+        public Selector TranslationSelector { get; private set; }
 
         Core.Mods.ModResources Resources { get { return _mod.Resources; } }
 
@@ -83,6 +85,12 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
             DialogsModel = new DialogsModel(_mod, languageId);
             NotifyOfPropertyChange(() => DialogsModel);
+
+            TranslationSelector = new Selector(_mod, ResourceType.Language);
+            TranslationSelector.RemoveId(languageId);
+            TranslationSelector.AddSpecialValue("", "<No language>", 0);
+            TranslationSelector.SetSelectedId("");
+            NotifyOfPropertyChange(() => TranslationSelector);
 
             return TaskUtility.Completed;
         }

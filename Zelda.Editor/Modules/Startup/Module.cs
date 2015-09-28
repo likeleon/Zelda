@@ -19,16 +19,7 @@ namespace Zelda.Editor.Modules.Startup
         readonly IModService _modService;
         readonly IOutput _output;
 
-        public override IEnumerable<Type> DefaultTools
-        {
-            get 
-            {
-                yield return typeof(IOutput);
-                yield return typeof(IErrorList);
-                yield return typeof(IProgressTool); 
-                yield return typeof(IResourceBrowser);
-            }
-        }
+        public override IEnumerable<Type> DefaultTools { get { yield return typeof(IResourceBrowser); } }
 
         [ImportingConstructor]
         public Module(IModService modService, IOutput output)

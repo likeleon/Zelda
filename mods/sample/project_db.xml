@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ProjectDB>
+<?xml version="1.0"?>
+<ProjectDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Assemblies>
     <Assembly>Sample.dll</Assembly>
   </Assemblies>
@@ -9,11 +9,17 @@
   <Tilesets>
     <Tileset Id="castle" Description="Castle" />
   </Tilesets>
+  <Sprites />
+  <Musics />
+  <Sounds />
   <Items>
     <Item Id="bomb" Description="Bomb" />
   </Items>
+  <Enemies />
+  <Entities />
   <Languages>
     <Language Id="en" Description="English" />
+    <Language Id="ko_KR" Description="Korean" />
   </Languages>
   <Fonts>
     <Font Id="8_bit" Description="8_bit" />

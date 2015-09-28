@@ -57,6 +57,8 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 
             loadedMod.FileRenamed += LoadedMod_FileRenamed;
             loadedMod.Resources.ElementDescriptionChanged += Resources_ElementDescriptionChanged;
+
+            OpenDialogsEditor("en");
         }
 
 

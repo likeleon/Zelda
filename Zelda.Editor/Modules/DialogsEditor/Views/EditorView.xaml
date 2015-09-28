@@ -11,6 +11,7 @@
              xmlns:controls="clr-namespace:Zelda.Editor.Core.Controls"
              xmlns:conveters="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Converters"
              xmlns:primitives="clr-namespace:Zelda.Editor.Core.Primitives"
+             xmlns:resourceSelectorView="clr-namespace:Zelda.Editor.Modules.ResourceSelector.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
@@ -50,11 +51,10 @@
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0 5">
                     <Label Content="Compare to language" />
-                    <ComboBox x:Name="languageComboBox" Margin="5 0" SelectedIndex="0"
-                              VerticalAlignment="Center" VerticalContentAlignment="Center">
-                        <sys:String>&lt;No language&gt;</sys:String>
-                    </ComboBox>
-                    <Button ToolTip="Refresh language" Height="{Binding ActualHeight, ElementName=languageComboBox}">
+                    <resourceSelectorView:SelectorView x:Name="translateLanguageSelector" Margin="5 0"
+                                                       VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                                       DataContext="{Binding TranslationSelector}" />
+                    <Button ToolTip="Refresh language" Height="{Binding ActualHeight, ElementName=translateLanguageSelector}">
                         <Image Source="/Resources/Icons/icon_refresh.png" Stretch="None" />
                     </Button>
                 </StackPanel>
@@ -76,8 +76,7 @@
                         </Style>
                     </controls:TreeListView.Resources>
                     <controls:TreeListView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}" />
                     </controls:TreeListView.ItemTemplate>
                     <controls:TreeListView.Columns>
                         <GridViewColumn Header="">

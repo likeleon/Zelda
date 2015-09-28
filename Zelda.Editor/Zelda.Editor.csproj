@@ -151,6 +151,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Modules\ResourceSelector\Views\SelectorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Modules\Shell\Views\ShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -348,6 +352,13 @@
     </Compile>
     <Compile Include="Modules\ResourceBrowser\Views\ResourceBrowserView.xaml.cs">
       <DependentUpon>ResourceBrowserView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\ResourceSelector\Items.cs" />
+    <Compile Include="Modules\ResourceSelector\ItemDataTemplateSelector.cs" />
+    <Compile Include="Modules\ResourceSelector\ResourceModel.cs" />
+    <Compile Include="Modules\ResourceSelector\Selector.cs" />
+    <Compile Include="Modules\ResourceSelector\Views\SelectorView.xaml.cs">
+      <DependentUpon>SelectorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Shell\Commands\ExitCommandDefinition.cs" />
     <Compile Include="Modules\Shell\Commands\ExitCommandHandler.cs" />
