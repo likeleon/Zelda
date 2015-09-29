@@ -237,6 +237,7 @@
     <Compile Include="Core\Mods\TilesetModel.cs" />
     <Compile Include="Core\PersistedDocument.cs" />
     <Compile Include="Core\Primitives\BindingProxy.cs" />
+    <Compile Include="Core\Primitives\ObservableDictionary.cs" />
     <Compile Include="Core\Services\ExtensionMethods.cs" />
     <Compile Include="Core\Services\IEditorProvider.cs" />
     <Compile Include="Core\Services\IResourceManager.cs" />

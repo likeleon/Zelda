@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<Dialogs>
+  <Dialog Id="_treasure.bomb.1">
+    <Text>폭탄을 찾았다!
+X를 눌러 폭탄을 떨어뜨려서
+모든 것을 폭파시키자!
+</Text>
+  </Dialog>
+</Dialogs>

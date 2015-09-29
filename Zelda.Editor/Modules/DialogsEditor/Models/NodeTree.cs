@@ -34,9 +34,20 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             return AddChild(key, NodeType.RealKey, out parent);
         }
 
+        public Node AddRef(string key)
+        {
+            Node parent;
+            return AddRef(key, out parent);
+        }
+
+        public Node AddRef(string key, out Node parent)
+        {
+            return AddChild(key, NodeType.RefKey, out parent);
+        }
+
         Node AddChild(string key, NodeType type, out Node outParent)
         {
-            var keyList = key.Split(new[] { _separator }, StringSplitOptions.None).ToList();
+            var keyList = key.Split(new[] { _separator }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             var parent = _root;
             var node = parent;
@@ -53,6 +64,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             // 이미 노드가 존재
             if (node != null)
             {
+                if (type == NodeType.RefKey || node.Type == NodeType.Container)
+                    node.Type = type;
+
                 outParent = null;
                 return null;
             }
@@ -79,6 +93,61 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             return node;
         }
 
+        public bool RemoveRef(Node node, bool keepKey)
+        {
+            return RemoveChild(node, NodeType.RefKey, keepKey);
+        }
+
+        bool RemoveChild(Node node, NodeType type, bool keepKey)
+        {
+            Node childToRemove;
+            if (!CanRemoveChild(node, type, out childToRemove))
+            {
+                if (type == node.Type)
+                {
+                    if (type == NodeType.RefKey && keepKey)
+                        node.Type = NodeType.RealKey;
+                    else
+                        node.Type = NodeType.Container;
+                }
+                return true;
+            }
+
+            if (type == NodeType.RefKey && keepKey)
+            {
+                node.Type = NodeType.RealKey;
+                return true;
+            }
+
+            childToRemove.Parent.RemoveChild(childToRemove);
+            return true;
+        }
+
+        public bool CanRemoveKey(Node node, out Node childToRemove)
+        {
+            return CanRemoveChild(node, NodeType.RefKey, out childToRemove);
+        }
+
+        bool CanRemoveChild(Node node, NodeType type, out Node childToRemove)
+        {
+            if (node.ChildrenCount > 0 || node.Type != type)
+            {
+                childToRemove = null;
+                return false;
+            }
+
+            // 실제 삭제해야할 노드를 찾습니다
+            var parent = node.Parent;
+            childToRemove = node;
+            while (parent != Root && parent != null &&
+                   parent.Type == NodeType.Container && parent.ChildrenCount == 1)
+            {
+                childToRemove = parent;
+                parent = childToRemove.Parent;
+            }
+            return true;
+        }
+
         public void Clear()
         {
             ClearChildren(_root);
@@ -88,6 +157,22 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         {
             node.Children.Cast<Node>().Do(child => ClearChildren(child));
             node.ClearChildren();
+        }
+
+        public Node Find(string key)
+        {
+            if (key == null)
+                throw new ArgumentNullException("key");
+
+            var node = Root;
+            var subKeys = key.Split(new[] { _separator }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var subKey in subKeys)
+            {
+                node = node.GetChild(subKey);
+                if (node == null)
+                    return null;
+            }
+            return node;
         }
     }
 }

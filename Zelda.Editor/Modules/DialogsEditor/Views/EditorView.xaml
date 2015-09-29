@@ -72,17 +72,17 @@
                         <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
                     </Button>
                 </StackPanel>
-                <controls:TreeListView ItemsSource="{Binding DialogsModel.Root.Children}">
+                <controls:TreeListView x:Name="dialogsTreeListView" ItemsSource="{Binding DialogsModel.Root.BindableChildren}">
                     <controls:TreeListView.Resources>
                         <Style TargetType="GridViewColumnHeader">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </Style>
                     </controls:TreeListView.Resources>
                     <controls:TreeListView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Children}" />
+                        <HierarchicalDataTemplate ItemsSource="{Binding BindableChildren}" />
                     </controls:TreeListView.ItemTemplate>
                     <controls:TreeListView.Columns>
-                        <GridViewColumn Header="">
+                        <GridViewColumn Header="" Width="{Binding ActualWidth, ElementName=dialogsTreeListView}">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <DockPanel Height="18">
@@ -102,7 +102,7 @@
                 </controls:TreeListView>
             </DockPanel>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
-            <GroupBox Grid.Column="2" Margin="0 2 0 0" Header="Dialog properties" IsEnabled="{Binding DialogExists}" >
+            <GroupBox Grid.Column="2" Margin="0 2 0 0" Header="Dialog properties" IsEnabled="{Binding IsDialogPropertiesEnabled}" >
                 <Grid Margin="0 10 0 0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -129,7 +129,8 @@
                              Text="{Binding DialogText}" />
                     <Label Grid.Row="3" Content="Translation: " />
                     <TextBox Grid.Row="4" Style="{StaticResource MultilineTextBox}" 
-                             Text="{Binding TranslationText}" />
+                             Text="{Binding TranslationText}"
+                             IsEnabled="{Binding TranslationText, Converter={StaticResource NullToBooleanConverter}}"/>
                     <Label Grid.Row="5" Content="Properties: " />
                     <DockPanel Grid.Row="6">
                         <StackPanel DockPanel.Dock="Right" Margin="5 0">

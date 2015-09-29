@@ -16,6 +16,10 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         readonly IMod _mod;
         string _languageId;
         Node _selectedNode;
+        bool _isDialogPropertiesEnabled;
+        string _dialogId;
+        string _dialogText;
+        string _translationText;
 
         public string LanguageId
         {
@@ -35,11 +39,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             set
             {
                 if (this.SetProperty(ref _selectedNode, value))
-                {
-                    NotifyOfPropertyChange(() => DialogExists);
-                    NotifyOfPropertyChange(() => DialogId);
-                    NotifyOfPropertyChange(() => DialogText);
-                }
+                    UpdateDialogView();
             }
         }
 
@@ -57,14 +57,31 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         public override Uri IconSource { get { return "icon_resource_language.png".ToIconUri(); } }
 
-        public bool DialogExists { get { return SelectedNode != null && DialogsModel.DialogExists(SelectedNode); } }
-        public string DialogId { get { return DialogExists ? SelectedNode.Key : ""; } }
+        public SelectorViewModel TranslationSelector { get; private set; }
+
+        public bool IsDialogPropertiesEnabled
+        {
+            get { return _isDialogPropertiesEnabled; }
+            set { this.SetProperty(ref _isDialogPropertiesEnabled, value); }
+        }
+
+        public string DialogId
+        {
+            get { return _dialogId; }
+            set { this.SetProperty(ref _dialogId, value); }
+        }
+
         public string DialogText
         {
-            get { return DialogExists ? DialogsModel.GetDialogText(SelectedNode) : ""; }
-            set { /* TODO: SetDialogTextCommand */ }
+            get { return _dialogText; }
+            set { this.SetProperty(ref _dialogText, value); }
         }
-        public SelectorViewModel TranslationSelector { get; private set; }
+
+        public string TranslationText
+        {
+            get { return _translationText; }
+            set { this.SetProperty(ref _translationText, value); }
+        }
 
         public RelayCommand RefreshTranslationCommand { get; private set; }
 
@@ -104,9 +121,19 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         {
             var newLanguage = e as ElementItem;
             if (newLanguage == null)
+            {
                 DialogsModel.ClearTranslation();
-            else
-                DialogsModel.SetTranslation(newLanguage.Id);
+                return;
+            }
+
+            try
+            {
+                DialogsModel.SetTranslationId(newLanguage.Id);
+            }
+            catch (Exception ex)
+            {
+                ex.ShowDialog();
+            }
         }
 
         void SetDescription(string description)
@@ -129,6 +156,42 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             {
                 e.ShowDialog();
             }      
+        }
+
+        void UpdateDialogView()
+        {
+            var exists = SelectedNode != null && DialogsModel.DialogExists(SelectedNode);
+            var hasTranslation = SelectedNode != null && DialogsModel.TranslatedDialogExists(SelectedNode);
+            IsDialogPropertiesEnabled = exists || hasTranslation;
+
+            UpdateDialogId();
+            UpdateDialogText();
+            UpdateTranslationText();
+        }
+
+        void UpdateDialogId()
+        {
+            if (SelectedNode != null &&
+                (DialogsModel.DialogExists(SelectedNode) || DialogsModel.TranslatedDialogExists(SelectedNode)))
+                DialogId = SelectedNode.Key;
+            else
+                DialogId = null;
+        }
+
+        void UpdateDialogText()
+        {
+            if (SelectedNode != null && DialogsModel.DialogExists(SelectedNode))
+                DialogText = DialogsModel.GetDialogText(SelectedNode);
+            else
+                DialogText = null;
+        }
+
+        void UpdateTranslationText()
+        {
+            if (SelectedNode != null && DialogsModel.TranslatedDialogExists(SelectedNode))
+                TranslationText = DialogsModel.GetTranslatedDialogText(SelectedNode);
+            else
+                TranslationText = null;
         }
     }
 }

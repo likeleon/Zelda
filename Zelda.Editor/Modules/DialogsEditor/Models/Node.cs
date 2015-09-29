@@ -26,12 +26,21 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             set { this.SetProperty(ref _parent, value); }
         }
 
+        public int ChildrenCount { get { return _children.Count; } }
+
         public IEnumerable<Node> Children { get { return _children.Values; } }
+
+        public BindableCollection<Node> BindableChildren { get; private set; }
+
+        public Node()
+        {
+            BindableChildren = new BindableCollection<Node>();
+        }
 
         public void AddChild(string subKey, Node child)
         {
             _children.Add(subKey, child);
-            NotifyOfPropertyChange(() => Children);
+            BindableChildren.Add(child);
         }
 
         public Node GetChild(string subKey)
@@ -41,10 +50,25 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             return child;
         }
 
+        public void RemoveChild(Node child)
+        {
+            if (child == null)
+                throw new ArgumentNullException("child");
+
+            if (child.Parent != this)
+                throw new InvalidOperationException("Parent mismatch");
+
+            if (!_children.ContainsKey(child.Key))
+                throw new InvalidOperationException("No such child");
+
+            _children.Remove(child.Key);
+            BindableChildren.Remove(child);
+        }
+
         public void ClearChildren()
         {
             _children.Clear();
-            NotifyOfPropertyChange(() => Children);
+            BindableChildren.Clear();
         }
 
         public override string ToString()
