@@ -17,7 +17,6 @@
     <UserControl.Resources>
         <primitives:BindingProxy x:Key="ModelProxy" Data="{Binding DialogsModel}" />
         <conveters:DialogNameConverter x:Key="DialogNameConverter" />
-        <conveters:DialogIconConverter x:Key="DialogIconConverter" />
         <conveters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -87,8 +86,7 @@
                                 <DataTemplate>
                                     <DockPanel Height="18">
                                         <ToggleButton Style="{StaticResource ExpandCollapseToggleStyle}" VerticalAlignment="Center" />
-                                        <Image Source="{Binding Converter={StaticResource DialogIconConverter}, ConverterParameter={StaticResource ModelProxy}}" 
-                                               Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
+                                        <Image Source="{Binding Icon}" Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
                                         <TextBlock Text="{Binding Converter={StaticResource DialogNameConverter}, ConverterParameter={StaticResource ModelProxy}}" 
                                                    VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                     </DockPanel>

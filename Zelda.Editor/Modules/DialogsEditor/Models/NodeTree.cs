@@ -155,7 +155,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         void ClearChildren(Node node)
         {
-            node.Children.Cast<Node>().Do(child => ClearChildren(child));
+            node.Children.Do(child => ClearChildren(child));
             node.ClearChildren();
         }
 

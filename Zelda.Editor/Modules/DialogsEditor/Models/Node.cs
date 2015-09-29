@@ -9,8 +9,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
     class Node : PropertyChangedBase
     {
         readonly Dictionary<string, Node> _children = new Dictionary<string, Node>(StringComparer.CurrentCulture);
-        string _key;
+        string _key = "";
         Node _parent;
+        Uri _icon;
 
         public string Key
         {
@@ -19,6 +20,12 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         }
 
         public NodeType Type { get; set; }
+
+        public Uri Icon
+        {
+            get { return _icon; }
+            set { this.SetProperty(ref _icon, value); }
+        }
 
         public Node Parent
         {

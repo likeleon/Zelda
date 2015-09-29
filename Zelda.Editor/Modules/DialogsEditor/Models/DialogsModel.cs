@@ -46,9 +46,16 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         {
             _dialogTree.Clear();
             _resources.Dialogs.Keys.Do(id => _dialogTree.AddKey(id));
+            UpdateChildIcons(_dialogTree.Root);
         }
 
-        public Uri GetIcon(Node node)
+        void UpdateChildIcons(Node node)
+        {
+            node.Children.Do(child => UpdateChildIcons(child));
+            node.Icon = GetIcon(node);
+        }
+
+        Uri GetIcon(Node node)
         {
             if (!DialogExists(node))
             {
@@ -94,6 +101,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             TranslationId = null;
             ClearTranslationFromTree();
             _translationResources.Clear();
+            UpdateChildIcons(_dialogTree.Root);
         }
 
         public void ReloadTranslation()
@@ -101,6 +109,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             ClearTranslationFromTree();
 
             var path = _mod.GetDialogsPath(TranslationId);
+            _translationResources.Clear();
             if (!_translationResources.ImportFromFile(path))
             {
                 TranslationId = null;
@@ -108,6 +117,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             }
 
             _translationResources.Dialogs.Keys.Do(dialogId => _dialogTree.AddRef(dialogId));
+            UpdateChildIcons(_dialogTree.Root);
         }
 
         void ClearTranslationFromTree()
