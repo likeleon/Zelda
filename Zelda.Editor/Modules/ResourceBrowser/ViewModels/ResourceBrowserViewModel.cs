@@ -385,7 +385,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             _shell.OpenDocument(GetEditor(path));
         }
 
-        static IDocument GetEditor(string path)
+        IDocument GetEditor(string path)
         {
             var provider = IoC.GetAllInstances(typeof(IEditorProvider))
                 .Cast<IEditorProvider>()
@@ -393,7 +393,11 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             if (provider == null)
                 return null;
 
-            var editor = provider.Create();
+            var editor = provider.Find(_shell.Documents, path);
+            if (editor != null)
+                return editor;
+
+            editor = provider.Create();
 
             var viewAware = (IViewAware)editor;
             viewAware.ViewAttached += (sender, e) =>

@@ -147,7 +147,7 @@ namespace Zelda.Editor.Modules.Shell.ViewModels
 
         protected override void OnActivationProcessed(IDocument doc, bool success)
         {
-            if (!ReferenceEquals(ActiveDocument, doc))
+            if (!ReferenceEquals(ActiveLayoutItem, doc))
                 ActiveLayoutItem = doc;
 
             base.OnActivationProcessed(doc, success);

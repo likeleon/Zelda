@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.Composition;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
 using System.Threading.Tasks;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
@@ -13,6 +15,11 @@ namespace Zelda.Editor.Modules.DialogsEditor
         readonly IModService _modService;
 
         public IDocument Create() { return new EditorViewModel(_modService.Mod); }
+
+        public IDocument Find(IEnumerable<IDocument> documents, string path)
+        {
+            return documents.OfType<EditorViewModel>().FirstOrDefault(vm => vm.FilePath == path);
+        }
 
         [ImportingConstructor]
         public EditorProvider(IModService modService)
