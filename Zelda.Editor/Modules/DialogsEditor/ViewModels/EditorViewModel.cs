@@ -92,7 +92,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             _mod = mod;
             Resources.ElementDescriptionChanged += (_, e) => NotifyOfPropertyChange(() => Description);
 
-            RefreshTranslationCommand = new RelayCommand(_ => DialogsModel.ReloadTranslation());
+            RefreshTranslationCommand = new RelayCommand(_ => RefreshTranslation());
         }
 
         protected override Task DoLoad(string filePath)
@@ -123,17 +123,19 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             if (newLanguage == null)
             {
                 DialogsModel.ClearTranslation();
-                return;
             }
-
-            try
+            else
             {
-                DialogsModel.SetTranslationId(newLanguage.Id);
+                try
+                {
+                    DialogsModel.SetTranslationId(newLanguage.Id);
+                }
+                catch (Exception ex)
+                {
+                    ex.ShowDialog();
+                }
             }
-            catch (Exception ex)
-            {
-                ex.ShowDialog();
-            }
+            UpdateTranslationText();
         }
 
         void SetDescription(string description)
@@ -192,6 +194,16 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 TranslationText = DialogsModel.GetTranslatedDialogText(SelectedNode);
             else
                 TranslationText = null;
+        }
+
+        void RefreshTranslation()
+        {
+            if (DialogsModel.TranslationId == null)
+                return;
+
+            DialogsModel.ReloadTranslation();
+
+            UpdateTranslationText();
         }
     }
 }
