@@ -4,9 +4,10 @@ using System.Linq;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
+using Zelda.Editor.Modules.DialogsEditor.Models;
 using Zelda.Game;
 
-namespace Zelda.Editor.Modules.DialogsEditor.Models
+namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 {
     class DialogsModel : PropertyChangedBase
     {

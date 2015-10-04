@@ -251,7 +251,8 @@
     <Compile Include="Modules\DialogsEditor\Converters\DialogNameConverter.cs" />
     <Compile Include="Modules\DialogsEditor\Converters\NullToBooleanConverter.cs" />
     <Compile Include="Modules\DialogsEditor\EditorProvider.cs" />
-    <Compile Include="Modules\DialogsEditor\Models\DialogsModel.cs" />
+    <Compile Include="Modules\DialogsEditor\ViewModels\DialogPropertiesTable.cs" />
+    <Compile Include="Modules\DialogsEditor\ViewModels\DialogsModel.cs" />
     <Compile Include="Modules\DialogsEditor\Models\NodeTree.cs" />
     <Compile Include="Modules\DialogsEditor\Models\Node.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\EditorViewModel.cs" />
