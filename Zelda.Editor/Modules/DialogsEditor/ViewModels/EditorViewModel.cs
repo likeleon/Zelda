@@ -32,6 +32,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         }
 
         public DialogsModel DialogsModel { get; private set; }
+        public DialogPropertiesTable PropertiesTable { get; private set; }
 
         public Node SelectedNode
         {
@@ -39,7 +40,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             set
             {
                 if (this.SetProperty(ref _selectedNode, value))
-                    UpdateDialogView();
+                    UpdateSelection();
             }
         }
 
@@ -58,6 +59,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         public override Uri IconSource { get { return "icon_resource_language.png".ToIconUri(); } }
 
         public SelectorViewModel TranslationSelector { get; private set; }
+
+        string SelectedNodeKey { get { return SelectedNode != null ? SelectedNode.Key : null; } }
 
         public bool IsDialogPropertiesEnabled
         {
@@ -106,6 +109,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
             DialogsModel = new DialogsModel(_mod, languageId);
             NotifyOfPropertyChange(() => DialogsModel);
+
+            PropertiesTable = new DialogPropertiesTable(DialogsModel);
+            NotifyOfPropertyChange(() => PropertiesTable);
 
             TranslationSelector = new SelectorViewModel(_mod, ResourceType.Language);
             TranslationSelector.RemoveId(languageId);
@@ -160,38 +166,44 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             }      
         }
 
+        void UpdateSelection()
+        {
+            UpdateDialogView();
+        }
+
         void UpdateDialogView()
         {
-            var exists = SelectedNode != null && DialogsModel.DialogExists(SelectedNode);
-            var hasTranslation = SelectedNode != null && DialogsModel.TranslatedDialogExists(SelectedNode);
+            var exists = DialogsModel.DialogExists(SelectedNodeKey);
+            var hasTranslation = DialogsModel.TranslatedDialogExists(SelectedNodeKey);
             IsDialogPropertiesEnabled = exists || hasTranslation;
 
             UpdateDialogId();
             UpdateDialogText();
             UpdateTranslationText();
+
+            PropertiesTable.DialogId = SelectedNodeKey;
         }
 
         void UpdateDialogId()
         {
-            if (SelectedNode != null &&
-                (DialogsModel.DialogExists(SelectedNode) || DialogsModel.TranslatedDialogExists(SelectedNode)))
-                DialogId = SelectedNode.Key;
+            if (DialogsModel.DialogExists(SelectedNodeKey) || DialogsModel.TranslatedDialogExists(SelectedNodeKey))
+                DialogId = SelectedNodeKey;
             else
                 DialogId = null;
         }
 
         void UpdateDialogText()
         {
-            if (SelectedNode != null && DialogsModel.DialogExists(SelectedNode))
-                DialogText = DialogsModel.GetDialogText(SelectedNode);
+            if (DialogsModel.DialogExists(SelectedNodeKey))
+                DialogText = DialogsModel.GetDialogText(SelectedNodeKey);
             else
                 DialogText = null;
         }
 
         void UpdateTranslationText()
         {
-            if (SelectedNode != null && DialogsModel.TranslatedDialogExists(SelectedNode))
-                TranslationText = DialogsModel.GetTranslatedDialogText(SelectedNode);
+            if (DialogsModel.TranslatedDialogExists(SelectedNodeKey))
+                TranslationText = DialogsModel.GetTranslatedDialogText(SelectedNodeKey);
             else
                 TranslationText = null;
         }
@@ -202,7 +214,6 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 return;
 
             DialogsModel.ReloadTranslation();
-
             UpdateTranslationText();
         }
     }

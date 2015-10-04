@@ -5,9 +5,7 @@ using System.IO;
 using System.Windows;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
-using Zelda.Editor.Modules.ErrorList;
 using Zelda.Editor.Modules.Output;
-using Zelda.Editor.Modules.Progress;
 using Zelda.Editor.Modules.ResourceBrowser;
 using Zelda.Game;
 
@@ -41,7 +39,7 @@ namespace Zelda.Editor.Modules.Startup
 
         public override void PostInitialize()
         {
-            var sampleModPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\mods\sample"));
+            var sampleModPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\mods\alttp"));
             _modService.Load(sampleModPath);
         }
 

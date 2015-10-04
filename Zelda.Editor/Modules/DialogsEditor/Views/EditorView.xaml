@@ -142,14 +142,35 @@
                                 <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
                             </Button>
                         </StackPanel>
-                        <ListView>
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Key" Width="100" />
-                                    <GridViewColumn Header="Value" Width="200" />
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
+                        <DataGrid AutoGenerateColumns="False" GridLinesVisibility="None" Background="Transparent" RowHeaderWidth="0"
+                                  ItemsSource="{Binding PropertiesTable.Items}">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="" Width="80">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <DockPanel>
+                                                <Image DockPanel.Dock="Left" Margin="10 0 5 0" Source="{Binding Icon}" Stretch="None" />
+                                                <TextBlock Text="{Binding Key}" VerticalAlignment="Center" />
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Value" Width="120">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Value}" VerticalAlignment="Center" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Translation" Width="120">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Translation}" VerticalAlignment="Center" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </DockPanel>
                 </Grid>
             </GroupBox>

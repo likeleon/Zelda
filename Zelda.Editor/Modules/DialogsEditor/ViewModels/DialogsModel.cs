@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
@@ -58,9 +59,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         Uri GetIcon(Node node)
         {
-            if (!DialogExists(node))
+            if (!DialogExists(node.Key))
             {
-                if (TranslatedDialogExists(node))
+                if (TranslatedDialogExists(node.Key))
                 {
                     if (node.BindableChildren.Any())
                         return "icon_dialogs_missing.png".ToIconUri();
@@ -78,17 +79,17 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             }
         }
 
-        public bool DialogExists(Node node)
+        public bool DialogExists(string id)
         {
-            return _resources.HasDialog(node.Key);
+            return _resources.HasDialog(id);
         }
 
-        public string GetDialogText(Node node)
+        public string GetDialogText(string id)
         {
-            if (!DialogExists(node))
+            if (!DialogExists(id))
                 return null;
 
-            return _resources.GetDialog(node.Key).Text;
+            return _resources.GetDialog(id).Text;
         }
 
         public void SetTranslationId(string languageId)
@@ -127,21 +128,37 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             {
                 var node = _dialogTree.Find(id);
                 if (node != null)
-                    _dialogTree.RemoveRef(node, DialogExists(node));
+                    _dialogTree.RemoveRef(node, DialogExists(node.Key));
             }
         }
 
-        public bool TranslatedDialogExists(Node node)
+        public bool TranslatedDialogExists(string id)
         {
-            return _translationResources.HasDialog(node.Key);
+            return _translationResources.HasDialog(id);
         }
 
-        public string GetTranslatedDialogText(Node node)
+        public string GetTranslatedDialogText(string id)
         {
-            if (!TranslatedDialogExists(node))
+            if (!TranslatedDialogExists(id))
                 return null;
 
-            return _translationResources.GetDialog(node.Key).Text;
+            return _translationResources.GetDialog(id).Text;
+        }
+
+        public IReadOnlyDictionary<string, string> GetDialogProperties(string id)
+        {
+            if (!DialogExists(id))
+                return new Dictionary<string, string>();
+
+            return _resources.GetDialog(id).Properties;
+        }
+
+        public IReadOnlyDictionary<string, string> GetTranslatedDialogProperties(string id)
+        {
+            if (!TranslatedDialogExists(id))
+                return new Dictionary<string, string>();
+
+            return _translationResources.GetDialog(id).Properties;
         }
     }
 }
