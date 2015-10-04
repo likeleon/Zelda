@@ -15,11 +15,12 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
     {
         readonly IMod _mod;
         string _languageId;
-        Node _selectedNode;
+        Node _selectedDialogNode;
         bool _isDialogPropertiesEnabled;
         string _dialogId;
         string _dialogText;
         string _translationText;
+        DialogPropertiesTable.Item _selectedPropertyItem;
 
         public string LanguageId
         {
@@ -34,12 +35,12 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         public DialogsModel DialogsModel { get; private set; }
         public DialogPropertiesTable PropertiesTable { get; private set; }
 
-        public Node SelectedNode
+        public Node SelectedDialogNode
         {
-            get { return _selectedNode; }
+            get { return _selectedDialogNode; }
             set
             {
-                if (this.SetProperty(ref _selectedNode, value))
+                if (this.SetProperty(ref _selectedDialogNode, value))
                     UpdateSelection();
             }
         }
@@ -60,7 +61,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         public SelectorViewModel TranslationSelector { get; private set; }
 
-        string SelectedNodeKey { get { return SelectedNode != null ? SelectedNode.Key : null; } }
+        string SelectedDialogId { get { return SelectedDialogNode != null ? SelectedDialogNode.Key : string.Empty; } }
 
         public bool IsDialogPropertiesEnabled
         {
@@ -86,7 +87,25 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             set { this.SetProperty(ref _translationText, value); }
         }
 
+        public DialogPropertiesTable.Item SelectedPropertyItem
+        {
+            get { return _selectedPropertyItem; }
+            set
+            {
+                if (this.SetProperty(ref _selectedPropertyItem, value))
+                    UpdatePropertiesButtons();
+            }
+        }
+
+        public string SelectedPropertyKey
+        {
+            get { return _selectedPropertyItem != null ? _selectedPropertyItem.Key : string.Empty; }
+        }
+
         public RelayCommand RefreshTranslationCommand { get; private set; }
+        public RelayCommand CreatePropertyCommand { get; private set; }
+        public RelayCommand SetPropertyKeyCommand { get; private set; }
+        public RelayCommand DeletePropertyCommand { get; private set; }
 
         Core.Mods.ModResources Resources { get { return _mod.Resources; } }
 
@@ -96,6 +115,11 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             Resources.ElementDescriptionChanged += (_, e) => NotifyOfPropertyChange(() => Description);
 
             RefreshTranslationCommand = new RelayCommand(_ => RefreshTranslation());
+            CreatePropertyCommand = new RelayCommand(_ => CreateProperty());
+            SetPropertyKeyCommand = new RelayCommand(_ => ChangeDialogPropertyKey(), 
+                                                     _ => DialogsModel != null && SelectedDialogPropertyExists());
+            DeletePropertyCommand = new RelayCommand(_ => DeleteDialogProperty(), 
+                                                     _ => DialogsModel != null && SelectedDialogPropertyExists());
         }
 
         protected override Task DoLoad(string filePath)
@@ -163,7 +187,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             catch (Exception e)
             {
                 e.ShowDialog();
-            }      
+            }
         }
 
         void UpdateSelection()
@@ -173,39 +197,51 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         void UpdateDialogView()
         {
-            var exists = DialogsModel.DialogExists(SelectedNodeKey);
-            var hasTranslation = DialogsModel.TranslatedDialogExists(SelectedNodeKey);
+            var exists = DialogsModel.DialogExists(SelectedDialogId);
+            var hasTranslation = DialogsModel.TranslatedDialogExists(SelectedDialogId);
             IsDialogPropertiesEnabled = exists || hasTranslation;
 
             UpdateDialogId();
             UpdateDialogText();
             UpdateTranslationText();
+            UpdatePropertiesButtons();
 
-            PropertiesTable.DialogId = SelectedNodeKey;
+            PropertiesTable.DialogId = SelectedDialogId;
         }
 
         void UpdateDialogId()
         {
-            if (DialogsModel.DialogExists(SelectedNodeKey) || DialogsModel.TranslatedDialogExists(SelectedNodeKey))
-                DialogId = SelectedNodeKey;
+            if (DialogsModel.DialogExists(SelectedDialogId) || DialogsModel.TranslatedDialogExists(SelectedDialogId))
+                DialogId = SelectedDialogId;
             else
                 DialogId = null;
         }
 
         void UpdateDialogText()
         {
-            if (DialogsModel.DialogExists(SelectedNodeKey))
-                DialogText = DialogsModel.GetDialogText(SelectedNodeKey);
+            if (DialogsModel.DialogExists(SelectedDialogId))
+                DialogText = DialogsModel.GetDialogText(SelectedDialogId);
             else
                 DialogText = null;
         }
 
         void UpdateTranslationText()
         {
-            if (DialogsModel.TranslatedDialogExists(SelectedNodeKey))
-                TranslationText = DialogsModel.GetTranslatedDialogText(SelectedNodeKey);
+            if (DialogsModel.TranslatedDialogExists(SelectedDialogId))
+                TranslationText = DialogsModel.GetTranslatedDialogText(SelectedDialogId);
             else
                 TranslationText = null;
+        }
+
+        void UpdatePropertiesButtons()
+        {
+            SetPropertyKeyCommand.RaiseCanExecuteChanged();
+            DeletePropertyCommand.RaiseCanExecuteChanged();
+        }
+
+        bool SelectedDialogPropertyExists()
+        {
+            return DialogsModel.DialogPropertyExists(SelectedDialogId, SelectedPropertyKey);
         }
 
         void RefreshTranslation()
@@ -215,6 +251,18 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
             DialogsModel.ReloadTranslation();
             UpdateTranslationText();
+        }
+
+        void CreateProperty()
+        {
+        }
+
+        void ChangeDialogPropertyKey()
+        {
+        }
+
+        void DeleteDialogProperty()
+        {
         }
     }
 }

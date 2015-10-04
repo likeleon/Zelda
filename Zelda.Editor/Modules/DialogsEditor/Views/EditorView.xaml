@@ -95,7 +95,7 @@
                         </GridViewColumn>
                     </controls:TreeListView.Columns>
                     <i:Interaction.Behaviors>
-                        <behaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedNode, Mode=TwoWay}" />
+                        <behaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedDialogNode, Mode=TwoWay}" />
                     </i:Interaction.Behaviors>
                 </controls:TreeListView>
             </DockPanel>
@@ -132,18 +132,20 @@
                     <Label Grid.Row="5" Content="Properties: " />
                     <DockPanel Grid.Row="6">
                         <StackPanel DockPanel.Dock="Right" Margin="5 0">
-                            <Button Width="32" Height="32" ToolTip="Add property">
+                            <Button Width="32" Height="32" ToolTip="Add property" Command="{Binding CreatePropertyCommand}">
                                 <Image Source="/Resources/Icons/icon_add.png" Stretch="None" />
                             </Button>
-                            <Button Width="32" Height="32" ToolTip="Change property key" Margin="0 5">
+                            <Button Width="32" Height="32" ToolTip="Change property key" Margin="0 5" Command="{Binding SetPropertyKeyCommand}">
                                 <Image Source="/Resources/Icons/icon_rename.png" Stretch="None" />
                             </Button>
-                            <Button Width="32" Height="32" ToolTip="Delete property">
+                            <Button Width="32" Height="32" ToolTip="Delete property" Command="{Binding DeletePropertyCommand}">
                                 <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
                             </Button>
                         </StackPanel>
-                        <DataGrid AutoGenerateColumns="False" GridLinesVisibility="None" Background="Transparent" RowHeaderWidth="0"
-                                  ItemsSource="{Binding PropertiesTable.Items}">
+                        <DataGrid AutoGenerateColumns="False" GridLinesVisibility="None" Background="Transparent" RowHeaderWidth="0" 
+                                  SelectionMode="Single" SelectionUnit="FullRow"
+                                  ItemsSource="{Binding PropertiesTable.Items}"
+                                  SelectedItem="{Binding SelectedPropertyItem}">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="" Width="80">
                                     <DataGridTemplateColumn.CellTemplate>

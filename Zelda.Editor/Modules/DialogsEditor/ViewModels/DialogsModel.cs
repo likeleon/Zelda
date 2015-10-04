@@ -84,6 +84,12 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             return _resources.HasDialog(id);
         }
 
+        public bool DialogPropertyExists(string id, string key)
+        {
+            return DialogExists(id) &&
+                   _resources.GetDialog(id).HasProperty(key);
+        }
+
         public string GetDialogText(string id)
         {
             if (!DialogExists(id))
