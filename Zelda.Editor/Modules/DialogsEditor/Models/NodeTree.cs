@@ -93,12 +93,17 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             return node;
         }
 
+        public bool CanRemoveRef(Node node, out Node childToRemove)
+        {
+            return CanRemoveChild(node, NodeType.RefKey, out childToRemove);
+        }
+
         public bool RemoveRef(Node node, bool keepKey)
         {
             return RemoveChild(node, NodeType.RefKey, keepKey);
         }
 
-        bool RemoveChild(Node node, NodeType type, bool keepKey)
+        bool RemoveChild(Node node, NodeType type, bool keepKey = false)
         {
             Node childToRemove;
             if (!CanRemoveChild(node, type, out childToRemove))
@@ -146,6 +151,11 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
                 parent = childToRemove.Parent;
             }
             return true;
+        }
+
+        public bool RemoveKey(Node node)
+        {
+            return RemoveChild(node, NodeType.RealKey);
         }
 
         public void Clear()

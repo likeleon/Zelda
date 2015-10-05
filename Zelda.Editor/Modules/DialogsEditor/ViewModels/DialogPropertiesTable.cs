@@ -70,6 +70,37 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 throw new ArgumentNullException("dialogsModel");
 
             _dialogsModel = dialogsModel;
+            _dialogsModel.DialogPropertyCreated += (_, e) => DialogPropertyCreated(e.Id, e.Key, e.Value);
+            _dialogsModel.DialogPropertyChanged += DialogsModel_DialogPropertyChanged;
+            _dialogsModel.DialogPropertyDeleted += DialogsModel_DialogPropertyDeleted;
+        }
+
+        void DialogsModel_DialogPropertyChanged(object sender, DialogPropertyEventArgs e)
+        {
+            if (e.Id != DialogId)
+                return;
+
+            var item = _items.FirstOrDefault(i => i.Key == e.Key);
+            if (item != null)
+                item.Value = e.Value;
+        }
+
+        void DialogsModel_DialogPropertyDeleted(object sender, DialogPropertyEventArgs e)
+        {
+            if (e.Id != DialogId)
+                return;
+
+            var item = _items.FirstOrDefault(i => i.Key == e.Key);
+            if (item == null)
+                return;
+
+            if (item.Translation == null)
+                _items.Remove(item);
+            else
+            {
+                item.Icon = "icon_property_missing.png".ToIconUri();
+                item.Value = "";
+            }
         }
 
         void Update()

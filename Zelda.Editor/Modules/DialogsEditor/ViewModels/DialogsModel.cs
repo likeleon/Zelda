@@ -12,6 +12,12 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 {
     class DialogsModel : PropertyChangedBase
     {
+        public event EventHandler<string> DialogCreated;
+        public event EventHandler<string> DialogDeleted;
+        public event EventHandler<DialogPropertyEventArgs> DialogPropertyCreated;
+        public event EventHandler<DialogPropertyEventArgs> DialogPropertyChanged;
+        public event EventHandler<DialogPropertyEventArgs> DialogPropertyDeleted;
+
         readonly IMod _mod;
         readonly string _languageId;
         readonly DialogResources _resources = new DialogResources();
@@ -165,6 +171,107 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 return new Dictionary<string, string>();
 
             return _translationResources.GetDialog(id).Properties;
+        }
+
+        public Node FindNode(string id)
+        {
+            return _dialogTree.Find(id);
+        }
+
+        public void CreateDialog(string id, string text, Dictionary<string, string> properties = null)
+        {
+            var data = new DialogData()
+            {
+                Id = id,
+                Text = text
+            };
+            if (properties != null)
+                properties.Do(kvp => data.SetProperty(kvp.Key, kvp.Value));
+            CreateDialog(id, data);
+        }
+
+        public void CreateDialog(string id, DialogData data)
+        {
+            if (!IsValidId(id))
+                throw new InvalidOperationException("Invalid dialog id: '{0}'".F(id));
+
+            if (DialogExists(id))
+                throw new InvalidOperationException("Dialog '{0}' already exists".F(id));
+
+            _resources.AddDialog(id, data);
+            _dialogTree.AddKey(id);
+
+            if (DialogCreated != null)
+                DialogCreated(this, id);
+        }
+
+        public static bool IsValidId(string id)
+        {
+            return !id.IsNullOrEmpty() && !id.StartsWith(".") && !id.EndsWith(".");
+        }
+
+        public void DeleteDialog(string id)
+        {
+            if (!DialogExists(id))
+                throw new InvalidOperationException("Invalid dialog id: '{0}'".F(id));
+
+            _resources.RemoveDialog(id);
+            _dialogTree.RemoveKey(_dialogTree.Find(id));
+
+            if (DialogDeleted != null)
+                DialogDeleted(this, id);
+        }
+
+        public void SetDialogProperty(string id, string key, string value)
+        {
+            var exists = DialogPropertyExists(id, key);
+            if (exists && GetDialogProperty(id, key) == value)
+                return;
+
+            _resources.GetDialog(id).SetProperty(key, value);
+            if (exists)
+            {
+                if (DialogPropertyChanged != null)
+                    DialogPropertyChanged(this, new DialogPropertyEventArgs(id, key, value));
+            }
+            else
+            {
+                if (DialogPropertyCreated != null)
+                    DialogPropertyCreated(this, new DialogPropertyEventArgs(id, key, value));
+            }
+        }
+
+        public string GetDialogProperty(string id, string key)
+        {
+            if (!DialogPropertyExists(id, key))
+                return null;
+
+            return _resources.GetDialog(id).GetProperty(key);
+        }
+
+        public void DeleteDialogProperty(string id, string key)
+        {
+            if (!DialogPropertyExists(id, key))
+                return;
+
+            _resources.GetDialog(id).RemoveProperty(key);
+
+            if (DialogPropertyDeleted != null)
+                DialogPropertyDeleted(this, new DialogPropertyEventArgs(id, key, null));
+        }
+    }
+
+    class DialogPropertyEventArgs : EventArgs
+    {
+        public string Id { get; private set; }
+        public string Key { get; private set; }
+        public string Value { get; private set; }
+
+        public DialogPropertyEventArgs(string id, string key, string value)
+        {
+            Id = id;
+            Key = key;
+            Value = value;
         }
     }
 }

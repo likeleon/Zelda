@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Zelda.Editor.Core;
+using Zelda.Editor.Core.Controls.ViewModels;
 using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Core.Threading;
 using Zelda.Editor.Modules.DialogsEditor.Models;
 using Zelda.Editor.Modules.ResourceSelector.Models;
 using Zelda.Editor.Modules.ResourceSelector.ViewModels;
+using Zelda.Editor.Modules.UndoRedo;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
@@ -116,9 +120,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
             RefreshTranslationCommand = new RelayCommand(_ => RefreshTranslation());
             CreatePropertyCommand = new RelayCommand(_ => CreateProperty());
-            SetPropertyKeyCommand = new RelayCommand(_ => ChangeDialogPropertyKey(), 
+            SetPropertyKeyCommand = new RelayCommand(_ => ChangeDialogPropertyKey(),
                                                      _ => DialogsModel != null && SelectedDialogPropertyExists());
-            DeletePropertyCommand = new RelayCommand(_ => DeleteDialogProperty(), 
+            DeletePropertyCommand = new RelayCommand(_ => DeleteDialogProperty(),
                                                      _ => DialogsModel != null && SelectedDialogPropertyExists());
         }
 
@@ -255,6 +259,26 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         void CreateProperty()
         {
+            var key = TextInputViewModel.GetText("New dialog property", "New property key:", SelectedPropertyKey);
+            if (key == null)
+                return;
+
+            var id = SelectedDialogId;
+            if (DialogsModel.DialogPropertyExists(id, key))
+            {
+                "The property '{0}' already exists in the dialog '{1}'".F(key, id).ShowErrorDialog();
+                return;
+            }
+
+            if (!DialogsModel.DialogExists(id))
+            {
+                var properties = new Dictionary<string, string>() { { key, "" } };
+                TryAction(new CreateDialogAction(this, id, "", properties));
+            }
+            else
+            {
+                TryAction(new CreateDialogPropertyAction(this, id, key, ""));
+            }
         }
 
         void ChangeDialogPropertyKey()
@@ -263,6 +287,153 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         void DeleteDialogProperty()
         {
+        }
+
+        class UndoActionSkipFirst : IUndoableAction
+        {
+            readonly IUndoableAction _wrappedCommand;
+            bool _firstTime = true;
+
+            public string Name { get { return _wrappedCommand.Name; } }
+
+            public UndoActionSkipFirst(IUndoableAction wrappedCommand)
+            {
+                _wrappedCommand = wrappedCommand;
+            }
+
+            public void Execute()
+            {
+                if (_firstTime)
+                {
+                    _firstTime = false;
+                    return;
+                }
+
+                try
+                {
+                    _wrappedCommand.Execute();
+                }
+                catch (Exception ex)
+                {
+                    ex.ShowDialog();
+                }
+            }
+
+            public void Undo()
+            {
+                try
+                {
+                    _wrappedCommand.Undo();
+                }
+                catch (Exception ex)
+                {
+                    ex.ShowDialog();
+                }
+            }
+        }
+
+        void TryAction(IUndoableAction action)
+        {
+            try
+            {
+                action.Execute();
+                UndoRedoManager.ExecuteAction(new UndoActionSkipFirst(action));
+            }
+            catch (Exception ex)
+            {
+                ex.ShowDialog();
+            }
+        }
+
+        void SetSelectedDialog(string id)
+        {
+            SelectedDialogNode = DialogsModel.FindNode(id);
+        }
+
+        void SetSelectedProperty(string key)
+        {
+            SelectedPropertyItem = PropertiesTable.Items.FirstOrDefault(i => i.Key == key);
+        }
+
+        abstract class DialogsEditorAction : IUndoableAction
+        {
+            public EditorViewModel Editor { get; private set; }
+            public DialogsModel Model { get; private set; }
+
+            public string Name { get; private set; }
+
+            public void Execute()
+            {
+                OnExecute();
+            }
+
+            public void Undo()
+            {
+                OnUndo();
+            }
+
+            public DialogsEditorAction(EditorViewModel editor, string name)
+            {
+                Editor = editor;
+                Name = name;
+                Model = editor.DialogsModel;
+            }
+
+            protected abstract void OnExecute();
+            protected abstract void OnUndo();
+        }
+
+        class CreateDialogAction : DialogsEditorAction
+        {
+            readonly string _id;
+            readonly string _text;
+            Dictionary<string, string> _properties;
+
+            public CreateDialogAction(EditorViewModel editor, string id, string text, Dictionary<string, string> properties)
+                : base(editor, "Create dialog")
+            {
+                _id = id;
+                _text = text;
+                _properties = properties;
+            }
+
+            protected override void OnExecute()
+            {
+                Model.CreateDialog(_id, _text, _properties);
+                Editor.SetSelectedDialog(_id);
+            }
+
+            protected override void OnUndo()
+            {
+                Model.DeleteDialog(_id);
+            }
+        }
+
+        class CreateDialogPropertyAction : DialogsEditorAction
+        {
+            readonly string _id;
+            readonly string _key;
+            readonly string _value;
+
+            public CreateDialogPropertyAction(EditorViewModel editor, string id, string key, string value)
+                : base(editor, "Create dialog property")
+            {
+                _id = id;
+                _key = key;
+                _value = value;
+            }
+
+            protected override void OnExecute()
+            {
+                Model.SetDialogProperty(_id, _key, _value);
+                Editor.SetSelectedProperty(_key);
+            }
+
+            protected override void OnUndo()
+            {
+                Model.DeleteDialogProperty(_id, _key);
+                Editor.UpdatePropertiesButtons();
+            }
         }
     }
 }
