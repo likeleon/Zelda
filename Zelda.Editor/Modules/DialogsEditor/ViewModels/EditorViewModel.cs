@@ -283,6 +283,22 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         void ChangeDialogPropertyKey()
         {
+            var oldKey = SelectedPropertyKey;
+            if (oldKey == null || !DialogsModel.DialogPropertyExists(SelectedDialogId, oldKey))
+                return;
+
+            var newKey = TextInputViewModel.GetText("Change dialog property key",
+                "Change the key of the property '{0}':".F(oldKey), oldKey);
+            if (newKey == null || newKey == oldKey)
+                return;
+
+            if (newKey.IsNullOrEmpty())
+            {
+                "The property key cannot be empty".ShowErrorDialog();
+                return;
+            }
+
+            TryAction(new SetDialogPropertyKeyCommand(this, SelectedDialogId, oldKey, newKey));
         }
 
         void DeleteDialogProperty()
@@ -433,6 +449,37 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             {
                 Model.DeleteDialogProperty(_id, _key);
                 Editor.UpdatePropertiesButtons();
+            }
+        }
+
+        class SetDialogPropertyKeyCommand : DialogsEditorAction
+        {
+            readonly string _id;
+            readonly string _oldKey;
+            readonly string _newKey;
+            readonly string _value;
+
+            public SetDialogPropertyKeyCommand(EditorViewModel editor, string id, string oldKey, string newKey)
+                : base(editor, "Create dialog property key")
+            {
+                _id = id;
+                _oldKey = oldKey;
+                _newKey = newKey;
+                _value = Model.GetDialogProperty(id, oldKey);
+            }
+
+            protected override void OnExecute()
+            {
+                Model.DeleteDialogProperty(_id, _oldKey);
+                Model.SetDialogProperty(_id, _newKey, _value);
+                Editor.SetSelectedProperty(_newKey);
+            }
+
+            protected override void OnUndo()
+            {
+                Model.DeleteDialogProperty(_id, _newKey);
+                Model.SetDialogProperty(_id, _oldKey, _value);
+                Editor.SetSelectedProperty(_oldKey);
             }
         }
     }
