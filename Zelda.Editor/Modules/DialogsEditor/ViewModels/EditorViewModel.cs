@@ -303,6 +303,10 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         void DeleteDialogProperty()
         {
+            if (!DialogsModel.DialogPropertyExists(SelectedDialogId, SelectedPropertyKey))
+                return;
+
+            TryAction(new DeleteDialogPropertyCommand(this, SelectedDialogId, SelectedPropertyKey));
         }
 
         class UndoActionSkipFirst : IUndoableAction
@@ -480,6 +484,33 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 Model.DeleteDialogProperty(_id, _newKey);
                 Model.SetDialogProperty(_id, _oldKey, _value);
                 Editor.SetSelectedProperty(_oldKey);
+            }
+        }
+
+        class DeleteDialogPropertyCommand : DialogsEditorAction
+        {
+            readonly string _id;
+            readonly string _key;
+            readonly string _value;
+
+            public DeleteDialogPropertyCommand(EditorViewModel editor, string id, string key)
+                : base(editor, "Delete dialog property")
+            {
+                _id = id;
+                _key = key;
+                _value = Model.GetDialogProperty(id, key);
+            }
+
+            protected override void OnExecute()
+            {
+                Model.DeleteDialogProperty(_id, _key);
+                Editor.UpdatePropertiesButtons();
+            }
+
+            protected override void OnUndo()
+            {
+                Model.SetDialogProperty(_id, _key, _value);
+                Editor.SetSelectedProperty(_key);
             }
         }
     }
