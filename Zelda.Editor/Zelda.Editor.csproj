@@ -113,6 +113,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Modules\DialogsEditor\Views\ChangeDialogIdView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Modules\DialogsEditor\Views\EditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -251,11 +255,15 @@
     <Compile Include="Modules\DialogsEditor\Converters\DialogNameConverter.cs" />
     <Compile Include="Modules\DialogsEditor\Converters\NullToBooleanConverter.cs" />
     <Compile Include="Modules\DialogsEditor\EditorProvider.cs" />
+    <Compile Include="Modules\DialogsEditor\ViewModels\ChangeDialogIdViewModel.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\DialogPropertiesTable.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\DialogsModel.cs" />
     <Compile Include="Modules\DialogsEditor\Models\NodeTree.cs" />
     <Compile Include="Modules\DialogsEditor\Models\Node.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\EditorViewModel.cs" />
+    <Compile Include="Modules\DialogsEditor\Views\ChangeDialogIdView.xaml.cs">
+      <DependentUpon>ChangeDialogIdView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Modules\DialogsEditor\Views\EditorView.xaml.cs">
       <DependentUpon>EditorView.xaml</DependentUpon>
     </Compile>

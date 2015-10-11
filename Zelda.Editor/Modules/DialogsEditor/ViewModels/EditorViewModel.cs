@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Controls.ViewModels;
 using Zelda.Editor.Core.Mods;
@@ -142,6 +144,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             LanguageId = languageId;
 
             DialogsModel = new DialogsModel(_mod, languageId);
+            DialogsModel.DialogIdChanged += (_, e) => UpdateDialogId();
             NotifyOfPropertyChange(() => DialogsModel);
 
             PropertiesTable = new DialogPropertiesTable(DialogsModel);
@@ -293,15 +296,52 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
             var oldId = SelectedDialogId;
             var prefixIds = DialogsModel.GetIds(oldId);
-            if (prefixIds.Length() <= 0)
+            if (prefixIds.Length <= 0)
                 return;
 
             var exists = false;
-            var isPrefix = false;
+            var isPrefix = true;
+            if (DialogsModel.DialogExists(oldId))
+            {
+                exists = true;
+                isPrefix = prefixIds.Length > 1;
+            }
+
+            var dialog = new ChangeDialogIdViewModel(DialogsModel, oldId, isPrefix, isPrefix && exists);
+            if (IoC.Get<IWindowManager>().ShowDialog(dialog) != true)
+                return;
+
+            var newId = dialog.DialogId;
+            if (newId == oldId)
+                return;
+
+            if (dialog.IsPrefix)
+                TryAction(new SetIdPrefixAction(this, oldId, newId));
+            else
+                TryAction(new SetDialogIdAction(this, oldId, newId));
         }
 
         void DeleteDialog()
         {
+            if (SelectedDialogId == null)
+                return;
+
+            var id = SelectedDialogId;
+            if (!DialogsModel.PrefixExists(id))
+                return;
+
+            if (DialogsModel.DialogExists(id))
+            {
+                TryAction(new DeleteDialogAction(this, id));
+                return;
+            }
+
+            var question = "Do you really want to delete all dialog prefixed by '{0}'?".F(id);
+            var answer = MessageBox.Show(question, "Delete confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (answer != MessageBoxResult.Yes)
+                return;
+
+            TryAction(new DeleteDialogsAction(this, id));
         }
 
         bool CanExecuteDialogCommand()
@@ -352,7 +392,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 return;
             }
 
-            TryAction(new SetDialogPropertyKeyCommand(this, SelectedDialogId, oldKey, newKey));
+            TryAction(new SetDialogPropertyKeyAction(this, SelectedDialogId, oldKey, newKey));
         }
 
         void DeleteDialogProperty()
@@ -360,7 +400,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             if (!DialogsModel.DialogPropertyExists(SelectedDialogId, SelectedPropertyKey))
                 return;
 
-            TryAction(new DeleteDialogPropertyCommand(this, SelectedDialogId, SelectedPropertyKey));
+            TryAction(new DeleteDialogPropertyAction(this, SelectedDialogId, SelectedPropertyKey));
         }
 
         class UndoActionSkipFirst : IUndoableAction
@@ -510,14 +550,14 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             }
         }
 
-        class SetDialogPropertyKeyCommand : DialogsEditorAction
+        class SetDialogPropertyKeyAction : DialogsEditorAction
         {
             readonly string _id;
             readonly string _oldKey;
             readonly string _newKey;
             readonly string _value;
 
-            public SetDialogPropertyKeyCommand(EditorViewModel editor, string id, string oldKey, string newKey)
+            public SetDialogPropertyKeyAction(EditorViewModel editor, string id, string oldKey, string newKey)
                 : base(editor, "Create dialog property key")
             {
                 _id = id;
@@ -541,13 +581,13 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             }
         }
 
-        class DeleteDialogPropertyCommand : DialogsEditorAction
+        class DeleteDialogPropertyAction : DialogsEditorAction
         {
             readonly string _id;
             readonly string _key;
             readonly string _value;
 
-            public DeleteDialogPropertyCommand(EditorViewModel editor, string id, string key)
+            public DeleteDialogPropertyAction(EditorViewModel editor, string id, string key)
                 : base(editor, "Delete dialog property")
             {
                 _id = id;
@@ -565,6 +605,109 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             {
                 Model.SetDialogProperty(_id, _key, _value);
                 Editor.SetSelectedProperty(_key);
+            }
+        }
+
+        class SetIdPrefixAction : DialogsEditorAction
+        {
+            readonly string _oldPrefix;
+            readonly string _newPrefix;
+            List<Tuple<string, string>> _editedIds;
+
+            public SetIdPrefixAction(EditorViewModel editor, string oldPrefix, string newPrefix)
+                :base(editor, "Change dialog id prefix")
+            {
+                _oldPrefix = oldPrefix;
+                _newPrefix = newPrefix;
+            }
+
+            protected override void OnExecute()
+            {
+                _editedIds = Model.SetDialogIdPrefix(_oldPrefix, _newPrefix);
+                if (_editedIds.Count > 0)
+                    Editor.SetSelectedDialog(_editedIds.First().Item2);
+            }
+
+            protected override void OnUndo()
+            {
+                _editedIds.Do(tuple => Model.SetDialogId(tuple.Item1, tuple.Item2));
+                if (_editedIds.Count > 0)
+                    Editor.SetSelectedDialog(_editedIds.First().Item1);
+            }
+        }
+
+        class SetDialogIdAction : DialogsEditorAction
+        {
+            readonly string _oldId;
+            readonly string _newId;
+
+            public SetDialogIdAction(EditorViewModel editor, string id, string newId)
+                : base(editor, "Change dialog id")
+            {
+                _oldId = id;
+                _newId = newId;
+            }
+
+            protected override void OnExecute()
+            {
+                Model.SetDialogId(_oldId, _newId);
+                Editor.SetSelectedDialog(_newId);
+            }
+
+            protected override void OnUndo()
+            {
+                Model.SetDialogId(_newId, _oldId);
+                Editor.SetSelectedDialog(_oldId);
+            }
+        }
+
+        class DeleteDialogAction : DialogsEditorAction
+        {
+            readonly string _id;
+            readonly string _text;
+            readonly Dictionary<string, string> _properties;
+
+            public DeleteDialogAction(EditorViewModel editor, string id)
+                : base(editor, "Delete dialog")
+            {
+                _id = id;
+                _text = Model.GetDialogText(id);
+                _properties = Model.GetDialogProperties(_id).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            }
+
+            protected override void OnExecute()
+            {
+                Model.DeleteDialog(_id);
+            }
+
+            protected override void OnUndo()
+            {
+                Model.CreateDialog(_id, _text, _properties);
+                Editor.SetSelectedDialog(_id);
+            }
+        }
+
+        class DeleteDialogsAction : DialogsEditorAction
+        {
+            readonly string _prefix;
+            List<Tuple<string, DialogData>> _removedDialogs;
+
+            public DeleteDialogsAction(EditorViewModel editor, string prefix)
+                : base(editor, "Delete dialogs")
+            {
+                _prefix = prefix;
+            }
+
+            protected override void OnExecute()
+            {
+                _removedDialogs = Model.DeletePrefix(_prefix);
+            }
+
+            protected override void OnUndo()
+            {
+                _removedDialogs.Do(tuple => Model.CreateDialog(tuple.Item1, tuple.Item2));
+                if (_removedDialogs.Count > 0)
+                    Editor.SetSelectedDialog(_removedDialogs.First().Item1);
             }
         }
     }

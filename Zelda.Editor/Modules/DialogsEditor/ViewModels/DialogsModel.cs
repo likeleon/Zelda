@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
@@ -13,6 +14,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
     class DialogsModel : PropertyChangedBase
     {
         public event EventHandler<string> DialogCreated;
+        public event EventHandler<DialogIdChangedEventArgs> DialogIdChanged;
         public event EventHandler<string> DialogDeleted;
         public event EventHandler<DialogPropertyEventArgs> DialogPropertyCreated;
         public event EventHandler<DialogPropertyEventArgs> DialogPropertyChanged;
@@ -99,6 +101,18 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         public bool PrefixExists(string prefix)
         {
             return _resources.Dialogs.Keys.Any(key => key.StartsWith(prefix));
+        }
+
+        public string[] GetIds(string prefix)
+        {
+            return _resources.Dialogs.Keys.Where(key => key.StartsWith(prefix)).ToArray();
+        }
+
+        public DialogData GetDialogData(string id)
+        {
+            if (!DialogExists(id))
+                return null;
+            return _resources.GetDialog(id);
         }
 
         public string GetDialogText(string id)
@@ -204,7 +218,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 throw new InvalidOperationException("Dialog '{0}' already exists".F(id));
 
             _resources.AddDialog(id, data);
-            _dialogTree.AddKey(id);
+            var node = _dialogTree.AddKey(id);
+            node.Icon = GetIcon(node);
 
             if (DialogCreated != null)
                 DialogCreated(this, id);
@@ -213,6 +228,61 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         public static bool IsValidId(string id)
         {
             return !id.IsNullOrEmpty() && !id.StartsWith(".") && !id.EndsWith(".");
+        }
+
+        public string SetDialogId(string id, string newId)
+        {
+            if (newId == id)
+                return id;
+
+            if (!DialogExists(id))
+                throw new InvalidOperationException("Dialog '{0}' no exists".F(id));
+
+            if (DialogExists(newId))
+                throw new InvalidOperationException("Dialog '{0}' already exists".F(newId));
+
+            if (!IsValidId(newId))
+                throw new InvalidOperationException("Invalid dialog id: {0}".F(newId));
+
+            _resources.SetDialogId(id, newId);
+            _dialogTree.RemoveKey(_dialogTree.Find(id));
+            var node = _dialogTree.AddKey(newId);
+            node.Icon = GetIcon(node);
+
+            if (DialogIdChanged != null)
+                DialogIdChanged(this, new DialogIdChangedEventArgs(id, newId));
+
+            return newId;
+        }
+
+        public bool CanSetDialogIdPrefix(string oldPrefix, string newPrefix, out string id)
+        {
+            foreach (var prefixedId in GetIds(oldPrefix))
+            {
+                var newId = Regex.Replace(prefixedId, "^" + oldPrefix, newPrefix);
+                if (DialogExists(newId))
+                {
+                    id = newId;
+                    return false;
+                }
+            }
+            id = null;
+            return true;
+        }
+
+        public List<Tuple<string, string>> SetDialogIdPrefix(string oldPrefix, string newPrefix)
+        {
+            string id;
+            if (!CanSetDialogIdPrefix(oldPrefix, newPrefix, out id))
+                throw new InvalidOperationException("Dialog '{0}' already exists".F(id));
+
+            var list = new List<Tuple<string, string>>();
+            foreach (var oldId in GetIds(oldPrefix))
+            {
+                var newId = Regex.Replace(oldId, "^" + oldPrefix, newPrefix);
+                list.Add(Tuple.Create(oldId, SetDialogId(oldId, newId)));
+            }
+            return list;
         }
 
         public void DeleteDialog(string id)
@@ -225,6 +295,17 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
             if (DialogDeleted != null)
                 DialogDeleted(this, id);
+        }
+
+        public List<Tuple<string, DialogData>> DeletePrefix(string prefix)
+        {
+            var list = new List<Tuple<string, DialogData>>();
+            foreach (var key in GetIds(prefix))
+            {
+                list.Add(Tuple.Create(key, GetDialogData(key)));
+                DeleteDialog(key);
+            }
+            return list;
         }
 
         public void SetDialogProperty(string id, string key, string value)
@@ -263,6 +344,18 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
             if (DialogPropertyDeleted != null)
                 DialogPropertyDeleted(this, new DialogPropertyEventArgs(id, key, null));
+        }
+    }
+
+    class DialogIdChangedEventArgs : EventArgs
+    {
+        public string OldId { get; private set; }
+        public string NewId { get; private set; }
+
+        public DialogIdChangedEventArgs(string oldId, string newId)
+        {
+            OldId = oldId;
+            NewId = newId;
         }
     }
 
