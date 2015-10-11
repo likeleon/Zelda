@@ -61,13 +61,13 @@
                     </Button>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Right" Margin="5 0">
-                    <Button Width="32" Height="32" ToolTip="Add dialog">
+                    <Button Width="32" Height="32" ToolTip="Add dialog" Command="{Binding CreateDialogCommand}">
                         <Image Source="/Resources/Icons/icon_add.png" Stretch="None" />
                     </Button>
-                    <Button Width="32" Height="32" ToolTip="Change dialog id" Margin="0 5">
+                    <Button Width="32" Height="32" ToolTip="Change dialog id" Margin="0 5" Command="{Binding ChangeDialogIdCommand}">
                         <Image Source="/Resources/Icons/icon_rename.png" Stretch="None" />
                     </Button>
-                    <Button Width="32" Height="32" ToolTip="Delete dialog">
+                    <Button Width="32" Height="32" ToolTip="Delete dialog" Command="{Binding DeleteDialogCommand}">
                         <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
                     </Button>
                 </StackPanel>

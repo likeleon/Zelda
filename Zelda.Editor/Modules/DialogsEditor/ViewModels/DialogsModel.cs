@@ -96,6 +96,11 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                    _resources.GetDialog(id).HasProperty(key);
         }
 
+        public bool PrefixExists(string prefix)
+        {
+            return _resources.Dialogs.Keys.Any(key => key.StartsWith(prefix));
+        }
+
         public string GetDialogText(string id)
         {
             if (!DialogExists(id))

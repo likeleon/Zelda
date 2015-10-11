@@ -107,6 +107,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         }
 
         public RelayCommand RefreshTranslationCommand { get; private set; }
+        public RelayCommand CreateDialogCommand { get; private set; }
+        public RelayCommand ChangeDialogIdCommand { get; private set; }
+        public RelayCommand DeleteDialogCommand { get; private set; }
         public RelayCommand CreatePropertyCommand { get; private set; }
         public RelayCommand SetPropertyKeyCommand { get; private set; }
         public RelayCommand DeletePropertyCommand { get; private set; }
@@ -119,6 +122,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             Resources.ElementDescriptionChanged += (_, e) => NotifyOfPropertyChange(() => Description);
 
             RefreshTranslationCommand = new RelayCommand(_ => RefreshTranslation());
+            CreateDialogCommand = new RelayCommand(_ => CreateDialog());
+            ChangeDialogIdCommand = new RelayCommand(_ => ChangeDialogId(), _ => CanExecuteDialogCommand());
+            DeleteDialogCommand = new RelayCommand(_ => DeleteDialog(), _ => CanExecuteDialogCommand());
             CreatePropertyCommand = new RelayCommand(_ => CreateProperty());
             SetPropertyKeyCommand = new RelayCommand(_ => ChangeDialogPropertyKey(),
                                                      _ => DialogsModel != null && SelectedDialogPropertyExists());
@@ -197,6 +203,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         void UpdateSelection()
         {
             UpdateDialogView();
+            ChangeDialogIdCommand.RaiseCanExecuteChanged();
+            DeleteDialogCommand.RaiseCanExecuteChanged();            
         }
 
         void UpdateDialogView()
@@ -255,6 +263,52 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
             DialogsModel.ReloadTranslation();
             UpdateTranslationText();
+        }
+
+        void CreateDialog()
+        {
+            var id = TextInputViewModel.GetText("New dialog", "New dialog id:", SelectedDialogId);
+            if (id == null)
+                return;
+
+            if (DialogsModel.IsValidId(id))
+            {
+                "Invalid dialog id: {0}".F(id).ShowErrorDialog();
+                return;
+            }
+
+            if (DialogsModel.DialogExists(id))
+            {
+                "Dialog '{0}' already exists".F(id).ShowErrorDialog();
+                return;
+            }
+
+            TryAction(new CreateDialogAction(this, id, ""));
+        }
+
+        void ChangeDialogId()
+        {
+            if (SelectedDialogId == null)
+                return;
+
+            var oldId = SelectedDialogId;
+            var prefixIds = DialogsModel.GetIds(oldId);
+            if (prefixIds.Length() <= 0)
+                return;
+
+            var exists = false;
+            var isPrefix = false;
+        }
+
+        void DeleteDialog()
+        {
+        }
+
+        bool CanExecuteDialogCommand()
+        {
+            return DialogsModel != null &&
+                   SelectedDialogId != null &&
+                   DialogsModel.PrefixExists(SelectedDialogId);
         }
 
         void CreateProperty()
@@ -409,7 +463,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             readonly string _text;
             Dictionary<string, string> _properties;
 
-            public CreateDialogAction(EditorViewModel editor, string id, string text, Dictionary<string, string> properties)
+            public CreateDialogAction(EditorViewModel editor, string id, string text, Dictionary<string, string> properties = null)
                 : base(editor, "Create dialog")
             {
                 _id = id;
