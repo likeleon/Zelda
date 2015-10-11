@@ -8,7 +8,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 {
     class Node : PropertyChangedBase
     {
-        readonly Dictionary<string, Node> _children = new Dictionary<string, Node>(StringComparer.CurrentCulture);
+        readonly Dictionary<string, Node> _children = new Dictionary<string, Node>();
         string _key = "";
         Node _parent;
         Uri _icon;

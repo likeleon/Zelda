@@ -6,6 +6,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Views"
              xmlns:behaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
              xmlns:controls="clr-namespace:Zelda.Editor.Core.Controls"
@@ -28,6 +29,11 @@
             <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
             <Setter Property="AcceptsReturn" Value="True" />
         </Style>
+        <CollectionViewSource x:Key="SortedDialogsTree" Source="{Binding DialogsModel.Root.BindableChildren}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Key" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
     </UserControl.Resources>
     <DockPanel Margin="10">
         <GroupBox DockPanel.Dock="Top" Header="Language properties" Padding="0 10 0 0">
@@ -71,7 +77,7 @@
                         <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
                     </Button>
                 </StackPanel>
-                <controls:TreeListView x:Name="dialogsTreeListView" ItemsSource="{Binding DialogsModel.Root.BindableChildren}">
+                <controls:TreeListView x:Name="dialogsTreeListView" ItemsSource="{Binding Source={StaticResource SortedDialogsTree}}">
                     <controls:TreeListView.Resources>
                         <Style TargetType="GridViewColumnHeader">
                             <Setter Property="Visibility" Value="Collapsed" />
