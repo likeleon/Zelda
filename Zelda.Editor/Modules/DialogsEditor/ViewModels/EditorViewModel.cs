@@ -124,7 +124,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             if (!Mod.IsDialogsFile(filePath, ref languageId))
                 throw new InvalidOperationException("Path is not dialogs file: {0}".F(filePath));
 
-            DisplayName = "Dialogs {0}".F(languageId);
+            Title = "Dialogs {0}".F(languageId);
             LanguageId = languageId;
 
             DialogsModel = new DialogsModel(Mod, languageId);

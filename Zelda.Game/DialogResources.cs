@@ -181,6 +181,7 @@ namespace Zelda.Game
 
             var dialog = GetDialog(oldDialogId);
             RemoveDialog(oldDialogId);
+            dialog.Id = newDialogId;
             AddDialog(newDialogId, dialog);
             return true;
         }

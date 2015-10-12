@@ -11,13 +11,27 @@ namespace Zelda.Editor.Modules.Mods.ViewModels
 {
     abstract class EditorDocument : Document, ISavableDocument
     {
+        string _title;
+
         public string FileName { get; private set; }
         public string FilePath { get; private set; }
-        public Mods.Models.ModResources Resources { get { return Mod.Resources; } }
+        public Models.ModResources Resources { get { return Mod.Resources; } }
         public bool HasUnsavedChanges { get { return UndoRedoManager.UndoStack.Count > 0; } }
 
         protected IMod Mod { get; private set; }
         protected string CloseConfirmMessage { get; set; }
+        protected string Title
+        {
+            get { return _title; }
+            set
+            {
+                if (_title != value)
+                {
+                    _title = value;
+                    UpdateDisplayName();
+                }
+            }
+        }
 
         public override void CanClose(Action<bool> callback)
         {
@@ -29,6 +43,7 @@ namespace Zelda.Editor.Modules.Mods.ViewModels
             Mod = mod;
             FilePath = filePath;
             FileName = Path.GetFileName(filePath);
+            Title = FileName;
             CloseConfirmMessage = "File '{0}' has been modified. Save changes?".F(FileName);
 
             UndoRedoManager.UndoStack.CollectionChanged += (_, e) => UpdateDisplayName();
@@ -36,7 +51,7 @@ namespace Zelda.Editor.Modules.Mods.ViewModels
 
         void UpdateDisplayName()
         {
-            DisplayName = (HasUnsavedChanges) ? FileName + "*" : FileName;
+            DisplayName = (HasUnsavedChanges) ? Title + "*" : Title;
         }
 
         public bool ConfirmClose()
@@ -85,7 +100,17 @@ namespace Zelda.Editor.Modules.Mods.ViewModels
 
         public Task Save()
         {
-            return OnSave();
+            try
+            {
+                OnSave();
+                UndoRedoManager.UndoStack.Clear();
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                ex.ShowDialog();
+                return Task.FromResult(false);
+            }
         }
 
         class UndoActionSkipFirst : IUndoableAction
