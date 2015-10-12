@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Threading.Tasks;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Modules.DialogsEditor.ViewModels;
@@ -14,7 +14,7 @@ namespace Zelda.Editor.Modules.DialogsEditor
     {
         readonly IModService _modService;
 
-        public IDocument Create() { return new EditorViewModel(_modService.Mod); }
+        public IDocument Create() { throw new NotSupportedException("Creating empty dialog editor is impossible"); }
 
         public IDocument Find(IEnumerable<IDocument> documents, string path)
         {
@@ -36,10 +36,10 @@ namespace Zelda.Editor.Modules.DialogsEditor
             var languageId = "";
             return mod.IsDialogsFile(path, ref languageId);
         }
-
-        public async Task Open(IDocument document, string path)
+        
+        public IDocument Open(string path)
         {
-            await ((EditorViewModel)document).Load(path);
+            return new EditorViewModel(_modService.Mod, path);
         }
     }
 }

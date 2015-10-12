@@ -119,6 +119,7 @@ namespace Zelda.Game
                     });
                 }
                 data.Dialogs = dialogs.ToArray();
+                data.XmlSerialize(stream);
                 return true;
             }
             catch (Exception ex)

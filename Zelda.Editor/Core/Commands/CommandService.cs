@@ -8,11 +8,11 @@ namespace Zelda.Editor.Core.Commands
     [Export(typeof(ICommandService))]
     public class CommandService : ICommandService
     {
-        private readonly Dictionary<Type, CommandDefinitionBase> _commandDefinitionsLookup = new Dictionary<Type, CommandDefinitionBase>();
-        private readonly Dictionary<CommandDefinitionBase, Command> _commands = new Dictionary<CommandDefinitionBase, Command>();
-        private readonly Dictionary<Command, TargetableCommand> _targetableCommands = new Dictionary<Command, TargetableCommand>();
+        readonly Dictionary<Type, CommandDefinitionBase> _commandDefinitionsLookup = new Dictionary<Type, CommandDefinitionBase>();
+        readonly Dictionary<CommandDefinitionBase, Command> _commands = new Dictionary<CommandDefinitionBase, Command>();
+        readonly Dictionary<Command, TargetableCommand> _targetableCommands = new Dictionary<Command, TargetableCommand>();
         
-        private readonly CommandDefinitionBase[] _commandDefinitions;
+        readonly CommandDefinitionBase[] _commandDefinitions;
 
         [ImportingConstructor]
         public CommandService([ImportMany] CommandDefinitionBase[] commandDefinitions)

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Zelda.Editor.Core.Services
 {
@@ -8,8 +7,7 @@ namespace Zelda.Editor.Core.Services
         bool Handles(string path);
 
         IDocument Create();
+        IDocument Open(string path);
         IDocument Find(IEnumerable<IDocument> documents, string path);
-
-        Task Open(IDocument document, string path);
     }
 }

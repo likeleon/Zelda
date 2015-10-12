@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Zelda.Editor.Core.Commands;
 using Zelda.Editor.Core.Threading;
+using Zelda.Editor.Modules.Shell.Commands;
 using Zelda.Editor.Modules.UndoRedo;
 using Zelda.Editor.Modules.UndoRedo.Commands;
 using Zelda.Editor.Modules.UndoRedo.Services;
@@ -11,7 +13,8 @@ namespace Zelda.Editor.Core
 {
     class Document : LayoutItemBase, IDocument,
         ICommandHandler<UndoCommandDefinition>,
-        ICommandHandler<RedoCommandDefinition>
+        ICommandHandler<RedoCommandDefinition>,
+        ICommandHandler<SaveFileCommandDefinition>
     {
         ICommand _closeCommand;
         IUndoRedoManager _undoRedoManager;
@@ -46,6 +49,20 @@ namespace Zelda.Editor.Core
         {
             UndoRedoManager.Redo(1);
             return TaskUtility.Completed;
+        }
+
+        void ICommandHandler<SaveFileCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = this is ISavableDocument;
+        }
+
+        async Task ICommandHandler<SaveFileCommandDefinition>.Run(Command command)
+        {
+            var savableDocument = this as ISavableDocument;
+            if (savableDocument == null)
+                return;
+
+            await savableDocument.Save();
         }
     }
 }

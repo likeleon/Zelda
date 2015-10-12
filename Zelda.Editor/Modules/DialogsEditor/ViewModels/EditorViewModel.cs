@@ -3,13 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Controls.ViewModels;
 using Zelda.Editor.Core.Services;
-using Zelda.Editor.Core.Threading;
 using Zelda.Editor.Modules.DialogsEditor.Models;
 using Zelda.Editor.Modules.Mods.Models;
+using Zelda.Editor.Modules.Mods.ViewModels;
 using Zelda.Editor.Modules.ResourceSelector.Models;
 using Zelda.Editor.Modules.ResourceSelector.ViewModels;
 using Zelda.Editor.Modules.UndoRedo;
@@ -17,9 +16,8 @@ using Zelda.Game;
 
 namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 {
-    class EditorViewModel : PersistedDocument
+    class EditorViewModel : EditorDocument
     {
-        readonly IMod _mod;
         string _languageId;
         Node _selectedDialogNode;
         bool _isDialogPropertiesEnabled;
@@ -58,7 +56,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 if (LanguageId.IsNullOrEmpty())
                     return "";
 
-                return _mod.Resources.GetDescription(ResourceType.Language, LanguageId);
+                return Mod.Resources.GetDescription(ResourceType.Language, LanguageId);
             }
             set { SetDescription(value); }
         }
@@ -116,12 +114,29 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         public RelayCommand SetPropertyKeyCommand { get; private set; }
         public RelayCommand DeletePropertyCommand { get; private set; }
 
-        Mods.Models.ModResources Resources { get { return _mod.Resources; } }
 
-        public EditorViewModel(IMod mod)
+        public EditorViewModel(IMod mod, string filePath)
+            : base(mod, filePath)
         {
-            _mod = mod;
             Resources.ElementDescriptionChanged += (_, e) => NotifyOfPropertyChange(() => Description);
+
+            var languageId = "";
+            if (!Mod.IsDialogsFile(filePath, ref languageId))
+                throw new InvalidOperationException("Path is not dialogs file: {0}".F(filePath));
+
+            DisplayName = "Dialogs {0}".F(languageId);
+            LanguageId = languageId;
+
+            DialogsModel = new DialogsModel(Mod, languageId);
+            DialogsModel.DialogIdChanged += (_, e) => UpdateDialogId();
+
+            PropertiesTable = new DialogPropertiesTable(DialogsModel);
+
+            TranslationSelector = new SelectorViewModel(Mod, ResourceType.Language);
+            TranslationSelector.RemoveId(languageId);
+            TranslationSelector.AddSpecialValue("", "<No language>", 0);
+            TranslationSelector.SetSelectedId("");
+            TranslationSelector.SelectedItemChanged += TranslationSelector_SelectedItemChanged;
 
             RefreshTranslationCommand = new RelayCommand(_ => RefreshTranslation());
             CreateDialogCommand = new RelayCommand(_ => CreateDialog());
@@ -129,35 +144,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             DeleteDialogCommand = new RelayCommand(_ => DeleteDialog(), _ => CanExecuteDialogCommand());
             CreatePropertyCommand = new RelayCommand(_ => CreateProperty());
             SetPropertyKeyCommand = new RelayCommand(_ => ChangeDialogPropertyKey(),
-                                                     _ => DialogsModel != null && SelectedDialogPropertyExists());
+                                                     _ => SelectedDialogPropertyExists());
             DeletePropertyCommand = new RelayCommand(_ => DeleteDialogProperty(),
-                                                     _ => DialogsModel != null && SelectedDialogPropertyExists());
-        }
-
-        protected override Task DoLoad(string filePath)
-        {
-            var languageId = "";
-            if (!_mod.IsDialogsFile(filePath, ref languageId))
-                throw new InvalidOperationException("Path is not dialogs file: {0}".F(filePath));
-
-            DisplayName = "Dialogs {0}".F(languageId);
-            LanguageId = languageId;
-
-            DialogsModel = new DialogsModel(_mod, languageId);
-            DialogsModel.DialogIdChanged += (_, e) => UpdateDialogId();
-            NotifyOfPropertyChange(() => DialogsModel);
-
-            PropertiesTable = new DialogPropertiesTable(DialogsModel);
-            NotifyOfPropertyChange(() => PropertiesTable);
-
-            TranslationSelector = new SelectorViewModel(_mod, ResourceType.Language);
-            TranslationSelector.RemoveId(languageId);
-            TranslationSelector.AddSpecialValue("", "<No language>", 0);
-            TranslationSelector.SetSelectedId("");
-            TranslationSelector.SelectedItemChanged += TranslationSelector_SelectedItemChanged;
-            NotifyOfPropertyChange(() => TranslationSelector);
-
-            return TaskUtility.Completed;
+                                                     _ => SelectedDialogPropertyExists());
         }
 
         void TranslationSelector_SelectedItemChanged(object sender, Item e)
@@ -337,7 +326,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             }
 
             var question = "Do you really want to delete all dialog prefixed by '{0}'?".F(id);
-            if (!question.AnswerYes("Delete confirmation"))
+            if (!question.AskYesNo("Delete confirmation"))
                 return;
 
             TryAction(new DeleteDialogsAction(this, id));
@@ -345,8 +334,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         bool CanExecuteDialogCommand()
         {
-            return DialogsModel != null &&
-                   SelectedDialogId != null &&
+            return SelectedDialogId != null &&
                    DialogsModel.PrefixExists(SelectedDialogId);
         }
 
@@ -402,62 +390,6 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             TryAction(new DeleteDialogPropertyAction(this, SelectedDialogId, SelectedPropertyKey));
         }
 
-        class UndoActionSkipFirst : IUndoableAction
-        {
-            readonly IUndoableAction _wrappedCommand;
-            bool _firstTime = true;
-
-            public string Name { get { return _wrappedCommand.Name; } }
-
-            public UndoActionSkipFirst(IUndoableAction wrappedCommand)
-            {
-                _wrappedCommand = wrappedCommand;
-            }
-
-            public void Execute()
-            {
-                if (_firstTime)
-                {
-                    _firstTime = false;
-                    return;
-                }
-
-                try
-                {
-                    _wrappedCommand.Execute();
-                }
-                catch (Exception ex)
-                {
-                    ex.ShowDialog();
-                }
-            }
-
-            public void Undo()
-            {
-                try
-                {
-                    _wrappedCommand.Undo();
-                }
-                catch (Exception ex)
-                {
-                    ex.ShowDialog();
-                }
-            }
-        }
-
-        void TryAction(IUndoableAction action)
-        {
-            try
-            {
-                action.Execute();
-                UndoRedoManager.ExecuteAction(new UndoActionSkipFirst(action));
-            }
-            catch (Exception ex)
-            {
-                ex.ShowDialog();
-            }
-        }
-
         void SetSelectedDialog(string id)
         {
             SelectedDialogNode = DialogsModel.FindNode(id);
@@ -466,6 +398,13 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         void SetSelectedProperty(string key)
         {
             SelectedPropertyItem = PropertiesTable.Items.FirstOrDefault(i => i.Key == key);
+        }
+
+        protected override Task OnSave()
+        {
+            DialogsModel.Save();
+            var task = Task.FromResult(true);
+            return task;
         }
 
         abstract class DialogsEditorAction : IUndoableAction

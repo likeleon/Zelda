@@ -87,6 +87,13 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             }
         }
 
+        public void Save()
+        {
+            var path = _mod.GetDialogsPath(_languageId);
+            if (!_resources.ExportToFile(path))
+                throw new Exception("Cannot save dialogs data file '{0}'".F(path));
+        }
+
         public bool DialogExists(string id)
         {
             return _resources.HasDialog(id);

@@ -194,7 +194,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                     var resources = mod.Resources;
                     var resourceFriendlyName = resources.GetFriendlyName(resourceType);
                     var question = "Do you really want to delete {0} '{1}'?".F(resourceFriendlyName, elementId);
-                    if (!question.AnswerYes("Delete confirmation"))
+                    if (!question.AskYesNo("Delete confirmation"))
                         return;
 
                     mod.DeleteResourceElement(resourceType, elementId);
@@ -209,7 +209,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                         else
                         {
                             var question = "Do you really want to delete folder '{0}'?".F(pathFromRoot);
-                            if (!question.AnswerYes("Delete confirmation"))
+                            if (!question.AskYesNo("Delete confirmation"))
                                 return;
 
                             mod.DeleteDirectory(path);
@@ -219,7 +219,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                     else
                     {
                         var question = "Do you really want to delete file '{0}'?".F(pathFromRoot);
-                        if (!question.AnswerYes("Delete confirmation"))
+                        if (!question.AskYesNo("Delete confirmation"))
                             return;
 
                         mod.DeleteFile(path);
@@ -392,16 +392,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             if (editor != null)
                 return editor;
 
-            editor = provider.Create();
-
-            var viewAware = (IViewAware)editor;
-            viewAware.ViewAttached += (sender, e) =>
-            {
-                var frameworkElement = (FrameworkElement)e.View;
-                frameworkElement.Loaded += async (sender2, e2) => await provider.Open(editor, path);
-            };
-
-            return editor;
+            return provider.Open(path);
         }
     }
 }

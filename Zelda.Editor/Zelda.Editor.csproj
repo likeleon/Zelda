@@ -226,7 +226,7 @@
     <Compile Include="Core\IDocument.cs" />
     <Compile Include="Core\ILayoutItem.cs" />
     <Compile Include="Core\IModule.cs" />
-    <Compile Include="Core\IPersistedDocument.cs" />
+    <Compile Include="Core\ISavableDocument.cs" />
     <Compile Include="Core\ITool.cs" />
     <Compile Include="Core\IWindow.cs" />
     <Compile Include="Core\LayoutItemBase.cs" />
@@ -245,7 +245,6 @@
     <Compile Include="Modules\Mods\Models\FileRenamedEventArgs.cs" />
     <Compile Include="Modules\Mods\Models\MapModel.cs" />
     <Compile Include="Modules\Mods\Models\TilesetModel.cs" />
-    <Compile Include="Core\PersistedDocument.cs" />
     <Compile Include="Core\Primitives\BindingProxy.cs" />
     <Compile Include="Core\Primitives\ObservableDictionary.cs" />
     <Compile Include="Core\Services\ExtensionMethods.cs" />
@@ -267,6 +266,7 @@
     <Compile Include="Modules\DialogsEditor\Views\EditorView.xaml.cs">
       <DependentUpon>EditorView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Modules\Mods\ViewModels\EditorDocument.cs" />
     <Compile Include="Modules\ResourceBrowser\ContextMenuItem.cs" />
     <Compile Include="Modules\ResourceBrowser\Converters\ModFileContextMenuItemsConverter.cs" />
     <Compile Include="Modules\ResourceBrowser\Converters\NullableValueConverter.cs" />
@@ -377,10 +377,12 @@
     <Compile Include="Modules\ResourceSelector\Views\SelectorView.xaml.cs">
       <DependentUpon>SelectorView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Modules\Shell\Commands\CloseFileCommandDefinition.cs" />
     <Compile Include="Modules\Shell\Commands\ExitCommandDefinition.cs" />
     <Compile Include="Modules\Shell\Commands\ExitCommandHandler.cs" />
     <Compile Include="Modules\Shell\Commands\OpenModCommandDefinition.cs" />
     <Compile Include="Modules\Shell\Commands\OpenModCommandHandler.cs" />
+    <Compile Include="Modules\Shell\Commands\SaveFileCommandDefinition.cs" />
     <Compile Include="Modules\Shell\Controls\LayoutInitializer.cs" />
     <Compile Include="Modules\Shell\Controls\PanesStyleSelector.cs" />
     <Compile Include="Modules\Shell\Controls\PanesTemplateSelector.cs" />
@@ -617,9 +619,7 @@
     <Resource Include="Resources\Icons\Save.png" />
     <Resource Include="Resources\Icons\Undo.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Modules\Mods\ViewModels\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

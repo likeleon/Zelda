@@ -39,10 +39,21 @@ namespace Zelda.Editor.Core.Services
             MessageBox.Show(text, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        public static bool AnswerYes(this string question, string dialogTitle)
+        public static bool AskYesNo(this string question, string dialogTitle)
         {
             var answer = MessageBox.Show(question, dialogTitle, MessageBoxButton.YesNo, MessageBoxImage.Question);
             return answer == MessageBoxResult.Yes;
+        }
+
+        public static bool? AskYesNoCancel(this string question, string dialogTitle)
+        {
+            var answer = MessageBox.Show(question, dialogTitle, MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            if (answer == MessageBoxResult.Yes)
+                return true;
+            else if (answer == MessageBoxResult.No)
+                return true;
+            else
+                return null;
         }
     }
 }
