@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Zelda.Editor.Core.Mods;
+using Zelda.Editor.Modules.Mods.Models;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.ResourceBrowser

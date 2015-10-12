@@ -2,7 +2,7 @@
 using System.IO;
 using Zelda.Game;
 
-namespace Zelda.Editor.Core.Mods
+namespace Zelda.Editor.Modules.Mods.Models
 {
     class ModPath
     {

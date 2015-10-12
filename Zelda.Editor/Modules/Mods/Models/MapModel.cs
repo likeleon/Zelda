@@ -4,7 +4,7 @@ using Zelda.Game;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 
-namespace Zelda.Editor.Core.Mods
+namespace Zelda.Editor.Modules.Mods.Models
 {
     class MapModel
     {

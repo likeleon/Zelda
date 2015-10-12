@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Zelda.Editor.Core;
-using Zelda.Editor.Core.Mods;
+using Zelda.Editor.Modules.Mods.Models;
 using Zelda.Editor.Modules.ResourceSelector.Models;
 using Zelda.Game;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Zelda.Editor.Core.Mods
+namespace Zelda.Editor.Modules.Mods.Models
 {
     class FileRenamedEventArgs : EventArgs
     {

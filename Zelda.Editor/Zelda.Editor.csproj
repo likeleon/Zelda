@@ -237,14 +237,14 @@
     <Compile Include="Core\Menus\MenuItemDefinition.cs" />
     <Compile Include="Core\Menus\MenuItemGroupDefinition.cs" />
     <Compile Include="Core\Menus\TextMenuItemDefinition.cs" />
-    <Compile Include="Core\Mods\ElementAddedEventArgs.cs" />
-    <Compile Include="Core\Mods\ElementDescriptionChangedEventArgs.cs" />
-    <Compile Include="Core\Mods\ElementRemovedEventArgs.cs" />
-    <Compile Include="Core\Mods\ElementRenamedEventArgs.cs" />
-    <Compile Include="Core\Mods\EntityModel.cs" />
-    <Compile Include="Core\Mods\FileRenamedEventArgs.cs" />
-    <Compile Include="Core\Mods\MapModel.cs" />
-    <Compile Include="Core\Mods\TilesetModel.cs" />
+    <Compile Include="Modules\Mods\Models\ElementAddedEventArgs.cs" />
+    <Compile Include="Modules\Mods\Models\ElementDescriptionChangedEventArgs.cs" />
+    <Compile Include="Modules\Mods\Models\ElementRemovedEventArgs.cs" />
+    <Compile Include="Modules\Mods\Models\ElementRenamedEventArgs.cs" />
+    <Compile Include="Modules\Mods\Models\EntityModel.cs" />
+    <Compile Include="Modules\Mods\Models\FileRenamedEventArgs.cs" />
+    <Compile Include="Modules\Mods\Models\MapModel.cs" />
+    <Compile Include="Modules\Mods\Models\TilesetModel.cs" />
     <Compile Include="Core\PersistedDocument.cs" />
     <Compile Include="Core\Primitives\BindingProxy.cs" />
     <Compile Include="Core\Primitives\ObservableDictionary.cs" />
@@ -271,7 +271,7 @@
     <Compile Include="Modules\ResourceBrowser\Converters\ModFileContextMenuItemsConverter.cs" />
     <Compile Include="Modules\ResourceBrowser\Converters\NullableValueConverter.cs" />
     <Compile Include="Modules\ResourceBrowser\Models\IModFile.cs" />
-    <Compile Include="Core\Mods\IModService.cs" />
+    <Compile Include="Modules\Mods\Services\IModService.cs" />
     <Compile Include="Modules\ResourceBrowser\Models\ModFileBase.cs" />
     <Compile Include="Modules\ResourceBrowser\ModFileBuilder.cs" />
     <Compile Include="Modules\ResourceBrowser\Models\NormalDirectory.cs" />
@@ -280,8 +280,8 @@
     <Compile Include="Modules\ResourceBrowser\Models\RootDirectory.cs" />
     <Compile Include="Modules\ResourceBrowser\Models\UnknownFile.cs" />
     <Compile Include="Modules\ResourceBrowser\Models\ModFileType.cs" />
-    <Compile Include="Core\Mods\ModResources.cs" />
-    <Compile Include="Core\Mods\ModService.cs" />
+    <Compile Include="Modules\Mods\Models\ModResources.cs" />
+    <Compile Include="Modules\Mods\Services\ModService.cs" />
     <Compile Include="Core\ModuleBase.cs" />
     <Compile Include="Core\PropertyChangedBaseExtensions.cs" />
     <Compile Include="Core\RelayCommand.cs" />
@@ -303,10 +303,10 @@
     <Compile Include="Modules\ErrorList\Views\ErrorListView.xaml.cs">
       <DependentUpon>ErrorListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Core\Mods\IMod.cs" />
-    <Compile Include="Core\Mods\ModPath.cs" />
-    <Compile Include="Core\Mods\ModProperties.cs" />
-    <Compile Include="Core\Mods\Mod.cs" />
+    <Compile Include="Modules\Mods\Models\IMod.cs" />
+    <Compile Include="Modules\Mods\Models\ModPath.cs" />
+    <Compile Include="Modules\Mods\Models\ModProperties.cs" />
+    <Compile Include="Modules\Mods\Models\Mod.cs" />
     <Compile Include="Modules\Progress\Commands\ViewProgressCommandDefinition.cs" />
     <Compile Include="Modules\Progress\Commands\ViewProgressCommandHandler.cs" />
     <Compile Include="Modules\Progress\IJob.cs" />
@@ -616,6 +616,9 @@
     <Resource Include="Resources\Icons\Redo.png" />
     <Resource Include="Resources\Icons\Save.png" />
     <Resource Include="Resources\Icons\Undo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Modules\Mods\ViewModels\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

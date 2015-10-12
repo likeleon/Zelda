@@ -2,7 +2,7 @@
 using Zelda.Game;
 using Zelda.Game.Engine;
 
-namespace Zelda.Editor.Core.Mods
+namespace Zelda.Editor.Modules.Mods.Models
 {
     class ModProperties
     {

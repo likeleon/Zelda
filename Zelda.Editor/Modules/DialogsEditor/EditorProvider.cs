@@ -3,9 +3,9 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using Zelda.Editor.Core;
-using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Modules.DialogsEditor.ViewModels;
+using Zelda.Editor.Modules.Mods.Services;
 
 namespace Zelda.Editor.Modules.DialogsEditor
 {

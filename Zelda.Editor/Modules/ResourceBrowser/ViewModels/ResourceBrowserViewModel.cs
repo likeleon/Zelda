@@ -5,12 +5,12 @@ using System.ComponentModel.Composition;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Controls.ViewModels;
-using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
+using Zelda.Editor.Modules.Mods.Models;
+using Zelda.Editor.Modules.Mods.Services;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels

@@ -4,8 +4,8 @@ using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Commands;
-using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Threading;
+using Zelda.Editor.Modules.Mods.Services;
 
 namespace Zelda.Editor.Modules.Shell.Commands
 {

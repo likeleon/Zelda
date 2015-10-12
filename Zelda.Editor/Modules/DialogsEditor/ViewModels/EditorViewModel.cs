@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Controls.ViewModels;
-using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Core.Threading;
 using Zelda.Editor.Modules.DialogsEditor.Models;
+using Zelda.Editor.Modules.Mods.Models;
 using Zelda.Editor.Modules.ResourceSelector.Models;
 using Zelda.Editor.Modules.ResourceSelector.ViewModels;
 using Zelda.Editor.Modules.UndoRedo;
@@ -116,7 +116,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         public RelayCommand SetPropertyKeyCommand { get; private set; }
         public RelayCommand DeletePropertyCommand { get; private set; }
 
-        Core.Mods.ModResources Resources { get { return _mod.Resources; } }
+        Mods.Models.ModResources Resources { get { return _mod.Resources; } }
 
         public EditorViewModel(IMod mod)
         {
@@ -274,7 +274,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             if (id == null)
                 return;
 
-            if (DialogsModel.IsValidId(id))
+            if (!DialogsModel.IsValidId(id))
             {
                 "Invalid dialog id: {0}".F(id).ShowErrorDialog();
                 return;

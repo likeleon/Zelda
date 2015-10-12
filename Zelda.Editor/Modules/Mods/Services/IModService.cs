@@ -1,6 +1,7 @@
 ﻿using System;
+using Zelda.Editor.Modules.Mods.Models;
 
-namespace Zelda.Editor.Core.Mods
+namespace Zelda.Editor.Modules.Mods.Services
 {
     interface IModService
     {

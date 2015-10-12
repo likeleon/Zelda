@@ -7,7 +7,6 @@
              xmlns:local="clr-namespace:Zelda.Editor.Modules.ResourceBrowser.Views"
              xmlns:behaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
              xmlns:converters="clr-namespace:Zelda.Editor.Modules.ResourceBrowser.Converters"
-             xmlns:mods="clr-namespace:Zelda.Editor.Core.Mods"
              xmlns:controls="clr-namespace:Zelda.Editor.Core.Controls"
              xmlns:primitives="clr-namespace:Zelda.Editor.Core.Primitives"
              mc:Ignorable="d" 

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Zelda.Game;
 
-namespace Zelda.Editor.Core.Mods
+namespace Zelda.Editor.Modules.Mods.Models
 {
     class Mod : PropertyChangedBase, IMod
     {

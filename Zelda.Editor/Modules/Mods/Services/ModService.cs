@@ -1,8 +1,9 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using Zelda.Editor.Modules.Mods.Models;
 using Zelda.Game;
 
-namespace Zelda.Editor.Core.Mods
+namespace Zelda.Editor.Modules.Mods.Services
 {
     [Export(typeof(IModService))]
     class ModService : IModService
@@ -23,7 +24,7 @@ namespace Zelda.Editor.Core.Mods
             if (!modPath.Exists(modPath.PropertiesPath))
                 throw new Exception("No mod was found in directory\n'{0}'".F(modPath));
 
-            var modProperties = new ModProperties(modPath);
+            var modProperties = new Models.ModProperties(modPath);
             CheckVersion(modProperties);
 
             Mod = new Mod(modProperties);
@@ -32,7 +33,7 @@ namespace Zelda.Editor.Core.Mods
                 Loaded(this, Mod);
         }
 
-        static void CheckVersion(ModProperties properties)
+        static void CheckVersion(Models.ModProperties properties)
         {
             Version modVersion = null;
             if (!Version.TryParse(properties.ZeldaVersion, out modVersion))

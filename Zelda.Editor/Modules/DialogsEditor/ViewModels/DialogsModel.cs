@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Zelda.Editor.Core;
-using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Modules.DialogsEditor.Models;
+using Zelda.Editor.Modules.Mods.Models;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.DialogsEditor.ViewModels

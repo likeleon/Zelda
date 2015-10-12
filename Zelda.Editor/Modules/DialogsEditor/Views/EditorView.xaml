@@ -34,6 +34,11 @@
                 <scm:SortDescription PropertyName="Key" />
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
+        <CollectionViewSource x:Key="SortedPropertiesTableItems" Source="{Binding PropertiesTable.Items}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Key" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
     </UserControl.Resources>
     <DockPanel Margin="10">
         <GroupBox DockPanel.Dock="Top" Header="Language properties" Padding="0 10 0 0">
@@ -150,7 +155,7 @@
                         </StackPanel>
                         <DataGrid AutoGenerateColumns="False" GridLinesVisibility="None" Background="Transparent" RowHeaderWidth="0" 
                                   SelectionMode="Single" SelectionUnit="FullRow"
-                                  ItemsSource="{Binding PropertiesTable.Items}"
+                                  ItemsSource="{Binding Source={StaticResource SortedPropertiesTableItems}}"
                                   SelectedItem="{Binding SelectedPropertyItem}">
                             <DataGrid.CellStyle>
                                 <Style TargetType="DataGridCell">
@@ -159,7 +164,7 @@
                                 </Style>
                             </DataGrid.CellStyle>
                             <DataGrid.Columns>
-                                <DataGridTemplateColumn Header="" Width="80">
+                                <DataGridTemplateColumn Header="Key" Width="80">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <DockPanel>

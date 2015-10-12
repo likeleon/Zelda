@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Zelda.Editor.Core.Mods;
 using Zelda.Editor.Core.Services;
+using Zelda.Editor.Modules.Mods.Models;
 using Zelda.Game;
-using ModResources = Zelda.Editor.Core.Mods.ModResources;
 
 namespace Zelda.Editor.Modules.ResourceSelector.Models
 {
@@ -13,7 +12,7 @@ namespace Zelda.Editor.Modules.ResourceSelector.Models
 
         public IMod Mod { get; private set; }
         public ResourceType ResourceType { get; private set; }
-        public ModResources Resources { get { return Mod.Resources; } }
+        public Mods.Models.ModResources Resources { get { return Mod.Resources; } }
         public InvisibleRootItem InvisibleRootItem { get; private set; }
 
         public ResourceModel(IMod mod, ResourceType resourceType)
