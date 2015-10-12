@@ -38,5 +38,11 @@ namespace Zelda.Editor.Core.Services
         {
             MessageBox.Show(text, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+
+        public static bool AnswerYes(this string question, string dialogTitle)
+        {
+            var answer = MessageBox.Show(question, dialogTitle, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            return answer == MessageBoxResult.Yes;
+        }
     }
 }

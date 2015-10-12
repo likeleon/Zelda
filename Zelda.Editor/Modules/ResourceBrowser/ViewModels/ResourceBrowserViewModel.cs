@@ -194,8 +194,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                     var resources = mod.Resources;
                     var resourceFriendlyName = resources.GetFriendlyName(resourceType);
                     var question = "Do you really want to delete {0} '{1}'?".F(resourceFriendlyName, elementId);
-                    var answer = MessageBox.Show(question, "Delete confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (answer != MessageBoxResult.Yes)
+                    if (!question.AnswerYes("Delete confirmation"))
                         return;
 
                     mod.DeleteResourceElement(resourceType, elementId);
@@ -206,14 +205,11 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                     if (Directory.Exists(path))
                     {
                         if (Directory.EnumerateFileSystemEntries(path).Any())
-                        {
                             "Folder is not empty".ShowWarningDialog();
-                        }
                         else
                         {
                             var question = "Do you really want to delete folder '{0}'?".F(pathFromRoot);
-                            var answer = MessageBox.Show(question, "Delete confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                            if (answer != MessageBoxResult.Yes)
+                            if (!question.AnswerYes("Delete confirmation"))
                                 return;
 
                             mod.DeleteDirectory(path);
@@ -223,8 +219,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                     else
                     {
                         var question = "Do you really want to delete file '{0}'?".F(pathFromRoot);
-                        var answer = MessageBox.Show(question, "Delete confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                        if (answer != MessageBoxResult.Yes)
+                        if (!question.AnswerYes("Delete confirmation"))
                             return;
 
                         mod.DeleteFile(path);

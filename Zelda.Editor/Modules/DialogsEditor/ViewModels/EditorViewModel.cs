@@ -337,8 +337,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             }
 
             var question = "Do you really want to delete all dialog prefixed by '{0}'?".F(id);
-            var answer = MessageBox.Show(question, "Delete confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (answer != MessageBoxResult.Yes)
+            if (!question.AnswerYes("Delete confirmation"))
                 return;
 
             TryAction(new DeleteDialogsAction(this, id));
