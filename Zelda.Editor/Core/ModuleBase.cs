@@ -7,7 +7,7 @@ using Zelda.Editor.Modules.MainMenu;
 
 namespace Zelda.Editor.Core
 {
-    public abstract class ModuleBase : IModule
+    abstract class ModuleBase : IModule
     {
 #pragma warning disable 649
         [Import]

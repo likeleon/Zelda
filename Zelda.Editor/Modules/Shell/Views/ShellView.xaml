@@ -7,6 +7,7 @@
              xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
              xmlns:controls="clr-namespace:Zelda.Editor.Modules.Shell.Controls"
              xmlns:converters="clr-namespace:Zelda.Editor.Modules.Shell.Converters"
+             xmlns:toolbarControls="clr-namespace:Zelda.Editor.Modules.ToolBars.Controls"
              SnapsToDevicePixels="True"
              TextOptions.TextFormattingMode="Display"
              TextOptions.TextRenderingMode="ClearType"
@@ -21,6 +22,7 @@
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
             <ContentControl cal:View.Model="{Binding MainMenu}" />
+            <ContentControl cal:View.Model="{Binding ToolBars}" />
         </StackPanel>
         
         <ContentControl DockPanel.Dock="Bottom" cal:View.Model="{Binding StatusBar}" IsTabStop="False" />
@@ -33,14 +35,26 @@
                 <controls:PanesTemplateSelector>
                     <controls:PanesTemplateSelector.DocumentTemplate>
                         <DataTemplate>
-                            <ContentControl cal:View.Model="{Binding}"
-                                            IsTabStop="False" />
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <toolbarControls:ToolPaneToolBar ItemsSource="{Binding ToolBar}" />
+                                <ContentControl Grid.Row="1" cal:View.Model="{Binding}" IsTabStop="False" />
+                            </Grid>
                         </DataTemplate>
                     </controls:PanesTemplateSelector.DocumentTemplate>
                     <controls:PanesTemplateSelector.ToolTemplate>
                         <DataTemplate>
-                            <ContentControl cal:View.Model="{Binding}"
-                                            IsTabStop="False" />
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <toolbarControls:ToolPaneToolBar ItemsSource="{Binding ToolBar}" />
+                                <ContentControl Grid.Row="1" cal:View.Model="{Binding}" IsTabStop="False" />
+                            </Grid>
                         </DataTemplate>
                     </controls:PanesTemplateSelector.ToolTemplate>
                 </controls:PanesTemplateSelector>

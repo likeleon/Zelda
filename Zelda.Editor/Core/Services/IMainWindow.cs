@@ -3,7 +3,7 @@ using System.Windows.Media;
 
 namespace Zelda.Editor.Core.Services
 {
-    public interface IMainWindow
+    interface IMainWindow
     {
         WindowState WindowState { get; set; }
         double Width { get; set; }

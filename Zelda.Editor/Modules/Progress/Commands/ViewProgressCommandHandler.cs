@@ -9,7 +9,7 @@ using Zelda.Editor.Core.Services;
 namespace Zelda.Editor.Modules.Progress.Commands
 {
     [CommandHandler]
-    public class ViewProgressCommandHandler : CommandHandlerBase<ViewProgressCommandDefinition>
+    class ViewProgressCommandHandler : CommandHandlerBase<ViewProgressCommandDefinition>
     {
         private readonly IShell _shell;
 

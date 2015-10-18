@@ -7,7 +7,7 @@ using Zelda.Editor.Core.Threading;
 namespace Zelda.Editor.Modules.ResourceBrowser.Commands
 {
     [CommandHandler]
-    public class ViewResourceBrowserCommandHandler : CommandHandlerBase<ViewResourceBrowserCommandDefinition>
+    class ViewResourceBrowserCommandHandler : CommandHandlerBase<ViewResourceBrowserCommandDefinition>
     {
         private IShell _shell;
 

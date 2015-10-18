@@ -10,12 +10,13 @@ using Zelda.Editor.Core.Services;
 using Zelda.Editor.Modules.MainMenu;
 using Zelda.Editor.Modules.Shell.Views;
 using Zelda.Editor.Modules.StatusBar;
+using Zelda.Editor.Modules.ToolBars;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.Shell.ViewModels
 {
     [Export(typeof(IShell))]
-    public class ShellViewModel : Conductor<IDocument>.Collection.OneActive, IShell
+    class ShellViewModel : Conductor<IDocument>.Collection.OneActive, IShell
     {
         public event EventHandler ActiveDocumentChanging;
         public event EventHandler ActiveDocumentChanged;
@@ -28,6 +29,9 @@ namespace Zelda.Editor.Modules.Shell.ViewModels
         IMenu _mainMenu;
 
         [Import]
+        IToolBars _toolBars;
+
+        [Import]
         IStatusBar _statusBar;
 #pragma warning restore 649
 
@@ -38,6 +42,7 @@ namespace Zelda.Editor.Modules.Shell.ViewModels
         ILayoutItem _activeLayoutItem;
 
         public IMenu MainMenu { get { return _mainMenu; } }
+        public IToolBars ToolBars { get { return _toolBars; } }
         public IStatusBar StatusBar { get { return _statusBar; } }
 
         public ILayoutItem ActiveLayoutItem

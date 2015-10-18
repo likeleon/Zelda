@@ -8,7 +8,7 @@ using Zelda.Editor.Core.Threading;
 namespace Zelda.Editor.Modules.ErrorList.Commands
 {
     [CommandHandler]
-    public class ViewErrorListCommandHandler : CommandHandlerBase<ViewErrorListCommandDefinition>
+    class ViewErrorListCommandHandler : CommandHandlerBase<ViewErrorListCommandDefinition>
     {
         private readonly IShell _shell;
 

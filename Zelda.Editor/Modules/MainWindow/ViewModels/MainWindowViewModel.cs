@@ -10,7 +10,7 @@ using System;
 namespace Zelda.Editor.Modules.MainWindow.ViewModels
 {
     [Export(typeof(IMainWindow))]
-    public class MainWindowViewModel : Conductor<IShell>, IMainWindow, IPartImportsSatisfiedNotification
+    class MainWindowViewModel : Conductor<IShell>, IMainWindow, IPartImportsSatisfiedNotification
     {
 #pragma warning disable 649
         [Import]

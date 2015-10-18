@@ -7,7 +7,7 @@ using Zelda.Editor.Core.Threading;
 namespace Zelda.Editor.Modules.Output.Commands
 {
     [CommandHandler]
-    public class ViewOutputCommandHandler : CommandHandlerBase<ViewOutputCommandDefinition>
+    class ViewOutputCommandHandler : CommandHandlerBase<ViewOutputCommandDefinition>
     {
         private IShell _shell;
 
