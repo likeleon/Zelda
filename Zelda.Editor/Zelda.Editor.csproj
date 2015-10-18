@@ -173,9 +173,21 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Modules\ToolBars\Resources\Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\ToolBars\Views\ToolBarsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Controls\Menu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Controls\Toolbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Controls\Tooltip.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -207,6 +219,7 @@
     <Compile Include="Core\Commands\CommandHandlerAttribute.cs" />
     <Compile Include="Core\Commands\CommandHandlerWrapper.cs" />
     <Compile Include="Core\Commands\CommandKeyGestureService.cs" />
+    <Compile Include="Core\Commands\CommandListDefinition.cs" />
     <Compile Include="Core\Commands\CommandRouter.cs" />
     <Compile Include="Core\Commands\CommandService.cs" />
     <Compile Include="Core\Commands\ICommandHandler.cs" />
@@ -214,6 +227,7 @@
     <Compile Include="Core\Commands\ICommandRerouter.cs" />
     <Compile Include="Core\Commands\ICommandRouter.cs" />
     <Compile Include="Core\Commands\ICommandService.cs" />
+    <Compile Include="Core\Commands\ICommandUiItem.cs" />
     <Compile Include="Core\Commands\TargetableCommand.cs" />
     <Compile Include="Core\Controls\DynamicStyle.cs" />
     <Compile Include="Core\Controls\TreeListView.cs" />
@@ -237,6 +251,12 @@
     <Compile Include="Core\Menus\MenuItemDefinition.cs" />
     <Compile Include="Core\Menus\MenuItemGroupDefinition.cs" />
     <Compile Include="Core\Menus\TextMenuItemDefinition.cs" />
+    <Compile Include="Core\ToolBars\ExcludeToolBarDefinition.cs" />
+    <Compile Include="Core\ToolBars\ExcludeToolBarItemDefinition.cs" />
+    <Compile Include="Core\ToolBars\ExcludeToolBarItemGroupDefinition.cs" />
+    <Compile Include="Core\ToolBars\ToolBarDefinition.cs" />
+    <Compile Include="Core\ToolBars\ToolBarItemDefinition.cs" />
+    <Compile Include="Core\ToolBars\ToolBarItemGroupDefinition.cs" />
     <Compile Include="Modules\Mods\Models\ElementAddedEventArgs.cs" />
     <Compile Include="Modules\Mods\Models\ElementDescriptionChangedEventArgs.cs" />
     <Compile Include="Modules\Mods\Models\ElementRemovedEventArgs.cs" />
@@ -399,6 +419,26 @@
     <Compile Include="Modules\StatusBar\ViewModels\StatusBarViewModel.cs" />
     <Compile Include="Modules\StatusBar\Views\StatusBarView.xaml.cs">
       <DependentUpon>StatusBarView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\ToolBars\Controls\CustomToggleButton.cs" />
+    <Compile Include="Modules\ToolBars\Controls\MainToolBar.cs" />
+    <Compile Include="Modules\ToolBars\Controls\ToolBarBase.cs" />
+    <Compile Include="Modules\ToolBars\Controls\ToolBarTrayContainer.cs" />
+    <Compile Include="Modules\ToolBars\Controls\ToolPaneToolBar.cs" />
+    <Compile Include="Modules\ToolBars\IToolBar.cs" />
+    <Compile Include="Modules\ToolBars\IToolBarBuilder.cs" />
+    <Compile Include="Modules\ToolBars\IToolBars.cs" />
+    <Compile Include="Modules\ToolBars\Models\CommandToolBarItem.cs" />
+    <Compile Include="Modules\ToolBars\Models\ToolBarItemBase.cs" />
+    <Compile Include="Modules\ToolBars\Models\ToolBarItemSeparator.cs" />
+    <Compile Include="Modules\ToolBars\Models\ToolBarModel.cs" />
+    <Compile Include="Modules\ToolBars\Module.cs" />
+    <Compile Include="Modules\ToolBars\ToolBarBuilder.cs" />
+    <Compile Include="Modules\ToolBars\ToolBarDefinitions.cs" />
+    <Compile Include="Modules\ToolBars\ViewModels\ToolBarsViewModel.cs" />
+    <Compile Include="Modules\ToolBars\Views\IToolBarsView.cs" />
+    <Compile Include="Modules\ToolBars\Views\ToolBarsView.xaml.cs">
+      <DependentUpon>ToolBarsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\UndoRedo\Commands\UndoCommandDefinition.cs" />
     <Compile Include="Modules\UndoRedo\Commands\RedoCommandDefinition.cs" />

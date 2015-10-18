@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.Composition;
-using Zelda.Editor.Core.Menus;
 using System.Linq;
-using Zelda.Editor.Modules.MainMenu.Models;
 using Zelda.Editor.Core.Commands;
+using Zelda.Editor.Core.Menus;
+using Zelda.Editor.Modules.MainMenu.Models;
 
 namespace Zelda.Editor.Modules.MainMenu
 {
@@ -36,16 +36,16 @@ namespace Zelda.Editor.Modules.MainMenu
                 .Where(x => x.MenuBar == menuBarDefinition)
                 .OrderBy(x => x.SortOrder);
 
-            foreach (MenuDefinition menu in menus)
+            foreach (var menu in menus)
             {
-                TextMenuItem menuModel = new TextMenuItem(menu);
+                var menuModel = new TextMenuItem(menu);
                 AddGroupsRecursive(menu, menuModel);
                 if (menuModel.Children.Any())
                     result.Add(menuModel);
             }
         }
 
-        private void AddGroupsRecursive(MenuDefinitionBase menu, StandardMenuItem menuModel)
+        void AddGroupsRecursive(MenuDefinitionBase menu, StandardMenuItem menuModel)
         {
             var groups = _menuItemGroups
                 .Where(x => x.Parent == menu)
@@ -54,15 +54,15 @@ namespace Zelda.Editor.Modules.MainMenu
 
             for (int i = 0; i < groups.Count; ++i)
             {
-                MenuItemGroupDefinition group = groups[i];
+                var group = groups[i];
                 var menuItems = _menuItems
                     .Where(x => x.Group == group)
                     .OrderBy(x => x.SortOrder);
 
                 foreach (MenuItemDefinition menuItem in menuItems)
                 {
-                    StandardMenuItem menuItemModel = (menuItem.CommandDefinition != null)
-                        ? new CommandMenuItem(_commandService.GetCommand(menuItem.CommandDefinition))
+                    var menuItemModel = (menuItem.CommandDefinition != null)
+                        ? new CommandMenuItem(_commandService.GetCommand(menuItem.CommandDefinition), menuModel)
                         : new TextMenuItem(menuItem) as StandardMenuItem;
                     AddGroupsRecursive(menuItem, menuItemModel);
                     menuModel.Add(menuItemModel);

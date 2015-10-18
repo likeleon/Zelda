@@ -5,14 +5,8 @@ namespace Zelda.Editor.Core.Commands
 {
     public abstract class CommandDefinition : CommandDefinitionBase
     {
-        public override Uri IconSource
-        {
-            get { return null; }
-        }
-
-        public override KeyGesture KeyGesture
-        {
-            get { return null; }
-        }
+        public override Uri IconSource { get { return null; } }
+        public override KeyGesture KeyGesture { get { return null; } }
+        public override sealed bool IsList { get { return false; } }
     }
 }

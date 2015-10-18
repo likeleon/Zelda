@@ -66,6 +66,8 @@ namespace Zelda.Editor.Core.Commands
         {
             if (typeof(CommandDefinition).IsAssignableFrom(commandDefinitionType))
                 return CommandHandlerWrapper.FromCommandHandler(CommandHandlerInterfaceType.MakeGenericType(commandDefinitionType), commandHandler);
+            if (typeof(CommandListDefinition).IsAssignableFrom(commandDefinitionType))
+                return CommandHandlerWrapper.FromCommandListHandler(CommandHandlerInterfaceType.MakeGenericType(commandDefinitionType), commandHandler);
             throw new InvalidOperationException();
         }
 

@@ -6,14 +6,14 @@ namespace Zelda.Editor.Core.Commands
 {
     public class Command : PropertyChangedBase
     {
-        private readonly CommandDefinitionBase _commandDefinition;
-        private bool _visible = true;
-        private bool _enabled = true;
-        private bool _checked;
-        private string _text;
-        private string _toolTip;
-        private Uri _iconSource;
-        private readonly KeyGesture _keyGesture;
+        readonly CommandDefinitionBase _commandDefinition;
+        bool _visible = true;
+        bool _enabled = true;
+        bool _checked;
+        string _text;
+        string _toolTip;
+        Uri _iconSource;
+        readonly KeyGesture _keyGesture;
 
         public CommandDefinitionBase CommandDefinition
         {

@@ -6,16 +6,9 @@ namespace Zelda.Editor.Modules.MainMenu.Models
 {
     public class MenuItemBase : PropertyChangedBase, IEnumerable<MenuItemBase>
     {
-        public static MenuItemBase Separator
-        {
-            get { return new MenuItemSeparator(); }
-        }
+        public static MenuItemBase Separator { get { return new MenuItemSeparator(); } }
 
-        public IObservableCollection<MenuItemBase> Children 
-        { 
-            get;
-            private set;
-        }
+        public IObservableCollection<MenuItemBase> Children { get; private set; }
 
         protected MenuItemBase()
         {
@@ -27,14 +20,8 @@ namespace Zelda.Editor.Modules.MainMenu.Models
             menuItems.Apply(Children.Add);
         }
 
-        public IEnumerator<MenuItemBase> GetEnumerator()
-        {
-            return Children.GetEnumerator();
-        }
+        public IEnumerator<MenuItemBase> GetEnumerator() { return Children.GetEnumerator(); }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
     }
 }

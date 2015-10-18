@@ -10,5 +10,6 @@ namespace Zelda.Editor.Core.Commands
         public abstract string ToolTip { get; }
         public abstract Uri IconSource { get; }
         public abstract KeyGesture KeyGesture { get; }
+        public abstract bool IsList { get; }
     }
 }
