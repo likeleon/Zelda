@@ -5,28 +5,31 @@ namespace Zelda.Editor.Modules.ErrorList
 {
     public class ErrorListItem : PropertyChangedBase
     {
-        private ErrorListItemType _itemType;
+        ErrorListItemType _itemType;
+        int _number;
+        string _description;
+        string _path;
+        int? _line;
+        int? _column;
+
         public ErrorListItemType ItemType
         {
             get { return _itemType; }
             set { this.SetProperty(ref _itemType, value);  }
         }
 
-        private int _number;
         public int Number
         {
             get { return _number; }
             set { this.SetProperty(ref _number, value); }
         }
 
-        private string _description;
         public string Description
         {
             get { return _description; }
             set { this.SetProperty(ref _description, value); }
         }
 
-        private string _path;
         public string Path
         {
             get { return _path; }
@@ -42,15 +45,13 @@ namespace Zelda.Editor.Modules.ErrorList
             get { return System.IO.Path.GetFileName(Path); }
         }
 
-        private int? _line;
         public int? Line
         {
             get { return _line; }
             set { this.SetProperty(ref _line, value); }
         }
 
-        private int? _column;
-        public int? column
+        public int? Column
         {
             get { return _column; }
             set { this.SetProperty(ref _column, value); }

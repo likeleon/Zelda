@@ -9,7 +9,7 @@ namespace Zelda.Editor.Modules.Progress.ViewModels
 {
     [Export(typeof(IProgressService))]
     [Export(typeof(IProgressTool))]
-    public class ProgressToolViewModel : Tool, IProgressService, IProgressTool
+    class ProgressToolViewModel : Tool, IProgressService, IProgressTool
     {
         public IObservableCollection<JobViewModel> Items { get { return _items; } }
         public override PaneLocation PreferredLocation { get { return PaneLocation.Bottom; } }

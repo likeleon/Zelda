@@ -251,12 +251,18 @@
     <Compile Include="Core\Menus\MenuItemDefinition.cs" />
     <Compile Include="Core\Menus\MenuItemGroupDefinition.cs" />
     <Compile Include="Core\Menus\TextMenuItemDefinition.cs" />
+    <Compile Include="Core\ToolBars\CommandToolBarItemDefinition.cs" />
     <Compile Include="Core\ToolBars\ExcludeToolBarDefinition.cs" />
     <Compile Include="Core\ToolBars\ExcludeToolBarItemDefinition.cs" />
     <Compile Include="Core\ToolBars\ExcludeToolBarItemGroupDefinition.cs" />
     <Compile Include="Core\ToolBars\ToolBarDefinition.cs" />
     <Compile Include="Core\ToolBars\ToolBarItemDefinition.cs" />
     <Compile Include="Core\ToolBars\ToolBarItemGroupDefinition.cs" />
+    <Compile Include="Modules\ErrorList\Commands\ToggleErrorsWarningsMessagesCommandHandler.cs" />
+    <Compile Include="Modules\ErrorList\Commands\ToggleMessagesCommandDefinition - Copy.cs" />
+    <Compile Include="Modules\ErrorList\Commands\ToggleWarningsCommandDefinition.cs" />
+    <Compile Include="Modules\ErrorList\Commands\ToggleErrorsCommandDefinition.cs" />
+    <Compile Include="Modules\ErrorList\ToolBarDefinitions.cs" />
     <Compile Include="Modules\Mods\Models\ElementAddedEventArgs.cs" />
     <Compile Include="Modules\Mods\Models\ElementDescriptionChangedEventArgs.cs" />
     <Compile Include="Modules\Mods\Models\ElementRemovedEventArgs.cs" />
@@ -408,6 +414,7 @@
     <Compile Include="Modules\Shell\Controls\PanesTemplateSelector.cs" />
     <Compile Include="Modules\Shell\Converters\NullableValueConverter.cs" />
     <Compile Include="Modules\Shell\MenuDefinitions.cs" />
+    <Compile Include="Modules\Shell\ToolBarDefinitions.cs" />
     <Compile Include="Modules\Shell\ViewModels\ShellViewModel.cs" />
     <Compile Include="Modules\Shell\Views\IShellView.cs" />
     <Compile Include="Modules\Shell\Views\ShellView.xaml.cs">
@@ -659,7 +666,11 @@
     <Resource Include="Resources\Icons\Save.png" />
     <Resource Include="Resources\Icons\Undo.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Modules\ErrorList\Resources\Error.png" />
+    <Resource Include="Modules\ErrorList\Resources\Message.png" />
+    <Resource Include="Modules\ErrorList\Resources\Warning.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

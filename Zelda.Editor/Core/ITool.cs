@@ -2,7 +2,7 @@
 
 namespace Zelda.Editor.Core
 {
-    public interface ITool : ILayoutItem
+    interface ITool : ILayoutItem
     {
         PaneLocation PreferredLocation { get; }
         double PreferredWidth { get; }

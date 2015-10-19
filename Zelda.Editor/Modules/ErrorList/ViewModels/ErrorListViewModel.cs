@@ -8,7 +8,7 @@ using Zelda.Editor.Core.Services;
 namespace Zelda.Editor.Modules.ErrorList.ViewModels
 {
     [Export(typeof(IErrorList))]
-    public class ErrorListViewModel : Tool, IErrorList
+    class ErrorListViewModel : Tool, IErrorList
     {
         readonly BindableCollection<ErrorListItem> _items = new BindableCollection<ErrorListItem>();
         bool _showErrors = true;
@@ -66,6 +66,8 @@ namespace Zelda.Editor.Modules.ErrorList.ViewModels
         public ErrorListViewModel()
         {
             DisplayName = "Error List";
+
+            ToolBarDefinition = ToolBarDefinitions.ErrorListToolBar;
 
             _items.CollectionChanged += (sender, e) =>
             {

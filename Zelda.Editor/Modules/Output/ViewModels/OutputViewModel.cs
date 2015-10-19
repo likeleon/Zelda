@@ -10,7 +10,7 @@ using Zelda.Editor.Modules.Output.Views;
 namespace Zelda.Editor.Modules.Output.ViewModels
 {
     [Export(typeof(IOutput))]
-    public class OutputViewModel : Tool, IOutput
+    class OutputViewModel : Tool, IOutput
     {
         private readonly StringBuilder _stringBuilder = new StringBuilder();
         private readonly OutputWriter _writer;

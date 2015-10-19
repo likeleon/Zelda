@@ -3,7 +3,7 @@ using Zelda.Editor.Core;
 
 namespace Zelda.Editor.Modules.ErrorList
 {
-    public interface IErrorList : ITool
+    interface IErrorList : ITool
     {
         bool ShowErrors { get; set; }
         bool ShowWarnings { get; set; }

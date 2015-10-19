@@ -1,7 +1,7 @@
 ﻿
 namespace Zelda.Editor.Core.Services
 {
-    public enum PaneLocation
+    enum PaneLocation
     {
         Left,
         Right,

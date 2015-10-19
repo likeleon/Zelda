@@ -1,9 +1,13 @@
-﻿using System.Linq;
+﻿using Caliburn.Micro;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Zelda.Editor.Core.Commands;
 using Zelda.Editor.Core.Threading;
+using Zelda.Editor.Core.ToolBars;
 using Zelda.Editor.Modules.Shell.Commands;
+using Zelda.Editor.Modules.ToolBars;
+using Zelda.Editor.Modules.ToolBars.Models;
 using Zelda.Editor.Modules.UndoRedo;
 using Zelda.Editor.Modules.UndoRedo.Commands;
 using Zelda.Editor.Modules.UndoRedo.Services;
@@ -17,10 +21,40 @@ namespace Zelda.Editor.Core
     {
         ICommand _closeCommand;
         IUndoRedoManager _undoRedoManager;
+        ToolBarDefinition _toolBarDefinition;
+        IToolBar _toolBar;
 
         public override ICommand CloseCommand
         {
             get { return _closeCommand ?? (_closeCommand = new RelayCommand(_ => TryClose(null), _ => true)); }
+        }
+
+        public ToolBarDefinition ToolBarDefinition
+        {
+            get { return _toolBarDefinition; }
+            protected set
+            {
+                _toolBarDefinition = value;
+                NotifyOfPropertyChange(() => ToolBar);
+                NotifyOfPropertyChange();
+            }
+        }
+
+        public IToolBar ToolBar
+        {
+            get
+            {
+                if (_toolBar != null)
+                    return _toolBar;
+
+                if (ToolBarDefinition == null)
+                    return null;
+
+                var toolBarBuilder = IoC.Get<IToolBarBuilder>();
+                _toolBar = new ToolBarModel();
+                toolBarBuilder.BuildToolBar(_toolBarDefinition, _toolBar);
+                return _toolBar;
+            }
         }
 
         public IUndoRedoManager UndoRedoManager

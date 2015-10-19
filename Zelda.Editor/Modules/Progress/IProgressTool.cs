@@ -2,7 +2,7 @@
 
 namespace Zelda.Editor.Modules.Progress
 {
-    public interface IProgressTool : ITool
+    interface IProgressTool : ITool
     {
     }
 }
