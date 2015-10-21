@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:cal="http://www.caliburnproject.org"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Views"
@@ -157,6 +158,13 @@
                                   SelectionMode="Single" SelectionUnit="FullRow"
                                   ItemsSource="{Binding Source={StaticResource SortedPropertiesTableItems}}"
                                   SelectedItem="{Binding SelectedPropertyItem}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="CellEditEnding">
+                                    <cal:ActionMessage MethodName="OnPropertyCellEditEnding">
+                                        <cal:Parameter Value="$eventArgs" />
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
                             <DataGrid.CellStyle>
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="BorderThickness" Value="0" />
@@ -174,20 +182,8 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Value" Width="120">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Value}" VerticalAlignment="Center" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Translation" Width="120">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Translation}" VerticalAlignment="Center" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Value" Width="120" Binding="{Binding Value}" />
+                                <DataGridTextColumn Header="Translation" Width="120" Binding="{Binding Translation}" IsReadOnly="True" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </DockPanel>

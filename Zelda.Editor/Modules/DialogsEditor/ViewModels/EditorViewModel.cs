@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Data;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Controls.ViewModels;
 using Zelda.Editor.Core.Services;
@@ -115,7 +117,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         public RelayCommand DeletePropertyCommand { get; private set; }
 
 
-        public EditorViewModel(IMod mod, string filePath)
+        public EditorViewModel(IMod mod, string filePath)           
             : base(mod, filePath)
         {
             Resources.ElementDescriptionChanged += (_, e) => NotifyOfPropertyChange(() => Description);
@@ -196,7 +198,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         {
             UpdateDialogView();
             ChangeDialogIdCommand.RaiseCanExecuteChanged();
-            DeleteDialogCommand.RaiseCanExecuteChanged();            
+            DeleteDialogCommand.RaiseCanExecuteChanged();
         }
 
         void UpdateDialogView()
@@ -405,6 +407,44 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             DialogsModel.Save();
             var task = Task.FromResult(true);
             return task;
+        }
+
+        public void OnPropertyCellEditEnding(DataGridCellEditEndingEventArgs param)
+        {
+            if (param.EditAction != DataGridEditAction.Commit || !CheckIsPropertyValueColumn(param.Column))
+                return;
+
+            var propertyItem = param.Row.DataContext as DialogPropertiesTable.Item;
+            if (propertyItem == null)
+                return;
+
+            var newValue = (param.EditingElement as TextBox).Text;
+            if (DialogsModel.GetDialogProperty(DialogId, propertyItem.Key) != newValue)
+                ChangeDialogPropertyValue(propertyItem.Key, newValue);
+        }
+
+        static bool CheckIsPropertyValueColumn(DataGridColumn column)
+        {
+            var textColumn = column as DataGridTextColumn;
+            if (textColumn == null)
+                return false;
+
+            var binding = textColumn.Binding as Binding;
+            return (binding.Path.Path == "Value");
+        }
+
+        void ChangeDialogPropertyValue(string key, string value)
+        {
+            if (!DialogsModel.DialogExists(DialogId))
+            {
+                var properties = new Dictionary<string, string>();
+                properties.Add(key, value);
+                TryAction(new CreateDialogAction(this, DialogId, string.Empty, properties));
+            }
+            else if (!DialogsModel.DialogPropertyExists(DialogId, key))
+                TryAction(new CreateDialogPropertyAction(this, DialogId, key, value));
+            else if (value != DialogsModel.GetDialogProperty(DialogId, key))
+                TryAction(new SetDialogPropertyValueAction(this, DialogId, key, value));
         }
 
         abstract class DialogsEditorAction : IUndoableAction
@@ -646,6 +686,35 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 _removedDialogs.Do(tuple => Model.CreateDialog(tuple.Item1, tuple.Item2));
                 if (_removedDialogs.Count > 0)
                     Editor.SetSelectedDialog(_removedDialogs.First().Item1);
+            }
+        }
+
+        class SetDialogPropertyValueAction : DialogsEditorAction
+        {
+            readonly string _id;
+            readonly string _key;
+            readonly string _oldValue;
+            readonly string _newValue;
+
+            public SetDialogPropertyValueAction(EditorViewModel editor, string id, string key, string newValue)
+                : base(editor, "Change dialog property")
+            {
+                _id = id;
+                _key = key;
+                _oldValue = Model.GetDialogProperty(id, key);
+                _newValue = newValue;
+            }
+
+            protected override void OnExecute()
+            {
+                Model.SetDialogProperty(_id, _key, _newValue);
+                Editor.SetSelectedProperty(_key);
+            }
+
+            protected override void OnUndo()
+            {
+                Model.SetDialogProperty(_id, _key, _oldValue);
+                Editor.SetSelectedProperty(_key);
             }
         }
     }
