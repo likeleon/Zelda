@@ -453,6 +453,7 @@
     <Compile Include="Modules\UndoRedo\IUndoRedoManager.cs" />
     <Compile Include="Modules\UndoRedo\MenuDefinitions.cs" />
     <Compile Include="Modules\UndoRedo\Services\UndoRedoManager.cs" />
+    <Compile Include="Modules\UndoRedo\ToolBarDefinitions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
