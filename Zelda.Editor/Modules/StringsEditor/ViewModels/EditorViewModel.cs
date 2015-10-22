@@ -51,6 +51,7 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
 
             Title = "Strings {0}".F(languageId);
             LanguageId = languageId;
+            CloseConfirmMessage = "Strings '{0}' has been modified. Save changes?".F(languageId);
 
             TranslationSelector = new SelectorViewModel(Mod, ResourceType.Language);
             TranslationSelector.RemoveId(languageId);

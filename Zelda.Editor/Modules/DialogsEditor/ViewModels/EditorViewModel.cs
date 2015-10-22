@@ -133,6 +133,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
             Title = "Dialogs {0}".F(languageId);
             LanguageId = languageId;
+            CloseConfirmMessage = "Dialogs '{0}' has been modified. Save changes?".F(languageId);
 
             DialogsModel = new DialogsModel(Mod, languageId);
             DialogsModel.DialogCreated += (_, e) => UpdateDialogViewIfDialogIdEquals(e);

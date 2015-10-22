@@ -409,6 +409,7 @@
       <DependentUpon>SelectorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Shell\Commands\CloseFileCommandDefinition.cs" />
+    <Compile Include="Modules\Shell\Commands\CloseFileCommandHandler.cs" />
     <Compile Include="Modules\Shell\Commands\ExitCommandDefinition.cs" />
     <Compile Include="Modules\Shell\Commands\ExitCommandHandler.cs" />
     <Compile Include="Modules\Shell\Commands\OpenModCommandDefinition.cs" />
