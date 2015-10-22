@@ -135,6 +135,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             LanguageId = languageId;
 
             DialogsModel = new DialogsModel(Mod, languageId);
+            DialogsModel.DialogCreated += (_, e) => UpdateDialogViewIfDialogIdEquals(e);
+            DialogsModel.DialogDeleted += (_, e) => UpdateDialogViewIfDialogIdEquals(e);
             DialogsModel.DialogIdChanged += (_, e) => UpdateDialogId();
             DialogsModel.DialogTextChanged += (_, e) => UpdateDialogText();
 
@@ -155,6 +157,12 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                                                      _ => SelectedDialogPropertyExists());
             DeletePropertyCommand = new RelayCommand(_ => DeleteDialogProperty(),
                                                      _ => SelectedDialogPropertyExists());
+        }
+
+        void UpdateDialogViewIfDialogIdEquals(string id)
+        {
+            if (id == DialogId)
+                UpdateDialogView();
         }
 
         void TranslationSelector_SelectedItemChanged(object sender, Item e)

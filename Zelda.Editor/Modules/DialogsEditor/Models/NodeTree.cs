@@ -68,7 +68,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
                     node.Type = type;
 
                 outParent = null;
-                return null;
+                return node;
             }
 
             outParent = parent;

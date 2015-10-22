@@ -9,15 +9,16 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Views"
-             xmlns:behaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
-             xmlns:controls="clr-namespace:Zelda.Editor.Core.Controls"
+             xmlns:coreBehaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
+             xmlns:coreControls="clr-namespace:Zelda.Editor.Core.Controls"
+             xmlns:corePrimitives="clr-namespace:Zelda.Editor.Core.Primitives"
+             xmlns:behaviors="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Behaviors"
              xmlns:conveters="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Converters"
-             xmlns:primitives="clr-namespace:Zelda.Editor.Core.Primitives"
              xmlns:resourceSelectorView="clr-namespace:Zelda.Editor.Modules.ResourceSelector.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
-        <primitives:BindingProxy x:Key="ModelProxy" Data="{Binding DialogsModel}" />
+        <corePrimitives:BindingProxy x:Key="ModelProxy" Data="{Binding DialogsModel}" />
         <conveters:DialogNameConverter x:Key="DialogNameConverter" />
         <conveters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -83,16 +84,16 @@
                         <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
                     </Button>
                 </StackPanel>
-                <controls:TreeListView x:Name="dialogsTreeListView" ItemsSource="{Binding Source={StaticResource SortedDialogsTree}}">
-                    <controls:TreeListView.Resources>
+                <coreControls:TreeListView x:Name="dialogsTreeListView" ItemsSource="{Binding Source={StaticResource SortedDialogsTree}}">
+                    <coreControls:TreeListView.Resources>
                         <Style TargetType="GridViewColumnHeader">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </Style>
-                    </controls:TreeListView.Resources>
-                    <controls:TreeListView.ItemTemplate>
+                    </coreControls:TreeListView.Resources>
+                    <coreControls:TreeListView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding BindableChildren}" />
-                    </controls:TreeListView.ItemTemplate>
-                    <controls:TreeListView.Columns>
+                    </coreControls:TreeListView.ItemTemplate>
+                    <coreControls:TreeListView.Columns>
                         <GridViewColumn Header="" Width="{Binding ActualWidth, ElementName=dialogsTreeListView}">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -105,11 +106,11 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                    </controls:TreeListView.Columns>
+                    </coreControls:TreeListView.Columns>
                     <i:Interaction.Behaviors>
-                        <behaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedDialogNode, Mode=TwoWay}" />
+                        <coreBehaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedDialogNode, Mode=TwoWay}" />
                     </i:Interaction.Behaviors>
-                </controls:TreeListView>
+                </coreControls:TreeListView>
             </DockPanel>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
             <GroupBox Grid.Column="2" Margin="0 2 0 0" Header="Dialog properties" IsEnabled="{Binding IsDialogPropertiesEnabled}" >
@@ -130,17 +131,28 @@
                     <DockPanel Grid.Row="1">
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                             <CheckBox x:Name="displayMarginCheckBox" Margin="5 0" Content="Display right margin at column:" VerticalAlignment="Center"/>
-                            <xctk:IntegerUpDown VerticalAlignment="Center"
+                            <xctk:IntegerUpDown x:Name="marginUpDown" VerticalAlignment="Center"
+                                                Value="23" Minimum="1" Maximum="255"
                                                 IsEnabled="{Binding IsChecked, ElementName=displayMarginCheckBox}"/>
                         </StackPanel>
                         <Label DockPanel.Dock="Left" Content="Text:" />
                     </DockPanel>
                     <TextBox Grid.Row="2" Margin="0 5" Style="{StaticResource MultilineTextBox}" 
-                             Text="{Binding DialogText}" />
+                             Text="{Binding DialogText}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:ShowMarginBehavior DisplayMargin="{Binding IsChecked, ElementName=displayMarginCheckBox, Mode=TwoWay}" 
+                                                          Margin="{Binding Value, ElementName=marginUpDown}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBox>
                     <Label Grid.Row="3" Content="Translation: " />
                     <TextBox Grid.Row="4" Style="{StaticResource MultilineTextBox}" 
                              Text="{Binding TranslationText}"
-                             IsEnabled="{Binding TranslationText, Converter={StaticResource NullToBooleanConverter}}"/>
+                             IsEnabled="{Binding TranslationText, Converter={StaticResource NullToBooleanConverter}}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:ShowMarginBehavior DisplayMargin="{Binding IsChecked, ElementName=displayMarginCheckBox, Mode=TwoWay}" 
+                                                          Margin="{Binding Value, ElementName=marginUpDown}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBox>
                     <Label Grid.Row="5" Content="Properties: " />
                     <DockPanel Grid.Row="6">
                         <StackPanel DockPanel.Dock="Right" Margin="5 0">

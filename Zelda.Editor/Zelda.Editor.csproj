@@ -258,6 +258,7 @@
     <Compile Include="Core\ToolBars\ToolBarDefinition.cs" />
     <Compile Include="Core\ToolBars\ToolBarItemDefinition.cs" />
     <Compile Include="Core\ToolBars\ToolBarItemGroupDefinition.cs" />
+    <Compile Include="Modules\DialogsEditor\Behaviors\ShowMarginBehavior.cs" />
     <Compile Include="Modules\ErrorList\Commands\ToggleErrorsWarningsMessagesCommandHandler.cs" />
     <Compile Include="Modules\ErrorList\Commands\ToggleMessagesCommandDefinition - Copy.cs" />
     <Compile Include="Modules\ErrorList\Commands\ToggleWarningsCommandDefinition.cs" />
@@ -672,9 +673,7 @@
     <Resource Include="Modules\ErrorList\Resources\Message.png" />
     <Resource Include="Modules\ErrorList\Resources\Warning.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Modules\DialogsEditor\Controls\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

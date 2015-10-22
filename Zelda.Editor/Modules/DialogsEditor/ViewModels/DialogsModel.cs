@@ -310,7 +310,10 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 throw new InvalidOperationException("Invalid dialog id: '{0}'".F(id));
 
             _resources.RemoveDialog(id);
-            _dialogTree.RemoveKey(_dialogTree.Find(id));
+
+            var node = _dialogTree.Find(id);
+            _dialogTree.RemoveKey(node);
+            node.Icon = GetIcon(node);
 
             if (DialogDeleted != null)
                 DialogDeleted(this, id);
