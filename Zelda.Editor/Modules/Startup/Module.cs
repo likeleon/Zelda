@@ -22,7 +22,6 @@ namespace Zelda.Editor.Modules.Startup
         {
             get
             {
-                yield return typeof(IOutput);
                 yield return typeof(IResourceBrowser);
             }
         }

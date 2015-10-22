@@ -291,7 +291,7 @@ namespace Zelda.Editor.Modules.Mods.Models
                 return false;
 
             var pathFromLanguages = path.Substring(languagesPath.Length + 1);
-            languageId = pathFromLanguages.Substring(pathFromLanguages.Length - expectedPathEnd.Length);
+            languageId = pathFromLanguages.Substring(0, pathFromLanguages.Length - expectedPathEnd.Length - 1);
             if (!Resources.Exists(ResourceType.Language, languageId))
                 return false;
 

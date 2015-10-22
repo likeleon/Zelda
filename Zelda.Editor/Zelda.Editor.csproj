@@ -173,6 +173,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Modules\StringsEditor\Views\EditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Modules\ToolBars\Resources\Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -279,7 +283,7 @@
     <Compile Include="Core\Services\IResourceManager.cs" />
     <Compile Include="Core\Services\ResourceManager.cs" />
     <Compile Include="Modules\DialogsEditor\Converters\DialogNameConverter.cs" />
-    <Compile Include="Modules\DialogsEditor\Converters\NullToBooleanConverter.cs" />
+    <Compile Include="Core\Converters\NullToBooleanConverter.cs" />
     <Compile Include="Modules\DialogsEditor\EditorProvider.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\ChangeDialogIdViewModel.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\DialogPropertiesTable.cs" />
@@ -427,6 +431,11 @@
     <Compile Include="Modules\StatusBar\ViewModels\StatusBarViewModel.cs" />
     <Compile Include="Modules\StatusBar\Views\StatusBarView.xaml.cs">
       <DependentUpon>StatusBarView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\StringsEditor\EditorProvider.cs" />
+    <Compile Include="Modules\StringsEditor\ViewModels\EditorViewModel.cs" />
+    <Compile Include="Modules\StringsEditor\Views\EditorView.xaml.cs">
+      <DependentUpon>EditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\ToolBars\Controls\CustomToggleButton.cs" />
     <Compile Include="Modules\ToolBars\Controls\MainToolBar.cs" />

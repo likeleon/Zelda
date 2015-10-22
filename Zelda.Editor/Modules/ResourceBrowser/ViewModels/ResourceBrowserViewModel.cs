@@ -333,7 +333,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             else if (mod.IsDialogsFile(absolutePath, ref elementId))
                 OpenDialogsEditor(elementId);
             else if (mod.IsStringsFile(absolutePath, ref elementId))
-                OpenStringsEditor(absolutePath, elementId);
+                OpenStringsEditor(elementId);
             else if (mod.IsScript(absolutePath))
                 OpenTextEditor(absolutePath);
             else if (mod.IsModRootDirectory(absolutePath))
@@ -365,19 +365,20 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             throw new NotImplementedException();
         }
 
-        void OpenStringsEditor(string absolutePath, string elementId)
+        void OpenStringsEditor(string languageId)
         {
-            throw new NotImplementedException();
+            var mod = _modService.Mod;
+            var path = mod.GetStringsPath(languageId);
+            if (mod.IsInRootPath(path))
+                _shell.OpenDocument(GetEditor(path));
         }
 
         void OpenDialogsEditor(string languageId)
         {
             var mod = _modService.Mod;
             var path = mod.GetDialogsPath(languageId);
-            if (!mod.IsInRootPath(path))
-                return;
-
-            _shell.OpenDocument(GetEditor(path));
+            if (mod.IsInRootPath(path))
+                _shell.OpenDocument(GetEditor(path));
         }
 
         IDocument GetEditor(string path)

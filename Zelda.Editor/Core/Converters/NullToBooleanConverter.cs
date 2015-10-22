@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Zelda.Editor.Modules.DialogsEditor.Converters
+namespace Zelda.Editor.Core.Converters
 {
     class NullToBooleanConverter : IValueConverter
     {

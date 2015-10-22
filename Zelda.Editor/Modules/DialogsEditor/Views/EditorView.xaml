@@ -11,6 +11,7 @@
              xmlns:local="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Views"
              xmlns:coreBehaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
              xmlns:coreControls="clr-namespace:Zelda.Editor.Core.Controls"
+             xmlns:coreConverters="clr-namespace:Zelda.Editor.Core.Converters"
              xmlns:corePrimitives="clr-namespace:Zelda.Editor.Core.Primitives"
              xmlns:behaviors="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Behaviors"
              xmlns:conveters="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Converters"
@@ -20,7 +21,7 @@
     <UserControl.Resources>
         <corePrimitives:BindingProxy x:Key="ModelProxy" Data="{Binding DialogsModel}" />
         <conveters:DialogNameConverter x:Key="DialogNameConverter" />
-        <conveters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
+        <coreConverters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>

@@ -431,8 +431,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         protected override Task OnSave()
         {
             DialogsModel.Save();
-            var task = Task.FromResult(true);
-            return task;
+            return Task.FromResult(true);
         }
 
         public void OnPropertyCellEditEnding(DataGridCellEditEndingEventArgs param)
