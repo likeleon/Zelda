@@ -24,7 +24,6 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         Node _selectedDialogNode;
         bool _isDialogPropertiesEnabled;
         string _dialogId;
-        string _dialogText;
         string _translationText;
         DialogPropertiesTable.Item _selectedPropertyItem;
 
@@ -83,8 +82,14 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         public string DialogText
         {
-            get { return _dialogText; }
-            set { this.SetProperty(ref _dialogText, value); }
+            get
+            {
+                if (DialogsModel.DialogExists(SelectedDialogId))
+                    return DialogsModel.GetDialogText(SelectedDialogId);
+                else
+                    return null;
+            }
+            set { ChangeDialogText(value); }
         }
 
         public string TranslationText
@@ -131,6 +136,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
             DialogsModel = new DialogsModel(Mod, languageId);
             DialogsModel.DialogIdChanged += (_, e) => UpdateDialogId();
+            DialogsModel.DialogTextChanged += (_, e) => UpdateDialogText();
 
             PropertiesTable = new DialogPropertiesTable(DialogsModel);
 
@@ -225,10 +231,22 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         void UpdateDialogText()
         {
-            if (DialogsModel.DialogExists(SelectedDialogId))
-                DialogText = DialogsModel.GetDialogText(SelectedDialogId);
-            else
-                DialogText = null;
+            NotifyOfPropertyChange(() => DialogText);
+        }
+
+        void ChangeDialogText(string newText)
+        {
+            if (!DialogsModel.DialogExists(DialogId))
+            {
+                if (!newText.IsNullOrEmpty())
+                    TryAction(new CreateDialogAction(this, DialogId, newText));
+                return;
+            }
+
+            if (DialogText == newText)
+                return;
+
+            TryAction(new SetDialogTextAction(this, DialogId, newText));
         }
 
         void UpdateTranslationText()
@@ -715,6 +733,33 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             {
                 Model.SetDialogProperty(_id, _key, _oldValue);
                 Editor.SetSelectedProperty(_key);
+            }
+        }
+
+        class SetDialogTextAction : DialogsEditorAction
+        {
+            readonly string _id;
+            readonly string _oldText;
+            readonly string _newText;
+
+            public SetDialogTextAction(EditorViewModel editor, string id, string text)
+                :base(editor, "Change dialog text")
+            {
+                _id = id;
+                _oldText = Model.GetDialogText(id);
+                _newText = text;
+            }
+
+            protected override void OnExecute()
+            {
+                Model.SetDialogText(_id, _newText);
+                Editor.SetSelectedDialog(_id);
+            }
+
+            protected override void OnUndo()
+            {
+                Model.SetDialogText(_id, _oldText);
+                Editor.SetSelectedDialog(_id);
             }
         }
     }

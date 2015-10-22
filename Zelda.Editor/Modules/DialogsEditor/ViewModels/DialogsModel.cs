@@ -15,6 +15,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
     {
         public event EventHandler<string> DialogCreated;
         public event EventHandler<DialogIdChangedEventArgs> DialogIdChanged;
+        public event EventHandler<string> DialogTextChanged;
         public event EventHandler<string> DialogDeleted;
         public event EventHandler<DialogPropertyEventArgs> DialogPropertyCreated;
         public event EventHandler<DialogPropertyEventArgs> DialogPropertyChanged;
@@ -128,6 +129,17 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 return null;
 
             return _resources.GetDialog(id).Text;
+        }
+
+        public void SetDialogText(string id, string text)
+        {
+            if (GetDialogText(id) == text)
+                return;
+
+            _resources.GetDialog(id).Text = text;
+
+            if (DialogTextChanged != null)
+                DialogTextChanged(this, text);
         }
 
         public void SetTranslationId(string languageId)
