@@ -6,6 +6,7 @@ using Zelda.Editor.Modules.Mods.Models;
 using Zelda.Editor.Modules.Mods.ViewModels;
 using Zelda.Editor.Modules.ResourceSelector.Models;
 using Zelda.Editor.Modules.ResourceSelector.ViewModels;
+using Zelda.Editor.Modules.StringsEditor.Models;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.StringsEditor.ViewModels
@@ -23,6 +24,8 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
                     NotifyOfPropertyChange(() => Description);
             }
         }
+
+        public StringsModel StringsModel { get; private set; }
 
         public string Description
         {
@@ -52,6 +55,8 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
             Title = "Strings {0}".F(languageId);
             LanguageId = languageId;
             CloseConfirmMessage = "Strings '{0}' has been modified. Save changes?".F(languageId);
+
+            StringsModel = new StringsModel(Mod, languageId);
 
             TranslationSelector = new SelectorViewModel(Mod, ResourceType.Language);
             TranslationSelector.RemoveId(languageId);

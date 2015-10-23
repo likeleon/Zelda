@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 
 namespace Zelda.Game
 {
-    class StringResources : XmlData
+    public class StringResources : XmlData
     {
         readonly Dictionary<string, string> _strings = new Dictionary<string, string>();
 

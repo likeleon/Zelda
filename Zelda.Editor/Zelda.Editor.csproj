@@ -287,7 +287,7 @@
     <Compile Include="Modules\DialogsEditor\EditorProvider.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\ChangeDialogIdViewModel.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\DialogPropertiesTable.cs" />
-    <Compile Include="Modules\DialogsEditor\ViewModels\DialogsModel.cs" />
+    <Compile Include="Modules\DialogsEditor\Models\DialogsModel.cs" />
     <Compile Include="Modules\DialogsEditor\Models\NodeTree.cs" />
     <Compile Include="Modules\DialogsEditor\Models\Node.cs" />
     <Compile Include="Modules\DialogsEditor\ViewModels\EditorViewModel.cs" />
@@ -433,7 +433,9 @@
     <Compile Include="Modules\StatusBar\Views\StatusBarView.xaml.cs">
       <DependentUpon>StatusBarView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Modules\StringsEditor\Converters\StringNameConverter.cs" />
     <Compile Include="Modules\StringsEditor\EditorProvider.cs" />
+    <Compile Include="Modules\StringsEditor\Models\StringsModel.cs" />
     <Compile Include="Modules\StringsEditor\ViewModels\EditorViewModel.cs" />
     <Compile Include="Modules\StringsEditor\Views\EditorView.xaml.cs">
       <DependentUpon>EditorView.xaml</DependentUpon>
