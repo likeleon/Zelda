@@ -86,7 +86,7 @@ namespace Zelda.Game
                     if (dialog.Id.IsNullOrEmpty())
                         throw new InvalidDataException("Missing value dialog Id");
 
-                    if (dialog.Text.IsNullOrEmpty())
+                    if (dialog.Text == null)
                         throw new InvalidDataException("Missing text for dialog '{0}'".F(dialog.Id));
 
                     if (HasDialog(dialog.Id))

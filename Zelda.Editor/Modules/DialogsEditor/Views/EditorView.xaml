@@ -14,14 +14,12 @@
              xmlns:coreConverters="clr-namespace:Zelda.Editor.Core.Converters"
              xmlns:corePrimitives="clr-namespace:Zelda.Editor.Core.Primitives"
              xmlns:behaviors="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Behaviors"
-             xmlns:conveters="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Converters"
              xmlns:resourceSelectorView="clr-namespace:Zelda.Editor.Modules.ResourceSelector.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
         <corePrimitives:BindingProxy x:Key="ModelProxy" Data="{Binding DialogsModel}" />
         <coreConverters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
-        <conveters:DialogNameConverter x:Key="DialogNameConverter" />
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
@@ -32,7 +30,7 @@
             <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
             <Setter Property="AcceptsReturn" Value="True" />
         </Style>
-        <CollectionViewSource x:Key="SortedDialogsTree" Source="{Binding DialogsModel.Root.BindableChildren}">
+        <CollectionViewSource x:Key="SortedDialogsTree" Source="{Binding DialogsModel.DialogTree.Root.Children}">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="Key" />
             </CollectionViewSource.SortDescriptions>
@@ -92,7 +90,7 @@
                         </Style>
                     </coreControls:TreeListView.Resources>
                     <coreControls:TreeListView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding BindableChildren}" />
+                        <HierarchicalDataTemplate ItemsSource="{Binding Value.Children}" />
                     </coreControls:TreeListView.ItemTemplate>
                     <coreControls:TreeListView.Columns>
                         <GridViewColumn Header="" Width="{Binding ActualWidth, ElementName=dialogsTreeListView}">
@@ -100,16 +98,15 @@
                                 <DataTemplate>
                                     <DockPanel Height="18">
                                         <ToggleButton Style="{StaticResource ExpandCollapseToggleStyle}" VerticalAlignment="Center" />
-                                        <Image Source="{Binding Icon}" Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Converter={StaticResource DialogNameConverter}, ConverterParameter={StaticResource ModelProxy}}" 
-                                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                        <Image Source="{Binding Value.Icon}" Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Key}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                     </DockPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
                     </coreControls:TreeListView.Columns>
                     <i:Interaction.Behaviors>
-                        <coreBehaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedDialogNode, Mode=TwoWay}" />
+                        <coreBehaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedDialog, Mode=TwoWay}" />
                     </i:Interaction.Behaviors>
                 </coreControls:TreeListView>
             </DockPanel>

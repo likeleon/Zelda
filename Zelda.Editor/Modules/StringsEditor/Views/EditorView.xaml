@@ -8,18 +8,16 @@
              xmlns:coreControls="clr-namespace:Zelda.Editor.Core.Controls"
              xmlns:coreConveters="clr-namespace:Zelda.Editor.Core.Converters"
              xmlns:corePrimitives="clr-namespace:Zelda.Editor.Core.Primitives"
-             xmlns:conveters="clr-namespace:Zelda.Editor.Modules.StringsEditor.Converters"
              xmlns:resourceSelectorView="clr-namespace:Zelda.Editor.Modules.ResourceSelector.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
         <corePrimitives:BindingProxy x:Key="ModelProxy" Data="{Binding StringsModel}" />
         <coreConveters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
-        <conveters:StringNameConverter x:Key="StringNameConverter" />
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
-        <CollectionViewSource x:Key="SortedStringsTree" Source="{Binding StringsModel.Root.BindableChildren}">
+        <CollectionViewSource x:Key="SortedStringsTree" Source="{Binding StringsModel.StringTree.Root.Children}">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="Key" />
             </CollectionViewSource.SortDescriptions>
@@ -53,17 +51,16 @@
             <coreControls:TreeListView x:Name="stringsTreeListView" ItemsSource="{Binding Source={StaticResource SortedStringsTree}}" 
                                        AlternationCount="2">
                 <coreControls:TreeListView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding BindableChildren}" />
+                    <HierarchicalDataTemplate ItemsSource="{Binding Value.Children}" />
                 </coreControls:TreeListView.ItemTemplate>
                 <coreControls:TreeListView.Columns>
                     <GridViewColumn Header="Key" Width="200">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <DockPanel Height="18">
+                                <DockPanel Height="18" DataContext="{Binding}">
                                     <ToggleButton Style="{StaticResource ExpandCollapseToggleStyle}" VerticalAlignment="Center" />
-                                    <Image Source="{Binding Icon}" Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
-                                    <TextBlock Text="{Binding Converter={StaticResource StringNameConverter}, ConverterParameter={StaticResource ModelProxy}}" 
-                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    <Image Source="{Binding Value.Icon}" Margin="3,0" Width="16" Height="16" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding Key}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                 </DockPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
@@ -71,7 +68,7 @@
                     <!--<GridViewColumn Header="Value" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Value}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Key}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>-->

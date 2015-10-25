@@ -21,7 +21,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
     class EditorViewModel : EditorDocument
     {
         string _languageId;
-        Node _selectedDialogNode;
+        KeyValuePair<string, Node>? _selectedDialog;
         bool _isDialogPropertiesEnabled;
         string _dialogId;
         string _translationText;
@@ -40,12 +40,12 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         public DialogsModel DialogsModel { get; private set; }
         public DialogPropertiesTable PropertiesTable { get; private set; }
 
-        public Node SelectedDialogNode
+        public KeyValuePair<string, Node>? SelectedDialog
         {
-            get { return _selectedDialogNode; }
+            get { return _selectedDialog; }
             set
             {
-                if (this.SetProperty(ref _selectedDialogNode, value))
+                if (this.SetProperty(ref _selectedDialog, value))
                     UpdateSelection();
             }
         }
@@ -66,7 +66,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         public SelectorViewModel TranslationSelector { get; private set; }
 
-        string SelectedDialogId { get { return SelectedDialogNode != null ? SelectedDialogNode.Key : string.Empty; } }
+        string SelectedDialogId { get { return SelectedDialog != null ? SelectedDialog.Value.Key : string.Empty; } }
 
         public bool IsDialogPropertiesEnabled
         {
@@ -421,7 +421,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         void SetSelectedDialog(string id)
         {
-            SelectedDialogNode = DialogsModel.FindNode(id);
+            var node = DialogsModel.DialogTree.Find(id);
+            if (node != null)
+                SelectedDialog = node.Parent.Children.First(x => x.Value == node);
         }
 
         void SetSelectedProperty(string key)

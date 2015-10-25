@@ -14,9 +14,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
         readonly string _languageId;
         readonly StringResources _resources = new StringResources();
         readonly StringResources _translationResources = new StringResources();
-        readonly NodeTree _stringTree = new NodeTree(".");
-
-        public Node Root { get { return _stringTree.Root; } }
+        public NodeTree StringTree { get; private set; }
 
         public StringsModel(IMod mod, string languageId)
         {
@@ -38,14 +36,14 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 
         void BuildStringTree()
         {
-            _stringTree.Clear();
-            _resources.Strings.Keys.Do(id => _stringTree.AddKey(id));
-            UpdateChildIcons(_stringTree.Root);
+            StringTree = new NodeTree(".");
+            _resources.Strings.Keys.Do(id => StringTree.AddKey(id));
+            UpdateChildIcons(StringTree.Root);
         }
 
         void UpdateChildIcons(Node node)
         {
-            node.Children.Do(child => UpdateChildIcons(child));
+            node.Children.Values.Do(child => UpdateChildIcons(child));
             node.Icon = GetIcon(node);
         }
 
@@ -55,7 +53,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
             {
                 if (TranslatedStringExists(node.Key))
                 {
-                    if (node.BindableChildren.Any())
+                    if (node.Children.Any())
                         return "icon_strings_missing.png".ToIconUri();
                     else
                         return "icon_string_missing.png".ToIconUri();
@@ -64,7 +62,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
             }
             else
             {
-                if (node.BindableChildren.Any())
+                if (node.Children.Any())
                     return "icon_strings.png".ToIconUri();
                 else
                     return "icon_string.png".ToIconUri();

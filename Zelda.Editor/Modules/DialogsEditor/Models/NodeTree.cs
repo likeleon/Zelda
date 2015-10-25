@@ -135,7 +135,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         bool CanRemoveChild(Node node, NodeType type, out Node childToRemove)
         {
-            if (node.ChildrenCount > 0 || node.Type != type)
+            if (node.Children.Any() || node.Type != type)
             {
                 childToRemove = null;
                 return false;
@@ -145,7 +145,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             var parent = node.Parent;
             childToRemove = node;
             while (parent != Root && parent != null &&
-                   parent.Type == NodeType.Container && parent.ChildrenCount == 1)
+                   parent.Type == NodeType.Container && parent.Children.Count() == 1)
             {
                 childToRemove = parent;
                 parent = childToRemove.Parent;
@@ -165,7 +165,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         void ClearChildren(Node node)
         {
-            node.Children.Do(child => ClearChildren(child));
+            node.Children.Values.Do(child => ClearChildren(child));
             node.ClearChildren();
         }
 

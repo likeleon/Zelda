@@ -24,10 +24,10 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         readonly string _languageId;
         readonly DialogResources _resources = new DialogResources();
         readonly DialogResources _translationResources = new DialogResources();
-        readonly NodeTree _dialogTree = new NodeTree(".");
         string _translationId;
 
-        public Node Root { get { return _dialogTree.Root; } }
+        public NodeTree DialogTree { get; private set; }
+
         public string TranslationId
         {
             get { return _translationId; }
@@ -54,14 +54,14 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         void BuildDialogTree()
         {
-            _dialogTree.Clear();
-            _resources.Dialogs.Keys.Do(id => _dialogTree.AddKey(id));
-            UpdateChildIcons(_dialogTree.Root);
+            DialogTree = new NodeTree(".");
+            _resources.Dialogs.Keys.Do(id => DialogTree.AddKey(id));
+            UpdateChildIcons(DialogTree.Root);
         }
 
         void UpdateChildIcons(Node node)
         {
-            node.Children.Do(child => UpdateChildIcons(child));
+            node.Children.Values.Do(child => UpdateChildIcons(child));
             node.Icon = GetIcon(node);
         }
 
@@ -71,7 +71,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             {
                 if (TranslatedDialogExists(node.Key))
                 {
-                    if (node.BindableChildren.Any())
+                    if (node.Children.Any())
                         return "icon_dialogs_missing.png".ToIconUri();
                     else
                         return "icon_dialog_missing.png".ToIconUri();
@@ -80,7 +80,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             }
             else
             {
-                if (node.BindableChildren.Any())
+                if (node.Children.Any())
                     return "icon_dialogs.png".ToIconUri();
                 else
                     return "icon_dialog.png".ToIconUri();
@@ -152,7 +152,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             TranslationId = null;
             ClearTranslationFromTree();
             _translationResources.Clear();
-            UpdateChildIcons(_dialogTree.Root);
+            UpdateChildIcons(DialogTree.Root);
         }
 
         public void ReloadTranslation()
@@ -167,17 +167,17 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
                 throw new Exception("Cannot open dialogs data file '{0}'".F(path));
             }
 
-            _translationResources.Dialogs.Keys.Do(dialogId => _dialogTree.AddRef(dialogId));
-            UpdateChildIcons(_dialogTree.Root);
+            _translationResources.Dialogs.Keys.Do(dialogId => DialogTree.AddRef(dialogId));
+            UpdateChildIcons(DialogTree.Root);
         }
 
         void ClearTranslationFromTree()
         {
             foreach (var id in _translationResources.Dialogs.Keys)
             {
-                var node = _dialogTree.Find(id);
+                var node = DialogTree.Find(id);
                 if (node != null)
-                    _dialogTree.RemoveRef(node, DialogExists(node.Key));
+                    DialogTree.RemoveRef(node, DialogExists(node.Key));
             }
         }
 
@@ -210,11 +210,6 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             return _translationResources.GetDialog(id).Properties;
         }
 
-        public Node FindNode(string id)
-        {
-            return _dialogTree.Find(id);
-        }
-
         public void CreateDialog(string id, string text, Dictionary<string, string> properties = null)
         {
             var data = new DialogData()
@@ -236,7 +231,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
                 throw new InvalidOperationException("Dialog '{0}' already exists".F(id));
 
             _resources.AddDialog(id, data);
-            var node = _dialogTree.AddKey(id);
+            var node = DialogTree.AddKey(id);
             node.Icon = GetIcon(node);
 
             if (DialogCreated != null)
@@ -263,8 +258,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
                 throw new InvalidOperationException("Invalid dialog id: {0}".F(newId));
 
             _resources.SetDialogId(id, newId);
-            _dialogTree.RemoveKey(_dialogTree.Find(id));
-            var node = _dialogTree.AddKey(newId);
+            DialogTree.RemoveKey(DialogTree.Find(id));
+            var node = DialogTree.AddKey(newId);
             node.Icon = GetIcon(node);
 
             if (DialogIdChanged != null)
@@ -310,8 +305,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
             _resources.RemoveDialog(id);
 
-            var node = _dialogTree.Find(id);
-            _dialogTree.RemoveKey(node);
+            var node = DialogTree.Find(id);
+            DialogTree.RemoveKey(node);
             node.Icon = GetIcon(node);
 
             if (DialogDeleted != null)
