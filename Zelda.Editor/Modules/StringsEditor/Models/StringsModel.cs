@@ -14,7 +14,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
         readonly string _languageId;
         readonly StringResources _resources = new StringResources();
         readonly StringResources _translationResources = new StringResources();
-        public NodeTree StringTree { get; private set; }
+        public NodeTree<StringNode> StringTree { get; private set; }
 
         public StringsModel(IMod mod, string languageId)
         {
@@ -36,36 +36,36 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 
         void BuildStringTree()
         {
-            StringTree = new NodeTree(".");
+            StringTree = new NodeTree<StringNode>(".");
             _resources.Strings.Keys.Do(id => StringTree.AddKey(id));
             UpdateChildIcons(StringTree.Root);
         }
 
-        void UpdateChildIcons(Node node)
+        void UpdateChildIcons(StringNode node)
         {
-            node.Children.Values.Do(child => UpdateChildIcons(child));
-            node.Icon = GetIcon(node);
+            node.Children.Values.Do(child => UpdateChildIcons((StringNode)child));
+            UpdateIcon(node);
         }
 
-        Uri GetIcon(Node node)
+        void UpdateIcon(StringNode node)
         {
             if (!StringExists(node.Key))
             {
                 if (TranslatedStringExists(node.Key))
                 {
                     if (node.Children.Any())
-                        return "icon_strings_missing.png".ToIconUri();
+                        node.Icon = "icon_strings_missing.png".ToIconUri();
                     else
-                        return "icon_string_missing.png".ToIconUri();
+                        node.Icon = "icon_string_missing.png".ToIconUri();
                 }
-                return "icon_folder_open.png".ToIconUri();
+                node.Icon = "icon_folder_open.png".ToIconUri();
             }
             else
             {
                 if (node.Children.Any())
-                    return "icon_strings.png".ToIconUri();
+                    node.Icon = "icon_strings.png".ToIconUri();
                 else
-                    return "icon_string.png".ToIconUri();
+                    node.Icon = "icon_string.png".ToIconUri();
             }
         }
 

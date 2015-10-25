@@ -11,41 +11,41 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         RefKey
     }
 
-    class NodeTree
+    class NodeTree<T> where T : Node, new()
     {
         readonly string _separator;
-        readonly Node _root = new Node();
+        readonly T _root = new T();
 
-        public Node Root { get { return _root; } }
+        public T Root { get { return _root; } }
 
         public NodeTree(string separator)
         {
             _separator = separator;
         }
 
-        public Node AddKey(string key)
+        public T AddKey(string key)
         {
-            Node parent;
+            T parent;
             return AddKey(key, out parent);
         }
 
-        public Node AddKey(string key, out Node parent)
+        public T AddKey(string key, out T parent)
         {
             return AddChild(key, NodeType.RealKey, out parent);
         }
 
-        public Node AddRef(string key)
+        public T AddRef(string key)
         {
-            Node parent;
+            T parent;
             return AddRef(key, out parent);
         }
 
-        public Node AddRef(string key, out Node parent)
+        public T AddRef(string key, out T parent)
         {
             return AddChild(key, NodeType.RefKey, out parent);
         }
 
-        Node AddChild(string key, NodeType type, out Node outParent)
+        T AddChild(string key, NodeType type, out T outParent)
         {
             var keyList = key.Split(new[] { _separator }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -53,7 +53,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             var node = parent;
             while (node != null && keyList.Count > 0)
             {
-                node = parent.GetChild(keyList.First()) as Node;
+                node = parent.GetChild(keyList.First()) as T;
                 if (node != null)
                 {
                     parent = node;
@@ -77,7 +77,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             while (keyList.Count > 0)
             {
                 var subKey = keyList.First();
-                node = new Node();
+                node = new T();
                 node.Parent = parent;
                 if (!parent.Key.IsNullOrEmpty())
                     node.Key = parent.Key + _separator + subKey;
@@ -93,19 +93,19 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             return node;
         }
 
-        public bool CanRemoveRef(Node node, out Node childToRemove)
+        public bool CanRemoveRef(T node, out T childToRemove)
         {
             return CanRemoveChild(node, NodeType.RefKey, out childToRemove);
         }
 
-        public bool RemoveRef(Node node, bool keepKey)
+        public bool RemoveRef(T node, bool keepKey)
         {
             return RemoveChild(node, NodeType.RefKey, keepKey);
         }
 
-        bool RemoveChild(Node node, NodeType type, bool keepKey = false)
+        bool RemoveChild(T node, NodeType type, bool keepKey = false)
         {
-            Node childToRemove;
+            T childToRemove;
             if (!CanRemoveChild(node, type, out childToRemove))
             {
                 if (type == node.Type)
@@ -128,12 +128,12 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             return true;
         }
 
-        public bool CanRemoveKey(Node node, out Node childToRemove)
+        public bool CanRemoveKey(T node, out T childToRemove)
         {
             return CanRemoveChild(node, NodeType.RefKey, out childToRemove);
         }
 
-        bool CanRemoveChild(Node node, NodeType type, out Node childToRemove)
+        bool CanRemoveChild(T node, NodeType type, out T childToRemove)
         {
             if (node.Children.Any() || node.Type != type)
             {
@@ -142,18 +142,18 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             }
 
             // 실제 삭제해야할 노드를 찾습니다
-            var parent = node.Parent;
+            var parent = (T)node.Parent;
             childToRemove = node;
             while (parent != Root && parent != null &&
                    parent.Type == NodeType.Container && parent.Children.Count() == 1)
             {
                 childToRemove = parent;
-                parent = childToRemove.Parent;
+                parent = (T)childToRemove.Parent;
             }
             return true;
         }
 
-        public bool RemoveKey(Node node)
+        public bool RemoveKey(T node)
         {
             return RemoveChild(node, NodeType.RealKey);
         }
@@ -163,13 +163,13 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             ClearChildren(_root);
         }
 
-        void ClearChildren(Node node)
+        void ClearChildren(T node)
         {
-            node.Children.Values.Do(child => ClearChildren(child));
+            node.Children.Values.Do(child => ClearChildren((T)child));
             node.ClearChildren();
         }
 
-        public Node Find(string key)
+        public T Find(string key)
         {
             if (key == null)
                 throw new ArgumentNullException("key");
@@ -178,7 +178,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             var subKeys = key.Split(new[] { _separator }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var subKey in subKeys)
             {
-                node = node.GetChild(subKey);
+                node = (T)node.GetChild(subKey);
                 if (node == null)
                     return null;
             }

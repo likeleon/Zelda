@@ -26,7 +26,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         readonly DialogResources _translationResources = new DialogResources();
         string _translationId;
 
-        public NodeTree DialogTree { get; private set; }
+        public NodeTree<DialogNode> DialogTree { get; private set; }
 
         public string TranslationId
         {
@@ -54,36 +54,36 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         void BuildDialogTree()
         {
-            DialogTree = new NodeTree(".");
+            DialogTree = new NodeTree<DialogNode>(".");
             _resources.Dialogs.Keys.Do(id => DialogTree.AddKey(id));
             UpdateChildIcons(DialogTree.Root);
         }
 
-        void UpdateChildIcons(Node node)
+        void UpdateChildIcons(DialogNode node)
         {
-            node.Children.Values.Do(child => UpdateChildIcons(child));
-            node.Icon = GetIcon(node);
+            node.Children.Values.Do(child => UpdateChildIcons((DialogNode)child));
+            UpdateIcon(node);
         }
 
-        Uri GetIcon(Node node)
+        void UpdateIcon(DialogNode node)
         {
             if (!DialogExists(node.Key))
             {
                 if (TranslatedDialogExists(node.Key))
                 {
                     if (node.Children.Any())
-                        return "icon_dialogs_missing.png".ToIconUri();
+                        node.Icon = "icon_dialogs_missing.png".ToIconUri();
                     else
-                        return "icon_dialog_missing.png".ToIconUri();
+                        node.Icon = "icon_dialog_missing.png".ToIconUri();
                 }
-                return "icon_folder_open.png".ToIconUri();
+                node.Icon = "icon_folder_open.png".ToIconUri();
             }
             else
             {
                 if (node.Children.Any())
-                    return "icon_dialogs.png".ToIconUri();
+                    node.Icon = "icon_dialogs.png".ToIconUri();
                 else
-                    return "icon_dialog.png".ToIconUri();
+                    node.Icon = "icon_dialog.png".ToIconUri();
             }
         }
 
@@ -232,7 +232,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
             _resources.AddDialog(id, data);
             var node = DialogTree.AddKey(id);
-            node.Icon = GetIcon(node);
+            UpdateIcon(node);
 
             if (DialogCreated != null)
                 DialogCreated(this, id);
@@ -260,7 +260,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             _resources.SetDialogId(id, newId);
             DialogTree.RemoveKey(DialogTree.Find(id));
             var node = DialogTree.AddKey(newId);
-            node.Icon = GetIcon(node);
+            UpdateIcon(node);
 
             if (DialogIdChanged != null)
                 DialogIdChanged(this, new DialogIdChangedEventArgs(id, newId));
@@ -307,7 +307,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
             var node = DialogTree.Find(id);
             DialogTree.RemoveKey(node);
-            node.Icon = GetIcon(node);
+            UpdateIcon(node);
 
             if (DialogDeleted != null)
                 DialogDeleted(this, id);

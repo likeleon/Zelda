@@ -263,6 +263,7 @@
     <Compile Include="Core\ToolBars\ToolBarItemDefinition.cs" />
     <Compile Include="Core\ToolBars\ToolBarItemGroupDefinition.cs" />
     <Compile Include="Modules\DialogsEditor\Behaviors\ShowMarginBehavior.cs" />
+    <Compile Include="Modules\DialogsEditor\Models\DialogNode.cs" />
     <Compile Include="Modules\ErrorList\Commands\ToggleErrorsWarningsMessagesCommandHandler.cs" />
     <Compile Include="Modules\ErrorList\Commands\ToggleMessagesCommandDefinition - Copy.cs" />
     <Compile Include="Modules\ErrorList\Commands\ToggleWarningsCommandDefinition.cs" />
@@ -433,6 +434,7 @@
       <DependentUpon>StatusBarView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\StringsEditor\EditorProvider.cs" />
+    <Compile Include="Modules\StringsEditor\Models\StringNode.cs" />
     <Compile Include="Modules\StringsEditor\Models\StringsModel.cs" />
     <Compile Include="Modules\StringsEditor\ViewModels\EditorViewModel.cs" />
     <Compile Include="Modules\StringsEditor\Views\EditorView.xaml.cs">
