@@ -65,13 +65,13 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <!--<GridViewColumn Header="Value" Width="150">
+                    <GridViewColumn Header="Value" Width="200">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Key}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                <coreControls:EditableTextBlock Text="{Binding Value.Value, Mode=TwoWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
-                    </GridViewColumn>-->
+                    </GridViewColumn>
                     <!--<GridViewColumn Header="{Binding TranslationId, StringFormat=Translation {0}}" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>

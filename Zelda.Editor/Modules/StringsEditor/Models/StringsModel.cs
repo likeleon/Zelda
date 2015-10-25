@@ -37,7 +37,11 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
         void BuildStringTree()
         {
             StringTree = new NodeTree<StringNode>(".");
-            _resources.Strings.Keys.Do(id => StringTree.AddKey(id));
+            foreach (var kvp in _resources.Strings)
+            {
+                var node = StringTree.AddKey(kvp.Key);
+                node.Value = kvp.Value;
+            }
             UpdateChildIcons(StringTree.Root);
         }
 
@@ -84,6 +88,14 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
         public bool TranslatedStringExists(string key)
         {
             return _translationResources.HasString(key);
+        }
+
+        public string GetString(string key)
+        {
+            if (!StringExists(key))
+                return null;
+
+            return _resources.GetString(key);
         }
     }
 }

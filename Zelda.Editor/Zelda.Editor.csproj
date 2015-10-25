@@ -234,6 +234,8 @@
     <Compile Include="Core\Commands\ICommandUiItem.cs" />
     <Compile Include="Core\Commands\TargetableCommand.cs" />
     <Compile Include="Core\Controls\DynamicStyle.cs" />
+    <Compile Include="Core\Controls\EditableTextBlock.cs" />
+    <Compile Include="Core\Controls\EditableTextBlockAdorner.cs" />
     <Compile Include="Core\Controls\TreeListView.cs" />
     <Compile Include="Core\Controls\ViewModels\TextInputViewModel.cs" />
     <Compile Include="Core\Controls\Views\TextInputView.xaml.cs">
