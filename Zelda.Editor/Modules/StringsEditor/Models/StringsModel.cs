@@ -10,10 +10,15 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 {
     class StringsModel : PropertyChangedBase
     {
+        public event EventHandler<string> StringCreated;
+        public event EventHandler<string> StringDeleted;
+        public event EventHandler<StringValueChangedEventArgs> StringValueChanged;
+
         readonly IMod _mod;
         readonly string _languageId;
         readonly StringResources _resources = new StringResources();
         readonly StringResources _translationResources = new StringResources();
+
         public NodeTree<StringNode> StringTree { get; private set; }
 
         public StringsModel(IMod mod, string languageId)
@@ -96,6 +101,68 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
                 return null;
 
             return _resources.GetString(key);
+        }
+
+        public void CreateString(string key, string value)
+        {
+            if (!IsValidKey(key))
+                throw new InvalidOperationException("Invalid string key: {0}".F(key));
+
+            if (StringExists(key))
+                throw new InvalidOperationException("String '{0}' already exists".F(key));
+
+            _resources.AddString(key, value);
+            var node = StringTree.AddKey(key);
+            UpdateIcon(node);
+
+            if (StringCreated != null)
+                StringCreated(this, key);
+        }
+
+        public bool IsValidKey(string key)
+        {
+            return !key.IsNullOrEmpty() && !key.StartsWith(".") && !key.EndsWith(".");
+        }
+
+        public void DeleteString(string key)
+        {
+            if (!StringExists(key))
+                throw new InvalidOperationException("Invalid string key: '{0}'".F(key));
+
+            _resources.RemoveString(key);
+
+            var node = StringTree.Find(key);
+            StringTree.RemoveKey(node);
+            UpdateIcon(node);
+
+            if (StringDeleted != null)
+                StringDeleted(this, key);
+        }
+
+        public void SetString(string key, string value)
+        {
+            if (GetString(key) == value)
+                return;
+
+            _resources.SetString(key, value);
+
+            var node = StringTree.Find(key);
+            node.Value = value;
+
+            if (StringValueChanged != null)
+                StringValueChanged(this, new StringValueChangedEventArgs(key, value));
+        }
+    }
+
+    class StringValueChangedEventArgs : EventArgs
+    {
+        public string Key { get; private set; }
+        public string NewValue { get; private set; }
+
+        public StringValueChangedEventArgs(string key, string newValue)
+        {
+            Key = key;
+            NewValue = newValue;
         }
     }
 }

@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.StringsEditor.Views"
              xmlns:coreControls="clr-namespace:Zelda.Editor.Core.Controls"
@@ -48,8 +50,7 @@
             </Button>-->
         </StackPanel>
         <DockPanel>
-            <coreControls:TreeListView x:Name="stringsTreeListView" ItemsSource="{Binding Source={StaticResource SortedStringsTree}}" 
-                                       AlternationCount="2">
+            <coreControls:TreeListView x:Name="stringsTreeListView" ItemsSource="{Binding Source={StaticResource SortedStringsTree}}">
                 <coreControls:TreeListView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Value.Children}" />
                 </coreControls:TreeListView.ItemTemplate>
@@ -68,7 +69,18 @@
                     <GridViewColumn Header="Value" Width="200">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <coreControls:EditableTextBlock Text="{Binding Value.Value, Mode=TwoWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                <coreControls:EditableTextBlock x:Name="valueEditableTextBlock"
+                                                                VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                                Text="{Binding Value.Value, Mode=TwoWay, UpdateSourceTrigger=Explicit}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="EditEnding">
+                                            <cal:ActionMessage MethodName="SetStringValue">
+                                                <cal:Parameter Value="{Binding Value}" />
+                                                <cal:Parameter Value="$eventArgs" />
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </coreControls:EditableTextBlock>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

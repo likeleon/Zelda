@@ -424,6 +424,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             var node = DialogsModel.DialogTree.Find(id);
             if (node != null)
                 SelectedDialog = node.Parent.Children.First(x => x.Value == node);
+            else
+                SelectedDialog = null;
         }
 
         void SetSelectedProperty(string key)

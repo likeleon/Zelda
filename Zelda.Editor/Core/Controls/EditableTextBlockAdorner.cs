@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -9,11 +10,13 @@ namespace Zelda.Editor.Core.Controls
 {
     class EditableTextBlockAdorner : Adorner
     {
-        static readonly double ExtraHeight = 5;
-        static readonly double ExtraWidth = 15;
+        public event EventHandler<string> TextBoxEditEnding;
+
+        static readonly double ExtraHeight = 10;
+        static readonly double ExtraWidth = 10;
 
         VisualCollection _collection;
-        TextBlock _textBlock;
+        EditableTextBlock _textBlock;
 
         public TextBox TextBox { get; private set; }
         protected override int VisualChildrenCount { get { return _collection.Count; } }
@@ -32,7 +35,6 @@ namespace Zelda.Editor.Core.Controls
             TextBox = new TextBox();
             var binding = new Binding("Text") { Source = adornedElement };
             TextBox.SetBinding(TextBox.TextProperty, binding);
-            TextBox.AcceptsReturn = true;
             TextBox.VerticalAlignment = VerticalAlignment.Stretch;
             TextBox.VerticalContentAlignment = VerticalAlignment.Center;
             TextBox.MaxLength = adornedElement.MaxLength;
@@ -46,16 +48,19 @@ namespace Zelda.Editor.Core.Controls
             if (e.Key == Key.Enter)
             {
                 TextBox.Text = TextBox.Text.Replace("\r\n", string.Empty);
+
                 var expression = TextBox.GetBindingExpression(TextBox.TextProperty);
                 if (expression != null)
                     expression.UpdateSource();
+
+                if (TextBoxEditEnding != null)
+                    TextBoxEditEnding(this, TextBox.Text);
             }
         }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var halfExtraHeight = ExtraHeight / 2.0;
-            TextBox.Arrange(new Rect(0, -halfExtraHeight, _textBlock.DesiredSize.Width + ExtraWidth, _textBlock.DesiredSize.Height + halfExtraHeight));
+            TextBox.Arrange(new Rect(0, -ExtraHeight / 2.0, DesiredSize.Width + ExtraWidth, DesiredSize.Height + ExtraHeight));
             TextBox.Focus();
             return finalSize;
         }

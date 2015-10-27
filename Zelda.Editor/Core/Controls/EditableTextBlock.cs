@@ -7,9 +7,30 @@ using Zelda.Game;
 
 namespace Zelda.Editor.Core.Controls
 {
+    public class EditableTextBlockEditEndingEventArgs : RoutedEventArgs
+    {
+        public string NewValue { get; private set; }
+
+        public EditableTextBlockEditEndingEventArgs(RoutedEvent routedEvent, string newValue)
+            : base(routedEvent)
+        {
+            NewValue = newValue;
+        }
+    }
+        
     class EditableTextBlock : TextBlock
     {
         EditableTextBlockAdorner _adorner;
+
+        public static readonly RoutedEvent EditEndingEvent =
+            EventManager.RegisterRoutedEvent("EditEndingEvent", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(EditableTextBlock));
+
+        public event RoutedEventHandler EditEnding
+        {
+            add { AddHandler(EditEndingEvent, value); }
+            remove { RemoveHandler(EditEndingEvent, value); }
+        }
+
 
         public bool IsInEditMode
         {
@@ -43,6 +64,7 @@ namespace Zelda.Editor.Core.Controls
                     textBlock._adorner = new EditableTextBlockAdorner(textBlock);
                     textBlock._adorner.TextBoxKeyUp += textBlock.TextBoxKeyUp;
                     textBlock._adorner.TextBoxLostFocus += textBlock.TextBoxLostFocus;
+                    textBlock._adorner.TextBoxEditEnding += textBlock.TextBoxEditEnding;
                 }
                 textBlock._adorner.TextBox.SelectAll();
                 layer.Add(textBlock._adorner);
@@ -59,6 +81,11 @@ namespace Zelda.Editor.Core.Controls
             }
         }
 
+        void TextBoxEditEnding(object sender, string newValue)
+        {
+            RaiseEvent(new EditableTextBlockEditEndingEventArgs(EditEndingEvent, newValue));
+        }
+
         void TextBoxLostFocus(object sender, RoutedEventArgs e)
         {
             IsInEditMode = false;
@@ -66,7 +93,7 @@ namespace Zelda.Editor.Core.Controls
 
         void TextBoxKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter || e.Key == Key.Escape)
                 IsInEditMode = false;
         }
 

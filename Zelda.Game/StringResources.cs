@@ -63,6 +63,12 @@ namespace Zelda.Game
             return _strings[key];
         }
 
+        public void SetString(string key, string value)
+        {
+            Debug.CheckAssertion(HasString(key), "No such string: '{0}'".F(key));
+            _strings[key] = value;
+        }
+
         public bool AddString(string key, string @string)
         {
             if (_strings.ContainsKey(key))
