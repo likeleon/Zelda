@@ -182,6 +182,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 catch (Exception ex)
                 {
                     ex.ShowDialog();
+                    TranslationSelector.SetSelectedId("");
                 }
             }
             UpdateTranslationText();

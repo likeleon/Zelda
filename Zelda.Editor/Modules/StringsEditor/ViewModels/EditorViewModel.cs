@@ -85,7 +85,22 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
 
         void TranslationSelector_SelectedItemChanged(object sender, Item e)
         {
-            throw new NotImplementedException();
+            var newLanguage = e as ElementItem;
+            if (newLanguage == null)
+            {
+                StringsModel.ClearTranslation();
+                return;
+            }
+
+            try
+            {
+                StringsModel.SetTranslationId(newLanguage.Id);
+            }
+            catch (Exception ex)
+            {
+                ex.ShowDialog();
+                TranslationSelector.SetSelectedId("");
+            }
         }
 
         void SetDescription(string description)

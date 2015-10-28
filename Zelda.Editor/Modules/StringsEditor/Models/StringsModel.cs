@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using System;
 using System.Linq;
+using Zelda.Editor.Core;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Modules.DialogsEditor.Models;
 using Zelda.Editor.Modules.Mods.Models;
@@ -18,8 +19,15 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
         readonly string _languageId;
         readonly StringResources _resources = new StringResources();
         readonly StringResources _translationResources = new StringResources();
+        string _translationId;
 
         public NodeTree<StringNode> StringTree { get; private set; }
+
+        public string TranslationId
+        {
+            get { return _translationId; }
+            set { this.SetProperty(ref _translationId, value); }
+        }
 
         public StringsModel(IMod mod, string languageId)
         {
@@ -67,7 +75,8 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
                     else
                         node.Icon = "icon_string_missing.png".ToIconUri();
                 }
-                node.Icon = "icon_folder_open.png".ToIconUri();
+                else
+                    node.Icon = "icon_folder_open.png".ToIconUri();
             }
             else
             {
@@ -151,6 +160,46 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 
             if (StringValueChanged != null)
                 StringValueChanged(this, new StringValueChangedEventArgs(key, value));
+        }
+
+        public void SetTranslationId(string languageId)
+        {
+            TranslationId = languageId;
+            ReloadTranslation();
+        }
+
+        void ReloadTranslation()
+        {
+            ClearTranslationFromTree();
+
+            var path = _mod.GetStringsPath(TranslationId);
+            _translationResources.Clear();
+            if (!_translationResources.ImportFromFile(path))
+            {
+                TranslationId = null;
+                throw new Exception("Cannot open strings data file '{0}'".F(path));
+            }
+
+            _translationResources.Strings.Keys.Do(stringKey => StringTree.AddRef(stringKey));
+            UpdateChildIcons(StringTree.Root);
+        }
+
+        public void ClearTranslation()
+        {
+            TranslationId = null;
+            ClearTranslationFromTree();
+            _translationResources.Clear();
+            UpdateChildIcons(StringTree.Root);
+        }
+
+        void ClearTranslationFromTree()
+        {
+            foreach (var id in _translationResources.Strings.Keys)
+            {
+                var node = StringTree.Find(id);
+                if (node != null)
+                    StringTree.RemoveRef(node, StringExists(node.Key));
+            }
         }
     }
 

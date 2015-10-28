@@ -51,7 +51,7 @@ namespace Zelda.Editor.Core.Services
             if (answer == MessageBoxResult.Yes)
                 return true;
             else if (answer == MessageBoxResult.No)
-                return true;
+                return false;
             else
                 return null;
         }

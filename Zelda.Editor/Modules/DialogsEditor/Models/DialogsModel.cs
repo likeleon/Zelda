@@ -76,7 +76,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
                     else
                         node.Icon = "icon_dialog_missing.png".ToIconUri();
                 }
-                node.Icon = "icon_folder_open.png".ToIconUri();
+                else
+                    node.Icon = "icon_folder_open.png".ToIconUri();
             }
             else
             {

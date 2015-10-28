@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Strings>
-  <Text>
-    <Key>title_screen.website</Key>
-    <Value>www.solarus-games.org</Value>
-  </Text>
-  <Text>
-    <Key>title_screen.press_space</Key>
-    <Value>스페이스바를 눌러주세요</Value>
-  </Text>
+  <Text Key="title_screen.website">www.solarus-games.org</Text>
+  <Text Key="title_screen.press_space">스페이스바를 눌러주세요</Text>
 </Strings>
