@@ -133,8 +133,8 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
 
         protected override Task OnSave()
         {
-            throw new NotImplementedException();
-            //return Task.FromResult(true);
+            StringsModel.Save();
+            return Task.FromResult(true);
         }
 
         public void SetStringValue(StringNode node, EditableTextBlockEditEndingEventArgs args)
