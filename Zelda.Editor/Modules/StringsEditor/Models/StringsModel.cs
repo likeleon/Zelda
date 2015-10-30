@@ -9,6 +9,7 @@ using Zelda.Game;
 
 namespace Zelda.Editor.Modules.StringsEditor.Models
 {
+    // TODO: String 리소스 Key 정렬로 저장
     class StringsModel : PropertyChangedBase
     {
         public event EventHandler<string> StringCreated;
@@ -122,6 +123,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 
             _resources.AddString(key, value);
             var node = StringTree.AddKey(key);
+            node.Value = value;
             UpdateIcon(node);
 
             if (StringCreated != null)
@@ -142,6 +144,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 
             var node = StringTree.Find(key);
             StringTree.RemoveKey(node);
+            node.Value = null;
             UpdateIcon(node);
 
             if (StringDeleted != null)
@@ -157,6 +160,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 
             var node = StringTree.Find(key);
             node.Value = value;
+            UpdateIcon(node);
 
             if (StringValueChanged != null)
                 StringValueChanged(this, new StringValueChangedEventArgs(key, value));
