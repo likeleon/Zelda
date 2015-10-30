@@ -19,7 +19,7 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
     class EditorViewModel : EditorDocument
     {
         string _languageId;
-        KeyValuePair<string, Node>? _selectedString;
+        KeyValuePair<string, Node>? _selectedItem;
 
         public string LanguageId
         {
@@ -33,12 +33,12 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
 
         public StringsModel StringsModel { get; private set; }
 
-        public KeyValuePair<string, Node>? SelectedString
+        public KeyValuePair<string, Node>? SelectedItem
         {
-            get { return _selectedString; }
+            get { return _selectedItem; }
             set
             {
-                if (this.SetProperty(ref _selectedString, value))
+                if (this.SetProperty(ref _selectedItem, value))
                     UpdateSelection();
             }
         }
@@ -59,7 +59,8 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
 
         public SelectorViewModel TranslationSelector { get; private set; }
 
-        string SelectedStringKey { get { return SelectedString != null ? SelectedString.Value.Key : string.Empty; } }
+        Node SelectedStringNode { get { return SelectedItem != null ? SelectedItem.Value.Value : null; } }
+        string SelectedStringKey { get { return SelectedStringNode != null ? SelectedStringNode.Key : string.Empty; } }
 
         public EditorViewModel(IMod mod, string filePath)
             :base(mod, filePath)
@@ -160,9 +161,9 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
         {
             var node = StringsModel.StringTree.Find(key);
             if (node != null)
-                SelectedString = node.Parent.Children.First(x => x.Value == node);
+                SelectedItem = node.Parent.Children.First(x => x.Value == node);
             else
-                SelectedString = null;
+                SelectedItem = null;
         }
 
         abstract class StringsEditorAction : IUndoableAction

@@ -21,7 +21,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
     class EditorViewModel : EditorDocument
     {
         string _languageId;
-        KeyValuePair<string, Node>? _selectedDialog;
+        KeyValuePair<string, Node>? _selectedItem;
         bool _isDialogPropertiesEnabled;
         string _dialogId;
         string _translationText;
@@ -40,12 +40,12 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         public DialogsModel DialogsModel { get; private set; }
         public DialogPropertiesTable PropertiesTable { get; private set; }
 
-        public KeyValuePair<string, Node>? SelectedDialog
+        public KeyValuePair<string, Node>? SelectedItem
         {
-            get { return _selectedDialog; }
+            get { return _selectedItem; }
             set
             {
-                if (this.SetProperty(ref _selectedDialog, value))
+                if (this.SetProperty(ref _selectedItem, value))
                     UpdateSelection();
             }
         }
@@ -66,7 +66,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         public SelectorViewModel TranslationSelector { get; private set; }
 
-        string SelectedDialogId { get { return SelectedDialog != null ? SelectedDialog.Value.Key : string.Empty; } }
+        Node SelectedDialogNode { get { return SelectedItem != null ? SelectedItem.Value.Value : null; } }
+        string SelectedDialogId { get { return SelectedDialogNode != null ? SelectedDialogNode.Key : string.Empty; } }
 
         public bool IsDialogPropertiesEnabled
         {
@@ -424,9 +425,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         {
             var node = DialogsModel.DialogTree.Find(id);
             if (node != null)
-                SelectedDialog = node.Parent.Children.First(x => x.Value == node);
+                SelectedItem = node.Parent.Children.First(x => x.Value == node);
             else
-                SelectedDialog = null;
+                SelectedItem = null;
         }
 
         void SetSelectedProperty(string key)

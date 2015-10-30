@@ -144,32 +144,30 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         public void SetTranslationId(string languageId)
         {
+            LoadTranslation(languageId);
+        }
+
+        void LoadTranslation(string languageId)
+        {
+            ClearTranslation();
+
+            var path = _mod.GetDialogsPath(languageId);
+            if (!_translationResources.ImportFromFile(path))
+                throw new Exception("Cannot open dialogs data file '{0}'".F(path));
+
+            _translationResources.Dialogs.Keys.Do(dialogId => DialogTree.AddRef(dialogId));
+            UpdateChildIcons(DialogTree.Root);
+
             TranslationId = languageId;
-            ReloadTranslation();
         }
 
         public void ClearTranslation()
         {
+            ClearTranslationFromTree();
+            _translationResources.Clear();
+            UpdateChildIcons(DialogTree.Root);
+
             TranslationId = null;
-            ClearTranslationFromTree();
-            _translationResources.Clear();
-            UpdateChildIcons(DialogTree.Root);
-        }
-
-        public void ReloadTranslation()
-        {
-            ClearTranslationFromTree();
-
-            var path = _mod.GetDialogsPath(TranslationId);
-            _translationResources.Clear();
-            if (!_translationResources.ImportFromFile(path))
-            {
-                TranslationId = null;
-                throw new Exception("Cannot open dialogs data file '{0}'".F(path));
-            }
-
-            _translationResources.Dialogs.Keys.Do(dialogId => DialogTree.AddRef(dialogId));
-            UpdateChildIcons(DialogTree.Root);
         }
 
         void ClearTranslationFromTree()
@@ -180,6 +178,11 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
                 if (node != null)
                     DialogTree.RemoveRef(node, DialogExists(node.Key));
             }
+        }
+
+        public void ReloadTranslation()
+        {
+            LoadTranslation(TranslationId);
         }
 
         public bool TranslatedDialogExists(string id)

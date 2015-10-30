@@ -106,7 +106,7 @@
                         </GridViewColumn>
                     </coreControls:TreeListView.Columns>
                     <i:Interaction.Behaviors>
-                        <coreBehaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedDialog, Mode=TwoWay}" />
+                        <coreBehaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
                     </i:Interaction.Behaviors>
                 </coreControls:TreeListView>
             </DockPanel>

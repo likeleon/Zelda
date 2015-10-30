@@ -164,32 +164,23 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 
         public void SetTranslationId(string languageId)
         {
-            TranslationId = languageId;
-            ReloadTranslation();
-        }
+            ClearTranslation();
 
-        void ReloadTranslation()
-        {
-            ClearTranslationFromTree();
-
-            var path = _mod.GetStringsPath(TranslationId);
-            _translationResources.Clear();
+            var path = _mod.GetStringsPath(languageId);
             if (!_translationResources.ImportFromFile(path))
-            {
-                TranslationId = null;
                 throw new Exception("Cannot open strings data file '{0}'".F(path));
-            }
 
             _translationResources.Strings.Keys.Do(stringKey => StringTree.AddRef(stringKey));
             UpdateChildIcons(StringTree.Root);
+            TranslationId = languageId;
         }
 
         public void ClearTranslation()
         {
-            TranslationId = null;
             ClearTranslationFromTree();
             _translationResources.Clear();
             UpdateChildIcons(StringTree.Root);
+            TranslationId = null;
         }
 
         void ClearTranslationFromTree()
@@ -200,6 +191,14 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
                 if (node != null)
                     StringTree.RemoveRef(node, StringExists(node.Key));
             }
+        }
+
+        public string GetTranslatedString(string key)
+        {
+            if (!TranslatedStringExists(key))
+                return string.Empty;
+
+            return _translationResources.GetString(key);
         }
     }
 

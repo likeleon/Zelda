@@ -10,12 +10,14 @@
              xmlns:coreControls="clr-namespace:Zelda.Editor.Core.Controls"
              xmlns:coreConveters="clr-namespace:Zelda.Editor.Core.Converters"
              xmlns:corePrimitives="clr-namespace:Zelda.Editor.Core.Primitives"
+             xmlns:converters="clr-namespace:Zelda.Editor.Modules.StringsEditor.Converters"
              xmlns:resourceSelectorView="clr-namespace:Zelda.Editor.Modules.ResourceSelector.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
         <corePrimitives:BindingProxy x:Key="ModelProxy" Data="{Binding StringsModel}" />
         <coreConveters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
+        <converters:KeyToTranslatedStringConverter x:Key="KeyToTranslatedStringConverter" />
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
@@ -51,6 +53,33 @@
         </StackPanel>
         <DockPanel>
             <coreControls:TreeListView x:Name="stringsTreeListView" ItemsSource="{Binding Source={StaticResource SortedStringsTree}}">
+                <coreControls:TreeListView.Resources>
+                    <Style x:Key="TranslateColumnHeaderStyle" TargetType="GridViewColumnHeader">
+                        <Setter Property="Content" Value="{Binding Data.TranslationId, Source={StaticResource ModelProxy}}" />
+                        <Setter Property="ContentStringFormat" Value="Translation ({0})" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Data.TranslationId, Source={StaticResource ModelProxy}}" Value="{x:Null}">
+                                <Setter Property="Content" Value="Translation" />
+                                <Setter Property="ContentStringFormat" Value="{x:Null}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="TranslatedStringTextBlockStyle" TargetType="TextBlock">
+                        <Setter Property="Text">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource KeyToTranslatedStringConverter}">
+                                    <Binding Path="Value.Key" />
+                                    <Binding Path="Data" Source="{StaticResource ModelProxy}" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Data.TranslationId, Source={StaticResource ModelProxy}}" Value="{x:Null}">
+                                <Setter Property="Text" Value="" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </coreControls:TreeListView.Resources>
                 <coreControls:TreeListView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Value.Children}" />
                 </coreControls:TreeListView.ItemTemplate>
@@ -84,14 +113,13 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <!--<GridViewColumn Header="{Binding TranslationId, StringFormat=Translation {0}}" Width="150">
+                    <GridViewColumn HeaderContainerStyle="{StaticResource TranslateColumnHeaderStyle}" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Key, Converter={StaticResource TranslatedStringConverter}, ConverterParameter={StaticResource ModelProxy}}"
-                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Style="{StaticResource TranslatedStringTextBlockStyle}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
-                    </GridViewColumn>-->
+                    </GridViewColumn>
                 </coreControls:TreeListView.Columns>
             </coreControls:TreeListView>
         </DockPanel>
