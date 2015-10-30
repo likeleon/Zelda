@@ -120,6 +120,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         {
             if (!DialogExists(id))
                 return null;
+
             return _resources.GetDialog(id);
         }
 
