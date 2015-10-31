@@ -27,7 +27,7 @@ namespace Zelda.Game
 
     public class DialogData
     {
-        readonly Dictionary<string, string> _properties = new Dictionary<string, string>();
+        readonly SortedDictionary<string, string> _properties = new SortedDictionary<string, string>(StringComparer.Ordinal);
 
         public string Id { get; set; }
         public string Text { get; set; }

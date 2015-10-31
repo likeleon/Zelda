@@ -73,7 +73,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser
         bool IsScriptFile(string path)
         {
             const string csharpExtension = ".cs";
-            return Path.GetExtension(path).Equals(csharpExtension, StringComparison.CurrentCultureIgnoreCase);
+            return Path.GetExtension(path).Equals(csharpExtension);
         }
 
         bool IsMapScriptFile(string path)

@@ -8,7 +8,7 @@ namespace Zelda.Game
 {
     public class StringResources : XmlData
     {
-        readonly Dictionary<string, string> _strings = new Dictionary<string, string>();
+        readonly SortedDictionary<string, string> _strings = new SortedDictionary<string, string>(StringComparer.Ordinal);
 
         public IReadOnlyDictionary<string, string> Strings { get { return _strings; } }
 
