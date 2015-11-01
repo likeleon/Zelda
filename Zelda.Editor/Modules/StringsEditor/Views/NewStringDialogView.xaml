@@ -1,0 +1,41 @@
+﻿<Window x:Class="Zelda.Editor.Modules.StringsEditor.Views.NewStringDialogView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Zelda.Editor.Modules.StringsEditor.Views"
+        mc:Ignorable="d"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        Title="New string" 
+        SizeToContent="Height"
+        Width="400">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Label Content="New string key:" VerticalAlignment="Center" />
+        <TextBox Grid.Column="1" Margin="5" Height="23" VerticalContentAlignment="Center"
+                 Text="{Binding StringKey, UpdateSourceTrigger=PropertyChanged}" />
+        <Label Grid.Row="1" Content="New string value:" VerticalAlignment="Center" />
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="5 0" Height="23" VerticalContentAlignment="Center"
+                 Text="{Binding StringValue, UpdateSourceTrigger=PropertyChanged}" />
+        <DockPanel Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,10">
+            <DockPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                    <Setter Property="Margin" Value="12 0 0 0" />
+                    <Setter Property="Padding" Value="4" />
+                </Style>
+            </DockPanel.Resources>
+            <Button Content="Ok" IsDefault="True" Width="80" Command="{Binding OkCommand}" />
+            <Button Content="Cancel" IsCancel="True" Width="80" Command="{Binding CancelCommand}" />
+        </DockPanel>
+    </Grid>
+</Window>

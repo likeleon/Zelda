@@ -143,7 +143,9 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
 
         void CreateString()
         {
-            throw new NotImplementedException();
+            var dialog = new NewStringDialogViewModel(StringsModel, SelectedStringKey);
+            if (IoC.Get<IWindowManager>().ShowDialog(dialog) == true)
+                TryAction(new CreateStringAction(this, dialog.StringKey, dialog.StringValue));
         }
 
         void ChangeStringKey()
