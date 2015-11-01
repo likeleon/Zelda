@@ -297,8 +297,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             var list = new List<Tuple<string, string>>();
             foreach (var oldId in GetIds(oldPrefix))
             {
-                var newId = Regex.Replace(oldId, "^" + oldPrefix, newPrefix);
-                list.Add(Tuple.Create(oldId, SetDialogId(oldId, newId)));
+                var newId = SetDialogId(oldId, Regex.Replace(oldId, "^" + oldPrefix, newPrefix));
+                list.Add(Tuple.Create(oldId, newId));
             }
             return list;
         }

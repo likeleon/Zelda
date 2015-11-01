@@ -7,6 +7,7 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.StringsEditor.Views"
+             xmlns:coreBehaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
              xmlns:coreControls="clr-namespace:Zelda.Editor.Core.Controls"
              xmlns:coreConveters="clr-namespace:Zelda.Editor.Core.Converters"
              xmlns:corePrimitives="clr-namespace:Zelda.Editor.Core.Primitives"
@@ -52,6 +53,17 @@
             </Button>-->
         </StackPanel>
         <DockPanel>
+            <StackPanel DockPanel.Dock="Right" Margin="5 0">
+                <Button Width="32" Height="32" ToolTip="Add string" Command="{Binding CreateStringCommand}">
+                    <Image Source="/Resources/Icons/icon_add.png" Stretch="None" />
+                </Button>
+                <Button Width="32" Height="32" ToolTip="Change string key" Margin="0 5" Command="{Binding ChangeStringKeyCommand}">
+                    <Image Source="/Resources/Icons/icon_rename.png" Stretch="None" />
+                </Button>
+                <Button Width="32" Height="32" ToolTip="Delete string" Command="{Binding DeleteStringCommand}">
+                    <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
+                </Button>
+            </StackPanel>
             <coreControls:TreeListView x:Name="stringsTreeListView" ItemsSource="{Binding Source={StaticResource SortedStringsTree}}">
                 <coreControls:TreeListView.Resources>
                     <Style x:Key="TranslateColumnHeaderStyle" TargetType="GridViewColumnHeader">
@@ -121,6 +133,9 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                 </coreControls:TreeListView.Columns>
+                <i:Interaction.Behaviors>
+                    <coreBehaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
+                </i:Interaction.Behaviors>
             </coreControls:TreeListView>
         </DockPanel>
     </DockPanel>

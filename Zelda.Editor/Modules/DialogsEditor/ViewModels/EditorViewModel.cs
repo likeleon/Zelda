@@ -122,7 +122,6 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
         public RelayCommand SetPropertyKeyCommand { get; private set; }
         public RelayCommand DeletePropertyCommand { get; private set; }
 
-
         public EditorViewModel(IMod mod, string filePath)           
             : base(mod, filePath)
         {
@@ -365,8 +364,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 
         bool CanExecuteDialogCommand()
         {
-            return SelectedDialogId != null &&
-                   DialogsModel.PrefixExists(SelectedDialogId);
+            return SelectedDialogId != null && DialogsModel.PrefixExists(SelectedDialogId);
         }
 
         void CreateProperty()

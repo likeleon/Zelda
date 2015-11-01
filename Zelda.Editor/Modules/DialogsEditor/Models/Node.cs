@@ -1,5 +1,7 @@
 ﻿using Caliburn.Micro;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Primitives;
 using Zelda.Game;
@@ -52,10 +54,11 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             if (child.Parent != this)
                 throw new InvalidOperationException("Parent mismatch");
 
-            if (!Children.ContainsKey(child.Key))
+            var item = Children.FirstOrDefault(kvp => kvp.Value == child);
+            if (item.Equals(default(KeyValuePair<string, Node>)))
                 throw new InvalidOperationException("No such child");
 
-            Children.Remove(child.Key);
+            Children.Remove(item.Key);
         }
 
         public void ClearChildren()

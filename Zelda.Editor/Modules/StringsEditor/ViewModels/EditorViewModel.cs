@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,11 +60,15 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
 
         public SelectorViewModel TranslationSelector { get; private set; }
 
+        public RelayCommand CreateStringCommand { get; private set; }
+        public RelayCommand ChangeStringKeyCommand { get; private set; }
+        public RelayCommand DeleteStringCommand { get; private set; }
+
         Node SelectedStringNode { get { return SelectedItem != null ? SelectedItem.Value.Value : null; } }
         string SelectedStringKey { get { return SelectedStringNode != null ? SelectedStringNode.Key : string.Empty; } }
 
         public EditorViewModel(IMod mod, string filePath)
-            :base(mod, filePath)
+            : base(mod, filePath)
         {
             Resources.ElementDescriptionChanged += (_, e) => NotifyOfPropertyChange(() => Description);
 
@@ -82,6 +87,10 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
             TranslationSelector.AddSpecialValue("", "<No language>", 0);
             TranslationSelector.SetSelectedId("");
             TranslationSelector.SelectedItemChanged += TranslationSelector_SelectedItemChanged;
+
+            CreateStringCommand = new RelayCommand(_ => CreateString());
+            ChangeStringKeyCommand = new RelayCommand(_ => ChangeStringKey(), _ => CanExecuteStringCommand());
+            DeleteStringCommand = new RelayCommand(_ => DeleteString(), _ => CanExecuteStringCommand());
         }
 
         void TranslationSelector_SelectedItemChanged(object sender, Item e)
@@ -128,8 +137,55 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
 
         void UpdateSelection()
         {
-            //SetKeyCommand.RaiseCanExecuteChanged();
-            //DeleteCommand.RaiseCanExecuteChanged();
+            ChangeStringKeyCommand.RaiseCanExecuteChanged();
+            DeleteStringCommand.RaiseCanExecuteChanged();
+        }
+
+        void CreateString()
+        {
+            throw new NotImplementedException();
+        }
+
+        void ChangeStringKey()
+        {
+            if (!CanExecuteStringCommand())
+                return;
+
+            var oldKey = SelectedStringKey;
+            var prefixKeys = StringsModel.GetKeys(oldKey);
+            if (prefixKeys.Length <= 0)
+                return;
+
+            var exists = false;
+            var isPrefix = true;
+            if (StringsModel.StringExists(oldKey))
+            {
+                exists = true;
+                isPrefix = prefixKeys.Length > 1;
+            }
+
+            var dialog = new ChangeStringKeyViewModel(StringsModel, oldKey, isPrefix, isPrefix && exists);
+            if (IoC.Get<IWindowManager>().ShowDialog(dialog) != true)
+                return;
+
+            var newKey = dialog.StringKey;
+            if (newKey == oldKey)
+                return;
+
+            if (dialog.IsPrefix)
+                TryAction(new SetKeyPrefixAction(this, oldKey, newKey));
+            else
+                TryAction(new SetStringKeyAction(this, oldKey, newKey));
+        }
+
+        bool CanExecuteStringCommand()
+        {
+            return SelectedStringKey != null && StringsModel.PrefixExists(SelectedStringKey);
+        }
+
+        void DeleteString()
+        {
+            throw new NotImplementedException();
         }
 
         protected override Task OnSave()
@@ -157,7 +213,7 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
             }
         }
 
-        void SetSelectedString(string key)
+        void SetSelectedKey(string key)
         {
             var node = StringsModel.StringTree.Find(key);
             if (node != null)
@@ -209,7 +265,7 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
             protected override void OnExecute()
             {
                 Model.CreateString(_key, _value);
-                Editor.SetSelectedString(_key);
+                Editor.SetSelectedKey(_key);
             }
 
             protected override void OnUndo()
@@ -238,7 +294,7 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
             protected override void OnUndo()
             {
                 Model.CreateString(_key, _value);
-                Editor.SetSelectedString(_key);
+                Editor.SetSelectedKey(_key);
             }
         }
 
@@ -259,13 +315,66 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
             protected override void OnExecute()
             {
                 Model.SetString(_key, _newValue);
-                Editor.SetSelectedString(_key);
+                Editor.SetSelectedKey(_key);
             }
 
             protected override void OnUndo()
             {
                 Model.SetString(_key, _oldValue);
-                Editor.SetSelectedString(_key);
+                Editor.SetSelectedKey(_key);
+            }
+        }
+
+        class SetKeyPrefixAction : StringsEditorAction
+        {
+            readonly string _newPrefix;
+            readonly string _oldPrefix;
+            List<Tuple<string, string>> _editedKeys;
+
+            public SetKeyPrefixAction(EditorViewModel editor, string oldPrefix, string newPrefix)
+                : base(editor, "Change string key prefix")
+            {
+                _oldPrefix = oldPrefix;
+                _newPrefix = newPrefix;
+            }
+
+            protected override void OnExecute()
+            {
+                _editedKeys = Model.SetStringKeyPrefix(_oldPrefix, _newPrefix);
+                if (_editedKeys.Count > 0)
+                    Editor.SetSelectedKey(_editedKeys.First().Item1);
+            }
+
+            protected override void OnUndo()
+            {
+                _editedKeys.Do(tuple => Model.SetStringKey(tuple.Item1, tuple.Item2));
+                if (_editedKeys.Count > 0)
+                    Editor.SetSelectedKey(_editedKeys.First().Item1);
+            }
+        }
+
+        class SetStringKeyAction : StringsEditorAction
+        {
+            readonly string _oldKey;
+            readonly string _newKey;
+
+            public SetStringKeyAction(EditorViewModel editor, string oldKey, string newKey)
+                : base(editor,"Change string key")
+            {
+                _oldKey = oldKey;
+                _newKey = newKey;
+            }
+
+            protected override void OnExecute()
+            {
+                Model.SetStringKey(_oldKey, _newKey);
+                Editor.SetSelectedKey(_newKey);
+            }
+
+            protected override void OnUndo()
+            {
+                Model.SetStringKey(_newKey, _oldKey);
+                Editor.SetSelectedKey(_oldKey);
             }
         }
     }

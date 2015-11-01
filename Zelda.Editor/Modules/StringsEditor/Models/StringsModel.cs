@@ -1,6 +1,8 @@
 ﻿using Caliburn.Micro;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Modules.DialogsEditor.Models;
@@ -13,6 +15,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
     class StringsModel : PropertyChangedBase
     {
         public event EventHandler<string> StringCreated;
+        public event EventHandler<StringKeyChangedEventArgs> StringKeyChanged;
         public event EventHandler<string> StringDeleted;
         public event EventHandler<StringValueChangedEventArgs> StringValueChanged;
 
@@ -130,7 +133,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
                 StringCreated(this, key);
         }
 
-        public bool IsValidKey(string key)
+        public static bool IsValidKey(string key)
         {
             return !key.IsNullOrEmpty() && !key.StartsWith(".") && !key.EndsWith(".");
         }
@@ -179,6 +182,16 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
             TranslationId = languageId;
         }
 
+        public string[] GetKeys(string prefix)
+        {
+            return _resources.Strings.Keys.Where(key => key.StartsWith(prefix)).ToArray();
+        }
+
+        public bool PrefixExists(string prefix)
+        {
+            return _resources.Strings.Keys.Any(key => key.StartsWith(prefix));
+        }
+
         public void ClearTranslation()
         {
             ClearTranslationFromTree();
@@ -204,6 +217,61 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 
             return _translationResources.GetString(key);
         }
+
+        public bool CanSetStringKeyPrefix(string oldPrefix, string newPrefix, out string key)
+        {
+            foreach (var prefixedKey in GetKeys(oldPrefix))
+            {
+                var newKey = Regex.Replace(prefixedKey, "^" + oldPrefix, newPrefix);
+                if (!StringExists(newKey))
+                {
+                    key = newKey;
+                    return false;
+                }
+            }
+            key = null;
+            return true;
+        }
+
+        public List<Tuple<string, string>> SetStringKeyPrefix(string oldPrefix, string newPrefix)
+        {
+            string key;
+            if (!CanSetStringKeyPrefix(oldPrefix, newPrefix, out key))
+                throw new InvalidOperationException("String '{0}' already exists".F(key));
+
+            var list = new List<Tuple<string, string>>();
+            foreach (var oldKey in GetKeys(oldPrefix))
+            {
+                var newKey = SetStringKey(oldKey, Regex.Replace(oldKey, "^" + oldKey, newPrefix));
+                list.Add(Tuple.Create(oldKey, newKey));
+            }
+            return list;
+        }
+
+        public string SetStringKey(string key, string newKey)
+        {
+            if (newKey == key)
+                return key;
+
+            if (!StringExists(key))
+                throw new InvalidOperationException("String '{0}' no exists".F(key));
+
+            if (StringExists(newKey))
+                throw new InvalidOperationException("String '{0}' already exists".F(newKey));
+
+            if (!IsValidKey(newKey))
+                throw new InvalidOperationException("Invalid String id: {0}".F(newKey));
+
+            _resources.SetStringKey(key, newKey);
+            StringTree.RemoveKey(StringTree.Find(key));
+            var node = StringTree.AddKey(newKey);
+            UpdateIcon(node);
+
+            if (StringKeyChanged != null)
+                StringKeyChanged(this, new StringKeyChangedEventArgs(key, newKey));
+
+            return newKey;
+        }
     }
 
     class StringValueChangedEventArgs : EventArgs
@@ -215,6 +283,18 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
         {
             Key = key;
             NewValue = newValue;
+        }
+    }
+
+    class StringKeyChangedEventArgs : EventArgs
+    {
+        public string OldKey { get; private set; }
+        public string NewKey { get; private set; }
+
+        public StringKeyChangedEventArgs(string oldKey, string newkey)
+        {
+            OldKey = oldKey;
+            NewKey = newkey;
         }
     }
 }

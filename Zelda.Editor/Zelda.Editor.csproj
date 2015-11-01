@@ -174,6 +174,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Modules\StringsEditor\Views\ChangeStringKeyView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Modules\StringsEditor\Views\EditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -440,7 +444,11 @@
     <Compile Include="Modules\StringsEditor\EditorProvider.cs" />
     <Compile Include="Modules\StringsEditor\Models\StringNode.cs" />
     <Compile Include="Modules\StringsEditor\Models\StringsModel.cs" />
+    <Compile Include="Modules\StringsEditor\ViewModels\ChangeStringKeyViewModel.cs" />
     <Compile Include="Modules\StringsEditor\ViewModels\EditorViewModel.cs" />
+    <Compile Include="Modules\StringsEditor\Views\ChangeStringKeyView.xaml.cs">
+      <DependentUpon>ChangeStringKeyView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Modules\StringsEditor\Views\EditorView.xaml.cs">
       <DependentUpon>EditorView.xaml</DependentUpon>
     </Compile>
