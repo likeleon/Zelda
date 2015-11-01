@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Zelda.Editor.Modules.StringsEditor.Views"
         mc:Ignorable="d"
+        FocusManager.FocusedElement="{Binding ElementName=keyTextBox}"
         SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
@@ -17,7 +18,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Label Content="{Binding Label}" VerticalAlignment="Center" />
-        <TextBox Grid.Row="1" Margin="0 5" Height="23" VerticalContentAlignment="Center"
+        <TextBox x:Name="keyTextBox" Grid.Row="1" Margin="0 5" Height="23" VerticalContentAlignment="Center"
                  Text="{Binding StringKey, UpdateSourceTrigger=PropertyChanged}" />
         <CheckBox Grid.Row="2" IsEnabled="{Binding AllowPrefix}" IsChecked="{Binding IsPrefix}"
                   Content="Change the key of all string with this key as prefix" />

@@ -80,7 +80,7 @@
                         <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
                     </Button>
                 </StackPanel>
-                <coreControls:TreeListView x:Name="dialogsTreeListView" 
+                <coreControls:TreeListView x:Name="dialogsTreeListView"
                                            ItemsSource="{Binding DialogsModel.DialogTree.Root.Children, Converter={StaticResource SortDialogNodeConverter}}">
                     <coreControls:TreeListView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Value.Children, Converter={StaticResource SortDialogNodeConverter}}" />

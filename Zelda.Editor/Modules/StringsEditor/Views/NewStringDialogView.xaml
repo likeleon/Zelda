@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Zelda.Editor.Modules.StringsEditor.Views"
         mc:Ignorable="d"
+        FocusManager.FocusedElement="{Binding ElementName=keyTextBox}"
         SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
@@ -22,7 +23,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Label Content="New string key:" VerticalAlignment="Center" />
-        <TextBox Grid.Column="1" Margin="5" Height="23" VerticalContentAlignment="Center"
+        <TextBox x:Name="keyTextBox" Grid.Column="1" Margin="5" Height="23" VerticalContentAlignment="Center"
                  Text="{Binding StringKey, UpdateSourceTrigger=PropertyChanged}" />
         <Label Grid.Row="1" Content="New string value:" VerticalAlignment="Center" />
         <TextBox Grid.Row="1" Grid.Column="1" Margin="5 0" Height="23" VerticalContentAlignment="Center"
