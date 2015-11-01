@@ -44,7 +44,7 @@
                                                DataContext="{Binding TranslationSelector}" />
             <Button ToolTip="Refresh language" Height="{Binding ActualHeight, ElementName=translateLanguageSelector}"
                     Command="{Binding RefreshTranslationCommand}"
-                    IsEnabled="{Binding DialogsModel.TranslationId, Converter={StaticResource NullToBooleanConverter}}">
+                    IsEnabled="{Binding StringsModel.TranslationId, Converter={StaticResource NullToBooleanConverter}}">
                 <Image Source="/Resources/Icons/icon_refresh.png" Stretch="None" />
             </Button>
         </StackPanel>

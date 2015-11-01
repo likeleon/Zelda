@@ -196,7 +196,24 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
 
         void DeleteString()
         {
-            throw new NotImplementedException();
+            var key = SelectedStringKey;
+            if (key == null)
+                return;
+
+            if (!StringsModel.PrefixExists(key))
+                return;
+
+            if (StringsModel.StringExists(key))
+            {
+                TryAction(new DeleteStringAction(this, key));
+                return;
+            }
+
+            var question = "Do you really want to delete all strings prefixed by '{0}'".F(key);
+            if (!question.AskYesNo("Delete confirmation"))
+                return;
+
+            TryAction(new DeleteStringAction(this, key));
         }
 
         protected override Task OnSave()
