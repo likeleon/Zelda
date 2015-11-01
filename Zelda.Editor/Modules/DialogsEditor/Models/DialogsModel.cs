@@ -183,6 +183,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         public void ReloadTranslation()
         {
+            if (TranslationId == null)
+                throw new InvalidOperationException("TranslationId is null");
+
             LoadTranslation(TranslationId);
         }
 

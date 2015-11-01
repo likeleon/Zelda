@@ -171,6 +171,19 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 
         public void SetTranslationId(string languageId)
         {
+            LoadTranslation(languageId);
+        }
+
+        public void ReloadTranslation()
+        {
+            if (TranslationId == null)
+                throw new InvalidOperationException("TranslationId is null");
+
+            LoadTranslation(TranslationId);
+        }
+
+        void LoadTranslation(string languageId)
+        {
             ClearTranslation();
 
             var path = _mod.GetStringsPath(languageId);

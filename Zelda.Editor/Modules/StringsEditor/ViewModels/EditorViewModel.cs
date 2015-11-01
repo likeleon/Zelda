@@ -59,6 +59,7 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
 
         public SelectorViewModel TranslationSelector { get; private set; }
 
+        public RelayCommand RefreshTranslationCommand { get; private set; }
         public RelayCommand CreateStringCommand { get; private set; }
         public RelayCommand ChangeStringKeyCommand { get; private set; }
         public RelayCommand DeleteStringCommand { get; private set; }
@@ -87,6 +88,7 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
             TranslationSelector.SetSelectedId("");
             TranslationSelector.SelectedItemChanged += TranslationSelector_SelectedItemChanged;
 
+            RefreshTranslationCommand = new RelayCommand(_ => RefreshTranslation());
             CreateStringCommand = new RelayCommand(_ => CreateString());
             ChangeStringKeyCommand = new RelayCommand(_ => ChangeStringKey(), _ => CanExecuteStringCommand());
             DeleteStringCommand = new RelayCommand(_ => DeleteString(), _ => CanExecuteStringCommand());
@@ -138,6 +140,14 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
         {
             ChangeStringKeyCommand.RaiseCanExecuteChanged();
             DeleteStringCommand.RaiseCanExecuteChanged();
+        }
+
+        void RefreshTranslation()
+        {
+            if (StringsModel.TranslationId == null)
+                return;
+
+            StringsModel.ReloadTranslation();
         }
 
         void CreateString()
