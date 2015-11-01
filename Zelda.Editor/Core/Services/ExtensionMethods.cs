@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using System;
+using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows;
@@ -54,6 +55,13 @@ namespace Zelda.Editor.Core.Services
                 return false;
             else
                 return null;
+        }
+
+        public static bool? ShowDialog(this WindowBase window, WindowStartupLocation startupLocation = WindowStartupLocation.CenterOwner)
+        {
+            dynamic settings = new ExpandoObject();
+            settings.WindowStartupLocation = startupLocation;
+            return IoC.Get<IWindowManager>().ShowDialog(window, null, settings);
         }
     }
 }

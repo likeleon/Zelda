@@ -327,7 +327,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
             }
 
             var dialog = new ChangeDialogIdViewModel(DialogsModel, oldId, isPrefix, isPrefix && exists);
-            if (IoC.Get<IWindowManager>().ShowDialog(dialog) != true)
+            if (dialog.ShowDialog() != true)
                 return;
 
             var newId = dialog.DialogId;

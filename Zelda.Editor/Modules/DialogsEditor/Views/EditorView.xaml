@@ -14,12 +14,14 @@
              xmlns:coreConverters="clr-namespace:Zelda.Editor.Core.Converters"
              xmlns:corePrimitives="clr-namespace:Zelda.Editor.Core.Primitives"
              xmlns:behaviors="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Behaviors"
+             xmlns:converters="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Converters"
              xmlns:resourceSelectorView="clr-namespace:Zelda.Editor.Modules.ResourceSelector.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
         <corePrimitives:BindingProxy x:Key="ModelProxy" Data="{Binding DialogsModel}" />
         <coreConverters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
+        <converters:SortDialogNodeConverter x:Key="SortDialogNodeConverter" />
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
@@ -30,11 +32,6 @@
             <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
             <Setter Property="AcceptsReturn" Value="True" />
         </Style>
-        <CollectionViewSource x:Key="SortedDialogsTree" Source="{Binding DialogsModel.DialogTree.Root.Children}">
-            <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="Key" />
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
         <CollectionViewSource x:Key="SortedPropertiesTableItems" Source="{Binding PropertiesTable.Items}">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="Key" />
@@ -83,15 +80,16 @@
                         <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
                     </Button>
                 </StackPanel>
-                <coreControls:TreeListView x:Name="dialogsTreeListView" ItemsSource="{Binding Source={StaticResource SortedDialogsTree}}">
+                <coreControls:TreeListView x:Name="dialogsTreeListView" 
+                                           ItemsSource="{Binding DialogsModel.DialogTree.Root.Children, Converter={StaticResource SortDialogNodeConverter}}">
+                    <coreControls:TreeListView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Value.Children, Converter={StaticResource SortDialogNodeConverter}}" />
+                    </coreControls:TreeListView.ItemTemplate>
                     <coreControls:TreeListView.Resources>
                         <Style TargetType="GridViewColumnHeader">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </Style>
                     </coreControls:TreeListView.Resources>
-                    <coreControls:TreeListView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Value.Children}" />
-                    </coreControls:TreeListView.ItemTemplate>
                     <coreControls:TreeListView.Columns>
                         <GridViewColumn Header="" Width="{Binding ActualWidth, ElementName=dialogsTreeListView}">
                             <GridViewColumn.CellTemplate>

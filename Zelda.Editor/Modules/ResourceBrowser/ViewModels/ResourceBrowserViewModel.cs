@@ -125,9 +125,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 
                 var resourceTypeName = mod.Resources.GetFriendlyName(resourceType);
                 var dialog = new NewResourceElementViewModel(resourceTypeName, mod) { Id = initialIdValue };
-                dynamic settings = new ExpandoObject();
-                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                if (IoC.Get<IWindowManager>().ShowDialog(dialog, null, settings) != true)
+                if (!dialog.ShowDialog() != true)
                     return;
 
                 var elementId = dialog.Id;

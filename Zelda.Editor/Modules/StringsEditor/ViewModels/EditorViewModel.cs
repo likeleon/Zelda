@@ -144,7 +144,7 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
         void CreateString()
         {
             var dialog = new NewStringDialogViewModel(StringsModel, SelectedStringKey);
-            if (IoC.Get<IWindowManager>().ShowDialog(dialog) == true)
+            if (dialog.ShowDialog() == true)
                 TryAction(new CreateStringAction(this, dialog.StringKey, dialog.StringValue));
         }
 
@@ -167,7 +167,7 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
             }
 
             var dialog = new ChangeStringKeyViewModel(StringsModel, oldKey, isPrefix, isPrefix && exists);
-            if (IoC.Get<IWindowManager>().ShowDialog(dialog) != true)
+            if (dialog.ShowDialog() != true)
                 return;
 
             var newKey = dialog.StringKey;

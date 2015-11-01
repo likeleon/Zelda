@@ -19,14 +19,10 @@
         <corePrimitives:BindingProxy x:Key="ModelProxy" Data="{Binding StringsModel}" />
         <coreConveters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <converters:KeyToTranslatedStringConverter x:Key="KeyToTranslatedStringConverter" />
+        <converters:SortStringNodeConverter x:Key="SortStringNodeConverter" />
         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
-        <CollectionViewSource x:Key="SortedStringsTree" Source="{Binding StringsModel.StringTree.Root.Children}">
-            <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="Key" />
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
     </UserControl.Resources>
     <DockPanel Margin="10">
         <GroupBox DockPanel.Dock="Top" Header="Language properties" Padding="0 10 0 0">
@@ -64,7 +60,11 @@
                     <Image Source="/Resources/Icons/icon_delete.png" Stretch="None" />
                 </Button>
             </StackPanel>
-            <coreControls:TreeListView x:Name="stringsTreeListView" ItemsSource="{Binding Source={StaticResource SortedStringsTree}}">
+            <coreControls:TreeListView x:Name="stringsTreeListView" 
+                                       ItemsSource="{Binding StringsModel.StringTree.Root.Children, Converter={StaticResource SortStringNodeConverter}}">
+                <coreControls:TreeListView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Value.Children, Converter={StaticResource SortStringNodeConverter}}" />
+                </coreControls:TreeListView.ItemTemplate>
                 <coreControls:TreeListView.Resources>
                     <Style x:Key="TranslateColumnHeaderStyle" TargetType="GridViewColumnHeader">
                         <Setter Property="Content" Value="{Binding Data.TranslationId, Source={StaticResource ModelProxy}}" />
@@ -92,9 +92,6 @@
                         </Style.Triggers>
                     </Style>
                 </coreControls:TreeListView.Resources>
-                <coreControls:TreeListView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Value.Children}" />
-                </coreControls:TreeListView.ItemTemplate>
                 <coreControls:TreeListView.Columns>
                     <GridViewColumn Header="Key" Width="200">
                         <GridViewColumn.CellTemplate>
