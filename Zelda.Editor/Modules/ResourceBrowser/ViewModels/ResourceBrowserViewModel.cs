@@ -8,8 +8,11 @@ using System.Threading.Tasks;
 using Zelda.Editor.Core;
 using Zelda.Editor.Core.Commands;
 using Zelda.Editor.Core.Controls.ViewModels;
+using Zelda.Editor.Core.Menus;
 using Zelda.Editor.Core.Services;
 using Zelda.Editor.Core.Threading;
+using Zelda.Editor.Modules.ContextMenus;
+using Zelda.Editor.Modules.ContextMenus.Models;
 using Zelda.Editor.Modules.Mods.Models;
 using Zelda.Editor.Modules.Mods.Services;
 using Zelda.Editor.Modules.ResourceBrowser.Commands;
@@ -23,17 +26,19 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
     {
         readonly IModService _modService;
         readonly IShell _shell;
+        readonly ContextMenuModel _contextMenu = new ContextMenuModel();
         IModFile _selectedModFile;
 
         public override PaneLocation PreferredLocation { get { return PaneLocation.Left; } }
         public override double PreferredWidth { get { return 400.0; } }
         public IEnumerable<IModFile> ModRootFiles { get; private set; }
+        public IMod Mod { get { return _modService.Mod; } }
+        public IContextMenu ContextMenu { get { return _contextMenu; } }
         public IModFile SelectedModFile
         {
             get { return _selectedModFile; }
             set { this.SetProperty(ref _selectedModFile, value); }
         }
-        public IMod Mod { get { return _modService.Mod; } }
 
         public RelayCommand DeleteCommand { get; private set; }
         public RelayCommand RenameCommand { get; private set; }
@@ -50,6 +55,85 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 
             _modService.Loaded += ModService_Loaded;
             _modService.Unloaded += ModService_Unloaded;
+        }
+
+        public bool BuildContextMenu()
+        {
+            _contextMenu.Clear();
+
+            if (SelectedModFile == null)
+                return false;
+
+            var menuDefinitions = CreateContextMenuItems();
+            IoC.Get<IContextMenuBuilder>().BuildContextMenu(menuDefinitions, _contextMenu);
+            return _contextMenu.Count > 0;
+        }
+
+        List<MenuItemDefinition> CreateContextMenuItems()
+        {
+            var menuItems = new List<MenuItemDefinition>();
+            menuItems.AddRange(CreateOpenMenuGroupItems());
+            return menuItems;
+        }
+
+        IEnumerable<MenuItemDefinition> CreateOpenMenuGroupItems()
+        {
+            var openAction = new OpenResourceCommandDefinition();
+
+            var path = SelectedModFile.Path;
+            var resourceType = ResourceType.Map;
+            var elementId = "";
+            if (Mod.IsResourceElement(path, ref resourceType, ref elementId))
+            {
+                var resourceTypeName = Mod.Resources.GetTypeName(resourceType);
+                openAction.SetIconSource("icon_resource_{0}.png".F(resourceTypeName).ToIconUri());
+
+                switch (resourceType)
+                {
+                    case ResourceType.Map:
+                        //{
+                        //    var openScriptAction = new OpenScriptCommandDefinition();
+                        //    openScriptAction.SetText("Open Script");
+                        //    openScriptAction.SetIconSource("icon_script.png".ToIconUri());
+                        //    yield return openScriptAction;
+                        //}
+                        break;
+
+                    case ResourceType.Language:
+                        //openAction.SetText("Open Dialogs");
+                        //{
+                        //    var openStringsAction = new OpenStringsCommandDefinition();
+                        //    openStringsAction.SetText("Open Strings");
+                        //    openStringsAction.SetIconSource(openAction.IconSource);
+                        //    yield return openStringsAction;
+                        //}
+                        break;
+
+                    case ResourceType.Tileset:
+                    case ResourceType.Sprite:
+                    case ResourceType.Item:
+                    case ResourceType.Enemy:
+                    case ResourceType.Entity:
+                        break;
+
+                    case ResourceType.Music:
+                    case ResourceType.Sound:
+                    case ResourceType.Font:
+                        openAction = null;
+                        break;
+                }
+            }
+            else if (Mod.IsScript(path))
+            {
+                openAction.SetIconSource("icon_script.png".ToIconUri());
+            }
+            else if (Mod.IsModRootDirectory(path))
+            {
+                openAction.SetText("Open properties");
+            }
+
+            if (openAction != null)
+                yield return new CommandMenuItemDefinition<OpenResourceCommandDefinition>(openAction, ContextMenuDefinitions.OpenMenuGroup, 0);
         }
 
         void ModService_Loaded(object sender, IMod loadedMod)

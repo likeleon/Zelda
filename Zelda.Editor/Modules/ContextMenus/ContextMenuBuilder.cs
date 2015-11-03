@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using Zelda.Editor.Core.Commands;
 using Zelda.Editor.Core.Menus;
@@ -17,7 +18,7 @@ namespace Zelda.Editor.Modules.ContextMenus
             _commandService = commandService;
         }
 
-        public void BuildContextMenu(MenuItemDefinition[] menuItemDefinitions, IContextMenu contextMenu)
+        public void BuildContextMenu(IEnumerable<MenuItemDefinition> menuItemDefinitions, IContextMenu contextMenu)
         {
             var menuItemsByGroup = menuItemDefinitions
                 .GroupBy(x => x.Group)

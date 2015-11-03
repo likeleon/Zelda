@@ -274,7 +274,7 @@
     <Compile Include="Core\ToolBars\ToolBarItemDefinition.cs" />
     <Compile Include="Core\ToolBars\ToolBarItemGroupDefinition.cs" />
     <Compile Include="Modules\ContextMenus\ContextMenuBuilder.cs" />
-    <Compile Include="Modules\ContextMenus\Controls\ContextMenuBase.cs" />
+    <Compile Include="Modules\ContextMenus\Controls\ContextMenuEx.cs" />
     <Compile Include="Modules\ContextMenus\IContextMenu.cs" />
     <Compile Include="Modules\ContextMenus\IContextMenuBuilder.cs" />
     <Compile Include="Modules\ContextMenus\Models\ContextMenuModel.cs" />

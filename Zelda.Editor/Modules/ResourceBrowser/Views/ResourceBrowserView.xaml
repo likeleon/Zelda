@@ -6,38 +6,26 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.ResourceBrowser.Views"
              xmlns:behaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
-             xmlns:converters="clr-namespace:Zelda.Editor.Modules.ResourceBrowser.Converters"
              xmlns:controls="clr-namespace:Zelda.Editor.Core.Controls"
-             xmlns:primitives="clr-namespace:Zelda.Editor.Core.Primitives"
+             xmlns:contextMenusControls="clr-namespace:Zelda.Editor.Modules.ContextMenus.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              Width="400">
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../../MainMenu/Resources/Styles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-            <primitives:BindingProxy x:Key="Proxy" Data="{Binding}" />
-            <HierarchicalDataTemplate x:Key="ModFileTemplate" ItemsSource="{Binding Children}" />
-            <converters:ModFileContextMenuItemsConverter x:Key="ModFileContextMenuItemsConverter" />
-            <converters:NullableValueConverter x:Key="NullableValueConverter" />
-            <ControlTemplate x:Key="MenuSeparatorTemplate">
-                <Separator />
-            </ControlTemplate>
-            <Image x:Key="MenuItemIcon" x:Shared="false" Width="16" Height="16" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased"
-                   Source="{Binding IconSource, Converter={StaticResource NullableValueConverter}}" />
-            <ContextMenu x:Key="ModFileContextMenu" 
-                         ItemsSource="{Binding Converter={StaticResource ModFileContextMenuItemsConverter}, ConverterParameter={StaticResource Proxy}}"
-                         ItemTemplate="{StaticResource menuTemplate}">
-            </ContextMenu>
-        </ResourceDictionary>
+        <ResourceDictionary Source="../../MainMenu/Resources/Styles.xaml" />
     </UserControl.Resources>
     <controls:TreeListView ItemsSource="{Binding ModRootFiles}"
-                           ItemTemplate="{StaticResource ModFileTemplate}">
+                           ContextMenuOpening="TreeListView_ContextMenuOpening">
+        <controls:TreeListView.ItemTemplate>
+            <HierarchicalDataTemplate ItemsSource="{Binding Children}" />
+        </controls:TreeListView.ItemTemplate>
+        <controls:TreeListView.ContextMenu>
+            <contextMenusControls:ContextMenuEx ItemsSource="{Binding ContextMenu}"
+                                                ItemTemplate="{StaticResource menuTemplate}" />
+        </controls:TreeListView.ContextMenu>
         <controls:TreeListView.Resources>
             <Style TargetType="controls:TreeListViewItem" BasedOn="{StaticResource {x:Type controls:TreeListViewItem}}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                <Setter Property="ContextMenu" Value="{StaticResource ModFileContextMenu}" />
             </Style>
         </controls:TreeListView.Resources>
         <controls:TreeListView.Columns>

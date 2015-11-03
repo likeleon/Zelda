@@ -19,5 +19,11 @@ namespace Zelda.Editor.Core.Menus
         {
             _commandDefinition = IoC.Get<ICommandService>().GetCommandDefinition(typeof(T));
         }
+
+        public CommandMenuItemDefinition(T commandDefinition, MenuItemGroupDefinition group, int sortOrder)
+            : base(group, sortOrder)
+        {
+            _commandDefinition = commandDefinition;
+        }
     }
 }

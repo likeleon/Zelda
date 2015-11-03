@@ -4,7 +4,7 @@ using Zelda.Editor.Modules.MainMenu.Controls;
 
 namespace Zelda.Editor.Modules.ContextMenus.Controls
 {
-    class ContextMenuBase : ContextMenu
+    class ContextMenuEx : ContextMenu
     {
         object _currentItem;
 
