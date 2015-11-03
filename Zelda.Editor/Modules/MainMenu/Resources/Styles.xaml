@@ -13,8 +13,10 @@
         <Setter Property="InputGestureText" Value="{Binding InputGestureText}" />
         <Setter Property="Icon" Value="{StaticResource MenuItemIcon}" />
         <Setter Property="IsCheckable" Value="{Binding IsChecked, Mode=OneWay}" />
-        <Setter Property="IsCheckable" Value="{Binding IsChecked, Mode=OneWay}" />
+        <Setter Property="IsChecked" Value="{Binding IsChecked, Mode=OneWay}" />
         <Setter Property="Command" Value="{Binding Command}" />
+        <!-- TODO -->
+        <!--<Setter Property="b:MenuBehavior.UpdateCommandUiItems" Value="True" />-->
     </Style>
     
     <HierarchicalDataTemplate x:Key="menuTemplate" ItemsSource="{Binding Children}">

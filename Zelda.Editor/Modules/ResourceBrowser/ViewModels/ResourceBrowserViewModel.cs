@@ -2,21 +2,24 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Windows;
+using System.Threading.Tasks;
 using Zelda.Editor.Core;
+using Zelda.Editor.Core.Commands;
 using Zelda.Editor.Core.Controls.ViewModels;
 using Zelda.Editor.Core.Services;
+using Zelda.Editor.Core.Threading;
 using Zelda.Editor.Modules.Mods.Models;
 using Zelda.Editor.Modules.Mods.Services;
+using Zelda.Editor.Modules.ResourceBrowser.Commands;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 {
     [Export(typeof(IResourceBrowser))]
-    class ResourceBrowserViewModel : Tool, IResourceBrowser
+    class ResourceBrowserViewModel : Tool, IResourceBrowser,
+        ICommandHandler<OpenResourceCommandDefinition>
     {
         readonly IModService _modService;
         readonly IShell _shell;
@@ -392,6 +395,17 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                 return editor;
 
             return provider.Open(path);
+        }
+
+        void ICommandHandler<OpenResourceCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = (SelectedModFile != null);
+        }
+
+        Task ICommandHandler<OpenResourceCommandDefinition>.Run(Command command)
+        {
+            Open(SelectedModFile.Path);
+            return TaskUtility.Completed;
         }
     }
 }

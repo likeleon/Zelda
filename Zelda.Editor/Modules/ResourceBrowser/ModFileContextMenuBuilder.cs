@@ -1,7 +1,14 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using Zelda.Editor.Core;
+using Zelda.Editor.Core.Menus;
 using Zelda.Editor.Core.Services;
+using Zelda.Editor.Modules.ContextMenus;
+using Zelda.Editor.Modules.ContextMenus.Models;
+using Zelda.Editor.Modules.MainMenu;
+using Zelda.Editor.Modules.MainMenu.Models;
+using Zelda.Editor.Modules.ResourceBrowser.Commands;
 using Zelda.Editor.Modules.ResourceBrowser.ViewModels;
 using Zelda.Game;
 
@@ -26,13 +33,25 @@ namespace Zelda.Editor.Modules.ResourceBrowser
             _modFile = modFile;
         }
 
-        public List<ContextMenuItem> Build()
+        //public List<ContextMenuItem> Build()
+        //{
+        //    BuildOpenMenus();
+        //    BuildNewMenus();
+        //    BuildRenameMenus();
+        //    BuildDeleteMenus();
+        //    return _items;
+        //}
+
+        public IContextMenu Build()
         {
-            BuildOpenMenus();
-            BuildNewMenus();
-            BuildRenameMenus();
-            BuildDeleteMenus();
-            return _items;
+            var contextMenuBuilder = IoC.Get<IContextMenuBuilder>();
+            var contextMenu = new ContextMenuModel();
+            var menuDefinitions = new MenuItemDefinition[]
+            {
+                new CommandMenuItemDefinition<OpenResourceCommandDefinition>(ContextMenuDefinitions.OpenMenuGroup, 0)
+            };
+            contextMenuBuilder.BuildContextMenu(menuDefinitions, contextMenu);
+            return contextMenu;
         }
 
         void BuildOpenMenus()

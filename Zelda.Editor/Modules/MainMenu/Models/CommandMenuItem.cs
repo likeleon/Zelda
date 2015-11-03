@@ -32,7 +32,6 @@ namespace Zelda.Editor.Modules.MainMenu.Models
             get { return IoC.Get<ICommandService>().GetTargetableCommand(_command); }
         }
 
-
         public override bool IsChecked { get { return _command.Checked; } }
         public override bool IsVisible { get { return _command.Visible; } }
 
