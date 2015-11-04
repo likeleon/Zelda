@@ -279,6 +279,10 @@
     <Compile Include="Modules\ContextMenus\IContextMenuBuilder.cs" />
     <Compile Include="Modules\ContextMenus\Models\ContextMenuModel.cs" />
     <Compile Include="Modules\DialogsEditor\Behaviors\ShowMarginBehavior.cs" />
+    <Compile Include="Modules\DialogsEditor\Commands\DeleteDialogCommandDefinition.cs" />
+    <Compile Include="Modules\DialogsEditor\Commands\SetDialogIdCommandDefinition.cs" />
+    <Compile Include="Modules\DialogsEditor\Commands\CreateDialogCommandDefinition.cs" />
+    <Compile Include="Modules\DialogsEditor\ContextMenuDefinitions.cs" />
     <Compile Include="Modules\DialogsEditor\Converters\SortDialogNodeConverter.cs" />
     <Compile Include="Modules\DialogsEditor\Models\DialogNode.cs" />
     <Compile Include="Modules\ErrorList\Commands\ToggleErrorsWarningsMessagesCommandHandler.cs" />
@@ -324,7 +328,6 @@
     <Compile Include="Modules\ResourceBrowser\Commands\OpenMapScriptCommandDefinition.cs" />
     <Compile Include="Modules\ResourceBrowser\Commands\OpenResourceCommandDefinition.cs" />
     <Compile Include="Modules\ResourceBrowser\ContextMenuDefinitions.cs" />
-    <Compile Include="Modules\ResourceBrowser\ContextMenuItem.cs" />
     <Compile Include="Modules\ResourceBrowser\Models\IModFile.cs" />
     <Compile Include="Modules\Mods\Services\IModService.cs" />
     <Compile Include="Modules\ResourceBrowser\Models\ModFileBase.cs" />

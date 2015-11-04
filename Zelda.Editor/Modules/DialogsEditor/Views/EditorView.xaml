@@ -13,30 +13,36 @@
              xmlns:coreControls="clr-namespace:Zelda.Editor.Core.Controls"
              xmlns:coreConverters="clr-namespace:Zelda.Editor.Core.Converters"
              xmlns:corePrimitives="clr-namespace:Zelda.Editor.Core.Primitives"
+             xmlns:contextMenusControls="clr-namespace:Zelda.Editor.Modules.ContextMenus.Controls"
              xmlns:behaviors="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Behaviors"
              xmlns:converters="clr-namespace:Zelda.Editor.Modules.DialogsEditor.Converters"
              xmlns:resourceSelectorView="clr-namespace:Zelda.Editor.Modules.ResourceSelector.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
-        <corePrimitives:BindingProxy x:Key="ModelProxy" Data="{Binding DialogsModel}" />
-        <coreConverters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
-        <converters:SortDialogNodeConverter x:Key="SortDialogNodeConverter" />
-        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        <Style x:Key="MultilineTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-            <Setter Property="FontFamily" Value="Courier New" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="VerticalAlignment" Value="Stretch" />
-            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
-            <Setter Property="AcceptsReturn" Value="True" />
-        </Style>
-        <CollectionViewSource x:Key="SortedPropertiesTableItems" Source="{Binding PropertiesTable.Items}">
-            <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="Key" />
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../MainMenu/Resources/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <corePrimitives:BindingProxy x:Key="ModelProxy" Data="{Binding DialogsModel}" />
+            <coreConverters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
+            <converters:SortDialogNodeConverter x:Key="SortDialogNodeConverter" />
+            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="MultilineTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="FontFamily" Value="Courier New" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="VerticalAlignment" Value="Stretch" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                <Setter Property="AcceptsReturn" Value="True" />
+            </Style>
+            <CollectionViewSource x:Key="SortedPropertiesTableItems" Source="{Binding PropertiesTable.Items}">
+                <CollectionViewSource.SortDescriptions>
+                    <scm:SortDescription PropertyName="Key" />
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+        </ResourceDictionary>
     </UserControl.Resources>
     <DockPanel Margin="10">
         <GroupBox DockPanel.Dock="Top" Header="Language properties" Padding="0 10 0 0">
@@ -81,10 +87,15 @@
                     </Button>
                 </StackPanel>
                 <coreControls:TreeListView x:Name="dialogsTreeListView"
-                                           ItemsSource="{Binding DialogsModel.DialogTree.Root.Children, Converter={StaticResource SortDialogNodeConverter}}">
+                                           ItemsSource="{Binding DialogsModel.DialogTree.Root.Children, Converter={StaticResource SortDialogNodeConverter}}"
+                                           ContextMenuOpening="dialogsTreeListView_ContextMenuOpening">
                     <coreControls:TreeListView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Value.Children, Converter={StaticResource SortDialogNodeConverter}}" />
                     </coreControls:TreeListView.ItemTemplate>
+                    <coreControls:TreeListView.ContextMenu>
+                        <contextMenusControls:ContextMenuEx ItemsSource="{Binding ContextMenu}"
+                                                            ItemTemplate="{StaticResource menuTemplate}" />
+                    </coreControls:TreeListView.ContextMenu>
                     <coreControls:TreeListView.Resources>
                         <Style TargetType="GridViewColumnHeader">
                             <Setter Property="Visibility" Value="Collapsed" />

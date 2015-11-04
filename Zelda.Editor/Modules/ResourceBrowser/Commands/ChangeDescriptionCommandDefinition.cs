@@ -1,5 +1,4 @@
-﻿using System;
-using Zelda.Editor.Core.Commands;
+﻿using Zelda.Editor.Core.Commands;
 
 namespace Zelda.Editor.Modules.ResourceBrowser.Commands
 {

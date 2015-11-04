@@ -1,12 +1,19 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Zelda.Editor.Core;
+using Zelda.Editor.Core.Commands;
 using Zelda.Editor.Core.Controls.ViewModels;
+using Zelda.Editor.Core.Menus;
 using Zelda.Editor.Core.Services;
+using Zelda.Editor.Core.Threading;
+using Zelda.Editor.Modules.ContextMenus;
+using Zelda.Editor.Modules.ContextMenus.Models;
+using Zelda.Editor.Modules.DialogsEditor.Commands;
 using Zelda.Editor.Modules.DialogsEditor.Models;
 using Zelda.Editor.Modules.Mods.Models;
 using Zelda.Editor.Modules.Mods.ViewModels;
@@ -17,14 +24,21 @@ using Zelda.Game;
 
 namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
 {
-    class EditorViewModel : EditorDocument
+    class EditorViewModel : EditorDocument,
+        ICommandHandler<CreateDialogCommandDefinition>,
+        ICommandHandler<DeleteDialogCommandDefinition>,
+        ICommandHandler<SetDialogIdCommandDefinition>
     {
+        readonly ContextMenuModel _contextMenu = new ContextMenuModel();
+
         string _languageId;
         KeyValuePair<string, Node>? _selectedItem;
         bool _isDialogPropertiesEnabled;
         string _dialogId;
         string _translationText;
         DialogPropertiesTable.Item _selectedPropertyItem;
+
+        public IContextMenu ContextMenu { get { return _contextMenu; } }
 
         public string LanguageId
         {
@@ -157,6 +171,23 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                                                      _ => SelectedDialogPropertyExists());
             DeletePropertyCommand = new RelayCommand(_ => DeleteDialogProperty(),
                                                      _ => SelectedDialogPropertyExists());
+        }
+
+        public bool BuildContextMenu()
+        {
+            _contextMenu.Clear();
+
+            var menuItems = new List<MenuItemDefinition>();
+            menuItems.Add(new CommandMenuItemDefinition<CreateDialogCommandDefinition>(ContextMenuDefinitions.CreateMenuGroup, 0));
+
+            if (DialogsModel.PrefixExists(SelectedDialogId))
+            {
+                menuItems.Add(new CommandMenuItemDefinition<SetDialogIdCommandDefinition>(ContextMenuDefinitions.SetIdMenuGroup, 0));
+                menuItems.Add(new CommandMenuItemDefinition<DeleteDialogCommandDefinition>(ContextMenuDefinitions.DeleteMenuGroup, 0));
+            }
+
+            IoC.Get<IContextMenuBuilder>().BuildContextMenu(menuItems, _contextMenu);
+            return _contextMenu.Count > 0;
         }
 
         void UpdateDialogViewIfDialogIdEquals(string id)
@@ -474,6 +505,39 @@ namespace Zelda.Editor.Modules.DialogsEditor.ViewModels
                 TryAction(new CreateDialogPropertyAction(this, DialogId, key, value));
             else if (value != DialogsModel.GetDialogProperty(DialogId, key))
                 TryAction(new SetDialogPropertyValueAction(this, DialogId, key, value));
+        }
+
+        void ICommandHandler<CreateDialogCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = CreateDialogCommand.CanExecute(null);
+        }
+
+        Task ICommandHandler<CreateDialogCommandDefinition>.Run(Command command)
+        {
+            CreateDialogCommand.Execute(null);
+            return TaskUtility.Completed;
+        }
+
+        void ICommandHandler<DeleteDialogCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = DeleteDialogCommand.CanExecute(null);
+        }
+
+        Task ICommandHandler<DeleteDialogCommandDefinition>.Run(Command command)
+        {
+            DeleteDialogCommand.Execute(null);
+            return TaskUtility.Completed;
+        }
+
+        void ICommandHandler<SetDialogIdCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = ChangeDialogIdCommand.CanExecute(null);
+        }
+
+        Task ICommandHandler<SetDialogIdCommandDefinition>.Run(Command command)
+        {
+            ChangeDialogIdCommand.Execute(null);
+            return TaskUtility.Completed;
         }
 
         abstract class DialogsEditorAction : IUndoableAction
