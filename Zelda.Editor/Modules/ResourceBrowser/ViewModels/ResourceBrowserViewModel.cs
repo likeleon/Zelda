@@ -22,7 +22,14 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 {
     [Export(typeof(IResourceBrowser))]
     class ResourceBrowserViewModel : Tool, IResourceBrowser,
-        ICommandHandler<OpenResourceCommandDefinition>
+        ICommandHandler<OpenResourceCommandDefinition>,
+        ICommandHandler<OpenMapScriptCommandDefinition>,
+        ICommandHandler<OpenLanguageStringsCommandDefinition>,
+        ICommandHandler<NewResourceElementCommandDefinition>,
+        ICommandHandler<NewDirectoryCommandDefinition>,
+        ICommandHandler<RenameCommandDefinition>,
+        ICommandHandler<ChangeDescriptionCommandDefinition>,
+        ICommandHandler<DeleteCommandDefinition>
     {
         readonly IModService _modService;
         readonly IShell _shell;
@@ -73,6 +80,9 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
         {
             var menuItems = new List<MenuItemDefinition>();
             menuItems.AddRange(CreateOpenMenuGroupItems());
+            menuItems.AddRange(CreateNewMenuGroupItems());
+            menuItems.AddRange(CreateRenameMenuGroupItems());
+            menuItems.AddRange(CreateDeleteMenuGroupItems());
             return menuItems;
         }
 
@@ -91,22 +101,18 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                 switch (resourceType)
                 {
                     case ResourceType.Map:
-                        //{
-                        //    var openScriptAction = new OpenScriptCommandDefinition();
-                        //    openScriptAction.SetText("Open Script");
-                        //    openScriptAction.SetIconSource("icon_script.png".ToIconUri());
-                        //    yield return openScriptAction;
-                        //}
+                        {
+                            yield return new CommandMenuItemDefinition<OpenMapScriptCommandDefinition>(
+                                new OpenMapScriptCommandDefinition(), ContextMenuDefinitions.OpenMenuGroup, 1);
+                        }
                         break;
 
                     case ResourceType.Language:
-                        //openAction.SetText("Open Dialogs");
-                        //{
-                        //    var openStringsAction = new OpenStringsCommandDefinition();
-                        //    openStringsAction.SetText("Open Strings");
-                        //    openStringsAction.SetIconSource(openAction.IconSource);
-                        //    yield return openStringsAction;
-                        //}
+                        openAction.SetText("Open Dialogs");
+                        {
+                            yield return new CommandMenuItemDefinition<OpenLanguageStringsCommandDefinition>(
+                                new OpenLanguageStringsCommandDefinition(), ContextMenuDefinitions.OpenMenuGroup, 1);
+                        }
                         break;
 
                     case ResourceType.Tileset:
@@ -131,12 +137,89 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             {
                 openAction.SetText("Open properties");
             }
+            else
+            {
+                openAction = null;
+            }
 
             if (openAction != null)
-                yield return new CommandMenuItemDefinition<OpenResourceCommandDefinition>(openAction, ContextMenuDefinitions.OpenMenuGroup, 0);
+                yield return new CommandMenuItemDefinition<OpenResourceCommandDefinition>(
+                    openAction, ContextMenuDefinitions.OpenMenuGroup, 0);
         }
 
-        void ModService_Loaded(object sender, IMod loadedMod)
+        IEnumerable<MenuItemDefinition> CreateNewMenuGroupItems()
+        {
+            var path = SelectedModFile.Path;
+            var resourceType = ResourceType.Map;
+            var elementId = "";
+            var isPotentialResourceElement = Mod.IsPotentialResourceElement(path, ref resourceType, ref elementId);
+            var isDeclaredResourceElement = isPotentialResourceElement && Mod.Resources.Exists(resourceType, elementId);
+            var isDir = Mod.IsDirectory(path);
+
+            NewResourceElementCommandDefinition newResourceCommandDefinition = null;
+
+            if (isPotentialResourceElement)
+            {
+                if (isDeclaredResourceElement)
+                    yield break;
+
+                var resourceTypeFriendlyName = Mod.Resources.GetFriendlyName(resourceType);
+                var resourceTypeName = Mod.Resources.GetTypeName(resourceType);
+
+                newResourceCommandDefinition = new NewResourceElementCommandDefinition();
+                newResourceCommandDefinition.SetText("Add to mod as {0}".F(resourceTypeFriendlyName));
+                newResourceCommandDefinition.SetIconSource("icon_resource_{0}.png".F(resourceTypeName).ToIconUri());
+            }
+            else if (Mod.IsResourceDirectory(path, ref resourceType) ||
+                     (isDir && Mod.IsInResourceDirectory(path, ref resourceType)))
+            {
+                var resourceTypeCreateFriendlyName = Mod.Resources.GetCreateFriendlyName(resourceType);
+                var resourceTypeName = Mod.Resources.GetTypeName(resourceType);
+
+                newResourceCommandDefinition = new NewResourceElementCommandDefinition();
+                newResourceCommandDefinition.SetText(resourceTypeCreateFriendlyName);
+                newResourceCommandDefinition.SetIconSource("icon_resource_{0}.png".F(resourceTypeName).ToIconUri());
+            }
+
+            if (newResourceCommandDefinition != null)
+                yield return new CommandMenuItemDefinition<NewResourceElementCommandDefinition>(
+                    newResourceCommandDefinition, ContextMenuDefinitions.NewMenuGroup, 0);
+
+            if (isDir)
+                yield return new CommandMenuItemDefinition<NewDirectoryCommandDefinition>(ContextMenuDefinitions.NewMenuGroup, 1);
+        }
+
+        IEnumerable<MenuItemDefinition> CreateRenameMenuGroupItems()
+        {
+            var path = SelectedModFile.Path;
+            if (path == Mod.RootPath)
+                yield break;
+
+            var resourceType = ResourceType.Map;
+            if (Mod.IsResourceDirectory(path, ref resourceType))
+                yield break;
+
+            yield return new CommandMenuItemDefinition<RenameCommandDefinition>(ContextMenuDefinitions.RenameMenuGroup, 0);
+
+            var elementId = "";
+            if (Mod.IsResourceElement(path, ref resourceType, ref elementId))
+                yield return new CommandMenuItemDefinition<ChangeDescriptionCommandDefinition>(ContextMenuDefinitions.RenameMenuGroup, 0);
+        }
+
+        IEnumerable<MenuItemDefinition> CreateDeleteMenuGroupItems()
+        {
+            var path = SelectedModFile.Path;
+            if (path == Mod.RootPath)
+                yield break;
+
+            var resourceType = ResourceType.Map;
+            if (Mod.IsResourceDirectory(path, ref resourceType))
+                yield break;
+
+            yield return new CommandMenuItemDefinition<DeleteCommandDefinition>(ContextMenuDefinitions.DeleteMenuGroup, 0);
+        }
+
+            void ModService_Loaded(object sender, IMod loadedMod)
         {
             ModRootFiles = ModFileBuilder.Build(loadedMod).Yield();
             NotifyOfPropertyChange(() => ModRootFiles);
@@ -182,7 +265,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             NotifyOfPropertyChange(() => ModRootFiles);
         }
 
-        public void NewResourceElement(IModFile parent)
+        void NewResourceElement(IModFile parent)
         {
             try
             {
@@ -212,7 +295,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 
                 var resourceTypeName = mod.Resources.GetFriendlyName(resourceType);
                 var dialog = new NewResourceElementViewModel(resourceTypeName, mod) { Id = initialIdValue };
-                if (!dialog.ShowDialog() != true)
+                if (dialog.ShowDialog() != true)
                     return;
 
                 var elementId = dialog.Id;
@@ -238,7 +321,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             }
         }
 
-        public void NewDirectory(IModFile parent)
+        void NewDirectory(IModFile parent)
         {
             try
             {
@@ -259,7 +342,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             }
         }
 
-        public void Delete(IModFile file)
+        void Delete(IModFile file)
         {
             var path = file.Path;
             var mod = _modService.Mod;
@@ -318,7 +401,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             }
         }
 
-        public void Rename(IModFile file)
+        void Rename(IModFile file)
         {
             var path = file.Path;
             var mod = _modService.Mod;
@@ -371,7 +454,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             }
         }
 
-        public void ChangeDescription(IModFile file)
+        void ChangeDescription(IModFile file)
         {
             var path = file.Path;
             var mod = _modService.Mod;
@@ -404,7 +487,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             }
         }
 
-        public void Open(string path)
+        void Open(string path)
         {
             var absolutePath = Path.GetFullPath(path);
             var mod = _modService.Mod;
@@ -480,7 +563,8 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 
             return provider.Open(path);
         }
-
+        
+        #region Command Handlings
         void ICommandHandler<OpenResourceCommandDefinition>.Update(Command command)
         {
             command.Enabled = (SelectedModFile != null);
@@ -491,5 +575,83 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             Open(SelectedModFile.Path);
             return TaskUtility.Completed;
         }
+
+        void ICommandHandler<OpenMapScriptCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = (SelectedModFile != null);
+        }
+
+        Task ICommandHandler<OpenMapScriptCommandDefinition>.Run(Command command)
+        {
+            Open(Mod.GetMapScriptPath(SelectedModFile.Path));
+            return TaskUtility.Completed;
+        }
+
+        void ICommandHandler<OpenLanguageStringsCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = (SelectedModFile != null);
+        }
+
+        Task ICommandHandler<OpenLanguageStringsCommandDefinition>.Run(Command command)
+        {
+            Open(Mod.GetStringsPath(SelectedModFile.Path));
+            return TaskUtility.Completed;
+        }
+
+        void ICommandHandler<NewResourceElementCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = (SelectedModFile != null);
+        }
+
+        Task ICommandHandler<NewResourceElementCommandDefinition>.Run(Command command)
+        {
+            NewResourceElement(SelectedModFile);
+            return TaskUtility.Completed;
+        }
+
+        void ICommandHandler<NewDirectoryCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = (SelectedModFile != null);
+        }
+
+        Task ICommandHandler<NewDirectoryCommandDefinition>.Run(Command command)
+        {
+            NewDirectory(SelectedModFile);
+            return TaskUtility.Completed;
+        }
+
+        void ICommandHandler<RenameCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = (SelectedModFile != null);
+        }
+
+        Task ICommandHandler<RenameCommandDefinition>.Run(Command command)
+        {
+            Rename(SelectedModFile);
+            return TaskUtility.Completed;
+        }
+
+        void ICommandHandler<ChangeDescriptionCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = (SelectedModFile != null);
+        }
+
+        Task ICommandHandler<ChangeDescriptionCommandDefinition>.Run(Command command)
+        {
+            ChangeDescription(SelectedModFile);
+            return TaskUtility.Completed;
+        }
+
+        void ICommandHandler<DeleteCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = (SelectedModFile != null);
+        }
+
+        Task ICommandHandler<DeleteCommandDefinition>.Run(Command command)
+        {
+            Delete(SelectedModFile);
+            return TaskUtility.Completed;
+        }
+        #endregion
     }
 }

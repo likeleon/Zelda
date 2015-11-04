@@ -315,11 +315,16 @@
       <DependentUpon>EditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Mods\ViewModels\EditorDocument.cs" />
+    <Compile Include="Modules\ResourceBrowser\Commands\DeleteCommandDefinition.cs" />
+    <Compile Include="Modules\ResourceBrowser\Commands\ChangeDescriptionCommandDefinition.cs" />
+    <Compile Include="Modules\ResourceBrowser\Commands\RenameCommandDefinition.cs" />
+    <Compile Include="Modules\ResourceBrowser\Commands\NewDirectoryCommandDefinition.cs" />
+    <Compile Include="Modules\ResourceBrowser\Commands\NewResourceElementCommandDefinition.cs" />
+    <Compile Include="Modules\ResourceBrowser\Commands\OpenLanguageStringsCommandDefinition.cs" />
+    <Compile Include="Modules\ResourceBrowser\Commands\OpenMapScriptCommandDefinition.cs" />
     <Compile Include="Modules\ResourceBrowser\Commands\OpenResourceCommandDefinition.cs" />
     <Compile Include="Modules\ResourceBrowser\ContextMenuDefinitions.cs" />
     <Compile Include="Modules\ResourceBrowser\ContextMenuItem.cs" />
-    <Compile Include="Modules\ResourceBrowser\Converters\ModFileContextMenuItemsConverter.cs" />
-    <Compile Include="Modules\ResourceBrowser\Converters\NullableValueConverter.cs" />
     <Compile Include="Modules\ResourceBrowser\Models\IModFile.cs" />
     <Compile Include="Modules\Mods\Services\IModService.cs" />
     <Compile Include="Modules\ResourceBrowser\Models\ModFileBase.cs" />
@@ -410,7 +415,6 @@
     <Compile Include="Modules\ResourceBrowser\Commands\ViewResourceBrowserCommandHandler.cs" />
     <Compile Include="Modules\ResourceBrowser\IResourceBrowser.cs" />
     <Compile Include="Modules\ResourceBrowser\MenuDefinitions.cs" />
-    <Compile Include="Modules\ResourceBrowser\ModFileContextMenuBuilder.cs" />
     <Compile Include="Modules\ResourceBrowser\ViewModels\NewResourceElementViewModel.cs" />
     <Compile Include="Modules\ResourceBrowser\ViewModels\ResourceBrowserViewModel.cs" />
     <Compile Include="Modules\ResourceBrowser\Views\NewResourceElementView.xaml.cs">
