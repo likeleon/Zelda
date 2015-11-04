@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Input;
 using Zelda.Editor.Core.Commands;
 
 namespace Zelda.Editor.Modules.ResourceBrowser.Commands
@@ -15,6 +16,7 @@ namespace Zelda.Editor.Modules.ResourceBrowser.Commands
         public override string Text { get { return "_Open"; } }
         public override string ToolTip { get { return "Open"; } }
         public override Uri IconSource { get { return _iconSource; } }
+        public override KeyGesture KeyGesture { get { return new KeyGesture(Key.Return); } }
 
         public void SetText(string text)
         {

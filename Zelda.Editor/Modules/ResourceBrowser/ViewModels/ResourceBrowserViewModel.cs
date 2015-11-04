@@ -110,8 +110,10 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
                     case ResourceType.Language:
                         openAction.SetText("Open Dialogs");
                         {
+                            var action = new OpenLanguageStringsCommandDefinition();
+                            action.SetIconSource(openAction.IconSource);
                             yield return new CommandMenuItemDefinition<OpenLanguageStringsCommandDefinition>(
-                                new OpenLanguageStringsCommandDefinition(), ContextMenuDefinitions.OpenMenuGroup, 1);
+                                action, ContextMenuDefinitions.OpenMenuGroup, 1);
                         }
                         break;
 
