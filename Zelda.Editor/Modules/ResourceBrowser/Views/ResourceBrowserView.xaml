@@ -4,7 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
              xmlns:local="clr-namespace:Zelda.Editor.Modules.ResourceBrowser.Views"
+             xmlns:coreTriggers="clr-namespace:Zelda.Editor.Core.Triggers"
              xmlns:behaviors="clr-namespace:Zelda.Editor.Core.Behaviors"
              xmlns:controls="clr-namespace:Zelda.Editor.Core.Controls"
              xmlns:contextMenusControls="clr-namespace:Zelda.Editor.Modules.ContextMenus.Controls"
@@ -26,6 +28,7 @@
         <controls:TreeListView.Resources>
             <Style TargetType="controls:TreeListViewItem" BasedOn="{StaticResource {x:Type controls:TreeListViewItem}}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <EventSetter Event="MouseDoubleClick" Handler="TreeListViewItem_MouseDoubleClick" />
             </Style>
         </controls:TreeListView.Resources>
         <controls:TreeListView.Columns>
@@ -58,9 +61,25 @@
         <i:Interaction.Behaviors>
             <behaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedModFile, Mode=TwoWay}" />
         </i:Interaction.Behaviors>
-        <controls:TreeListView.InputBindings>
-            <KeyBinding Key="Delete" Command="{Binding DeleteCommand}" />
-            <KeyBinding Key="F2" Command="{Binding RenameCommand}" />
-        </controls:TreeListView.InputBindings>
+        <i:Interaction.Triggers>
+            <coreTriggers:InputBindingTrigger>
+                <coreTriggers:InputBindingTrigger.InputBinding>
+                    <KeyBinding Key="Return" />
+                </coreTriggers:InputBindingTrigger.InputBinding>
+                <cal:ActionMessage MethodName="OpenSelectedFile" />
+            </coreTriggers:InputBindingTrigger>
+            <coreTriggers:InputBindingTrigger>
+                <coreTriggers:InputBindingTrigger.InputBinding>
+                    <KeyBinding Key="F2" />
+                </coreTriggers:InputBindingTrigger.InputBinding>
+                <cal:ActionMessage MethodName="RenameSelectedFile" />
+            </coreTriggers:InputBindingTrigger>
+            <coreTriggers:InputBindingTrigger>
+                <coreTriggers:InputBindingTrigger.InputBinding>
+                    <KeyBinding Key="Delete" />
+                </coreTriggers:InputBindingTrigger.InputBinding>
+                <cal:ActionMessage MethodName="DeleteSelectedFile" />
+            </coreTriggers:InputBindingTrigger>
+        </i:Interaction.Triggers>
     </controls:TreeListView>
 </UserControl>

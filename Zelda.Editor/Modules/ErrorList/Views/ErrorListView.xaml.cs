@@ -13,7 +13,7 @@ namespace Zelda.Editor.Modules.ErrorList.Views
             InitializeComponent();
         }
 
-        private void OnDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        void OnDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var dataGrid = sender as DataGrid;
             if (dataGrid.SelectedItems == null || dataGrid.SelectedItems.Count != 1)

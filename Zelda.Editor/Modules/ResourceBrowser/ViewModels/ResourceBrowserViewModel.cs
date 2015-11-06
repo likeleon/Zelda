@@ -47,9 +47,6 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             set { this.SetProperty(ref _selectedModFile, value); }
         }
 
-        public RelayCommand DeleteCommand { get; private set; }
-        public RelayCommand RenameCommand { get; private set; }
-
         [ImportingConstructor]
         public ResourceBrowserViewModel(IModService modService, IShell shell)
         {
@@ -57,8 +54,6 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
             _shell = shell;
 
             DisplayName = "Resource Browser";
-            DeleteCommand = new RelayCommand(_ => Delete(SelectedModFile), _ => SelectedModFile != null);
-            RenameCommand = new RelayCommand(_ => Rename(SelectedModFile), _ => SelectedModFile != null);
 
             _modService.Loaded += ModService_Loaded;
             _modService.Unloaded += ModService_Unloaded;
@@ -565,7 +560,33 @@ namespace Zelda.Editor.Modules.ResourceBrowser.ViewModels
 
             return provider.Open(path);
         }
-        
+
+        public void OpenSelectedFile()
+        {
+            if (SelectedModFile != null)
+                Open(SelectedModFile.Path);
+        }
+
+        public void Open(IModFile modFile)
+        {
+            if (modFile == null)
+                throw new ArgumentNullException("modFile");
+
+            Open(modFile.Path);
+        }
+
+        public void RenameSelectedFile()
+        {
+            if (SelectedModFile != null)
+                Rename(SelectedModFile);
+        }
+
+        public void DeleteSelectedFile()
+        {
+            if (SelectedModFile != null)
+                Delete(SelectedModFile);
+        }
+
         #region Command Handlings
         void ICommandHandler<OpenResourceCommandDefinition>.Update(Command command)
         {
