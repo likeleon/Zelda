@@ -114,6 +114,10 @@
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
                     </coreControls:TreeListView.Columns>
+                    <coreControls:TreeListView.InputBindings>
+                        <KeyBinding Key="F2" Command="{Binding ChangeDialogIdCommand}" />
+                        <KeyBinding Key="Delete" Command="{Binding DeleteDialogCommand}" />
+                    </coreControls:TreeListView.InputBindings>
                     <i:Interaction.Behaviors>
                         <coreBehaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
                     </i:Interaction.Behaviors>

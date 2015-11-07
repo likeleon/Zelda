@@ -460,6 +460,10 @@
     <Compile Include="Modules\StatusBar\Views\StatusBarView.xaml.cs">
       <DependentUpon>StatusBarView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Modules\StringsEditor\Commands\CreateDialogCommandDefinition.cs" />
+    <Compile Include="Modules\StringsEditor\Commands\DeleteStringCommandDefinition.cs" />
+    <Compile Include="Modules\StringsEditor\Commands\SetStringKeyCommandDefinition.cs" />
+    <Compile Include="Modules\StringsEditor\ContextMenuDefinitions.cs" />
     <Compile Include="Modules\StringsEditor\Converters\KeyToTranslatedStringConverter.cs" />
     <Compile Include="Modules\StringsEditor\Converters\SortStringNodeConverter.cs" />
     <Compile Include="Modules\StringsEditor\EditorProvider.cs" />

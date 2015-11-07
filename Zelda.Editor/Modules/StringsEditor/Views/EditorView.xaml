@@ -11,18 +11,24 @@
              xmlns:coreControls="clr-namespace:Zelda.Editor.Core.Controls"
              xmlns:coreConveters="clr-namespace:Zelda.Editor.Core.Converters"
              xmlns:corePrimitives="clr-namespace:Zelda.Editor.Core.Primitives"
+             xmlns:contextMenusControls="clr-namespace:Zelda.Editor.Modules.ContextMenus.Controls"
              xmlns:converters="clr-namespace:Zelda.Editor.Modules.StringsEditor.Converters"
              xmlns:resourceSelectorView="clr-namespace:Zelda.Editor.Modules.ResourceSelector.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
-        <corePrimitives:BindingProxy x:Key="ModelProxy" Data="{Binding StringsModel}" />
-        <coreConveters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
-        <converters:KeyToTranslatedStringConverter x:Key="KeyToTranslatedStringConverter" />
-        <converters:SortStringNodeConverter x:Key="SortStringNodeConverter" />
-        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../MainMenu/Resources/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <corePrimitives:BindingProxy x:Key="ModelProxy" Data="{Binding StringsModel}" />
+            <coreConveters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
+            <converters:KeyToTranslatedStringConverter x:Key="KeyToTranslatedStringConverter" />
+            <converters:SortStringNodeConverter x:Key="SortStringNodeConverter" />
+            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
     <DockPanel Margin="10">
         <GroupBox DockPanel.Dock="Top" Header="Language properties" Padding="0 10 0 0">
@@ -61,10 +67,15 @@
                 </Button>
             </StackPanel>
             <coreControls:TreeListView x:Name="stringsTreeListView" 
-                                       ItemsSource="{Binding StringsModel.StringTree.Root.Children, Converter={StaticResource SortStringNodeConverter}}">
+                                       ItemsSource="{Binding StringsModel.StringTree.Root.Children, Converter={StaticResource SortStringNodeConverter}}"
+                                       ContextMenuOpening="stringsTreeListView_ContextMenuOpening">
                 <coreControls:TreeListView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Value.Children, Converter={StaticResource SortStringNodeConverter}}" />
                 </coreControls:TreeListView.ItemTemplate>
+                <coreControls:TreeListView.ContextMenu>
+                    <contextMenusControls:ContextMenuEx ItemsSource="{Binding ContextMenu}"
+                                                        ItemTemplate="{StaticResource menuTemplate}" />
+                </coreControls:TreeListView.ContextMenu>
                 <coreControls:TreeListView.Resources>
                     <Style x:Key="TranslateColumnHeaderStyle" TargetType="GridViewColumnHeader">
                         <Setter Property="Content" Value="{Binding Data.TranslationId, Source={StaticResource ModelProxy}}" />
@@ -130,6 +141,10 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                 </coreControls:TreeListView.Columns>
+                <coreControls:TreeListView.InputBindings>
+                    <KeyBinding Key="F2" Command="{Binding ChangeStringKeyCommand}" />
+                    <KeyBinding Key="Delete" Command="{Binding DeleteStringCommand}" />
+                </coreControls:TreeListView.InputBindings>
                 <i:Interaction.Behaviors>
                     <coreBehaviors:TreeViewBindableSelectedItemBehavior SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
                 </i:Interaction.Behaviors>

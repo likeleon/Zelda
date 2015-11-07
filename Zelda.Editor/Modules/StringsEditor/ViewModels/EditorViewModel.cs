@@ -1,25 +1,39 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Zelda.Editor.Core;
+using Zelda.Editor.Core.Commands;
 using Zelda.Editor.Core.Controls;
+using Zelda.Editor.Core.Menus;
 using Zelda.Editor.Core.Services;
+using Zelda.Editor.Core.Threading;
+using Zelda.Editor.Modules.ContextMenus;
+using Zelda.Editor.Modules.ContextMenus.Models;
 using Zelda.Editor.Modules.DialogsEditor.Models;
 using Zelda.Editor.Modules.Mods.Models;
 using Zelda.Editor.Modules.Mods.ViewModels;
 using Zelda.Editor.Modules.ResourceSelector.Models;
 using Zelda.Editor.Modules.ResourceSelector.ViewModels;
+using Zelda.Editor.Modules.StringsEditor.Commands;
 using Zelda.Editor.Modules.StringsEditor.Models;
 using Zelda.Editor.Modules.UndoRedo;
 using Zelda.Game;
 
 namespace Zelda.Editor.Modules.StringsEditor.ViewModels
 {
-    class EditorViewModel : EditorDocument
+    class EditorViewModel : EditorDocument,
+        ICommandHandler<CreateStringCommandDefinition>,
+        ICommandHandler<DeleteStringCommandDefinition>,
+        ICommandHandler<SetStringKeyCommandDefinition>
     {
+        readonly ContextMenuModel _contextMenu = new ContextMenuModel();
+
         string _languageId;
         KeyValuePair<string, Node>? _selectedItem;
+
+        public IContextMenu ContextMenu { get { return _contextMenu; } }
 
         public string LanguageId
         {
@@ -92,6 +106,23 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
             CreateStringCommand = new RelayCommand(_ => CreateString());
             ChangeStringKeyCommand = new RelayCommand(_ => ChangeStringKey(), _ => CanExecuteStringCommand());
             DeleteStringCommand = new RelayCommand(_ => DeleteString(), _ => CanExecuteStringCommand());
+        }
+
+        public bool BuildContextMenu()
+        {
+            _contextMenu.Clear();
+
+            var menuItems = new List<MenuItemDefinition>();
+            menuItems.Add(new CommandMenuItemDefinition<CreateStringCommandDefinition>(ContextMenuDefinitions.CreateMenuGroup, 0));
+
+            if (StringsModel.PrefixExists(SelectedStringKey))
+            {
+                menuItems.Add(new CommandMenuItemDefinition<SetStringKeyCommandDefinition>(ContextMenuDefinitions.SetIdMenuGroup, 0));
+                menuItems.Add(new CommandMenuItemDefinition<DeleteStringCommandDefinition>(ContextMenuDefinitions.DeleteMenuGroup, 0));
+            }
+
+            IoC.Get<IContextMenuBuilder>().BuildContextMenu(menuItems, _contextMenu);
+            return _contextMenu.Count > 0;
         }
 
         void TranslationSelector_SelectedItemChanged(object sender, Item e)
@@ -249,6 +280,41 @@ namespace Zelda.Editor.Modules.StringsEditor.ViewModels
             else
                 SelectedItem = null;
         }
+
+        #region Command Handlers
+        void ICommandHandler<CreateStringCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = CreateStringCommand.CanExecute(null);
+        }
+
+        Task ICommandHandler<CreateStringCommandDefinition>.Run(Command command)
+        {
+            CreateStringCommand.Execute(null);
+            return TaskUtility.Completed;
+        }
+
+        void ICommandHandler<DeleteStringCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = DeleteStringCommand.CanExecute(null);
+        }
+
+        Task ICommandHandler<DeleteStringCommandDefinition>.Run(Command command)
+        {
+            DeleteStringCommand.Execute(null);
+            return TaskUtility.Completed;
+        }
+
+        void ICommandHandler<SetStringKeyCommandDefinition>.Update(Command command)
+        {
+            command.Enabled = ChangeStringKeyCommand.CanExecute(null);
+        }
+
+        Task ICommandHandler<SetStringKeyCommandDefinition>.Run(Command command)
+        {
+            ChangeStringKeyCommand.Execute(null);
+            return TaskUtility.Completed;
+        }
+        #endregion
 
         abstract class StringsEditorAction : IUndoableAction
         {
