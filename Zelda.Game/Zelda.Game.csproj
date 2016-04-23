@@ -294,6 +294,7 @@
     </Content>
     <Content Include="..\Libraries\zlib\zlib1.dll">
       <Link>zlib1.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
