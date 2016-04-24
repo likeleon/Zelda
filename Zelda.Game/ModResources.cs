@@ -58,18 +58,11 @@ namespace Zelda.Game
         public class ResourceMap : Dictionary<string, string>
         {
         }
-
-
-        public IEnumerable<string> Assemblies
-        {
-            get { return _assemblies; }
-        }
    
         readonly static Dictionary<ResourceType, string> _resourceTypeNames;
-
         readonly Dictionary<ResourceType, ResourceMap> _resourceMaps;
 
-        string[] _assemblies;
+        public IEnumerable<string> Assemblies { get; private set; }
 
         static ModResources()
         {
@@ -91,7 +84,7 @@ namespace Zelda.Game
             {
                 var db = buffer.XmlDeserialize<ProjectDB>();
 
-                _assemblies = db.Assemblies.ToArray();
+                Assemblies = db.Assemblies.ToArray();
 
                 FillResourceMap(ResourceType.Map, db.Maps);
                 FillResourceMap(ResourceType.Tileset, db.Tilesets);
@@ -126,7 +119,7 @@ namespace Zelda.Game
             try
             {
                 var db = new ProjectDB();
-                db.Assemblies = _assemblies.ToArray();
+                db.Assemblies = Assemblies.ToArray();
 
                 db.Maps = ExportResourceMap(ResourceType.Map);
                 db.Tilesets = ExportResourceMap(ResourceType.Tileset);
@@ -205,7 +198,7 @@ namespace Zelda.Game
 
         public bool Exists(ResourceType resourceType, string id)
         {
-            ResourceMap resource = GetElements(resourceType);
+            var resource = GetElements(resourceType);
             return resource.ContainsKey(id);
         }
 

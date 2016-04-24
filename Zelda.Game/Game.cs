@@ -1,27 +1,46 @@
-﻿using Zelda.Game.Engine;
-using System;
+﻿using System;
 using System.Linq;
+using Zelda.Game.Engine;
 using Zelda.Game.Entities;
-using Key = Zelda.Game.Savegame.Key;
 using Zelda.Game.Script;
+using Key = Zelda.Game.Savegame.Key;
 
 namespace Zelda.Game
 {
     class Game
     {
+        readonly DialogBoxSystem _dialogBox;
         bool _started;
+        Map _nextMap;
+
+        public MainLoop MainLoop { get; }
+        public Equipment Equipment { get { return SaveGame.Equipment; } }
+        public Savegame SaveGame { get; }
+        public Hero Hero { get; }
+        public GameCommands Commands { get; }
+        public CommandsEffects CommandsEffects { get; } = new CommandsEffects();
+
+        public bool IsPaused { get; private set; }
+        public bool IsDialogEnabled { get { return _dialogBox.IsEnabled; } }
+        public bool IsSuspended { get { return CurrentMap == null || IsPaused; } }
+
+        public bool CanPause { get { return !IsSuspended && Equipment.GetLife() > 0; } } // 게임 오버 처리가 시작되려고 할 때에는 일시 정지를 허용하면 안 됩니다
+        public bool CanUnpause { get { return IsPaused; } }
+
+        public bool HasCurrentMap { get { return CurrentMap != null; } }
+        public Map CurrentMap { get; private set; }
 
         public Game(MainLoop mainLoop, Savegame saveGame)
         {
-            _mainLoop = mainLoop;
-            _saveGame = saveGame;
+            MainLoop = mainLoop;
+            SaveGame = saveGame;
             _dialogBox = new DialogBoxSystem(this);
 
-            _saveGame.Game = this;
+            SaveGame.Game = this;
 
             // 멤버 초기화
-            _commands = new GameCommands(this);
-            _hero = new Hero(Equipment);
+            Commands = new GameCommands(this);
+            Hero = new Hero(Equipment);
             UpdateCommandsEffects();
             
             // 게임 오버 이후에 재시작하는 경우에 대한 처리입니다
@@ -29,11 +48,11 @@ namespace Zelda.Game
                 Equipment.RestoreAllLife();
 
             // 시작 맵을 시작합니다
-            string startingMapId = _saveGame.GetString(Key.StartingMap);
-            string startingDestinationName = _saveGame.GetString(Key.StartingPoint);
+            string startingMapId = SaveGame.GetString(Key.StartingMap);
+            string startingDestinationName = SaveGame.GetString(Key.StartingPoint);
 
             bool validMapSaved = false;
-            if (!String.IsNullOrEmpty(startingMapId))
+            if (!startingMapId.IsNullOrEmpty())
             {
                 if (CurrentMod.ResourceExists(ResourceType.Map, startingMapId))
                     validMapSaved = true;
@@ -75,13 +94,13 @@ namespace Zelda.Game
 
             if (CurrentMap != null)
             {
-                if (_hero.IsOnMap)
-                    _hero.NotifyBeingRemoved();
+                if (Hero.IsOnMap)
+                    Hero.NotifyBeingRemoved();
             }
 
             SaveGame.ScriptGame.NotifyFinished();
-            _saveGame.NotifyGameFinished();
-            _saveGame.Game = null;
+            SaveGame.NotifyGameFinished();
+            SaveGame.Game = null;
 
             _started = false;
         }
@@ -91,48 +110,10 @@ namespace Zelda.Game
             throw new NotImplementedException();
         }
 
-        #region 전역 객체들
-        readonly MainLoop _mainLoop;
-        public MainLoop MainLoop
-        {
-            get { return _mainLoop; }
-        }
-
-        public Equipment Equipment
-        {
-            get { return _saveGame.Equipment; }
-        }
-
-        readonly Savegame _saveGame;
-        public Savegame SaveGame
-        {
-            get { return _saveGame; }
-        }
-
-        readonly Hero _hero;
-        public Hero Hero
-        {
-            get { return _hero; }
-        }
-
-        readonly GameCommands _commands;
-        public GameCommands Commands
-        {
-            get { return _commands; }
-        }
-
-        readonly CommandsEffects _commandsEffects = new CommandsEffects();
-        public CommandsEffects CommandsEffects
-        {
-            get { return _commandsEffects; }
-        }
-        #endregion
-
-        #region 메인 루프에 의해 호출되는 함수들
         public bool NotifyInput(InputEvent inputEvent)
         {
             if (CurrentMap != null && CurrentMap.IsLoaded)
-                _commands.NotifyInput(inputEvent);
+                Commands.NotifyInput(inputEvent);
             return true;
         }
 
@@ -168,40 +149,15 @@ namespace Zelda.Game
 
         public bool NotifyDialogStarted(Dialog dialog, object info)
         {
-            return _saveGame.ScriptGame.NotifyDialogStarted(dialog, info);
+            return SaveGame.ScriptGame.NotifyDialogStarted(dialog, info);
         }
 
         public void NotifyDialogFinished(Dialog dialog, Action<object> callback, object status)
         {
-            _saveGame.ScriptGame.NotifyDialogFinished(dialog);
+            SaveGame.ScriptGame.NotifyDialogFinished(dialog);
 
             if (callback != null)
                 CoreToScript.Call(() => callback(status));
-        }
-        #endregion
-
-        #region 현재 게임 상태
-        public bool IsPaused { get; private set; }
-        public bool IsDialogEnabled { get { return _dialogBox.IsEnabled; } }
-        public bool IsSuspended { get { return CurrentMap == null || IsPaused; } }
-        #endregion
-        
-        #region 일시 정지
-        public bool CanPause
-        {
-            get
-            {
-                return !IsSuspended &&
-                       Equipment.GetLife() > 0;  // 게임 오버 처리가 시작되려고 할 때에는 일시 정지를 허용하면 안 됩니다
-            }
-        }
-
-        public bool CanUnpause
-        {
-            get
-            {
-                return IsPaused;
-            }
         }
 
         public void SetPaused(bool paused)
@@ -212,18 +168,14 @@ namespace Zelda.Game
             IsPaused = paused;
             if (paused)
             {
-                _commandsEffects.SaveActionCommandEffect();
-                _commandsEffects.ActionCommandEffect = ActionCommandEffect.None;
+                CommandsEffects.SaveActionCommandEffect();
+                CommandsEffects.ActionCommandEffect = ActionCommandEffect.None;
             }
             else
             {
-                _commandsEffects.RestoreActionCommandEffect();
+                CommandsEffects.RestoreActionCommandEffect();
             }
         }
-        #endregion
-
-        #region 다이얼로그
-        readonly DialogBoxSystem _dialogBox;
 
         public void StartDialog(string dialogId, object info, Action<object> callback)
         {
@@ -237,9 +189,7 @@ namespace Zelda.Game
         {
             _dialogBox.Close(status);
         }
-        #endregion
 
-        #region 게임 컨트롤
         public void NotifyCommandPressed(GameCommand command)
         {
             if (IsDialogEnabled)
@@ -248,7 +198,7 @@ namespace Zelda.Game
                     return;
             }
 
-            if (_saveGame.ScriptGame.NotifyCommandPressed(command))
+            if (SaveGame.ScriptGame.NotifyCommandPressed(command))
                 return;
 
             if (command == GameCommand.Pause)
@@ -265,16 +215,8 @@ namespace Zelda.Game
                 }
             }
             else if (!IsSuspended)
-                _hero.NotifyCommandPressed(command);
+                Hero.NotifyCommandPressed(command);
         }
-        #endregion
-
-        #region 맵
-        public bool HasCurrentMap { get { return CurrentMap != null; } }
-
-        public Map CurrentMap { get; private set; }
-
-        Map _nextMap;
 
         public void SetCurrentMap(string mapId, string destinationName)
         {
@@ -293,9 +235,7 @@ namespace Zelda.Game
 
             _nextMap.DestinationName = destinationName;
         }
-        #endregion
 
-        #region 갱신 함수들
         void UpdateCommandsEffects()
         {
         }
@@ -316,10 +256,9 @@ namespace Zelda.Game
             if (_started && !CurrentMap.IsStarted)
             {
                 Debug.CheckAssertion(CurrentMap.IsLoaded, "This map is not loaded");
-                _hero.PlaceOnDestination(CurrentMap, previousMapLocation);
+                Hero.PlaceOnDestination(CurrentMap, previousMapLocation);
                 CurrentMap.Start();
             }
         }
-        #endregion
     }
 }

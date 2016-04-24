@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Zelda.Game.Engine
 {
-    public static class ModFiles
+    static class ModFiles
     {
         public enum DataFileLocation
         {

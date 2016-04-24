@@ -8,34 +8,42 @@ namespace Zelda.Game
 {
     class Map
     {
-        #region 생성
-        public Map(string id)
-        {
-            Id = id;
-            CameraPosition = new Rectangle(new Point(), Video.ModSize);
-            ScriptMap = ScriptContext.CreateScriptMap(this);
-            Floor = MapData.NoFloor;
-        }
-        #endregion
-
-        #region 맵 속성들
-        public string Id { get; private set; }
+        public string Id { get; }
         public string TilesetId { get; private set; }
         public Tileset Tileset { get; private set; }
         public string MusicId { get; private set; }
         public bool HasWorld { get { return string.IsNullOrEmpty(World); } }
         public string World { get; private set; }
-        public int Floor { get; private set; }
+        public int Floor { get; private set; } = MapData.NoFloor;
         public Rectangle Location { get; private set; }
         public Size Size { get { return Location.Size; } }
         public int Width { get { return Location.Width; } }
         public int Height { get { return Location.Height; } }
         public int Width8 { get; private set; }
         public int Height8 { get; private set; }
-        #endregion
 
-        #region 현재 도착 위치
+        public bool IsStarted { get; private set; }
+        public ScriptMap ScriptMap { get; }
+
         public string DestinationName { get; set; }
+
+        public Game Game { get; private set; }
+        public bool IsLoaded { get; private set; }
+
+        public MapEntities Entities { get; private set; }
+
+        public Surface VisibleSurface { get; private set; }
+        public Rectangle CameraPosition { get; private set; }
+
+        Surface _backgroundSurface;
+        Surface _foregroundSurface;
+
+        public Map(string id)
+        {
+            Id = id;
+            CameraPosition = new Rectangle(new Point(), Video.ModSize);
+            ScriptMap = ScriptContext.CreateScriptMap(this);
+        }
 
         public Destination GetDestination()
         {
@@ -56,11 +64,6 @@ namespace Zelda.Game
 
             return destination ?? Entities.DefaultDestination;
         }
-        #endregion
-
-        #region 로드
-        public Game Game { get; private set; }
-        public bool IsLoaded { get; private set; }
 
         public void Load(Game game)
         {
@@ -171,15 +174,6 @@ namespace Zelda.Game
                 _foregroundSurface.FillWithColor(Color.Black, dstPosition);
             }
         }
-        #endregion
-
-        #region 엔티티들
-        public MapEntities Entities { get; private set; }
-        #endregion
-
-        #region 메인 루프
-        Surface _backgroundSurface;
-        Surface _foregroundSurface;
 
         void DrawBackground()
         {
@@ -234,11 +228,6 @@ namespace Zelda.Game
             IsSuspended = suspended;
             Entities.SetSuspended(suspended);
         }
-        #endregion
-
-        #region 시작
-        public bool IsStarted { get; private set; }
-        public ScriptMap ScriptMap { get; private set; }
 
         public void Start()
         {
@@ -249,9 +238,7 @@ namespace Zelda.Game
             Entities.NotifyMapStarted();
             ScriptMap.NotifyStarted(GetDestination());
         }
-        #endregion
 
-        #region 현재 목표 지점
         public int GetDestinationSide()
         {
             if (DestinationName.SafeSubstring(0, 5) == "_side")
@@ -261,14 +248,7 @@ namespace Zelda.Game
             }
             return -1;
         }
-        #endregion
 
-        #region 카메라
-        public Surface VisibleSurface { get; private set; }
-        public Rectangle CameraPosition { get; private set; }
-        #endregion
-
-        #region 장애물과의 충돌 (실제 이동 전에)
         public bool TestCollisionWithBorder(int x, int y)
         {
             return (x < 0 || y < 0 || x >= Location.Width || y >= Location.Height);
@@ -462,9 +442,7 @@ namespace Zelda.Game
             
             return Entities.GetTileGround(layer, x, y);
         }
-        #endregion
 
-        #region 디텍터들과의 충돌 (이동 후에 체크)
         public void CheckCollisionWithDetectors(MapEntity entity)
         {
             if (IsSuspended)
@@ -493,6 +471,5 @@ namespace Zelda.Game
             foreach (var entity in Entities.Entities.Where(e => e.IsEnabled && !e.IsBeingRemoved))
                 detector.CheckCollision(entity);
         }
-        #endregion
     }
 }

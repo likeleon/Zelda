@@ -10,13 +10,8 @@ namespace Zelda.Game
         public static ModResources Resources { get; private set; }
         public static string Language { get; private set; }
         public static IReadOnlyDictionary<string, Dialog> Dialogs { get { return _dialogs; } }
-        public static StringResources Strings { get; private set; }
+        public static StringResources Strings { get; } = new StringResources();
 
-        static CurrentMod()
-        {
-            Strings = new StringResources();
-        }            
-    
         public static void Initialize()
         {
             Resources = new ModResources();
@@ -84,7 +79,7 @@ namespace Zelda.Game
             Strings.Clear();
             Strings.ImportFromBuffer(ModFiles.DataFileRead("text/strings.xml", true));
 
-            DialogResources resources = new DialogResources();
+            var resources = new DialogResources();
             var success = resources.ImportFromBuffer(ModFiles.DataFileRead("text/dialogs.xml", true));
 
             _dialogs.Clear();

@@ -1,5 +1,4 @@
-﻿using System;
-using Zelda.Game.Engine;
+﻿using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 
 namespace Zelda.Game
@@ -8,35 +7,20 @@ namespace Zelda.Game
     // 각 시퀀스는 이 애니메이션에서의 스프라이트 방향입니다
     class SpriteAnimation : DisposableObject
     {
-        readonly uint _frameDelay;
-        public uint FrameDelay
-        {
-            get { return _frameDelay; }
-        }
+        public uint FrameDelay { get; }
+        public bool IsLooping { get { return _loopOnFrame != -1; } }
+        public int NumDirections { get { return _directions.Length; } }
 
-        public bool IsLooping
-        {
-            get { return _loopOnFrame != -1; }
-        }
-
-        public int NumDirections
-        {
-            get { return _directions.Length; }
-        }
-
-        Surface _srcImage;
         readonly bool _srcImageIsTileset;
         readonly int _loopOnFrame;
         readonly SpriteAnimationDirection[] _directions;
+        Surface _srcImage;
+        bool _shoudEnablePixelCollisions;
 
-        public SpriteAnimation(
-            string imageFileName,
-            SpriteAnimationDirection[] directions,
-            uint frameDelay,
-            int loopOnframe)
+        public SpriteAnimation(string imageFileName, SpriteAnimationDirection[] directions, uint frameDelay, int loopOnframe)
         {
             _srcImageIsTileset = imageFileName == "tileset";
-            _frameDelay = frameDelay;
+            FrameDelay = frameDelay;
             _directions = directions;
             _loopOnFrame = loopOnframe;
 
@@ -107,8 +91,6 @@ namespace Zelda.Game
                 "Invalid spriite direction");
             return _directions[(int)direction];
         }
-
-        bool _shoudEnablePixelCollisions;
 
         public void EnablePixelCollisions()
         {

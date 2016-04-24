@@ -8,7 +8,6 @@ namespace Zelda.Game
     {
         static readonly int _numVisibleLines = 3;
 
-        readonly Game _game;
         readonly Queue<string> _remainingLines = new Queue<string>();
         readonly TextSurface[] _lineSurfaces = new TextSurface[_numVisibleLines];
 
@@ -17,15 +16,14 @@ namespace Zelda.Game
         bool _builtIn;
         Point _textPosition;
 
-        public Game Game { get { return _game; } }
-
+        public Game Game { get; }
         public string DialogId { get; private set; }
-        public bool IsEnabled { get { return !String.IsNullOrEmpty(DialogId); } }
+        public bool IsEnabled { get { return !DialogId.IsNullOrEmpty(); } }
         bool HasMoreLines { get { return _remainingLines.Count > 0; } }
 
         public DialogBoxSystem(Game game)
         {
-            _game = game;
+            Game = game;
 
             for (int i = 0; i < _numVisibleLines; ++i)
                 _lineSurfaces[i] = new TextSurface(0, 0, TextHorizontalAlignment.Left, TextVerticalAlignment.Bottom);
@@ -39,7 +37,7 @@ namespace Zelda.Game
             _dialog = CurrentMod.GetDialog(dialogId);
             _callback = callback;
 
-            CommandsEffects commandsEffects = _game.CommandsEffects;
+            var commandsEffects = Game.CommandsEffects;
             commandsEffects.SaveActionCommandEffect();
             commandsEffects.ActionCommandEffect = ActionCommandEffect.None;
 
@@ -56,12 +54,11 @@ namespace Zelda.Game
                     throw new NotImplementedException("Shop Dialog");
 
                 _remainingLines.Clear();
-                foreach (string line in text.Split('\n'))
-                    _remainingLines.Enqueue(line);
+                text.Split('\n').Do(line => _remainingLines.Enqueue(line));
 
                 // 위치를 결정합니다
-                Rectangle cameraPosition = _game.CurrentMap.CameraPosition;
-                bool top = (_game.Hero.Y >= cameraPosition.Y + 130);
+                var cameraPosition = Game.CurrentMap.CameraPosition;
+                bool top = (Game.Hero.Y >= cameraPosition.Y + 130);
                 int x = cameraPosition.Width / 2 - 110;
                 int y = top ? 32 : cameraPosition.Height - 96;
 
@@ -78,12 +75,12 @@ namespace Zelda.Game
 
             var callback = _callback;
             _callback = null;
-            DialogId = String.Empty;
+            DialogId = "";
 
-            CommandsEffects commandsEffects = _game.CommandsEffects;
+            var commandsEffects = Game.CommandsEffects;
             commandsEffects.RestoreActionCommandEffect();
 
-            _game.NotifyDialogFinished(_dialog, callback, status);
+            Game.NotifyDialogFinished(_dialog, callback, status);
         }
 
         void ShowMoreLines()
@@ -96,8 +93,7 @@ namespace Zelda.Game
                 return;
             }
 
-            CommandsEffects commandsEffects = _game.CommandsEffects;
-            commandsEffects.ActionCommandEffect = ActionCommandEffect.Next;
+            Game.CommandsEffects.ActionCommandEffect = ActionCommandEffect.Next;
 
             // 다음 3라인을 준비합니다
             int textX = _textPosition.X;

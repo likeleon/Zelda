@@ -14,22 +14,14 @@ namespace Zelda.Game
     {
         Opening,
         Closing
-
     }
 
     abstract class Transition
     {
-        readonly TransitionDirection _direction;
-        Surface _previousSurface;
-        bool _suspended;
-        uint _whenSuspended;
-        
         public Game Game { get; private set; }
-
-        public TransitionDirection Direction
-        {
-            get { return _direction; }
-        }
+        public TransitionDirection Direction { get; }
+        public bool IsSuspended { get; private set; }
+        public uint WhenSuspended { get; private set; }
 
         public Surface PreviousSurface
         {
@@ -42,24 +34,15 @@ namespace Zelda.Game
             }
         }
 
-        public virtual bool NeedsPreviousSurface
-        {
-            get { return false; }
-        }
+        public virtual bool NeedsPreviousSurface { get { return false; } }
+        public abstract bool IsStarted { get; }
+        public abstract bool IsFinished { get; }
 
-        public bool IsSuspended
-        {
-            get { return _suspended; }
-        }
-
-        public uint WhenSuspended
-        {
-            get { return _whenSuspended; }
-        }
+        Surface _previousSurface;
 
         protected Transition(TransitionDirection direction)
         {
-            _direction = direction;
+            Direction = direction;
         }
 
         public Transition Create(TransitionStyle style, TransitionDirection direction, Surface dstSurface, Game game = null)
@@ -85,17 +68,15 @@ namespace Zelda.Game
 
         public void SetSuspended(bool suspended)
         {
-            if (suspended != _suspended)
+            if (suspended != IsSuspended)
             {
-                _suspended = suspended;
+                IsSuspended = suspended;
                 if (suspended)
-                    _whenSuspended = EngineSystem.Now;
+                    WhenSuspended = EngineSystem.Now;
                 NotifySuspended(suspended);
             }
         }
 
-        public abstract bool IsStarted { get; }
-        public abstract bool IsFinished { get; }
         public abstract void Start();
         public abstract void Update();
         public abstract void Draw(Surface dstSurface);

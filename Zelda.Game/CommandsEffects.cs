@@ -1,7 +1,7 @@
 ﻿
 namespace Zelda.Game
 {
-    public enum ActionCommandEffect
+    enum ActionCommandEffect
     {
         None,
         Next,
@@ -15,14 +15,14 @@ namespace Zelda.Game
         Count
     }
 
-    public enum SwordCommandEffect
+    enum SwordCommandEffect
     {
         None,
         Sword,
         Count
     }
 
-    public enum PauseCommandEffect
+    enum PauseCommandEffect
     {
         None,
         Pause,
@@ -32,22 +32,11 @@ namespace Zelda.Game
 
     class CommandsEffects
     {
-        #region 액션
-        ActionCommandEffect _actionCommandEffect = ActionCommandEffect.None;
-        public ActionCommandEffect ActionCommandEffect
-        {
-            get { return _actionCommandEffect; }
-            set { _actionCommandEffect = value; }
-        }
-
-        bool _actionCommandEnabled;
-        public bool ActionCommandEnabled
-        {
-            get { return _actionCommandEnabled; }
-            set { _actionCommandEnabled = true; }
-        }
+        public ActionCommandEffect ActionCommandEffect { get; set; } = ActionCommandEffect.None;
+        public bool ActionCommandEnabled { get; set; }
 
         ActionCommandEffect _actionCommandEffectSaved = ActionCommandEffect.None;
+
         public void SaveActionCommandEffect()
         {
             _actionCommandEffectSaved = ActionCommandEffect;
@@ -62,13 +51,12 @@ namespace Zelda.Game
         {
             get
             {
-                return _actionCommandEffect == ActionCommandEffect.Look ||
-                       _actionCommandEffect == ActionCommandEffect.Open ||
-                       _actionCommandEffect == ActionCommandEffect.Lift ||
-                       _actionCommandEffect == ActionCommandEffect.Speak ||
-                       _actionCommandEffect == ActionCommandEffect.Grab;
+                return ActionCommandEffect == ActionCommandEffect.Look ||
+                       ActionCommandEffect == ActionCommandEffect.Open ||
+                       ActionCommandEffect == ActionCommandEffect.Lift ||
+                       ActionCommandEffect == ActionCommandEffect.Speak ||
+                       ActionCommandEffect == ActionCommandEffect.Grab;
             }
         }
-        #endregion
     }
 }

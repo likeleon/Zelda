@@ -10,7 +10,7 @@ namespace Zelda.Game
         public static bool ShowPopupOnDie { get; set; }
 
         readonly static Lazy<StreamWriter> _errorFile = Exts.Lazy(() => File.CreateText("Error.log"));
-        private static StreamWriter ErrorFile { get { return _errorFile.Value; } }
+        static StreamWriter ErrorFile { get { return _errorFile.Value; } }
 
         public static void Warning(string message)
         {

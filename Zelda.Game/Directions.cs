@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Zelda.Game
+﻿namespace Zelda.Game
 {
     public enum Direction4
     {

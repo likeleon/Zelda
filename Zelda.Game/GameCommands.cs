@@ -9,8 +9,6 @@ namespace Zelda.Game
     // 적당한 객체에게 알려주는 역할을 합니다.
     class GameCommands
     {
-        readonly Game _game;
-   
         static readonly ushort[] _directionMasks = new ushort[]
         {
             0x0001,
@@ -39,32 +37,9 @@ namespace Zelda.Game
             Direction8.None,        // down + left + right + up: stop
         };
 
-        public GameCommands(Game game)
-        {
-            _game = game;
-
-            foreach (GameCommand command in Enum.GetValues(typeof(GameCommand)))
-            {
-                if (command == GameCommand.None)
-                    continue;
-
-                KeyboardKey keyboardKey = GetSavedKeyboardBinding(command);
-                _keyboardMapping[keyboardKey] = command;
-            }
-        }
-
-        Savegame Savegame
-        {
-            get { return _game.SaveGame; }
-        }
-
-        KeyboardKey GetSavedKeyboardBinding(GameCommand command)
-        {
-            Savegame.Key savegameKey = GetKeyboardBindingSavegameKey(command);
-            string keyboardKeyName = Savegame.GetString(savegameKey);
-            return InputEvent.GetKeyboardKeyByName(keyboardKeyName);
-        }
-
+        readonly Game _game;
+        readonly HashSet<GameCommand> _commandsPressed = new HashSet<GameCommand>();
+        readonly Dictionary<KeyboardKey, GameCommand> _keyboardMapping = new Dictionary<KeyboardKey, GameCommand>();
         readonly static Dictionary<GameCommand, Savegame.Key> _savegameKeys = new Dictionary<GameCommand, Savegame.Key>()
         {
             { GameCommand.Action, Savegame.Key.KeyboardAction },
@@ -77,6 +52,29 @@ namespace Zelda.Game
             { GameCommand.Left, Savegame.Key.KeyboardLeft },
             { GameCommand.Down, Savegame.Key.KeyboardDown }
         };
+
+        Savegame Savegame { get { return _game.SaveGame; } }
+
+        public GameCommands(Game game)
+        {
+            _game = game;
+
+            foreach (GameCommand command in Enum.GetValues(typeof(GameCommand)))
+            {
+                if (command == GameCommand.None)
+                    continue;
+
+                var keyboardKey = GetSavedKeyboardBinding(command);
+                _keyboardMapping[keyboardKey] = command;
+            }
+        }
+
+        KeyboardKey GetSavedKeyboardBinding(GameCommand command)
+        {
+            var savegameKey = GetKeyboardBindingSavegameKey(command);
+            var keyboardKeyName = Savegame.GetString(savegameKey);
+            return InputEvent.GetKeyboardKeyByName(keyboardKeyName);
+        }
 
         Savegame.Key GetKeyboardBindingSavegameKey(GameCommand command)
         {
@@ -111,9 +109,6 @@ namespace Zelda.Game
             return _commandsPressed.Contains(command);
         }
 
-        #region 키보드 매핑
-        readonly Dictionary<KeyboardKey, GameCommand> _keyboardMapping = new Dictionary<KeyboardKey,GameCommand>();
-
         void KeyboardKeyPressed(KeyboardKey keyboardKeyPressed)
         {
             GameCommand commandPressed = GetCommandFromKeyboard(keyboardKeyPressed);
@@ -136,11 +131,7 @@ namespace Zelda.Game
             
             return GameCommand.None;
         }
-        #endregion
 
-        #region 하이레벨 커맨드 처리
-        readonly HashSet<GameCommand> _commandsPressed = new HashSet<GameCommand>();
-        
         void GameCommandPressed(GameCommand command)
         {
             _commandsPressed.Add(command);
@@ -151,6 +142,5 @@ namespace Zelda.Game
         {
             _commandsPressed.Remove(command);
         }
-        #endregion
     }
 }

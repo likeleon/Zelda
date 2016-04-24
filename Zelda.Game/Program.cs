@@ -30,35 +30,33 @@ namespace Zelda.Game
             }
         }
 
-        private static int Run(string[] args)
+        static int Run(string[] args)
         {
-            using (MainLoop mainLoop = new MainLoop(new Arguments(args)))
-            {
+            using (var mainLoop = new MainLoop(new Arguments(args)))
                 mainLoop.Run();
-            }
             return 0;
         }
 
-        private static void FatalError(Exception e)
+        static void FatalError(Exception e)
         {
-            string report = BuildExceptionReport(e).ToString();
+            var report = BuildExceptionReport(e).ToString();
             File.WriteAllText("Exception.log", report);
             Console.Error.WriteLine(report);
         }
 
-        private static StringBuilder BuildExceptionReport(Exception e)
+        static StringBuilder BuildExceptionReport(Exception e)
         {
             return BuildExceptionReport(e, new StringBuilder(), 0);
         }
 
-        private static StringBuilder BuildExceptionReport(Exception e, StringBuilder sb, int d)
+        static StringBuilder BuildExceptionReport(Exception e, StringBuilder sb, int d)
         {
             if (e == null)
                 return sb;
 
             sb.AppendFormat("Exception of type `{0}`: {1}", e.GetType().FullName, e.Message);
 
-            TypeLoadException tle = e as TypeLoadException;
+            var tle = e as TypeLoadException;
             if (tle != null)
             {
                 sb.AppendLine();
@@ -84,7 +82,7 @@ namespace Zelda.Game
             return sb;
         }
 
-        private static void Indent(StringBuilder sb, int d)
+        static void Indent(StringBuilder sb, int d)
         {
             sb.Append(new string(' ', d * 2));
         }

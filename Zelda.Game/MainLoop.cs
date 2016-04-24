@@ -93,8 +93,7 @@ namespace Zelda.Game
 
         void Update()
         {
-            if (Game != null)
-                Game.Update();
+            Game?.Update();
 
             ScriptContext.Update();
             EngineSystem.Update();
@@ -139,8 +138,7 @@ namespace Zelda.Game
         {
             _rootSurface.Clear();
 
-            if (Game != null)
-                Game.Draw(_rootSurface);
+            Game?.Draw(_rootSurface);
             ScriptContext.MainOnDraw(_rootScriptSurface);
             Video.Render(_rootSurface);
         }
@@ -154,7 +152,7 @@ namespace Zelda.Game
 
             CheckVersionCompatibility(modProperties.ZeldaVersion);
             ModFiles.SetModWriteDir(modProperties.ModWriteDir);
-            if (!String.IsNullOrWhiteSpace(modProperties.TitleBar))
+            if (!modProperties.TitleBar.IsNullOrWhiteSpace())
                 Video.WindowTitle = modProperties.TitleBar;
 
             Video.SetModSizeRange(

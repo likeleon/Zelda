@@ -68,7 +68,7 @@ namespace Zelda.Game
         readonly MainLoop _mainLoop;
         readonly Dictionary<string, SavedValue> _savedValues = new Dictionary<string, SavedValue>();
         
-        public string FileName { get; private set; }
+        public string FileName { get; }
         public bool IsEmpty { get; private set; }
 
         public ScriptGame ScriptGame { get; set; }
@@ -77,8 +77,7 @@ namespace Zelda.Game
 
         public void Initialize()
         {
-            string modWriteDir = ModFiles.ModWriteDir;
-            Debug.CheckAssertion(!String.IsNullOrWhiteSpace(modWriteDir),
+            Debug.CheckAssertion(!ModFiles.ModWriteDir.IsNullOrWhiteSpace(),
                 "The mod write directory for savegames was not set in mod.xml");
 
             if (!ModFiles.DataFileExists(FileName))

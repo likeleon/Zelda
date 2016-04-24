@@ -28,7 +28,7 @@ namespace Zelda.Game
             {
                 try
                 {
-                    Assembly asm = Assembly.Load(ModFiles.DataFileRead(asmFile));
+                    var asm = Assembly.Load(ModFiles.DataFileRead(asmFile));
                     asms.AddRange(asm.GetNamespaces().Select(ns => new Tuple<Assembly, string>(asm, ns)));
                 }
                 catch (Exception ex)

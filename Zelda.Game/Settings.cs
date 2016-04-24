@@ -9,7 +9,7 @@ namespace Zelda.Game
     {
         public static bool Load(string fileName)
         {
-            Debug.CheckAssertion(!String.IsNullOrEmpty(ModFiles.ModWriteDir),
+            Debug.CheckAssertion(!ModFiles.ModWriteDir.IsNullOrWhiteSpace(),
                 "Cannot load setings: no mod write directory was specified in mod.xml");
 
             if (!ModFiles.DataFileExists(fileName))

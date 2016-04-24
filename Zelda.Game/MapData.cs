@@ -10,13 +10,8 @@ namespace Zelda.Game
     public class EntityIndex
     {
         public Layer Layer { get; set; }
-        
         public int Index { get; set; }
-
-        public bool IsValid
-        {
-            get { return Index != -1; }
-        }
+        public bool IsValid { get { return Index != -1; } }
 
         public EntityIndex()
         {
@@ -60,7 +55,7 @@ namespace Zelda.Game
     {
         public Size Size { get; set; }
         public bool HasWorld { get { return !World.IsNullOrEmpty(); } }
-        public string World { get; private set; }
+        public string World { get; private set; } = "";
         public Point Location { get; private set; }
         public bool HasFloor { get { return Floor != NoFloor; } }
         public int Floor { get; private set; }
@@ -75,7 +70,6 @@ namespace Zelda.Game
 
         public MapData()
         {
-            World = string.Empty;
             for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
                 _entities[layer] = new List<EntityData>();
         }
@@ -105,8 +99,8 @@ namespace Zelda.Game
 
         EntityIndex AddEntity(EntityData entity)
         {
-            Layer layer = entity.Layer;
-            EntityIndex index = new EntityIndex(layer, _entities[(int)layer].Count);
+            var layer = entity.Layer;
+            var index = new EntityIndex(layer, _entities[(int)layer].Count);
 
             if (!entity.Type.CanBeStoredInMapFile())
                 return new EntityIndex();

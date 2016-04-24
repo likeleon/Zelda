@@ -12,19 +12,20 @@ namespace Zelda.Game
         public Size Size { get; private set; }
         public Point Origin { get; private set; }
         
-        int _numFrames;
         public int NumFrames
         {
             get { return _numFrames; }
             set { _numFrames = Math.Max(value, 1); }
         }
 
-        int _numColumns;
         public int NumColumns
         {
             get { return _numColumns; }
             set { _numColumns = Math.Max(value, 1); }
         }
+
+        int _numFrames;
+        int _numColumns;
 
         public SpriteAnimationDirectionData(Point xy, Size size, Point origin, int numFrames, int numColumns = 1)
         {
@@ -62,61 +63,34 @@ namespace Zelda.Game
 
     class SpriteAnimationData
     {
-        readonly string _srcImage;
-        public string SrcImage
-        {
-            get { return _srcImage; }
-        }
+        public string SrcImage { get; }
+        public bool SrcImageIsTileset { get { return SrcImage == "tileset"; } }
+        public uint FrameDelay { get; }
+        public int LoopOnFrame { get; }
+        public IEnumerable<SpriteAnimationDirectionData> Directions { get; }
 
-        public bool SrcImageIsTileset
+        public SpriteAnimationData(string srcImage, List<SpriteAnimationDirectionData> directions, uint frameDelay, int loopOnFrame)
         {
-            get { return _srcImage == "tileset"; }
-        }
-
-        readonly uint _frameDelay;
-        public uint FrameDelay
-        {
-            get { return _frameDelay; }
-        }
-
-        readonly int _loopOnFrame;
-        public int LoopOnFrame
-        {
-            get { return _loopOnFrame; }
-        }
-
-        readonly List<SpriteAnimationDirectionData> _directions;
-        public IEnumerable<SpriteAnimationDirectionData> Directions
-        {
-            get { return _directions; }
-        }
-
-        public SpriteAnimationData(
-            string srcImage, 
-            List<SpriteAnimationDirectionData> directions, 
-            uint frameDelay, 
-            int loopOnFrame)
-        {
-            _srcImage = srcImage;
-            _directions = directions;
-            _frameDelay = frameDelay;
-            _loopOnFrame = loopOnFrame;
+            SrcImage = srcImage;
+            Directions = directions;
+            FrameDelay = frameDelay;
+            LoopOnFrame = loopOnFrame;
         }
     }
 
     class SpriteData : XmlData
     {
-        Dictionary<string, SpriteAnimationData> _animations = new Dictionary<string, SpriteAnimationData>();
-        public IDictionary<string, SpriteAnimationData> Animations { get { return _animations; } }
-
+        public IReadOnlyDictionary<string, SpriteAnimationData> Animations { get { return _animations; } }
         public string DefaultAnimationName { get; private set; }
+
+        readonly Dictionary<string, SpriteAnimationData> _animations = new Dictionary<string, SpriteAnimationData>();
 
         protected override bool OnImportFromBuffer(byte[] buffer)
         {
             try
             {
                 var xmlData = buffer.XmlDeserialize<SpriteXmlData>();
-                foreach (SpriteXmlData.Animation animation in xmlData.Animations)
+                foreach (var animation in xmlData.Animations)
                 {
                     string animationName = animation.Name.CheckField("Name");
                     string srcImage = animation.SrcImage.CheckField("SrcImage");
@@ -126,7 +100,7 @@ namespace Zelda.Game
                     if (frameToLoopOn < -1)
                         throw new InvalidDataException("Bad field 'FrameToLoopOn' (must be a positive number or -1");
 
-                    List<SpriteAnimationDirectionData> directions = new List<SpriteAnimationDirectionData>();
+                    var directions = new List<SpriteAnimationDirectionData>();
                     foreach (var direction in animation.Directions)
                     {
                         int x = direction.X.CheckField("X");

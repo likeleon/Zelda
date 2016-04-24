@@ -8,7 +8,7 @@ namespace Zelda.Game
         readonly Dictionary<string, EquipmentItem> _items = new Dictionary<string, EquipmentItem>();
         bool _suspended;
 
-        public Savegame Savegame { get; private set; }
+        public Savegame Savegame { get; }
         public Game Game { get { return Savegame.Game; } }
         
         public Equipment(Savegame saveGame)
@@ -18,19 +18,16 @@ namespace Zelda.Game
 
         public void NotifyGameFinished()
         {
-            foreach (EquipmentItem item in _items.Values)
-                item.Exit();
+            _items.Values.Do(i => i.Exit());
         }
 
         public void Update()
         {
-            Game game = Savegame.Game;
-            if (game == null)
+            if (Game == null)
                 return;
 
-            bool gameSuspended = game.IsSuspended;
-            if (_suspended != gameSuspended)
-                SetSuspended(gameSuspended);
+            if (_suspended != Game.IsSuspended)
+                SetSuspended(Game.IsSuspended);
         }
 
         public void SetSuspended(bool suspended)
@@ -80,19 +77,14 @@ namespace Zelda.Game
             // project_db.xml에 정의된 각 장비 아이템들을 생성합니다
             foreach (var kvp in CurrentMod.GetResources(ResourceType.Item))
             {
-                string itemId = kvp.Key;
-                EquipmentItem item = new EquipmentItem(this);
+                var itemId = kvp.Key;
+                var item = new EquipmentItem(this);
                 item.Name = itemId;
                 _items[itemId] = item;
             }
 
-            // 아이템 스크립트들을 로드합니다
-            foreach (EquipmentItem item in _items.Values)
-                item.Initialize();
-
-            // 아이템들을 시작합니다
-            foreach (EquipmentItem item in _items.Values)
-                item.Start();
+            _items.Values.Do(i => i.Initialize());
+            _items.Values.Do(i => i.Start());
         }
 
         public bool ItemExists(string itemName)
@@ -112,7 +104,7 @@ namespace Zelda.Game
             var savegameVariable = "_item_slot_" + slot;
             var itemName = Savegame.GetString(savegameVariable);
 
-            if (String.IsNullOrEmpty(itemName))
+            if (itemName.IsNullOrEmpty())
                 return null;
             
             return GetItem(itemName);
@@ -147,9 +139,7 @@ namespace Zelda.Game
 
             if (Game != null)
             {
-                if (ability == Ability.Tunic ||
-                    ability == Ability.Sword ||
-                    ability == Ability.Shield)
+                if (ability == Ability.Tunic || ability == Ability.Sword || ability == Ability.Shield)
                 {
                     // 영웅 스프라이트가 이 능력들에 의해 영향을 받습니다
                     Game.Hero.RebuildEquipment();
@@ -194,8 +184,7 @@ namespace Zelda.Game
 
         public void NotifyAbilityUsed(Ability ability)
         {
-            foreach (EquipmentItem item in _items.Values)
-                item.NotifyAbilityUsed(ability);
+            _items.Values.Do(i => i.NotifyAbilityUsed(ability));
         }
     }
 }

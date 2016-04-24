@@ -1,19 +1,13 @@
-﻿using System;
-using Zelda.Game.Engine;
+﻿using Zelda.Game.Engine;
 
 namespace Zelda.Game
 {
     class SpriteAnimationDirection
     {
-        public SpriteAnimationDirection(Rectangle[] frames, Point origin)
-        {
-            _frames = frames;
-            _origin = origin;
-            
-            Debug.CheckAssertion(_frames != null && _frames.Length > 0, "Empty sprite direction");
-        }
+        readonly Rectangle[] _frames;
+        PixelBits[] _pixelBits;
 
-        #region 크기와 중점
+        public Point Origin { get; }
         public Size Size
         {
             get
@@ -23,25 +17,21 @@ namespace Zelda.Game
             }
         }
 
-        readonly Point _origin;
-        public Point Origin
-        {
-            get { return _origin; }
-        }
-        #endregion
+        public int NumFrames { get { return _frames.Length; } }
+        public bool ArePixelCollisionsEnabled { get { return _pixelBits != null; } }
 
-        #region 프레임
-        readonly Rectangle[] _frames;
-
-        public int NumFrames
+        public SpriteAnimationDirection(Rectangle[] frames, Point origin)
         {
-            get { return _frames.Length; }
+            _frames = frames;
+            Origin = origin;
+            
+            Debug.CheckAssertion(_frames != null && _frames.Length > 0, "Empty sprite direction");
         }
 
         public void Draw(Surface dstSurface, Point dstPosition, int currentFrame, Surface srcImage)
         {
             Rectangle currentFrameRect = GetFrame(currentFrame);
-            srcImage.DrawRegion(currentFrameRect, dstSurface, dstPosition - _origin);
+            srcImage.DrawRegion(currentFrameRect, dstSurface, dstPosition - Origin);
         }
 
         public Rectangle GetFrame(int frame)
@@ -51,15 +41,7 @@ namespace Zelda.Game
 
             return _frames[frame];
         }
-        #endregion
 
-        #region 픽셀 충돌
-        PixelBits[] _pixelBits;
-
-        public bool ArePixelCollisionsEnabled
-        {
-            get { return _pixelBits != null; }
-        }
 
         public void EnablePixelCollisions(Surface srcImage)
         {
@@ -83,6 +65,5 @@ namespace Zelda.Game
             Debug.CheckAssertion(frame >= 0 && frame < NumFrames, "Invalid frame number");
             return _pixelBits[frame];
         }
-        #endregion
     }
 }

@@ -8,9 +8,9 @@ namespace Zelda.Game
 {
     public class StringResources : XmlData
     {
-        readonly SortedDictionary<string, string> _strings = new SortedDictionary<string, string>(StringComparer.Ordinal);
-
         public IReadOnlyDictionary<string, string> Strings { get { return _strings; } }
+
+        readonly SortedDictionary<string, string> _strings = new SortedDictionary<string, string>(StringComparer.Ordinal);
 
         protected override bool OnImportFromBuffer(byte[] buffer)
         {

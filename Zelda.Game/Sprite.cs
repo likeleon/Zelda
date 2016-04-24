@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Zelda.Game.Engine;
 using Zelda.Game.Entities;
 using Zelda.Game.Script;
@@ -9,16 +8,35 @@ namespace Zelda.Game
 {
     class Sprite : Drawable
     {
+        static readonly Dictionary<string, SpriteAnimationSet> _allAnimationSets = new Dictionary<string, SpriteAnimationSet>();
+
         readonly Lazy<Surface> _intermediateSurface;
         readonly Lazy<ScriptSprite> _scriptSprite;
         bool _ignoreSuspended;
-        
-        Surface IntermediateSurface { get { return _intermediateSurface.Value; } }
-        public Point Origin { get { return _currentAnimation.GetDirection(_currentDirection).Origin; } }
+        uint _frameDelay;
+        SpriteAnimation _currentAnimation;
+        uint _nextFrameDate;
+        uint _blinkDelay;
+        bool _blinkIsSpriteVisible;
+        uint _blinkNextChangeDate;
 
+        public Point Origin { get { return _currentAnimation.GetDirection(CurrentDirection).Origin; } }
         public ScriptSprite ScriptSprite { get { return _scriptSprite.Value; } }
+        public string AnimationSetId { get; }
+        public SpriteAnimationSet AnimationSet { get; }
+        public bool IsAnimationFinished { get; private set; }
+        public bool IsAnimationStarted { get { return !IsAnimationFinished; } }
+        public int CurrentFrame { get; private set; } = -1;
+        public bool HasFrameChanged { get; set; }
+        public Direction4 CurrentDirection { get; private set; }
+        public int NumDirections { get { return _currentAnimation.NumDirections; } }
+        public string CurrentAnimation { get; private set; }
+        public Size Size { get { return _currentAnimation.GetDirection(CurrentDirection).Size; } }
+        public Size MaxSize { get { return AnimationSet.MaxSize; } }
+        public bool IsBlinking { get { return _blinkDelay != 0; } }
 
-        #region 초기화
+        Surface IntermediateSurface { get { return _intermediateSurface.Value; } }
+
         public static void Initialize()
         {
         }
@@ -27,95 +45,29 @@ namespace Zelda.Game
         {
             _allAnimationSets.Clear();
         }
-        #endregion
-
-        #region 애니메이션 셋
-        static readonly Dictionary<string, SpriteAnimationSet> _allAnimationSets = new Dictionary<string, SpriteAnimationSet>();
-
-        readonly string _animationSetId;    // 이 스프라이트의 애니메이션 셋 아이디
-        public string AnimationSetId
-        {
-            get { return _animationSetId; }
-        }
-
-        readonly SpriteAnimationSet _animationSet;
-        public SpriteAnimationSet AnimationSet
-        {
-            get { return _animationSet; }
-        }
 
         public void EnablePixelCollisions()
         {
-            _animationSet.EnablePixelCollisions();
+            AnimationSet.EnablePixelCollisions();
         }
 
         public bool ArePixelCollisionsEnabled()
         {
-            return _animationSet.ArePixelCollisionsEnabled();
-        }
-        #endregion
-
-        #region 애니메이션 상태
-        bool _finished;
-        public bool IsAnimationFinished
-        {
-            get { return _finished; }
-        }
-
-        public bool IsAnimationStarted
-        {
-            get { return !IsAnimationFinished; }
-        }
-
-        uint _frameDelay;   // 두 프레임간 딜레이 (밀리초)
-        uint FrameDelay
-        {
-            get { return _frameDelay; }
-            set { _frameDelay = value; }
-        }
-
-        int _currentFrame = -1;
-        public int CurrentFrame
-        {
-            get { return _currentFrame; }
+            return AnimationSet.ArePixelCollisionsEnabled();
         }
 
         public int GetNumFrames()
         {
-            return _currentAnimation.GetDirection(_currentDirection).NumFrames;
+            return _currentAnimation.GetDirection(CurrentDirection).NumFrames;
         }
-
-        public bool HasFrameChanged { get; set; }
-
-        Direction4 _currentDirection;
-        public Direction4 CurrentDirection
-        {
-            get { return _currentDirection; }
-        }
-
-        [Description("현재 애니메이션의 방향 개수")]
-        public int NumDirections
-        {
-            get { return _currentAnimation.NumDirections; }
-        }
-
-        string _currentAnimationName;
-        [Description("현재 애니메이션")]
-        public string CurrentAnimation
-        {
-            get { return _currentAnimationName; }
-        }
-
-        SpriteAnimation _currentAnimation;
-        uint _nextFrameDate;
 
         public void SetCurrentAnimation(string animationName)
         {
-            if (animationName != _currentAnimationName || !IsAnimationStarted)
+            if (animationName != CurrentAnimation || !IsAnimationStarted)
             {
-                _currentAnimationName = animationName;
-                _currentAnimation = _animationSet.GetAnimation(animationName);
-                FrameDelay = _currentAnimation.FrameDelay;
+                CurrentAnimation = animationName;
+                _currentAnimation = AnimationSet.GetAnimation(animationName);
+                _frameDelay = _currentAnimation.FrameDelay;
 
                 SetCurrentFrame(0);
             }
@@ -123,17 +75,17 @@ namespace Zelda.Game
 
         public bool HasAnimation(string animationName)
         {
-            return _animationSet.HasAnimation(animationName);
+            return AnimationSet.HasAnimation(animationName);
         }
 
         public void SetCurrentFrame(int currentFrame)
         {
-            _finished = false;
-            _nextFrameDate = EngineSystem.Now + FrameDelay;
+            IsAnimationFinished = false;
+            _nextFrameDate = EngineSystem.Now + _frameDelay;
 
-            if (currentFrame != _currentFrame)
+            if (currentFrame != CurrentFrame)
             {
-                _currentFrame = currentFrame;
+                CurrentFrame = currentFrame;
                 HasFrameChanged = true;
             }
         }
@@ -148,13 +100,13 @@ namespace Zelda.Game
             if (currentDirection < 0 || (int)currentDirection >= NumDirections)
             {
                 Debug.Die("Invalid direction {0} for sprite '{1}' in animation {2}"
-                    .F(currentDirection, AnimationSetId, _currentAnimationName));
+                    .F(currentDirection, AnimationSetId, CurrentAnimation));
             }
 
-            if (currentDirection == _currentDirection)
+            if (currentDirection == CurrentDirection)
                 return;
 
-            _currentDirection = currentDirection;
+            CurrentDirection = currentDirection;
 
             SetCurrentFrame(0);
         }
@@ -170,20 +122,18 @@ namespace Zelda.Game
             if (!suspended)
             {
                 uint now = EngineSystem.Now;
-                _nextFrameDate = now + FrameDelay;
+                _nextFrameDate = now + _frameDelay;
                 _blinkNextChangeDate = now;
             }
             else
                 _blinkIsSpriteVisible = true;
         }
-        #endregion
 
-        #region 생성과 소멸
         public Sprite(string id)
         {
-            _animationSetId = id;
-            _animationSet = GetAnimationSet(id);
-            SetCurrentAnimation(_animationSet.DefaultAnimation);
+            AnimationSetId = id;
+            AnimationSet = GetAnimationSet(id);
+            SetCurrentAnimation(AnimationSet.DefaultAnimation);
 
             _intermediateSurface = Exts.Lazy(() => Surface.Create(MaxSize));
             _scriptSprite = Exts.Lazy<ScriptSprite>(() => new ScriptSprite(this));
@@ -191,22 +141,9 @@ namespace Zelda.Game
 
         public void SetTileset(Tileset tileset)
         {
-            _animationSet.SetTileset(tileset);
+            AnimationSet.SetTileset(tileset);
         }
-        #endregion
 
-        #region 크기와 중심점
-        public Size Size
-        {
-            get { return _currentAnimation.GetDirection(_currentDirection).Size; }
-        }
-        public Size MaxSize
-        {
-            get { return _animationSet.MaxSize; }
-        }
-        #endregion
-
-        #region 갱신과 그리기
         public override void Update()
         {
             base.Update();
@@ -219,9 +156,9 @@ namespace Zelda.Game
 
             // 시간에 따라 프레임을 갱신해 줍니다
             int nextFrame = 0;
-            while (!_finished && 
+            while (!IsAnimationFinished && 
                    !IsSuspended && 
-                   FrameDelay > 0 && 
+                   _frameDelay > 0 && 
                    now >= _nextFrameDate)
             {
                 // 다음 프레임을 얻습니다
@@ -230,11 +167,11 @@ namespace Zelda.Game
                 // 애니메이션이 끝났는지 확인합니다
                 if (nextFrame == -1)
                 {
-                    _finished = true;
+                    IsAnimationFinished = true;
                 }
                 else
                 {
-                    _currentFrame = nextFrame;
+                    CurrentFrame = nextFrame;
                     _nextFrameDate += _frameDelay;
                 }
                 HasFrameChanged = true;
@@ -252,7 +189,7 @@ namespace Zelda.Game
 
         int GetNextFrame()
         {
-            return _currentAnimation.GetNextFrame(_currentDirection, _currentFrame);
+            return _currentAnimation.GetNextFrame(CurrentDirection, CurrentFrame);
         }
 
         public override void RawDraw(Surface dstSurface, Point dstPosition)
@@ -261,11 +198,11 @@ namespace Zelda.Game
                 (_blinkDelay == 0 || _blinkIsSpriteVisible))
             {
                 if (!_intermediateSurface.IsValueCreated)
-                    _currentAnimation.Draw(dstSurface, dstPosition, _currentDirection, _currentFrame);
+                    _currentAnimation.Draw(dstSurface, dstPosition, CurrentDirection, CurrentFrame);
                 else
                 {
                     IntermediateSurface.Clear();
-                    _currentAnimation.Draw(IntermediateSurface, Origin, _currentDirection, _currentFrame);
+                    _currentAnimation.Draw(IntermediateSurface, Origin, CurrentDirection, CurrentFrame);
                     IntermediateSurface.DrawRegion(new Rectangle(Size), dstSurface, dstPosition - Origin);
                 }
             }
@@ -285,18 +222,6 @@ namespace Zelda.Game
         {
             Transition.Draw(IntermediateSurface);
         }
-        #endregion
-
-        #region 효과
-        uint _blinkDelay;
-
-        public bool IsBlinking
-        {
-            get { return _blinkDelay != 0; }
-        }
-
-        bool _blinkIsSpriteVisible;
-        uint _blinkNextChangeDate;
 
         public void SetBlinking(uint blinkDelay)
         {
@@ -308,26 +233,23 @@ namespace Zelda.Game
                 _blinkNextChangeDate = EngineSystem.Now;
             }
         }
-        #endregion
 
-        #region 충돌
         public bool TestCollision(Sprite other, int x1, int y1, int x2, int y2)
         {
-            var direction1 = _currentAnimation.GetDirection(_currentDirection);
+            var direction1 = _currentAnimation.GetDirection(CurrentDirection);
             var origin1 = direction1.Origin;
             var location1 = new Point(x1 - origin1.X, y1 - origin1.Y);
             location1 += XY;
-            var pixelBits1 = direction1.GetPixelBits(_currentFrame);
+            var pixelBits1 = direction1.GetPixelBits(CurrentFrame);
 
-            var direction2 = other._currentAnimation.GetDirection(other._currentDirection);
+            var direction2 = other._currentAnimation.GetDirection(other.CurrentDirection);
             var origin2 = direction2.Origin;
             var location2 = new Point(x2 - origin2.X, y2 - origin2.Y);
             location2 += other.XY;
-            var pixelBits2 = direction2.GetPixelBits(other._currentFrame);
+            var pixelBits2 = direction2.GetPixelBits(other.CurrentFrame);
 
             return pixelBits1.TestCollision(pixelBits2, location1, location2);
         }
-        #endregion
 
         static SpriteAnimationSet GetAnimationSet(string id)
         {

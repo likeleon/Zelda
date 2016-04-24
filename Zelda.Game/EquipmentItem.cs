@@ -1,5 +1,4 @@
-﻿using System;
-using Zelda.Game.Script;
+﻿using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
@@ -12,12 +11,12 @@ namespace Zelda.Game
         public Savegame Savegame { get { return _equipment.Savegame; } }
 
         public string Name { get; set; }
-        
-        public bool IsSaved { get { return !String.IsNullOrEmpty(SavegameVariable); } }
+
+        public bool IsSaved { get { return !SavegameVariable.IsNullOrEmpty(); } }
         public string SavegameVariable { get; set; }
-        
+
         public string AmountSavegameVariable { get; set; }
-        public bool HasAmount { get { return !String.IsNullOrEmpty(AmountSavegameVariable); } }
+        public bool HasAmount { get { return !AmountSavegameVariable.IsNullOrEmpty(); } }
 
         public bool IsObtainable { get; set; }
         public bool IsAssignable { get; set; }
@@ -47,8 +46,8 @@ namespace Zelda.Game
         public EquipmentItem(Equipment equipment)
         {
             _equipment = equipment;
-            Name = String.Empty;
-            SavegameVariable = String.Empty;
+            Name = "";
+            SavegameVariable = "";
             IsObtainable = true;
             SoundWhenBrandished = "treasure";
         }
@@ -67,32 +66,27 @@ namespace Zelda.Game
 
         public void Start()
         {
-            if (ScriptItem != null)
-                ScriptItem.NotifyStarted();
+            ScriptItem?.NotifyStarted();
         }
 
         public void Exit()
         {
-            if (ScriptItem != null)
-                ScriptItem.NotifyFinished();
+            ScriptItem?.NotifyFinished();
         }
 
         public void NotifyUsing()
         {
-            if (ScriptItem != null)
-                ScriptItem.NotifyUsing();
+            ScriptItem?.NotifyUsing();
         }
 
         public void NotifyAbilityUsed(Ability ability)
         {
-            if (ScriptItem != null)
-                ScriptItem.NotifyAbilityUsed(ability);
+            ScriptItem?.NotifyAbilityUsed(ability);
         }
 
         public void NotifyObtaining(Treasure treasure)
         {
-            if (ScriptItem != null)
-                ScriptItem.NotifyObtaining(treasure.Variant, IsSaved ? SavegameVariable : null);
+            ScriptItem?.NotifyObtaining(treasure.Variant, IsSaved ? SavegameVariable : null);
         }
     }
 }

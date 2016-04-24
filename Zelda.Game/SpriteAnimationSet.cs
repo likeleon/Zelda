@@ -8,17 +8,8 @@ namespace Zelda.Game
 {
     class SpriteAnimationSet
     {
-        string _defaultAnimationName;   // 기본 애니메이션의 이름
-        public string DefaultAnimation
-        {
-            get { return _defaultAnimationName; }
-        }
-
-        Size _maxSize;   // 가장 큰 프레임의 크기
-        public Size MaxSize
-        {
-            get { return _maxSize; }
-        }
+        public string DefaultAnimation { get; private set; }
+        public Size MaxSize { get; private set; }
 
         readonly string _id;
         readonly Dictionary<string, SpriteAnimation> _animations = new Dictionary<string, SpriteAnimation>();
@@ -39,7 +30,7 @@ namespace Zelda.Game
             bool success = data.ImportFromModFile(fileName);
             if (success)
             {
-                _defaultAnimationName = data.DefaultAnimationName;
+                DefaultAnimation = data.DefaultAnimationName;
                 foreach (var kvp in data.Animations)
                     AddAnimation(kvp.Key, kvp.Value);
             }
@@ -73,9 +64,7 @@ namespace Zelda.Game
 
             foreach (var direction in animationData.Directions)
             {
-                Size size = direction.Size;
-                _maxSize.Width = Math.Max(size.Width, _maxSize.Width);
-                _maxSize.Height = Math.Max(size.Height, _maxSize.Height);
+                MaxSize = new Size(Math.Max(direction.Size.Width, MaxSize.Width), Math.Max(direction.Size.Height, MaxSize.Height));
                 directions.Add(new SpriteAnimationDirection(direction.GetAllFrames().ToArray(), direction.Origin));
             }
 
