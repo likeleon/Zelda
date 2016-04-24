@@ -1,68 +1,48 @@
 ﻿using SDL2;
 using System;
-using System.ComponentModel;
 
 namespace Zelda.Game.Engine
 {
-    static class Video
+    public static class Video
     {
-        static Size _modSize;
-       
         // 렌더링할 모드 표면 크기
-        public static Size ModSize
-        {
-            get { return _modSize; }
-        }
+        public static Size ModSize { get; private set; } = Size.Zero;
 
-        public static string WindowTitle
+        internal static string WindowTitle
         {
             get { return SDL.SDL_GetWindowTitle(_mainWindow); }
             set { SDL.SDL_SetWindowTitle(_mainWindow, value); }
         }
 
-        static IntPtr _pixelFormat;
-        public static IntPtr PixelFormat
-        {
-            get { return _pixelFormat; }
-        }
+        internal static IntPtr PixelFormat { get; private set; }
+        internal static IntPtr Renderer { get; private set; }
 
         static IntPtr _mainWindow;
-
-        static IntPtr _mainRenderer;
-        public static IntPtr Renderer
-        {
-            get { return _mainRenderer; }
-        }
 
         static Size _normalModSize;     // 모드에 설정된 기본 크기
         static Size _minModSize;        // 모드에 설정된 최소 크기
         static Size _maxModSize;        // 모드에 설정된 최대 크기
         static Size _wantedModSize;     // 유저가 원한 크기
 
-        public static void Initialize(Arguments args, string zeldaVersion)
+        internal static void Initialize(Arguments args, string zeldaVersion)
         {
-            string modSizeString = args.GetArgumentValue("-mod-size");
-
-            _wantedModSize = new Size(Properties.Settings.Default.DefaultModWidth,
-                                      Properties.Settings.Default.DefaultModHeight);
-
-            if (modSizeString != null)
-                _wantedModSize = ParseSize(modSizeString);
+            var defaultModSize = new Size(Properties.Settings.Default.DefaultModWidth, Properties.Settings.Default.DefaultModHeight);
+            _wantedModSize = args.GetArgumentValue("-mod-size")?.ToSize() ?? defaultModSize;
 
             CreateWindow(args, zeldaVersion);
         }
 
-        public static void Quit()
+        internal static void Quit()
         {
-            if (_pixelFormat != IntPtr.Zero)
+            if (PixelFormat != IntPtr.Zero)
             {
-                SDL.SDL_FreeFormat(_pixelFormat);
-                _pixelFormat = IntPtr.Zero;
+                SDL.SDL_FreeFormat(PixelFormat);
+                PixelFormat = IntPtr.Zero;
             }
-            if (_mainRenderer != IntPtr.Zero)
+            if (Renderer != IntPtr.Zero)
             {
-                SDL.SDL_DestroyRenderer(_mainRenderer);
-                _mainRenderer = IntPtr.Zero;
+                SDL.SDL_DestroyRenderer(Renderer);
+                Renderer = IntPtr.Zero;
             }
             if (_mainWindow != IntPtr.Zero)
             {
@@ -70,15 +50,8 @@ namespace Zelda.Game.Engine
                 _mainWindow = IntPtr.Zero;
             }
 
-            _modSize = new Size();
-            _wantedModSize = new Size();
-        }
-
-        public static Size ParseSize(string sizeString)
-        {
-            string[] words = sizeString.Split('x');
-            Debug.CheckAssertion(words.Length == 2, "sizeString does not contain two numbers");
-            return new Size(Convert.ToInt32(words[0]), Convert.ToInt32(words[1]));
+            ModSize = Size.Zero;
+            _wantedModSize = Size.Zero;
         }
 
         static void CreateWindow(Arguments args, string zeldaVersion)
@@ -92,19 +65,19 @@ namespace Zelda.Game.Engine
                 SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN | SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
             Debug.CheckAssertion(_mainWindow != IntPtr.Zero, "Cannot create the window: " + SDL.SDL_GetError());
 
-            _mainRenderer = SDL.SDL_CreateRenderer(_mainWindow, -1, (uint)(SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC));
-            if (_mainRenderer == IntPtr.Zero)
+            Renderer = SDL.SDL_CreateRenderer(_mainWindow, -1, (uint)(SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC));
+            if (Renderer == IntPtr.Zero)
             {
-                _mainRenderer = SDL.SDL_CreateRenderer(_mainWindow, -1, (uint)(SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED));
-                if (_mainRenderer == IntPtr.Zero)
-                    _mainRenderer = SDL.SDL_CreateRenderer(_mainWindow, -1, (uint)(SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED));
+                Renderer = SDL.SDL_CreateRenderer(_mainWindow, -1, (uint)(SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED));
+                if (Renderer == IntPtr.Zero)
+                    Renderer = SDL.SDL_CreateRenderer(_mainWindow, -1, (uint)(SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED));
             }
-            Debug.CheckAssertion(_mainRenderer != IntPtr.Zero, "Cannot create the renderer: " + SDL.SDL_GetError());
+            Debug.CheckAssertion(Renderer != IntPtr.Zero, "Cannot create the renderer: " + SDL.SDL_GetError());
 
-            SDL.SDL_SetRenderDrawBlendMode(_mainRenderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
+            SDL.SDL_SetRenderDrawBlendMode(Renderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
 
             SDL.SDL_RendererInfo rendererInfo;
-            SDL.SDL_GetRendererInfo(_mainRenderer, out rendererInfo);
+            SDL.SDL_GetRendererInfo(Renderer, out rendererInfo);
 
             unsafe
             {
@@ -113,12 +86,12 @@ namespace Zelda.Game.Engine
                     uint format = rendererInfo.texture_formats[i];
                     if (!SDL.SDL_ISPIXELFORMAT_FOURCC(format) && SDL.SDL_ISPIXELFORMAT_ALPHA(format))
                     {
-                        _pixelFormat = SDL.SDL_AllocFormat(format);
+                        PixelFormat = SDL.SDL_AllocFormat(format);
                         break;
                     }
                 }
             }
-            Debug.CheckAssertion(_pixelFormat != IntPtr.Zero, "No caompatible pixel format");
+            Debug.CheckAssertion(PixelFormat != IntPtr.Zero, "No caompatible pixel format");
 
             if ((rendererInfo.flags & (uint)SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED) != 0)
                 Console.WriteLine("2D acceleration: yes");
@@ -129,22 +102,22 @@ namespace Zelda.Game.Engine
         static void InitializeVideoModes()
         {
             SDL.SDL_SetWindowFullscreen(_mainWindow, 0);
-            SDL.SDL_RenderSetLogicalSize(_mainRenderer, _modSize.Width, _modSize.Height);
+            SDL.SDL_RenderSetLogicalSize(Renderer, ModSize.Width, ModSize.Height);
             SDL.SDL_ShowCursor(SDL.SDL_ENABLE);
         }
 
-        public static void ShowWindow()
+        internal static void ShowWindow()
         {
             SDL.SDL_ShowWindow(_mainWindow);
         }
 
-        public static void Render(Surface surface)
+        internal static void Render(Surface surface)
         {
-            SDL.SDL_SetRenderDrawColor(_mainRenderer, 0, 0, 0, 255);
-            SDL.SDL_RenderSetClipRect(_mainRenderer, IntPtr.Zero);
-            SDL.SDL_RenderClear(_mainRenderer);
-            surface.Render(_mainRenderer);
-            SDL.SDL_RenderPresent(_mainRenderer);
+            SDL.SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255);
+            SDL.SDL_RenderSetClipRect(Renderer, IntPtr.Zero);
+            SDL.SDL_RenderClear(Renderer);
+            surface.Render(Renderer);
+            SDL.SDL_RenderPresent(Renderer);
         }
 
         public static void SetModSizeRange(Size normalSize, Size minSize, Size maxSize)
@@ -153,7 +126,7 @@ namespace Zelda.Game.Engine
                 normalSize.Width >= minSize.Width ||
                 normalSize.Height >= minSize.Height ||
                 normalSize.Width <= maxSize.Width ||
-                normalSize.Height <=  maxSize.Height,
+                normalSize.Height <= maxSize.Height,
                 "Invalid mod size range");
 
             _normalModSize = normalSize;
@@ -169,11 +142,11 @@ namespace Zelda.Game.Engine
                 msg += ": this mod only supports {0}x{1} to {2}x{3}".F(minSize.Width, minSize.Height, maxSize.Width, maxSize.Height);
                 msg += ". Using {0}x{1} instead.".F(normalSize.Width, normalSize.Height);
                 Debug.Warning(msg);
-                _modSize = normalSize;
+                ModSize = normalSize;
             }
             else
             {
-                _modSize = _wantedModSize;
+                ModSize = _wantedModSize;
             }
 
             InitializeVideoModes();

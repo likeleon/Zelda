@@ -106,7 +106,7 @@ namespace Alttp.Menus
                     font: font.Id,
                     fontSize: font.Size);
             }
-            _dialogSurface = ScriptSurface.Create(ScriptVideo.ModSize);
+            _dialogSurface = ScriptSurface.Create(Video.ModSize);
             _boxImg = ScriptSurface.Create("hud/dialog_box.png");
             _iconsImg = ScriptSurface.Create("hud/dialog_icons.png");
             _endLinesSprite = ScriptSprite.Create("hud/dialog_box_message_end");

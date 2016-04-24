@@ -22,10 +22,9 @@ namespace Zelda.Game
                 ModWriteDir = data.ModWriteDir;
                 TitleBar = data.TitleBar;
 
-                var normalModSizeString = data.NormalModSizeString ?? "320x240";
-                NormalModSize = Video.ParseSize(normalModSizeString);
-                MinModSize = Video.ParseSize(data.MinModSizeString ?? normalModSizeString);
-                MaxModSize = Video.ParseSize(data.MaxModSizeString ?? normalModSizeString);
+                NormalModSize = new Size(320, 240);
+                MinModSize = data.MinModSizeString?.ToSize() ?? NormalModSize;
+                MaxModSize = data.MaxModSizeString?.ToSize() ?? NormalModSize;
 
                 if (NormalModSize.Width < MinModSize.Width || NormalModSize.Height < MinModSize.Height ||
                     NormalModSize.Width > MaxModSize.Width || NormalModSize.Height > MaxModSize.Height)
