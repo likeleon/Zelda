@@ -1,4 +1,4 @@
-﻿using Zelda.Game.Engine;
+﻿using Zelda.Game.Lowlevel;
 using Zelda.Game.Movements;
 using Zelda.Game.Script;
 
@@ -19,7 +19,7 @@ namespace Zelda.Game.Entities
         {
             _maximumMoves = maximumMoves;
             _initialMaximumMoves = maximumMoves;
-            _whenCanMove = EngineSystem.Now;
+            _whenCanMove = Engine.Now;
             _lastPosition = xy;
             _initialPosition = xy;
             IsPushable = canBePushed;
@@ -121,7 +121,7 @@ namespace Zelda.Game.Entities
 
             if (Movement != null ||                 // 이미 이동 중
                 _maximumMoves == 0 ||               // 더 이상 움직일 수 없음
-                EngineSystem.Now < _whenCanMove ||  // 당분간 움직일 수 없음
+                Engine.Now < _whenCanMove ||  // 당분간 움직일 수 없음
                 (pulling && !IsPullable) ||
                 (!pulling && !IsPushable) ||
                 (allowedDirection != Direction4.None && heroDirection != allowedDirection))
@@ -141,7 +141,7 @@ namespace Zelda.Game.Entities
         public override void StopMovementByHero()
         {
             ClearMovement();
-            _whenCanMove = EngineSystem.Now + _movingDelay;
+            _whenCanMove = Engine.Now + _movingDelay;
 
             if (XY != _lastPosition)
             {
@@ -177,7 +177,7 @@ namespace Zelda.Game.Entities
             {
                 // 주인공에 의해 당기거나 멀고 있는 상태
                 ClearMovement();
-                _whenCanMove = EngineSystem.Now + _movingDelay;
+                _whenCanMove = Engine.Now + _movingDelay;
             }
 
             XY = _initialPosition;

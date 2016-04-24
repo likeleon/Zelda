@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace Zelda.Game.Engine
+namespace Zelda.Game.Lowlevel
 {
     class InputEvent
     {

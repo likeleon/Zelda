@@ -4,7 +4,7 @@ using System.Security;
 using System.Text;
 using System.Collections;
 
-namespace Zelda.Game.Engine
+namespace Zelda.Game.Lowlevel
 {
     #region Aliases
     using PHYSFS_uint8 = System.Byte;

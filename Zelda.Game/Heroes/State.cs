@@ -1,5 +1,5 @@
 ﻿using System;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 using Zelda.Game.Entities;
 
 namespace Zelda.Game.Heroes
@@ -68,7 +68,7 @@ namespace Zelda.Game.Heroes
             _suspended = suspended;
 
             if (suspended)
-                _whenSuspended = EngineSystem.Now;
+                _whenSuspended = Engine.Now;
         }
 
         public void NotifyCommandPressed(GameCommand command)

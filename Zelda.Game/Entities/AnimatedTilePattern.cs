@@ -1,4 +1,4 @@
-﻿using Zelda.Game.Engine;
+﻿using Zelda.Game.Lowlevel;
 
 namespace Zelda.Game.Entities
 {
@@ -44,7 +44,7 @@ namespace Zelda.Game.Entities
 
         public new static void Update()
         {
-            uint now = EngineSystem.Now;
+            uint now = Engine.Now;
             while (now >= _nextFrameDate)
             {
                 _frameCounter = (_frameCounter + 1) % 12;

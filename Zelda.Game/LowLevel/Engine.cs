@@ -1,11 +1,9 @@
 ﻿using SDL2;
-using System;
 using System.ComponentModel;
-using System.Reflection;
 
-namespace Zelda.Game.Engine
+namespace Zelda.Game.Lowlevel
 {
-    static class EngineSystem
+    static class Engine
     {
         static uint _initialTime = 0;       // 초기화 시점의 실제 시각, 밀리초
         static uint _ticks = 0;             // 게임 시각, 밀리초

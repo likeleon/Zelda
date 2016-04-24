@@ -1,5 +1,5 @@
 ﻿using System;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 using Zelda.Game.Entities;
 
 namespace Zelda.Game.Heroes
@@ -89,7 +89,7 @@ namespace Zelda.Game.Heroes
             _tunicSprite.SetSuspended(suspended);
 
             // 타이머
-            uint now = EngineSystem.Now;
+            uint now = Engine.Now;
             if (suspended)
                 _whenSuspended = now;
             else if (_endBlinkDate != 0)
@@ -107,7 +107,7 @@ namespace Zelda.Game.Heroes
 
             if (IsBlinking &&
                 _endBlinkDate != 0 &&
-                EngineSystem.Now >= _endBlinkDate)
+                Engine.Now >= _endBlinkDate)
             {
                 StopBlink();
             }
@@ -298,7 +298,7 @@ namespace Zelda.Game.Heroes
             if (duration == 0)
                 _endBlinkDate = 0;  // 끝나지 않습니다
             else
-                _endBlinkDate = EngineSystem.Now + duration;
+                _endBlinkDate = Engine.Now + duration;
         }
 
         public void StopBlink()

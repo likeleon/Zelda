@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace Zelda.Game.Engine
+namespace Zelda.Game.Lowlevel
 {
     static class ModFiles
     {

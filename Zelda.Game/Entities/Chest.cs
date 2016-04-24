@@ -1,5 +1,5 @@
 ﻿using System;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
@@ -85,7 +85,7 @@ namespace Zelda.Game.Entities
             {
                 Sound.Play("chest_open");
                 SetOpen(true);
-                _treasureDate = EngineSystem.Now + 300;
+                _treasureDate = Engine.Now + 300;
 
                 CommandsEffects.ActionCommandEffect = ActionCommandEffect.None;
                 Hero.StartFreezed();
@@ -98,7 +98,7 @@ namespace Zelda.Game.Entities
         {
             if (IsOpen && !IsSuspended)
             {
-                if (!_treasureGiven && _treasureDate != 0 && EngineSystem.Now >= _treasureDate)
+                if (!_treasureGiven && _treasureDate != 0 && Engine.Now >= _treasureDate)
                 {
                     _treasureDate = 0;
                     _treasure.EnsureObtainable();

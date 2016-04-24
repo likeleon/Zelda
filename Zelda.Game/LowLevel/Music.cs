@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Zelda.Game.Engine
+namespace Zelda.Game.Lowlevel
 {
     public enum MusicFormat
     {

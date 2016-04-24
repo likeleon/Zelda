@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 using Zelda.Game.Movements;
 using Zelda.Game.Script;
 
@@ -433,7 +433,7 @@ namespace Zelda.Game.Entities
             IsSuspended = suspended;
 
             if (suspended)
-                WhenSuspended = EngineSystem.Now;
+                WhenSuspended = Engine.Now;
 
             foreach (var sprite in _sprites)
                 sprite.SetSuspended(suspended || !IsEnabled);

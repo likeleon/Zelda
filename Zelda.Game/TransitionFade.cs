@@ -1,5 +1,5 @@
 ﻿using System;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 
 namespace Zelda.Game
 {
@@ -55,7 +55,7 @@ namespace Zelda.Game
         public override void Start()
         {
             _alpha = _alphaStart;
-            _nextFrameDate = EngineSystem.Now;
+            _nextFrameDate = Engine.Now;
         }
 
         public override void Update()
@@ -63,7 +63,7 @@ namespace Zelda.Game
             if (!IsStarted || IsSuspended)
                 return;
 
-            while (EngineSystem.Now >= _nextFrameDate && !_finished)
+            while (Engine.Now >= _nextFrameDate && !_finished)
             {
                 _alpha += _alphaIncrement;
                 _nextFrameDate += Delay;
@@ -97,7 +97,7 @@ namespace Zelda.Game
         protected override void NotifySuspended(bool suspended)
         {
             if (!suspended)
-                _nextFrameDate += EngineSystem.Now + WhenSuspended;
+                _nextFrameDate += Engine.Now + WhenSuspended;
         }
     }
 }

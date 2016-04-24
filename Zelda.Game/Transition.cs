@@ -1,5 +1,5 @@
 ﻿using System;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 
 namespace Zelda.Game
 {
@@ -72,7 +72,7 @@ namespace Zelda.Game
             {
                 IsSuspended = suspended;
                 if (suspended)
-                    WhenSuspended = EngineSystem.Now;
+                    WhenSuspended = Engine.Now;
                 NotifySuspended(suspended);
             }
         }

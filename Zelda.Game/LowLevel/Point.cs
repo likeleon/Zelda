@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Zelda.Game.Engine
+namespace Zelda.Game.Lowlevel
 {
     public struct Point
     {

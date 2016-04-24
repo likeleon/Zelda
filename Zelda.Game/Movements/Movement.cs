@@ -1,5 +1,5 @@
 ﻿using System;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 using Zelda.Game.Entities;
 using Zelda.Game.Script;
 
@@ -103,7 +103,7 @@ namespace Zelda.Game.Movements
             _suspended = suspended;
 
             if (suspended)
-                _whenSuspended = EngineSystem.Now;
+                _whenSuspended = Engine.Now;
         }
         #endregion
 
@@ -159,7 +159,7 @@ namespace Zelda.Game.Movements
             _xy = xy;
 
             NotifyPositionChanged();
-            _lastMoveDate = EngineSystem.Now;
+            _lastMoveDate = Engine.Now;
         }
 
         public void TranslateX(int dx)

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Zelda.Game.Script;
 
-namespace Zelda.Game.Engine
+namespace Zelda.Game.Lowlevel
 {
     class Surface : Drawable, IDisposable
     {

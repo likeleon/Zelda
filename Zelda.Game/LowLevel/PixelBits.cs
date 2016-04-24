@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Zelda.Game.Engine
+namespace Zelda.Game.Lowlevel
 {
     class PixelBits
     {
@@ -73,7 +73,7 @@ namespace Zelda.Game.Engine
 
             if (debugPixelCollisions)
             {
-                Console.WriteLine("{0}".F(EngineSystem.Now));
+                Console.WriteLine("{0}".F(Engine.Now));
                 Console.WriteLine(" bounding box collision");
                 Console.WriteLine("rect1 = {0}".F(boundingBox1));
                 Console.WriteLine("rect2 = {0}".F(boundingBox2));

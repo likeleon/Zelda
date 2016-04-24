@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 
 namespace Zelda.Game.Movements
 {
@@ -100,7 +100,7 @@ namespace Zelda.Game.Movements
                 _trajectoryEnumerator = _trajectory.GetEnumerator();
 
                 if (_nextMoveDate == 0)
-                    _nextMoveDate = EngineSystem.Now;
+                    _nextMoveDate = Engine.Now;
                 _nextMoveDate += Delay;
 
                 NotifyMovementChanged();
@@ -109,7 +109,7 @@ namespace Zelda.Game.Movements
 
         public override void Update()
         {
-            uint now = EngineSystem.Now;
+            uint now = Engine.Now;
 
             while (now >= _nextMoveDate &&
                    !IsSuspended &&
@@ -164,7 +164,7 @@ namespace Zelda.Game.Movements
                 WhenSuspended != 0 &&
                 _nextMoveDate != 0)
             {
-                _nextMoveDate += EngineSystem.Now - WhenSuspended;
+                _nextMoveDate += Engine.Now - WhenSuspended;
             }
         }
         #endregion

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 
 namespace Zelda.Game.Movements
 {
@@ -145,7 +145,7 @@ namespace Zelda.Game.Movements
             snappedX -= snappedX % 8;
             snappedY -= snappedY % 8;
 
-            uint now = EngineSystem.Now;
+            uint now = Engine.Now;
 
             if (!_snapping)
             {
@@ -207,7 +207,7 @@ namespace Zelda.Game.Movements
                 WhenSuspended != 0 &&
                 _stopSnappingDate != 0)
             {
-                _stopSnappingDate += EngineSystem.Now -WhenSuspended;
+                _stopSnappingDate += Engine.Now -WhenSuspended;
             }
         }
 

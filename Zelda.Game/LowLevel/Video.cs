@@ -1,7 +1,7 @@
 ﻿using SDL2;
 using System;
 
-namespace Zelda.Game.Engine
+namespace Zelda.Game.Lowlevel
 {
     public static class Video
     {

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 
 namespace Zelda.Game
 {
@@ -14,7 +14,7 @@ namespace Zelda.Game
             set
             {
                 _expirationDate = value;
-                IsFinished = EngineSystem.Now >= _expirationDate;
+                IsFinished = Engine.Now >= _expirationDate;
             }
         }
 
@@ -24,9 +24,9 @@ namespace Zelda.Game
 
         public Timer(uint duration)
         {
-            _expirationDate = EngineSystem.Now + duration;
+            _expirationDate = Engine.Now + duration;
             InitialDuration = duration;
-            IsFinished = (EngineSystem.Now >= _expirationDate);
+            IsFinished = (Engine.Now >= _expirationDate);
         }
 
         public void Update()
@@ -34,7 +34,7 @@ namespace Zelda.Game
             if (IsSuspended || IsFinished)
                 return;
 
-            var now = EngineSystem.Now;
+            var now = Engine.Now;
             IsFinished = (now >= _expirationDate);
         }
 
@@ -43,7 +43,7 @@ namespace Zelda.Game
             if (IsSuspended == suspended)
                 return;
 
-            var now = EngineSystem.Now;
+            var now = Engine.Now;
 
             if (suspended)
                 _whenSuspended = now;

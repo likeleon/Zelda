@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 using Zelda.Game.Heroes;
 using Zelda.Game.Script;
 
@@ -70,13 +70,13 @@ namespace Zelda.Game.Entities
             _invincible = invincible;
             _endInvincibleDate = 0;
             if (invincible)
-                _endInvincibleDate = EngineSystem.Now + duration;
+                _endInvincibleDate = Engine.Now + duration;
         }
 
         void UpdateInvincibility()
         {
             if (IsInvincible &&
-                EngineSystem.Now >= _endInvincibleDate)
+                Engine.Now >= _endInvincibleDate)
                 SetInvincible(false, 0);
         }
 
@@ -384,7 +384,7 @@ namespace Zelda.Game.Entities
 
             if (!suspended)
             {
-                uint diff = EngineSystem.Now - WhenSuspended;
+                uint diff = Engine.Now - WhenSuspended;
 
                 if (_endInvincibleDate != 0)
                     _endInvincibleDate += diff;

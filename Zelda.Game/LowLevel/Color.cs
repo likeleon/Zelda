@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace Zelda.Game.Engine
+namespace Zelda.Game.Lowlevel
 {
     public struct Color
     {

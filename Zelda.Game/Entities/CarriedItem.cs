@@ -1,5 +1,5 @@
 ﻿using System;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 using Zelda.Game.Movements;
 
 namespace Zelda.Game.Entities
@@ -100,7 +100,7 @@ namespace Zelda.Game.Entities
             SetMovement(movement);
 
             _yIncrement = -2;
-            _nextDownDate = EngineSystem.Now + 40;
+            _nextDownDate = Engine.Now + 40;
             _itemHeight = 18;
         }
         #endregion
@@ -190,7 +190,7 @@ namespace Zelda.Game.Entities
 
         public bool WillExplodeSoon
         {
-            get { return CanExplode && EngineSystem.Now >= _explosionDate - 1500; }
+            get { return CanExplode && Engine.Now >= _explosionDate - 1500; }
         }
         #endregion
 
@@ -210,7 +210,7 @@ namespace Zelda.Game.Entities
             }
             else if (CanExplode && !_isBreaking)
             {
-                if (EngineSystem.Now >= _explosionDate)
+                if (Engine.Now >= _explosionDate)
                     BreakItem();
                 else if (WillExplodeSoon)
                 {
@@ -232,7 +232,7 @@ namespace Zelda.Game.Entities
                     BreakItemOnGround();
                 else
                 {
-                    uint now = EngineSystem.Now;
+                    uint now = Engine.Now;
                     while (now >= _nextDownDate)
                     {
                         _nextDownDate += 40;
@@ -278,7 +278,7 @@ namespace Zelda.Game.Entities
 
             if (!suspended && WhenSuspended != 0)
             {
-                uint diff = EngineSystem.Now - WhenSuspended;
+                uint diff = Engine.Now - WhenSuspended;
                 if (IsBeingThrown)
                     _nextDownDate += diff;
                 if (CanExplode)

@@ -1,5 +1,5 @@
 ﻿using System;
-using Zelda.Game.Engine;
+using Zelda.Game.Lowlevel;
 using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
@@ -52,7 +52,7 @@ namespace Zelda.Game.Entities
         public Bomb(string name, Layer layer, Point xy)
             : base(CollisionMode.Facing, name, layer, xy, new Size(16, 16))
         {
-            _explosionDate = EngineSystem.Now + 6000;
+            _explosionDate = Engine.Now + 6000;
 
             CreateSprite("entities/bomb");
             Sprite.EnablePixelCollisions();
@@ -110,7 +110,7 @@ namespace Zelda.Game.Entities
 
             if (!suspended && WhenSuspended != 0)
             {
-                uint diff = EngineSystem.Now - WhenSuspended;
+                uint diff = Engine.Now - WhenSuspended;
                 _explosionDate += diff;
             }
         }
@@ -122,7 +122,7 @@ namespace Zelda.Game.Entities
             if (IsSuspended)
                 return;
 
-            uint now = EngineSystem.Now;
+            uint now = Engine.Now;
             if (now >= _explosionDate)
                 Explode();
             else if (now >= _explosionDate - 1500 && Sprite.CurrentAnimation != "stopped_explosion_soon")
