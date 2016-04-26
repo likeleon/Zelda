@@ -40,7 +40,7 @@ namespace Zelda.Game.Heroes
                 movement.SetAngle(angle);
                 Hero.SetMovement(movement);
             }
-            _endHurtDate = Engine.Now + 200;
+            _endHurtDate = Framework.Now + 200;
 
             if (_damage != 0)
             {
@@ -64,7 +64,7 @@ namespace Zelda.Game.Heroes
             base.Update();
 
             if ((Hero.Movement != null && Hero.Movement.IsFinished) ||
-                Engine.Now >= _endHurtDate)
+                Framework.Now >= _endHurtDate)
             {
                 Hero.ClearMovement();
                 Hero.StartStateFromGround();
@@ -77,7 +77,7 @@ namespace Zelda.Game.Heroes
 
             if (!suspended)
             {
-                uint diff = Engine.Now - WhenSuspended;
+                uint diff = Framework.Now - WhenSuspended;
                 _endHurtDate += diff;
             }
         }

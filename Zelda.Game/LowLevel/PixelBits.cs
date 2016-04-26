@@ -73,7 +73,7 @@ namespace Zelda.Game.Lowlevel
 
             if (debugPixelCollisions)
             {
-                Console.WriteLine("{0}".F(Engine.Now));
+                Console.WriteLine("{0}".F(Framework.Now));
                 Console.WriteLine(" bounding box collision");
                 Console.WriteLine("rect1 = {0}".F(boundingBox1));
                 Console.WriteLine("rect2 = {0}".F(boundingBox2));

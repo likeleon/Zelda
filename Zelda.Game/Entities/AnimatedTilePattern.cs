@@ -44,7 +44,7 @@ namespace Zelda.Game.Entities
 
         public new static void Update()
         {
-            uint now = Engine.Now;
+            uint now = Framework.Now;
             while (now >= _nextFrameDate)
             {
                 _frameCounter = (_frameCounter + 1) % 12;

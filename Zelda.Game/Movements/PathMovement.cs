@@ -145,7 +145,7 @@ namespace Zelda.Game.Movements
             snappedX -= snappedX % 8;
             snappedY -= snappedY % 8;
 
-            uint now = Engine.Now;
+            uint now = Framework.Now;
 
             if (!_snapping)
             {
@@ -207,7 +207,7 @@ namespace Zelda.Game.Movements
                 WhenSuspended != 0 &&
                 _stopSnappingDate != 0)
             {
-                _stopSnappingDate += Engine.Now -WhenSuspended;
+                _stopSnappingDate += Framework.Now -WhenSuspended;
             }
         }
 

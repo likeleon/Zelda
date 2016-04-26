@@ -11,11 +11,13 @@ namespace Zelda.Game
         static Game _nextGame;
 
         public static bool Exiting { get; set; }
+        public static Platform Platform { get; private set; }
         public static Game Game { get; private set; }
+        public static uint Now { get { return Platform.Now; } }
 
         public static int Run(Arguments args)
         {
-            Engine.Initialize(args);
+            Platform = new Platform(args);
 
             LoadModProperties();
 
@@ -36,7 +38,7 @@ namespace Zelda.Game
                 Game.Stop();
 
             ScriptContext.Exit();
-            Engine.Quit();
+            Platform.Dispose();
 
             return 0;
         }
@@ -45,14 +47,14 @@ namespace Zelda.Game
         // 메인 루프는 게임 시간을 컨트롤하고 반복해서 월드를 갱신, 화면을 그린다.
         static void Loop()
         {
-            uint lastFrameDate = Engine.GetRealTime();
+            uint lastFrameDate = Platform.GetRealTime();
             uint lag = 0;               // 따라잡아야 하는 게임 시간
             uint timeDropped = 0;      // 따라잡지 못한 시간
 
             while (!Exiting)
             {
                 // 마지막 이터레이션 시간 측정
-                uint now = Engine.GetRealTime() - timeDropped;
+                uint now = Platform.GetRealTime() - timeDropped;
                 uint lastFrameDuration = now - lastFrameDate;
                 lastFrameDate = now;
                 lag += lastFrameDuration;
@@ -61,9 +63,9 @@ namespace Zelda.Game
                 if (lag >= 200)
                 {
                     // 매우 큰 랙. 따라잡는 대신 가짜 실제 시각을 사용.
-                    timeDropped += lag - Engine.TimeStep;
-                    lag = Engine.TimeStep;
-                    lastFrameDate = Engine.GetRealTime() - timeDropped;
+                    timeDropped += lag - Platform.TimeStep;
+                    lag = Platform.TimeStep;
+                    lastFrameDate = Platform.GetRealTime() - timeDropped;
                 }
 
                 // 1. 입력 이벤트를 감지하고 처리
@@ -71,12 +73,12 @@ namespace Zelda.Game
 
                 // 2. 월드를 한번, 혹은 시스템이 느릴 경우 따라잡기 위해 여러번 갱신 (그리기는 스킵).
                 int numUpdates = 0;
-                while (lag >= Engine.TimeStep &&
+                while (lag >= Platform.TimeStep &&
                        numUpdates < 10 && // 매우 느린 시스템에서도 적어도 가끔은 그리기 위해
                        !Exiting)
                 {
                     Update();
-                    lag -= Engine.TimeStep;
+                    lag -= Platform.TimeStep;
                     ++numUpdates;
                 }
 
@@ -85,9 +87,9 @@ namespace Zelda.Game
                     Draw();
 
                 // 4. CPU와 GPU 사이클을 절약하기 위해, 가능하면 sleep.
-                lastFrameDuration = (Engine.GetRealTime() - timeDropped) - lastFrameDate;
-                if (lastFrameDuration < Engine.TimeStep)
-                    Engine.Sleep(Engine.TimeStep - lastFrameDuration);
+                lastFrameDuration = (Platform.GetRealTime() - timeDropped) - lastFrameDate;
+                if (lastFrameDuration < Platform.TimeStep)
+                    Platform.Sleep(Platform.TimeStep - lastFrameDuration);
             }
         }
 
@@ -96,7 +98,7 @@ namespace Zelda.Game
             Game?.Update();
 
             ScriptContext.Update();
-            Engine.Update();
+            Platform.Update();
 
             if (_nextGame != Game)
             {

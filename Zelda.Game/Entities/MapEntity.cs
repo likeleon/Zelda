@@ -431,7 +431,7 @@ namespace Zelda.Game.Entities
             IsSuspended = suspended;
 
             if (suspended)
-                WhenSuspended = Engine.Now;
+                WhenSuspended = Framework.Now;
 
             foreach (var sprite in _sprites)
                 sprite.SetSuspended(suspended || !IsEnabled);
