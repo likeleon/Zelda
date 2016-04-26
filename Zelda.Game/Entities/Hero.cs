@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Zelda.Game.Lowlevel;
+using Zelda.Game.LowLevel;
 using Zelda.Game.Heroes;
 using Zelda.Game.Script;
 

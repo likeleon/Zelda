@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using Zelda.Game.Lowlevel;
+using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Script
 {

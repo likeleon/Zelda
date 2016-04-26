@@ -1,5 +1,5 @@
 ﻿using Zelda.Game;
-using Zelda.Game.Lowlevel;
+using Zelda.Game.LowLevel;
 using Zelda.Game.Script;
 
 namespace Alttp.Menus.SavegameScreens
@@ -39,7 +39,7 @@ namespace Alttp.Menus.SavegameScreens
             return false;
         }
 
-        public bool KeyPressed(Zelda.Game.Lowlevel.KeyboardKey key)
+        public bool KeyPressed(Zelda.Game.LowLevel.KeyboardKey key)
         {
             if (key != KeyboardKey.Space && key != KeyboardKey.Return)
                 return false;

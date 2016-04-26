@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Zelda.Game;
-using Zelda.Game.Lowlevel;
+using Zelda.Game.LowLevel;
 using Zelda.Game.Entities;
 
 namespace Zelda.Editor.Modules.Mods.Models

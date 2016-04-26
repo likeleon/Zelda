@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
-using Zelda.Game.Lowlevel;
+using Zelda.Game.LowLevel;
 using Zelda.Game.Entities;
 
 namespace Zelda.Game

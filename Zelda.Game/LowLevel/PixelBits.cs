@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Zelda.Game.Lowlevel
+namespace Zelda.Game.LowLevel
 {
     class PixelBits
     {

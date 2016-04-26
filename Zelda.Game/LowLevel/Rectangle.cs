@@ -1,6 +1,6 @@
 ﻿using SDL2;
 
-namespace Zelda.Game.Lowlevel
+namespace Zelda.Game.LowLevel
 {
     public struct Rectangle
     {

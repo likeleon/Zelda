@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Xml.Serialization;
-using Zelda.Game.Lowlevel;
+using Zelda.Game.LowLevel;
 
 namespace Zelda.Game
 {

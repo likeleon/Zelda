@@ -1,5 +1,5 @@
 ﻿using Zelda.Game;
-using Zelda.Game.Lowlevel;
+using Zelda.Game.LowLevel;
 
 namespace Alttp.Menus.SavegameScreens
 {

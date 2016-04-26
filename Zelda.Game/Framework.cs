@@ -1,11 +1,13 @@
 ﻿using System;
-using Zelda.Game.Lowlevel;
+using Zelda.Game.LowLevel;
 using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
     static class Framework
     {
+        static readonly uint TimeStep = 10;  // 업데이트시마다 추가될 게임 시간, 밀리초
+
         static Surface _rootSurface;
         static ScriptSurface _rootScriptSurface;
         static Game _nextGame;
@@ -13,10 +15,12 @@ namespace Zelda.Game
         public static bool Exiting { get; set; }
         public static Platform Platform { get; private set; }
         public static Game Game { get; private set; }
-        public static uint Now { get { return Platform.Now; } }
+        public static uint Now { get; private set; }
 
         public static int Run(Arguments args)
         {
+            Logger.Info("Zelda " + ZeldaVersion.Version);
+
             Platform = new Platform(args);
 
             LoadModProperties();
@@ -63,8 +67,8 @@ namespace Zelda.Game
                 if (lag >= 200)
                 {
                     // 매우 큰 랙. 따라잡는 대신 가짜 실제 시각을 사용.
-                    timeDropped += lag - Platform.TimeStep;
-                    lag = Platform.TimeStep;
+                    timeDropped += lag - TimeStep;
+                    lag = TimeStep;
                     lastFrameDate = Platform.GetRealTime() - timeDropped;
                 }
 
@@ -73,12 +77,12 @@ namespace Zelda.Game
 
                 // 2. 월드를 한번, 혹은 시스템이 느릴 경우 따라잡기 위해 여러번 갱신 (그리기는 스킵).
                 int numUpdates = 0;
-                while (lag >= Platform.TimeStep &&
+                while (lag >= TimeStep &&
                        numUpdates < 10 && // 매우 느린 시스템에서도 적어도 가끔은 그리기 위해
                        !Exiting)
                 {
                     Update();
-                    lag -= Platform.TimeStep;
+                    lag -= TimeStep;
                     ++numUpdates;
                 }
 
@@ -88,8 +92,8 @@ namespace Zelda.Game
 
                 // 4. CPU와 GPU 사이클을 절약하기 위해, 가능하면 sleep.
                 lastFrameDuration = (Platform.GetRealTime() - timeDropped) - lastFrameDate;
-                if (lastFrameDuration < Platform.TimeStep)
-                    Platform.Sleep(Platform.TimeStep - lastFrameDuration);
+                if (lastFrameDuration < TimeStep)
+                    Platform.Sleep(TimeStep - lastFrameDuration);
             }
         }
 
@@ -98,6 +102,8 @@ namespace Zelda.Game
             Game?.Update();
 
             ScriptContext.Update();
+
+            Now += TimeStep;
             Platform.Update();
 
             if (_nextGame != Game)

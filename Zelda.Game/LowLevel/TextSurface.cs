@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace Zelda.Game.Lowlevel
+namespace Zelda.Game.LowLevel
 {
     public enum TextHorizontalAlignment
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Zelda.Game.Lowlevel
+namespace Zelda.Game.LowLevel
 {
     static class Geometry
     {

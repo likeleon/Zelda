@@ -1,7 +1,7 @@
 ﻿using LibModPlugSharp;
 using System;
 
-namespace Zelda.Game.Lowlevel
+namespace Zelda.Game.LowLevel
 {
     class ItDecoder
     {

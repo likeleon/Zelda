@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Zelda.Game.Containers;
-using Zelda.Game.Lowlevel;
+using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Entities
 {

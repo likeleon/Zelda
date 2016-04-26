@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Zelda.Game.Entities;
-using Zelda.Game.Lowlevel;
+using Zelda.Game.LowLevel;
 using Zelda.Game.Script;
 using Key = Zelda.Game.Savegame.Key;
 

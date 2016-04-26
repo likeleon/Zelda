@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Zelda.Game.Lowlevel;
+using Zelda.Game.LowLevel;
 using Zelda.Game.Movements;
 using Zelda.Game.Script;
 

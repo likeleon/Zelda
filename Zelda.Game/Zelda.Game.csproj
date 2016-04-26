@@ -81,6 +81,7 @@
     <Compile Include="LowLevel\Geometry.cs" />
     <Compile Include="LowLevel\ItDecoder.cs" />
     <Compile Include="LowLevel\KeyboardKey.cs" />
+    <Compile Include="LowLevel\Logger.cs" />
     <Compile Include="LowLevel\ModFiles.cs" />
     <Compile Include="LowLevel\Music.cs" />
     <Compile Include="LowLevel\PixelBits.cs" />

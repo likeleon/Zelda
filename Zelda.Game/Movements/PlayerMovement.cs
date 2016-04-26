@@ -1,4 +1,4 @@
-﻿using Zelda.Game.Lowlevel;
+﻿using Zelda.Game.LowLevel;
 using Zelda.Game.Entities;
 
 namespace Zelda.Game.Movements

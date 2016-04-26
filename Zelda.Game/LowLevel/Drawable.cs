@@ -2,7 +2,7 @@
 using System.Drawing;
 using Zelda.Game.Movements;
 
-namespace Zelda.Game.Lowlevel
+namespace Zelda.Game.LowLevel
 {
     abstract class Drawable
     {

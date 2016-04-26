@@ -1,16 +1,12 @@
 ﻿using SDL2;
 using System;
 
-namespace Zelda.Game.Lowlevel
+namespace Zelda.Game.LowLevel
 {
     class Platform : IDisposable
     {
         readonly uint _initialTime = 0;       // 초기화 시점의 실제 시각, 밀리초
-
-        public static uint TimeStep { get; } = 10;  // 업데이트시마다 추가될 게임 시간, 밀리초
-
         public string Os { get { return SDL.SDL_GetPlatform(); } }
-        public uint Now { get; private set; }
 
         internal Platform(Arguments args)
         {
@@ -39,7 +35,6 @@ namespace Zelda.Game.Lowlevel
 
         public void Update()
         {
-            Now += TimeStep;
             Sound.Update();
         }
 
