@@ -32,8 +32,8 @@ namespace Zelda.Game
 
         static int Run(string[] args)
         {
-            using (var mainLoop = new MainLoop(new Arguments(args)))
-                mainLoop.Run();
+            using (var framework = new Framework(new Arguments(args)))
+                framework.Run();
             return 0;
         }
 
@@ -76,7 +76,7 @@ namespace Zelda.Game
             }
 
             sb.AppendLine();
-            Indent(sb, d); 
+            Indent(sb, d);
             sb.Append(e.StackTrace);
 
             return sb;

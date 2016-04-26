@@ -65,7 +65,6 @@ namespace Zelda.Game
 
         static readonly int SaveGameVersion = 2;
 
-        readonly MainLoop _mainLoop;
         readonly Dictionary<string, SavedValue> _savedValues = new Dictionary<string, SavedValue>();
         
         public string FileName { get; }
@@ -99,9 +98,8 @@ namespace Zelda.Game
             Equipment.NotifyGameFinished();
         }
 
-        public Savegame(MainLoop mainLoop, string fileName)
+        public Savegame(string fileName)
         {
-            _mainLoop = mainLoop;
             FileName = fileName;
             Equipment = new Equipment(this);
         }

@@ -26,7 +26,6 @@ namespace Zelda.Game.Entities
 
         bool _initialized;
         Direction4 _direction;
-        MainLoop _mainLoop;
         Point _origin;
         Rectangle _boundingBox;
         int _optimizationDistance = DefaultOptimizationDistance;
@@ -285,7 +284,6 @@ namespace Zelda.Game.Entities
 
         public void SetMap(Map map)
         {
-            _mainLoop = map.Game.MainLoop;
             Map = map;
             if (Game.CurrentMap == map)
                 NotifyTilesetChanged();

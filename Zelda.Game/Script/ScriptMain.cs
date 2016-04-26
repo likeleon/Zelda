@@ -35,12 +35,12 @@ namespace Zelda.Game.Script
 
         public static void Exit()
         {
-            ScriptToCore.Call(() => ScriptContext.MainLoop.Exiting = true);
+            ScriptToCore.Call(() => ScriptContext.Framework.Exiting = true);
         }
 
         public static void Reset()
         {
-            ScriptToCore.Call(ScriptContext.MainLoop.SetResetting);
+            ScriptToCore.Call(ScriptContext.Framework.SetResetting);
         }
 
         public virtual bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)

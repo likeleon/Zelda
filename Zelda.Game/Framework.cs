@@ -4,7 +4,7 @@ using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
-    class MainLoop : DisposableObject
+    class Framework : IDisposable
     {
         readonly Surface _rootSurface;
         readonly ScriptSurface _rootScriptSurface;
@@ -14,7 +14,7 @@ namespace Zelda.Game
         public Game Game { get; private set; }
         bool IsResetting { get { return Game != null && _nextGame == null; } }
 
-        public MainLoop(Arguments args)
+        public Framework(Arguments args)
         {
             Engine.Initialize(args);
 
@@ -32,7 +32,7 @@ namespace Zelda.Game
             Video.ShowWindow();
         }
 
-        protected override void OnDispose(bool disposing)
+        public void Dispose()
         {
             if (Game != null)
                 Game.Stop();

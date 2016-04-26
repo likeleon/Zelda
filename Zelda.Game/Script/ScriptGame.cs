@@ -48,7 +48,7 @@ namespace Zelda.Game.Script
                     throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
 
                 T game = (T)Activator.CreateInstance(typeof(T));
-                game._savegame = new Savegame(ScriptContext.MainLoop, fileName);
+                game._savegame = new Savegame(fileName);
                 game._savegame.Initialize();
                 game._savegame.ScriptGame = game;
                 return game;
@@ -118,11 +118,11 @@ namespace Zelda.Game.Script
                 }
                 else
                 {
-                    MainLoop mainLoop = ScriptContext.MainLoop;
-                    if (mainLoop.Game != null)
-                        mainLoop.Game.Stop();
-                    game = new Game(mainLoop, _savegame);
-                    mainLoop.SetGame(game);
+                    Framework framework = ScriptContext.Framework;
+                    if (framework.Game != null)
+                        framework.Game.Stop();
+                    game = new Game(framework, _savegame);
+                    framework.SetGame(game);
                 }
             });
         }
