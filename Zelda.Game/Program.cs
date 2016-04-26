@@ -32,9 +32,7 @@ namespace Zelda.Game
 
         static int Run(string[] args)
         {
-            using (var framework = new Framework(new Arguments(args)))
-                framework.Run();
-            return 0;
+            return Framework.Run(new Arguments(args));
         }
 
         static void FatalError(Exception e)

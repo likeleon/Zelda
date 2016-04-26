@@ -18,7 +18,7 @@ namespace Zelda.Game.Script
                 var timerContext = context;
                 if (timerContext == null)
                 {
-                    var game = ScriptContext.Framework.Game;
+                    var game = Framework.Game;
                     if (game != null && game.HasCurrentMap)
                         timerContext = game.CurrentMap.ScriptMap;
                     else

@@ -4,17 +4,16 @@ using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
-    class Framework : IDisposable
+    static class Framework
     {
-        readonly Surface _rootSurface;
-        readonly ScriptSurface _rootScriptSurface;
-        Game _nextGame;
+        static Surface _rootSurface;
+        static ScriptSurface _rootScriptSurface;
+        static Game _nextGame;
 
-        public bool Exiting { get; set; }
-        public Game Game { get; private set; }
-        bool IsResetting { get { return Game != null && _nextGame == null; } }
+        public static bool Exiting { get; set; }
+        public static Game Game { get; private set; }
 
-        public Framework(Arguments args)
+        public static int Run(Arguments args)
         {
             Engine.Initialize(args);
 
@@ -27,23 +26,24 @@ namespace Zelda.Game
 
             _rootScriptSurface = new ScriptSurface(_rootSurface);
 
-            ScriptContext.Initialize(this);
+            ScriptContext.Initialize();
             
             Video.ShowWindow();
-        }
 
-        public void Dispose()
-        {
+            Loop();
+
             if (Game != null)
                 Game.Stop();
 
             ScriptContext.Exit();
             Engine.Quit();
+
+            return 0;
         }
 
         // 유저가 프로그램에 대한 종료 요청을 보내기 전까지 메인 루프를 실행한다.
         // 메인 루프는 게임 시간을 컨트롤하고 반복해서 월드를 갱신, 화면을 그린다.
-        public void Run()
+        static void Loop()
         {
             uint lastFrameDate = Engine.GetRealTime();
             uint lag = 0;               // 따라잡아야 하는 게임 시간
@@ -91,7 +91,7 @@ namespace Zelda.Game
             }
         }
 
-        void Update()
+        static void Update()
         {
             Game?.Update();
 
@@ -109,12 +109,12 @@ namespace Zelda.Game
                 else
                 {
                     ScriptContext.Exit();
-                    ScriptContext.Initialize(this);
+                    ScriptContext.Initialize();
                 }
             }
         }
 
-        void CheckInput()
+        static void CheckInput()
         {
             var inputEvent = InputEvent.GetEvent();
             while (inputEvent != null)
@@ -124,7 +124,7 @@ namespace Zelda.Game
             }
         }
 
-        void NotifyInput(InputEvent inputEvent)
+        static void NotifyInput(InputEvent inputEvent)
         {
             if (inputEvent.IsWindowClosing)
                 Exiting = true;
@@ -134,7 +134,7 @@ namespace Zelda.Game
                 Game.NotifyInput(inputEvent);
         }
 
-        void Draw()
+        static void Draw()
         {
             _rootSurface.Clear();
 
@@ -143,7 +143,7 @@ namespace Zelda.Game
             Video.Render(_rootSurface);
         }
 
-        void LoadModProperties()
+        static void LoadModProperties()
         {
             // 모드 속성 파일을 읽습니다
             var fileName = "mod.xml";
@@ -161,7 +161,7 @@ namespace Zelda.Game
                 modProperties.MaxModSize);
         }
 
-        void CheckVersionCompatibility(string zeldaRequiredVersion)
+        static void CheckVersionCompatibility(string zeldaRequiredVersion)
         {
             if (string.IsNullOrWhiteSpace(zeldaRequiredVersion))
                 Debug.Die("No Zelda version is specified in your mod.xml file!");
@@ -176,12 +176,12 @@ namespace Zelda.Game
             }
         }
 
-        internal void SetGame(Game game)
+        internal static void SetGame(Game game)
         {
             _nextGame = game;
         }
 
-        public void SetResetting()
+        public static void SetResetting()
         {
             if (Game != null)
                 Game.Stop();

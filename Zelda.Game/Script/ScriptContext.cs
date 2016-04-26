@@ -7,15 +7,12 @@ namespace Zelda.Game.Script
 {
     static partial class ScriptContext
     {
-        public static Framework Framework { get; private set; }
-        
         static ObjectCreator _objectCreator;
         static ScriptMain _scriptMain;
 
         #region 메인 루프
-        public static void Initialize(Framework framework)
+        public static void Initialize()
         {
-            Framework = framework;
             _objectCreator = new ObjectCreator(CurrentMod.Resources);
 
             CreateScriptMain();

@@ -118,11 +118,10 @@ namespace Zelda.Game.Script
                 }
                 else
                 {
-                    Framework framework = ScriptContext.Framework;
-                    if (framework.Game != null)
-                        framework.Game.Stop();
-                    game = new Game(framework, _savegame);
-                    framework.SetGame(game);
+                    if (Framework.Game != null)
+                        Framework.Game.Stop();
+                    game = new Game(_savegame);
+                    Framework.SetGame(game);
                 }
             });
         }

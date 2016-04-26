@@ -18,8 +18,7 @@ namespace Zelda.Game.Script
                 ScriptMovement movement = null;
                 if (type == MovementType.Target)
                 {
-                    Game game = ScriptContext.Framework.Game;
-                    if (game != null)
+                    if (Framework.Game != null)
                         throw new NotImplementedException("If we are on a map, the default target should be the hero.");
                     else
                         movement = new ScriptTargetMovement(new TargetMovement(new Point(0, 0), 32, false));

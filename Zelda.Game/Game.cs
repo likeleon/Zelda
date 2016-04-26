@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Zelda.Game.Lowlevel;
 using Zelda.Game.Entities;
+using Zelda.Game.Lowlevel;
 using Zelda.Game.Script;
 using Key = Zelda.Game.Savegame.Key;
 
@@ -13,7 +13,6 @@ namespace Zelda.Game
         bool _started;
         Map _nextMap;
 
-        public Framework Framework { get; }
         public Equipment Equipment { get { return SaveGame.Equipment; } }
         public Savegame SaveGame { get; }
         public Hero Hero { get; }
@@ -30,9 +29,8 @@ namespace Zelda.Game
         public bool HasCurrentMap { get { return CurrentMap != null; } }
         public Map CurrentMap { get; private set; }
 
-        public Game(Framework framework, Savegame saveGame)
+        public Game(Savegame saveGame)
         {
-            Framework = framework;
             SaveGame = saveGame;
             _dialogBox = new DialogBoxSystem(this);
 
