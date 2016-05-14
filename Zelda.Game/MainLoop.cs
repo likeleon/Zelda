@@ -1,31 +1,37 @@
 ﻿using System;
+using System.Linq;
 using Zelda.Game.LowLevel;
 using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
-    static class Framework
+    static class MainLoop
     {
+        public static bool Exiting { get; set; }
+        public static ModFiles ModFiles { get; private set; }
+        public static Platform Platform { get; private set; }
+        public static Game Game { get; private set; }
+        public static uint Now { get; private set; }
+
         static readonly uint TimeStep = 10;  // 업데이트시마다 추가될 게임 시간, 밀리초
 
         static Surface _rootSurface;
         static ScriptSurface _rootScriptSurface;
         static Game _nextGame;
 
-        public static bool Exiting { get; set; }
-        public static Platform Platform { get; private set; }
-        public static Game Game { get; private set; }
-        public static uint Now { get; private set; }
-
-        public static int Run(Arguments args)
+        public static void Initialize(Arguments args)
         {
             Logger.Info("Zelda " + ZeldaVersion.Version);
 
+            var modPath = GetModPath(args);
+            Logger.Info("Opening mod '{0}'".F(modPath));
+            ModFiles = new ModFiles(args.ProgramName, modPath);
+
             Platform = new Platform(args);
 
-            LoadModProperties();
-
             CurrentMod.Initialize();
+
+            LoadModProperties();
 
             _rootSurface = Surface.Create(Video.ModSize);
             _rootSurface.IsSoftwareDestination = false;
@@ -33,16 +39,36 @@ namespace Zelda.Game
             _rootScriptSurface = new ScriptSurface(_rootSurface);
 
             ScriptContext.Initialize();
-            
+
             Video.ShowWindow();
+        }
 
-            Loop();
+        static string GetModPath(Arguments args)
+        {
+            if (args.Args.Any() && !args.Args.Last().IsNullOrEmpty() && args.Args.Last()[0] != '-')
+                return args.Args.Last();
+            return Properties.Settings.Default.DefaultMod;
+        }
 
-            if (Game != null)
-                Game.Stop();
+        public static int Run()
+        {
+            try
+            {
+                Loop();
+            }
+            finally
+            {
+                if (Game != null)
+                    Game.Stop();
 
-            ScriptContext.Exit();
-            Platform.Dispose();
+                ScriptContext.Exit();
+
+                if (Platform != null)
+                    Platform.Dispose();
+
+                if (ModFiles != null)
+                    ModFiles.Dispose();
+            }
 
             return 0;
         }
@@ -153,20 +179,14 @@ namespace Zelda.Game
 
         static void LoadModProperties()
         {
-            // 모드 속성 파일을 읽습니다
-            var fileName = "mod.xml";
-            var modProperties = new ModProperties();
-            modProperties.ImportFromModFile(fileName);
+            var properties = CurrentMod.Properties;
 
-            CheckVersionCompatibility(modProperties.ZeldaVersion);
-            ModFiles.SetModWriteDir(modProperties.ModWriteDir);
-            if (!modProperties.TitleBar.IsNullOrWhiteSpace())
-                Video.WindowTitle = modProperties.TitleBar;
+            CheckVersionCompatibility(properties.ZeldaVersion);
 
-            Video.SetModSizeRange(
-                modProperties.NormalModSize,
-                modProperties.MinModSize,
-                modProperties.MaxModSize);
+            if (!properties.TitleBar.IsNullOrEmpty())
+                Video.WindowTitle = properties.TitleBar;
+
+            Video.SetModSizeRange(properties.NormalModSize, properties.MinModSize, properties.MaxModSize);
         }
 
         static void CheckVersionCompatibility(string zeldaRequiredVersion)

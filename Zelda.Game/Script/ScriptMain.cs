@@ -13,7 +13,7 @@ namespace Zelda.Game.Script
             {
                 fileName = fileName ?? "settings.dat";
 
-                if (String.IsNullOrEmpty(ModFiles.ModWriteDir))
+                if (String.IsNullOrEmpty(MainLoop.ModFiles.ModWriteDir))
                     throw new Exception("Cannnot load settings: no write directory was specified in mod.xml");
 
                 return Settings.Load(fileName);
@@ -26,7 +26,7 @@ namespace Zelda.Game.Script
             {
                 fileName = fileName ?? "settings.dat";
 
-                if (String.IsNullOrEmpty(ModFiles.ModWriteDir))
+                if (String.IsNullOrEmpty(MainLoop.ModFiles.ModWriteDir))
                     throw new Exception("Cannnot save settings: no write directory was specified in mod.xml");
 
                 return Settings.Save(fileName);
@@ -35,12 +35,12 @@ namespace Zelda.Game.Script
 
         public static void Exit()
         {
-            ScriptToCore.Call(() => Framework.Exiting = true);
+            ScriptToCore.Call(() => MainLoop.Exiting = true);
         }
 
         public static void Reset()
         {
-            ScriptToCore.Call(Framework.SetResetting);
+            ScriptToCore.Call(MainLoop.SetResetting);
         }
 
         public virtual bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)

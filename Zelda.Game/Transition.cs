@@ -72,7 +72,7 @@ namespace Zelda.Game
             {
                 IsSuspended = suspended;
                 if (suspended)
-                    WhenSuspended = Framework.Now;
+                    WhenSuspended = MainLoop.Now;
                 NotifySuspended(suspended);
             }
         }

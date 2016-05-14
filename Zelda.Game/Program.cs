@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Zelda.Game
@@ -10,11 +11,7 @@ namespace Zelda.Game
         [STAThread]
         public static int Main(string[] args)
         {
-#if DEBUG
-            Debug.DieOnError = true;
-#endif
-
-            if (Debugger.IsAttached)
+            if (Debugger.IsAttached || args.Contains("--just-die"))
                 return Run(args);
 
             AppDomain.CurrentDomain.UnhandledException += (_, e) => FatalError((Exception)e.ExceptionObject);
@@ -32,7 +29,8 @@ namespace Zelda.Game
 
         static int Run(string[] args)
         {
-            return Framework.Run(new Arguments(args));
+            MainLoop.Initialize(new Arguments(args));
+            return MainLoop.Run();
         }
 
         static void FatalError(Exception e)

@@ -81,7 +81,7 @@ namespace Zelda.Game
         public void SetCurrentFrame(int currentFrame)
         {
             IsAnimationFinished = false;
-            _nextFrameDate = Framework.Now + _frameDelay;
+            _nextFrameDate = MainLoop.Now + _frameDelay;
 
             if (currentFrame != CurrentFrame)
             {
@@ -121,7 +121,7 @@ namespace Zelda.Game
             // 복귀라면 _nextFrameDate를 다시 계산해줍니다
             if (!suspended)
             {
-                uint now = Framework.Now;
+                uint now = MainLoop.Now;
                 _nextFrameDate = now + _frameDelay;
                 _blinkNextChangeDate = now;
             }
@@ -152,7 +152,7 @@ namespace Zelda.Game
                 return;
 
             HasFrameChanged = false;
-            uint now = Framework.Now;
+            uint now = MainLoop.Now;
 
             // 시간에 따라 프레임을 갱신해 줍니다
             int nextFrame = 0;
@@ -230,7 +230,7 @@ namespace Zelda.Game
             if (blinkDelay > 0)
             {
                 _blinkIsSpriteVisible = false;
-                _blinkNextChangeDate = Framework.Now;
+                _blinkNextChangeDate = MainLoop.Now;
             }
         }
 

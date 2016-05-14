@@ -55,7 +55,7 @@ namespace Zelda.Game
         public override void Start()
         {
             _alpha = _alphaStart;
-            _nextFrameDate = Framework.Now;
+            _nextFrameDate = MainLoop.Now;
         }
 
         public override void Update()
@@ -63,7 +63,7 @@ namespace Zelda.Game
             if (!IsStarted || IsSuspended)
                 return;
 
-            while (Framework.Now >= _nextFrameDate && !_finished)
+            while (MainLoop.Now >= _nextFrameDate && !_finished)
             {
                 _alpha += _alphaIncrement;
                 _nextFrameDate += Delay;
@@ -97,7 +97,7 @@ namespace Zelda.Game
         protected override void NotifySuspended(bool suspended)
         {
             if (!suspended)
-                _nextFrameDate += Framework.Now + WhenSuspended;
+                _nextFrameDate += MainLoop.Now + WhenSuspended;
         }
     }
 }

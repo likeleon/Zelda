@@ -103,7 +103,7 @@ namespace Zelda.Game.Movements
             _suspended = suspended;
 
             if (suspended)
-                _whenSuspended = Framework.Now;
+                _whenSuspended = MainLoop.Now;
         }
         #endregion
 
@@ -159,7 +159,7 @@ namespace Zelda.Game.Movements
             _xy = xy;
 
             NotifyPositionChanged();
-            _lastMoveDate = Framework.Now;
+            _lastMoveDate = MainLoop.Now;
         }
 
         public void TranslateX(int dx)

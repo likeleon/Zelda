@@ -9,13 +9,13 @@ namespace Zelda.Game
     {
         public static bool Load(string fileName)
         {
-            Debug.CheckAssertion(!ModFiles.ModWriteDir.IsNullOrWhiteSpace(),
+            Debug.CheckAssertion(!MainLoop.ModFiles.ModWriteDir.IsNullOrWhiteSpace(),
                 "Cannot load setings: no mod write directory was specified in mod.xml");
 
-            if (!ModFiles.DataFileExists(fileName))
+            if (!MainLoop.ModFiles.DataFileExists(fileName))
                 return false;
 
-            var settings = ModFiles.DataFileRead(fileName).XmlDeserialize<SettingsXmlData>();
+            var settings = MainLoop.ModFiles.DataFileRead(fileName).XmlDeserialize<SettingsXmlData>();
 
             var language = settings.Language;
             if (!language.IsNullOrEmpty() && CurrentMod.HasLanguage(language))
@@ -26,7 +26,7 @@ namespace Zelda.Game
 
         public static bool Save(string fileName)
         {
-            Debug.CheckAssertion(!String.IsNullOrEmpty(ModFiles.ModWriteDir),
+            Debug.CheckAssertion(!String.IsNullOrEmpty(MainLoop.ModFiles.ModWriteDir),
                 "Cannot save settings: no mod write directory was specified in mod.xml");
 
             var settings = new SettingsXmlData();
@@ -35,7 +35,7 @@ namespace Zelda.Game
             
             var stream = new MemoryStream();
             settings.XmlSerialize(stream);
-            ModFiles.DataFileSave(fileName, stream.GetBuffer(), stream.Length);
+            MainLoop.ModFiles.DataFileSave(fileName, stream.GetBuffer(), stream.Length);
             return true;
         }
     }

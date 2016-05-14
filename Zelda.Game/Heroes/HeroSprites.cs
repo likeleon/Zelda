@@ -89,7 +89,7 @@ namespace Zelda.Game.Heroes
             _tunicSprite.SetSuspended(suspended);
 
             // 타이머
-            uint now = Framework.Now;
+            uint now = MainLoop.Now;
             if (suspended)
                 _whenSuspended = now;
             else if (_endBlinkDate != 0)
@@ -107,7 +107,7 @@ namespace Zelda.Game.Heroes
 
             if (IsBlinking &&
                 _endBlinkDate != 0 &&
-                Framework.Now >= _endBlinkDate)
+                MainLoop.Now >= _endBlinkDate)
             {
                 StopBlink();
             }
@@ -298,7 +298,7 @@ namespace Zelda.Game.Heroes
             if (duration == 0)
                 _endBlinkDate = 0;  // 끝나지 않습니다
             else
-                _endBlinkDate = Framework.Now + duration;
+                _endBlinkDate = MainLoop.Now + duration;
         }
 
         public void StopBlink()

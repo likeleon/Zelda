@@ -6,8 +6,8 @@ namespace Zelda.Game.Movements
 {
     class StraightMovement : Movement
     {
-        uint _nextMoveDateX = Framework.Now;    // 다음 X 이동 시각
-        uint _nextMoveDateY = Framework.Now;    // 다음 Y 이동 시각
+        uint _nextMoveDateX = MainLoop.Now;    // 다음 X 이동 시각
+        uint _nextMoveDateY = MainLoop.Now;    // 다음 Y 이동 시각
         uint _xDelay;           // x축으로의 1픽셀 이동시의 딜레이
         uint _yDelay;           // y축으로의 1픽셀 이동시의 딜레이
         int _xMove;             // x축으로의 다음 이동량 (0, 1, -1)
@@ -24,7 +24,7 @@ namespace Zelda.Game.Movements
         {
             if (!IsSuspended)
             {
-                uint now = Framework.Now;
+                uint now = MainLoop.Now;
 
                 bool xMoveNow = _xMove != 0 && now >= _nextMoveDateX;
                 bool yMoveNow = _yMove != 0 && now >= _nextMoveDateY;
@@ -63,7 +63,7 @@ namespace Zelda.Game.Movements
                         UpdateY();
                     }
 
-                    now = Framework.Now;
+                    now = MainLoop.Now;
 
                     if (!_finished && _maxDistance != 0 && Geometry.GetDistance(_initialXY, XY) >= _maxDistance)
                     {
@@ -95,7 +95,7 @@ namespace Zelda.Game.Movements
             {
                 if (WhenSuspended != 0)
                 {
-                    uint diff = Framework.Now - WhenSuspended;
+                    uint diff = MainLoop.Now - WhenSuspended;
                     _nextMoveDateX += diff;
                     _nextMoveDateY += diff;
                 }
@@ -154,7 +154,7 @@ namespace Zelda.Game.Movements
                 xSpeed = 0;
 
             _xSpeed = xSpeed;
-            uint now = Framework.Now;
+            uint now = MainLoop.Now;
 
             // _xDelay, _xMove, _nextMoveDateX를 다시 계산합니다
             if (_xSpeed == 0)
@@ -189,7 +189,7 @@ namespace Zelda.Game.Movements
                 ySpeed = 0;
 
             _ySpeed = ySpeed;
-            uint now = Framework.Now;
+            uint now = MainLoop.Now;
 
             // _xDelay, _xMove, _nextMoveDateX를 다시 계산합니다
             if (_ySpeed == 0)
@@ -275,7 +275,7 @@ namespace Zelda.Game.Movements
         {
             if (IsSuspended)
             {
-                uint delay = nextMoveDateX - Framework.Now;
+                uint delay = nextMoveDateX - MainLoop.Now;
                 _nextMoveDateX = WhenSuspended + delay;
             }
             else
@@ -286,7 +286,7 @@ namespace Zelda.Game.Movements
         {
             if (IsSuspended)
             {
-                uint delay = nextMoveDateY - Framework.Now;
+                uint delay = nextMoveDateY - MainLoop.Now;
                 _nextMoveDateY = WhenSuspended + delay;
             }
             else

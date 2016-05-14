@@ -13,7 +13,6 @@ namespace Zelda.Game.LowLevel
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
             _initialTime = GetRealTime();
 
-            ModFiles.Initialize(args);
             Sound.Initialize(args);
             InputEvent.Initialize();
             Video.Initialize(args, ZeldaVersion.Version.ToString());
@@ -28,7 +27,6 @@ namespace Zelda.Game.LowLevel
             Sprite.Quit();
             FontResource.Quit();
             Video.Quit();
-            ModFiles.Quit();
 
             SDL.SDL_Quit();
         }

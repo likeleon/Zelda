@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Zelda.Game.LowLevel;
 
 namespace Zelda.Game
 {
@@ -11,11 +10,15 @@ namespace Zelda.Game
         public static string Language { get; private set; }
         public static IReadOnlyDictionary<string, Dialog> Dialogs { get { return _dialogs; } }
         public static StringResources Strings { get; } = new StringResources();
+        public static ModProperties Properties { get; private set; }
 
         public static void Initialize()
         {
             Resources = new ModResources();
             Resources.ImportFromModFile("project_db.xml");
+
+            Properties = new ModProperties();
+            Properties.ImportFromModFile("mod.xml");
         }
 
         public static void Quit()
@@ -77,10 +80,10 @@ namespace Zelda.Game
             Language = languageCode;
 
             Strings.Clear();
-            Strings.ImportFromBuffer(ModFiles.DataFileRead("text/strings.xml", true));
+            Strings.ImportFromBuffer(MainLoop.ModFiles.DataFileRead("text/strings.xml", true));
 
             var resources = new DialogResources();
-            var success = resources.ImportFromBuffer(ModFiles.DataFileRead("text/dialogs.xml", true));
+            var success = resources.ImportFromBuffer(MainLoop.ModFiles.DataFileRead("text/dialogs.xml", true));
 
             _dialogs.Clear();
             if (success)

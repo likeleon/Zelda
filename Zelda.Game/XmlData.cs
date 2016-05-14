@@ -16,10 +16,10 @@ namespace Zelda.Game
 
         public bool ImportFromModFile(string modFileName, bool languageSpecific = false)
         {
-            if (!ModFiles.DataFileExists(modFileName))
+            if (!MainLoop.ModFiles.DataFileExists(modFileName))
                 Debug.Error("Cannot find mod file '{0}'".F(modFileName));
 
-            return OnImportFromBuffer(ModFiles.DataFileRead(modFileName, languageSpecific));
+            return OnImportFromBuffer(MainLoop.ModFiles.DataFileRead(modFileName, languageSpecific));
         }
 
         public bool ImportFromBuffer(byte[] buffer)
