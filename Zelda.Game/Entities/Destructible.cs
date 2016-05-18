@@ -127,7 +127,7 @@ namespace Zelda.Game.Entities
                     DamageOnEnemies,
                     explosionDate));
 
-                Sound.Play("lift");
+                Audio.Play("lift");
 
                 if (!CanRegenerate)
                     RemoveFromMap();

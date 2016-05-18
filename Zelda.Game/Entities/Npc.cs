@@ -167,7 +167,7 @@ namespace Zelda.Game.Entities
                         "stone",
                         2,
                         0));
-                    Sound.Play("lift");
+                    Audio.Play("lift");
                     RemoveFromMap();
                     return true;
                 }

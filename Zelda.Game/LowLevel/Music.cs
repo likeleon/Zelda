@@ -175,7 +175,7 @@ namespace Zelda.Game.LowLevel
 
         // OGG 한정
         IntPtr _oggFile;
-        readonly Sound.SoundFromMemory _oggMem = new Sound.SoundFromMemory();
+        readonly SoundFromMemory _oggMem = new SoundFromMemory();
         GCHandle _oggMemHandle;
 
         Music(string musicId, bool loop, Action callback)
@@ -238,7 +238,7 @@ namespace Zelda.Game.LowLevel
                         _oggMemHandle = GCHandle.Alloc(_oggMem);
                         // 이제 _oggmem은 인코딩된 데이터를 가집니다
 
-                        int error = Vorbisfile.ov_open_callback(GCHandle.ToIntPtr(_oggMemHandle), out _oggFile, IntPtr.Zero, 0, Sound.OggCallbacks);
+                        int error = Vorbisfile.ov_open_callback(GCHandle.ToIntPtr(_oggMemHandle), out _oggFile, IntPtr.Zero, 0, Audio.OggCallbacks);
                         if (error != 0)
                             Debug.Error("Cannot load music file '{0}' from memory: error {1}".F(_fileName, error));
                         else

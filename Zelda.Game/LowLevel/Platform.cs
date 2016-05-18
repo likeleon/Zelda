@@ -15,7 +15,7 @@ namespace Zelda.Game.LowLevel
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
             _initialTime = GetRealTime();
 
-            Sound.Initialize(args);
+            Audio.Initialize(args);
             InputEvent.Initialize();
             Video = new Video(args, ZeldaVersion.Version.ToString());
             FontResource.Initialize();
@@ -25,7 +25,7 @@ namespace Zelda.Game.LowLevel
         public void Dispose()
         {
             InputEvent.Quit();
-            Sound.Quit();
+            Audio.Quit();
             Sprite.Quit();
             FontResource.Quit();
             if (Video != null)
@@ -36,7 +36,7 @@ namespace Zelda.Game.LowLevel
 
         public void Update()
         {
-            Sound.Update();
+            Audio.Update();
         }
 
         public uint GetRealTime()

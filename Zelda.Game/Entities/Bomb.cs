@@ -90,7 +90,7 @@ namespace Zelda.Game.Entities
                 Hero.IsFacingPointIn(BoundingBox))
             {
                 Hero.StartLifting(new CarriedItem(Hero, this, "entities/bomb", String.Empty, 0, _explosionDate));
-                Sound.Play("lift");
+                Audio.Play("lift");
                 RemoveFromMap();
                 return true;
             }
@@ -137,7 +137,7 @@ namespace Zelda.Game.Entities
         void Explode()
         {
             Entities.ScheduleAddEntity(new Explosion(String.Empty, Layer, CenterPoint, true));
-            Sound.Play("explosion");
+            Audio.Play("explosion");
             RemoveFromMap();
         }
     }

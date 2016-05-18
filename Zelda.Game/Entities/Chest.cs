@@ -83,7 +83,7 @@ namespace Zelda.Game.Entities
 
             if (CanOpen())
             {
-                Sound.Play("chest_open");
+                Audio.Play("chest_open");
                 SetOpen(true);
                 _treasureDate = MainLoop.Now + 300;
 

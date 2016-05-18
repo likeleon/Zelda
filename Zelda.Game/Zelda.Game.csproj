@@ -89,7 +89,7 @@
     <Compile Include="LowLevel\Rectangle.cs" />
     <Compile Include="LowLevel\InputEvent.cs" />
     <Compile Include="LowLevel\Size.cs" />
-    <Compile Include="LowLevel\Sound.cs" />
+    <Compile Include="LowLevel\Audio.cs" />
     <Compile Include="LowLevel\TextSurface.cs" />
     <Compile Include="Entities\AnimatedTilePattern.cs" />
     <Compile Include="Entities\Block.cs" />

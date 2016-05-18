@@ -27,7 +27,7 @@ namespace Zelda.Game.Heroes
 
             string soundId = _treasure.Item.SoundWhenBrandished;
             if (!String.IsNullOrEmpty(soundId))
-                Sound.Play(soundId);
+                Audio.Play(soundId);
 
             _treasure.GiveToPlayer();
 
