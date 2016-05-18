@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Zelda.Game.LowLevel
 {
-    class ModFiles : IDisposable
+    public class ModFiles : IDisposable
     {
         public enum DataFileLocation
         {
@@ -18,14 +18,13 @@ namespace Zelda.Game.LowLevel
         public string ZeldaWriteDir { get; private set; }
         public string ModWriteDir { get; private set; }
 
-        public ModFiles(string programName, string modPath)
-        {
-            if (programName.IsNullOrEmpty())
-                FileSystem.PHYSFS_init(null);
-            else
-                FileSystem.PHYSFS_init(programName);
+        readonly CurrentMod _mod;
 
-            ModPath = Properties.Settings.Default.DefaultMod;
+        public ModFiles(CurrentMod mod, string programName, string modPath)
+        {
+            _mod = mod;
+
+            FileSystem.PHYSFS_init(programName);
 
             ModPath = modPath;
             var archiveModPath1 = ModPath + "/data.zelda";
@@ -41,22 +40,12 @@ namespace Zelda.Game.LowLevel
 
             SetZeldaWriteDir(Properties.Settings.Default.WriteDir);
 
-            if (!ModExists())
+            if (!DataFileExists("mod.xml"))
                 throw new Exception("No mod was found in the directory '{0}'".F(ModPath));
-
-            CurrentMod.Initialize();
-            SetModWriteDir(CurrentMod.Properties.ModWriteDir);
-        }
-
-        bool ModExists()
-        {
-            return DataFileExists("mod.xml");
         }
 
         public void Dispose()
         {
-            CurrentMod.Quit();
-
             FileSystem.PHYSFS_deinit();
         }
 
@@ -65,10 +54,10 @@ namespace Zelda.Game.LowLevel
             string fullFileName;
             if (languageSpecific)
             {
-                if (CurrentMod.Language == null)
+                if (_mod.Language == null)
                     return false;
 
-                fullFileName = "Languages/" + CurrentMod.Language + "/" + fileName;
+                fullFileName = "Languages/" + _mod.Language + "/" + fileName;
             }
             else
             {
@@ -84,10 +73,10 @@ namespace Zelda.Game.LowLevel
 
             if (languageSpecific)
             {
-                if (CurrentMod.Language == null)
+                if (_mod.Language == null)
                     throw new InvalidOperationException("Cannot open language-specific file '{0}': no language was set".F(fileName));
 
-                fullFileName = "Languages/" + CurrentMod.Language + "/" + fullFileName;
+                fullFileName = "Languages/" + _mod.Language + "/" + fullFileName;
             }
 
             if (FileSystem.PHYSFS_exists(fullFileName) == 0)

@@ -76,10 +76,10 @@ namespace Zelda.Game
 
         public void Initialize()
         {
-            Debug.CheckAssertion(!MainLoop.ModFiles.ModWriteDir.IsNullOrWhiteSpace(),
+            Debug.CheckAssertion(!MainLoop.CurrentMod.ModFiles.ModWriteDir.IsNullOrWhiteSpace(),
                 "The mod write directory for savegames was not set in mod.xml");
 
-            if (!MainLoop.ModFiles.DataFileExists(FileName))
+            if (!MainLoop.CurrentMod.ModFiles.DataFileExists(FileName))
             {
                 IsEmpty = true;
                 SetInitialValues();
@@ -132,7 +132,7 @@ namespace Zelda.Game
         {
             try
             {
-                var saveData = MainLoop.ModFiles.DataFileRead(FileName).XmlDeserialize<SaveXmlData>();
+                var saveData = MainLoop.CurrentMod.ModFiles.DataFileRead(FileName).XmlDeserialize<SaveXmlData>();
                 foreach (var pair in saveData.KeySavedValues)
                     _savedValues[pair.Key] = pair.Value;
             }
@@ -151,7 +151,7 @@ namespace Zelda.Game
 
             var stream = new MemoryStream();
             saveData.XmlSerialize(stream);
-            MainLoop.ModFiles.DataFileSave(FileName, stream.GetBuffer(), stream.Length);
+            MainLoop.CurrentMod.ModFiles.DataFileSave(FileName, stream.GetBuffer(), stream.Length);
             IsEmpty = false;
         }
 

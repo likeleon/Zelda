@@ -1,44 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Zelda.Game.LowLevel;
 
 namespace Zelda.Game
 {
-    static class CurrentMod
+    public class CurrentMod : IDisposable
     {
-        static readonly Dictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
+        readonly Dictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
 
-        public static ModResources Resources { get; private set; }
-        public static string Language { get; private set; }
-        public static IReadOnlyDictionary<string, Dialog> Dialogs { get { return _dialogs; } }
-        public static StringResources Strings { get; } = new StringResources();
-        public static ModProperties Properties { get; private set; }
+        public ModFiles ModFiles { get; }
+        public ModResources Resources { get; }
+        public string Language { get; private set; }
+        public IReadOnlyDictionary<string, Dialog> Dialogs => _dialogs;
+        public StringResources Strings { get; } = new StringResources();
+        public ModProperties Properties { get; }
 
-        public static void Initialize()
+        public CurrentMod(string programName, string modPath)
         {
+            ModFiles = new ModFiles(this, programName, modPath);
+
             Resources = new ModResources();
-            Resources.ImportFromModFile("project_db.xml");
+            Resources.ImportFromModFile(ModFiles, "project_db.xml");
 
             Properties = new ModProperties();
-            Properties.ImportFromModFile("mod.xml");
+            Properties.ImportFromModFile(ModFiles, "mod.xml");
+
+            ModFiles.SetModWriteDir(Properties.ModWriteDir);
         }
 
-        public static void Quit()
+        public void Dispose()
         {
-            Resources.Clear();
-            Strings.Clear();
-            _dialogs.Clear();
+            if (ModFiles != null)
+                ModFiles.Dispose();
         }
 
-        public static bool ResourceExists(ResourceType resourceType, string id)
+        public bool ResourceExists(ResourceType resourceType, string id)
         {
             return Resources.Exists(resourceType, id);
         }
 
-        public static IReadOnlyDictionary<string, string> GetResources(ResourceType resourceType)
+        public IReadOnlyDictionary<string, string> GetResources(ResourceType resourceType)
         {
             return Resources.GetElements(resourceType);
         }
 
-        public static string GetLanguageName(string languageCode)
+        public string GetLanguageName(string languageCode)
         {
             var languages = GetResources(ResourceType.Language);
             if (languages.ContainsKey(languageCode))
@@ -47,43 +53,43 @@ namespace Zelda.Game
                 return "";
         }
 
-        public static bool StringExists(string key)
+        public bool StringExists(string key)
         {
             return Strings.HasString(key);
         }
 
-        public static string GetString(string key)
+        public string GetString(string key)
         {
             return Strings.GetString(key);
         }
 
-        public static bool DialogExists(string dialogId)
+        public bool DialogExists(string dialogId)
         {
             return _dialogs.ContainsKey(dialogId);
         }
 
-        public static Dialog GetDialog(string dialogId)
+        public Dialog GetDialog(string dialogId)
         {
             Debug.CheckAssertion(DialogExists(dialogId), "No such dialog: '{0}'".F(dialogId));
             return Dialogs[dialogId];
         }
 
-        public static bool HasLanguage(string languageCode)
+        public bool HasLanguage(string languageCode)
         {
             return ResourceExists(ResourceType.Language, languageCode);
         }
 
-        public static void SetLanguage(string languageCode)
+        public void SetLanguage(string languageCode)
         {
             Debug.CheckAssertion(HasLanguage(languageCode), "No such language: '{0}'".F(languageCode));
 
             Language = languageCode;
 
             Strings.Clear();
-            Strings.ImportFromBuffer(MainLoop.ModFiles.DataFileRead("text/strings.xml", true));
+            Strings.ImportFromBuffer(ModFiles.DataFileRead("text/strings.xml", true));
 
             var resources = new DialogResources();
-            var success = resources.ImportFromBuffer(MainLoop.ModFiles.DataFileRead("text/dialogs.xml", true));
+            var success = resources.ImportFromBuffer(ModFiles.DataFileRead("text/dialogs.xml", true));
 
             _dialogs.Clear();
             if (success)

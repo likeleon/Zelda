@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Xml.Serialization;
-using Zelda.Game.LowLevel;
 
 namespace Zelda.Game
 {
@@ -9,33 +8,37 @@ namespace Zelda.Game
     {
         public static bool Load(string fileName)
         {
-            Debug.CheckAssertion(!MainLoop.ModFiles.ModWriteDir.IsNullOrWhiteSpace(),
+            var modFiles = MainLoop.CurrentMod.ModFiles;
+
+            Debug.CheckAssertion(!modFiles.ModWriteDir.IsNullOrWhiteSpace(),
                 "Cannot load setings: no mod write directory was specified in mod.xml");
 
-            if (!MainLoop.ModFiles.DataFileExists(fileName))
+            if (!modFiles.DataFileExists(fileName))
                 return false;
 
-            var settings = MainLoop.ModFiles.DataFileRead(fileName).XmlDeserialize<SettingsXmlData>();
+            var settings = modFiles.DataFileRead(fileName).XmlDeserialize<SettingsXmlData>();
 
             var language = settings.Language;
-            if (!language.IsNullOrEmpty() && CurrentMod.HasLanguage(language))
-                CurrentMod.SetLanguage(language);
+            if (!language.IsNullOrEmpty() && MainLoop.CurrentMod.HasLanguage(language))
+                MainLoop.CurrentMod.SetLanguage(language);
 
             return true;
         }
 
         public static bool Save(string fileName)
         {
-            Debug.CheckAssertion(!String.IsNullOrEmpty(MainLoop.ModFiles.ModWriteDir),
+            var modFiles = MainLoop.CurrentMod.ModFiles;
+
+            Debug.CheckAssertion(!String.IsNullOrEmpty(modFiles.ModWriteDir),
                 "Cannot save settings: no mod write directory was specified in mod.xml");
 
             var settings = new SettingsXmlData();
-            if (!CurrentMod.Language.IsNullOrEmpty())
-                settings.Language = CurrentMod.Language;
+            if (!MainLoop.CurrentMod.Language.IsNullOrEmpty())
+                settings.Language = MainLoop.CurrentMod.Language;
             
             var stream = new MemoryStream();
             settings.XmlSerialize(stream);
-            MainLoop.ModFiles.DataFileSave(fileName, stream.GetBuffer(), stream.Length);
+            modFiles.DataFileSave(fileName, stream.GetBuffer(), stream.Length);
             return true;
         }
     }
