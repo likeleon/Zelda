@@ -7,6 +7,7 @@ namespace Zelda.Game.LowLevel
     {
         public string Os => SDL.SDL_GetPlatform();
         public Video Video { get; }
+        public Audio Audio { get; }
 
         readonly uint _initialTime;       // 초기화 시점의 실제 시각, 밀리초
 
@@ -15,7 +16,7 @@ namespace Zelda.Game.LowLevel
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
             _initialTime = GetRealTime();
 
-            Audio.Initialize(args);
+            Audio = new Audio(args);
             InputEvent.Initialize();
             Video = new Video(args, ZeldaVersion.Version.ToString());
             FontResource.Initialize();
@@ -25,7 +26,8 @@ namespace Zelda.Game.LowLevel
         public void Dispose()
         {
             InputEvent.Quit();
-            Audio.Quit();
+            if (Audio != null)
+                Audio.Dispose();
             Sprite.Quit();
             FontResource.Quit();
             if (Video != null)

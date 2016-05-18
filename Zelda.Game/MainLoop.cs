@@ -10,6 +10,7 @@ namespace Zelda.Game
         public static bool Exiting { get; set; }
         public static Mod Mod { get; private set; }
         public static Video Video => Platform.Video;
+        public static Audio Audio => Platform.Audio;
 
         internal static Game Game { get; private set; }
         internal static uint Now { get; private set; }

@@ -24,7 +24,7 @@ namespace Zelda.Game.Heroes
         {
             base.Start(previousState);
 
-            Audio.Play("hero_hurt");
+            MainLoop.Audio.Play("hero_hurt");
 
             uint invincibilityDuration = 2000;
             Hero.SetInvincible(true, invincibilityDuration);

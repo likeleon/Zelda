@@ -6,21 +6,21 @@ namespace Zelda.Game.Script
     public class ScriptAudio
     {
         public static int MusicVolume { get { return Music.Volume; } }
-        public static int SoundVolume { get { return Audio.Volume; } }
+        public static int SoundVolume { get { return MainLoop.Audio.Volume; } }
 
         public static void PlaySound(string soundId)
         {
             ScriptToCore.Call(() =>
             {
-                if (!Audio.Exists(soundId))
+                if (!MainLoop.Audio.Exists(soundId))
                     throw new ArgumentException("No such sound: '{0}'".F(soundId), "soundId");
-                Audio.Play(soundId);
+                MainLoop.Audio.Play(soundId);
             });
         }
 
         public static void PreloadSounds()
         {
-            ScriptToCore.Call(Audio.LoadAll);
+            ScriptToCore.Call(MainLoop.Audio.LoadAll);
         }
 
         public static void PlayMusic(string musicId, bool loop = true)
@@ -58,7 +58,7 @@ namespace Zelda.Game.Script
 
         public static void SetSoundVolume(int volume)
         {
-            ScriptToCore.Call(() => Audio.SetVolume(volume));
+            ScriptToCore.Call(() => MainLoop.Audio.SetVolume(volume));
         }
     }
 }

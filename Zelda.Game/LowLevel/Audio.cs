@@ -201,90 +201,71 @@ namespace Zelda.Game.LowLevel
         }
     }
 
-    class Audio
+    public class Audio : IDisposable
     {
-        public static readonly Vorbisfile.ov_callbacks OggCallbacks;
+        public int Volume => (int)(_volume * 100.0 + 0.5);
 
-        static IntPtr _device;
-        static IntPtr _context;
-        static readonly List<Sound> _currentSounds = new List<Sound>();
-        static readonly Dictionary<string, Sound> _allSounds = new Dictionary<string, Sound>();
-        
-        static float _volume = 1.0f;
-        static bool _initialized;
-        static bool _soundsPreloaded;
-        
-        public static int Volume { get { return (int)(_volume * 100.0 + 0.5); } }
-        public static bool IsInitialized { get { return _initialized; } }
+        internal static readonly Vorbisfile.ov_callbacks OggCallbacks = CreateCallbacks();
 
-        static Audio()
+        readonly List<Sound> _currentSounds = new List<Sound>();
+        readonly Dictionary<string, Sound> _allSounds = new Dictionary<string, Sound>();
+        IntPtr _device;
+        IntPtr _context;        
+        float _volume = 1.0f;
+        bool _soundsPreloaded;
+
+        static Vorbisfile.ov_callbacks CreateCallbacks()
         {
-            OggCallbacks = new Vorbisfile.ov_callbacks();
-            OggCallbacks.read_func = CbRead;
-            OggCallbacks.seek_func = null;
-            OggCallbacks.close_func = null;
-            OggCallbacks.tell_func = null;
+            var cb = new Vorbisfile.ov_callbacks();
+            cb.read_func = CbRead;
+            cb.seek_func = null;
+            cb.close_func = null;
+            cb.tell_func = null;
+            return cb;
         }
 
-        public static void Initialize(Arguments args)
+        internal Audio(Arguments args)
         {
-            bool disable = args.HasArgument("-no-audio");
-            if (disable)
+            if (args.HasArgument("-no-audio"))
                 return;
 
             // OpenAL 초기화
             _device = ALC10.alcOpenDevice(null);
             if (_device == IntPtr.Zero)
-            {
-                Debug.Error("Cannot open audio device");
-                return;
-            }
+                throw new Exception("Cannot open audio device");
 
             int[] attr = { ALC10.ALC_FREQUENCY, 32000, 0 }; // SPC 출력 샘플링 레이트가 32 KHZ
             _context = ALC10.alcCreateContext(_device, attr);
             if (_context == IntPtr.Zero)
-            {
-                Debug.Error("Cannot create audio context");
-                ALC10.alcCloseDevice(_device);
-                return;
-            }
+                throw new Exception("Cannot create audio context");
+
             if (!ALC10.alcMakeContextCurrent(_context))
-            {
-                Debug.Error("Cannot activate audio context");
-                ALC10.alcDestroyContext(_context);
-                ALC10.alcCloseDevice(_device);
-                return;
-            }
+                throw new Exception("Cannot activate audio context");
 
             AL10.alGenBuffers(IntPtr.Zero, null);   // 몇몇 시스템에서 첫 사운드가 로드될 때 발생하는 에러 대비
 
-            _initialized = true;
             SetVolume(100);
 
             Music.Initialize();
         }
 
-        public static void Quit()
+        public void Dispose()
         {
-            if (!IsInitialized)
-                return;
-
             Music.Quit();
 
             _allSounds.Values.Do(s => s.Dispose());
-            _allSounds.Clear();
 
-            // OpenAL 정리
-            ALC10.alcMakeContextCurrent(IntPtr.Zero);
-            ALC10.alcDestroyContext(_context);
-            _context = IntPtr.Zero;
-            ALC10.alcCloseDevice(_device);
-            _device = IntPtr.Zero;
-            
-            _initialized = false;
+            if (_context != IntPtr.Zero)
+            {
+                ALC10.alcMakeContextCurrent(IntPtr.Zero);
+                ALC10.alcDestroyContext(_context);
+            }
+
+            if (_device != IntPtr.Zero)
+                ALC10.alcCloseDevice(_device);
         }
 
-        public static void Update()
+        internal void Update()
         {
             var soundsToRemove = new List<Sound>();
             foreach (var sound in _currentSounds)
@@ -298,10 +279,10 @@ namespace Zelda.Game.LowLevel
             Music.Update();
         }
 
-        public static uint CbRead(IntPtr ptr, uint size, uint nbBytes, IntPtr datasource)
+        static uint CbRead(IntPtr ptr, uint size, uint nbBytes, IntPtr datasource)
         {
-            GCHandle handle = GCHandle.FromIntPtr(datasource);
-            SoundFromMemory mem = (SoundFromMemory)handle.Target;
+            var handle = GCHandle.FromIntPtr(datasource);
+            var mem = (SoundFromMemory)handle.Target;
 
             uint totalSize = (uint)mem.data.Length;
             if (mem.position >= totalSize)
@@ -320,9 +301,9 @@ namespace Zelda.Game.LowLevel
             return nbBytes;
         }
 
-        public static void LoadAll()
+        public void LoadAll()
         {
-            if (IsInitialized || _soundsPreloaded)
+            if (_soundsPreloaded)
                 return;
 
             var soundElements = MainLoop.Mod.GetResources(ResourceType.Sound);
@@ -335,12 +316,12 @@ namespace Zelda.Game.LowLevel
             _soundsPreloaded = true;
         }
 
-        public static bool Exists(string soundId)
+        internal bool Exists(string soundId)
         {
             return MainLoop.Mod.ModFiles.DataFileExists("sounds/{0}.ogg".F(soundId));
         }
 
-        public static void Play(string soundId)
+        public void Play(string soundId)
         {
             if (!_allSounds.ContainsKey(soundId))
                 _allSounds.Add(soundId, new Sound(soundId));
@@ -352,7 +333,7 @@ namespace Zelda.Game.LowLevel
             _currentSounds.Add(_allSounds[soundId]);
         }
 
-        public static void SetVolume(int volume)
+        public void SetVolume(int volume)
         {
             volume = Math.Min(100, Math.Max(0, volume));
             _volume = volume / 100.0f;
