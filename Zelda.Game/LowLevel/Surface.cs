@@ -145,11 +145,11 @@ namespace Zelda.Game.LowLevel
             }
             string prefixedFileName = prefix + fileName;
 
-            if (!MainLoop.CurrentMod.ModFiles.DataFileExists(prefixedFileName, languageSpecific))
+            if (!MainLoop.Mod.ModFiles.DataFileExists(prefixedFileName, languageSpecific))
                 return IntPtr.Zero;
 
             IntPtr softwareSurface;
-            byte[] buffer = MainLoop.CurrentMod.ModFiles.DataFileRead(prefixedFileName, languageSpecific);
+            byte[] buffer = MainLoop.Mod.ModFiles.DataFileRead(prefixedFileName, languageSpecific);
             GCHandle bufferHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             IntPtr rw = SDL.SDL_RWFromMem(bufferHandle.AddrOfPinnedObject(), buffer.Length);
             softwareSurface = SDL_image.IMG_Load_RW(rw, 0);

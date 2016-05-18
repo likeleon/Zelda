@@ -100,7 +100,7 @@ namespace Zelda.Game
         {
             MapData data = new MapData();
             string fileName = "maps/" + Id + ".xml";
-            bool success = data.ImportFromModFile(MainLoop.CurrentMod.ModFiles, fileName);
+            bool success = data.ImportFromModFile(MainLoop.Mod.ModFiles, fileName);
 
             if (!success)
                 Debug.Die("Failed to load map data file '{0}'".F(fileName));

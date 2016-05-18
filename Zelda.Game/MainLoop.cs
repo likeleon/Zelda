@@ -8,7 +8,7 @@ namespace Zelda.Game
     static class MainLoop
     {
         public static bool Exiting { get; set; }
-        public static CurrentMod CurrentMod { get; private set; }
+        public static Mod Mod { get; private set; }
         public static Platform Platform { get; private set; }
         public static Game Game { get; private set; }
         public static uint Now { get; private set; }
@@ -25,7 +25,7 @@ namespace Zelda.Game
 
             var modPath = GetModPath(args);
             Logger.Info("Opening mod '{0}'".F(modPath));
-            CurrentMod = new CurrentMod(args.ProgramName, modPath);
+            Mod = new Mod(args.ProgramName, modPath);
 
             Platform = new Platform(args);
 
@@ -64,8 +64,8 @@ namespace Zelda.Game
                 if (Platform != null)
                     Platform.Dispose();
 
-                if (CurrentMod != null)
-                    MainLoop.CurrentMod.Dispose();
+                if (Mod != null)
+                    MainLoop.Mod.Dispose();
             }
 
             return 0;
@@ -177,7 +177,7 @@ namespace Zelda.Game
 
         static void LoadModProperties()
         {
-            var properties = MainLoop.CurrentMod.Properties;
+            var properties = MainLoop.Mod.Properties;
 
             CheckVersionCompatibility(properties.ZeldaVersion);
 

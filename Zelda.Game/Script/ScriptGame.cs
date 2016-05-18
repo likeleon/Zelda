@@ -33,10 +33,10 @@ namespace Zelda.Game.Script
         {
             return ScriptToCore.Call(() =>
             {
-                if (String.IsNullOrWhiteSpace(MainLoop.CurrentMod.ModFiles.ModWriteDir))
+                if (String.IsNullOrWhiteSpace(MainLoop.Mod.ModFiles.ModWriteDir))
                     throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
 
-                return MainLoop.CurrentMod.ModFiles.DataFileExists(fileName);
+                return MainLoop.Mod.ModFiles.DataFileExists(fileName);
             });
         }
 
@@ -44,7 +44,7 @@ namespace Zelda.Game.Script
         {
             return ScriptToCore.Call<T>(() =>
             {
-                if (String.IsNullOrWhiteSpace(MainLoop.CurrentMod.ModFiles.ModWriteDir))
+                if (String.IsNullOrWhiteSpace(MainLoop.Mod.ModFiles.ModWriteDir))
                     throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
 
                 T game = (T)Activator.CreateInstance(typeof(T));
@@ -59,10 +59,10 @@ namespace Zelda.Game.Script
         {
             ScriptToCore.Call(() =>
             {
-                if (string.IsNullOrEmpty(MainLoop.CurrentMod.ModFiles.ModWriteDir))
+                if (string.IsNullOrEmpty(MainLoop.Mod.ModFiles.ModWriteDir))
                     throw new InvalidOperationException("Cannot delete savegame: no mod directory was specified in mod.xml");
 
-                MainLoop.CurrentMod.ModFiles.DataFileDelete(fileName);
+                MainLoop.Mod.ModFiles.DataFileDelete(fileName);
             });
         }
 
@@ -108,7 +108,7 @@ namespace Zelda.Game.Script
         {
             ScriptToCore.Call(() =>
             {
-                if (MainLoop.CurrentMod.GetResources(ResourceType.Map).Count <= 0)
+                if (MainLoop.Mod.GetResources(ResourceType.Map).Count <= 0)
                     throw new InvalidOperationException("Cannot start game: there is no map in this mod");
 
                 Game game = _savegame.Game;
@@ -171,7 +171,7 @@ namespace Zelda.Game.Script
         {
             ScriptToCore.Call(() =>
             {
-                if (String.IsNullOrEmpty(MainLoop.CurrentMod.ModFiles.ModWriteDir))
+                if (String.IsNullOrEmpty(MainLoop.Mod.ModFiles.ModWriteDir))
                     throw new InvalidOperationException("Cannot save game: no write directory was specified in mod.xml");
 
                 _savegame.Save();
@@ -202,7 +202,7 @@ namespace Zelda.Game.Script
         {
             ScriptToCore.Call(() =>
             {
-                if (!MainLoop.CurrentMod.DialogExists(dialogId))
+                if (!MainLoop.Mod.DialogExists(dialogId))
                     throw new ArgumentException("No such dialog: '{0}'".F(dialogId));
 
                 var game = _savegame.Game;

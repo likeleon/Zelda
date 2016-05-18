@@ -13,7 +13,7 @@ namespace Zelda.Game.Script
             {
                 fileName = fileName ?? "settings.dat";
 
-                if (String.IsNullOrEmpty(MainLoop.CurrentMod.ModFiles.ModWriteDir))
+                if (String.IsNullOrEmpty(MainLoop.Mod.ModFiles.ModWriteDir))
                     throw new Exception("Cannnot load settings: no write directory was specified in mod.xml");
 
                 return Settings.Load(fileName);
@@ -26,7 +26,7 @@ namespace Zelda.Game.Script
             {
                 fileName = fileName ?? "settings.dat";
 
-                if (String.IsNullOrEmpty(MainLoop.CurrentMod.ModFiles.ModWriteDir))
+                if (String.IsNullOrEmpty(MainLoop.Mod.ModFiles.ModWriteDir))
                     throw new Exception("Cannnot save settings: no write directory was specified in mod.xml");
 
                 return Settings.Save(fileName);

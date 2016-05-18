@@ -18,9 +18,9 @@ namespace Zelda.Game.LowLevel
         public string ZeldaWriteDir { get; private set; }
         public string ModWriteDir { get; private set; }
 
-        readonly CurrentMod _mod;
+        readonly Mod _mod;
 
-        public ModFiles(CurrentMod mod, string programName, string modPath)
+        public ModFiles(Mod mod, string programName, string modPath)
         {
             _mod = mod;
 

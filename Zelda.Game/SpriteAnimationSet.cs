@@ -27,7 +27,7 @@ namespace Zelda.Game
 
             string fileName = "sprites/" + _id + ".xml";
             SpriteData data = new SpriteData();
-            bool success = data.ImportFromModFile(MainLoop.CurrentMod.ModFiles, fileName);
+            bool success = data.ImportFromModFile(MainLoop.Mod.ModFiles, fileName);
             if (success)
             {
                 DefaultAnimation = data.DefaultAnimationName;

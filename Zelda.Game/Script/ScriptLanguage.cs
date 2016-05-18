@@ -8,22 +8,22 @@ namespace Zelda.Game.Script
     {
         static Lazy<string[]> _languages;
         
-        public static string Language { get { return MainLoop.CurrentMod.Language; } }
+        public static string Language { get { return MainLoop.Mod.Language; } }
         public static IEnumerable<string> Languages { get { return _languages.Value; } }
 
         static ScriptLanguage()
         {
-            _languages = Exts.Lazy(() => MainLoop.CurrentMod.GetResources(ResourceType.Language).Select(r => r.Key).ToArray());
+            _languages = Exts.Lazy(() => MainLoop.Mod.GetResources(ResourceType.Language).Select(r => r.Key).ToArray());
         }
         
         public static void SetLanguage(string languageCode)
         {
             ScriptToCore.Call(() =>
             {
-                if (!MainLoop.CurrentMod.HasLanguage(languageCode))
+                if (!MainLoop.Mod.HasLanguage(languageCode))
                     throw new ArgumentException("No such language: '{0}'".F(languageCode), "languageCode");
 
-                MainLoop.CurrentMod.SetLanguage(languageCode);
+                MainLoop.Mod.SetLanguage(languageCode);
             });
         }
 
@@ -33,17 +33,17 @@ namespace Zelda.Game.Script
             {
                 if (languageCode != null)
                 {
-                    if (!MainLoop.CurrentMod.HasLanguage(languageCode))
+                    if (!MainLoop.Mod.HasLanguage(languageCode))
                         throw new ArgumentException("No such language: '{0}'".F(languageCode), "languageCode");
 
-                    return MainLoop.CurrentMod.GetLanguageName(languageCode);
+                    return MainLoop.Mod.GetLanguageName(languageCode);
                 }
                 else
                 {
-                    if (MainLoop.CurrentMod.Language == null)
+                    if (MainLoop.Mod.Language == null)
                         throw new ArgumentException("No language is set", "languageCode");
 
-                    return MainLoop.CurrentMod.GetLanguageName(MainLoop.CurrentMod.Language);
+                    return MainLoop.Mod.GetLanguageName(MainLoop.Mod.Language);
                 }
             });
         }
@@ -52,10 +52,10 @@ namespace Zelda.Game.Script
         {
             return ScriptToCore.Call(() =>
             {
-                if (!MainLoop.CurrentMod.StringExists(key))
+                if (!MainLoop.Mod.StringExists(key))
                     return null;
 
-                return MainLoop.CurrentMod.GetString(key);
+                return MainLoop.Mod.GetString(key);
             });
         }
 
@@ -63,10 +63,10 @@ namespace Zelda.Game.Script
         {
             return ScriptToCore.Call(() =>
             {
-                if (!MainLoop.CurrentMod.DialogExists(dialogId))
+                if (!MainLoop.Mod.DialogExists(dialogId))
                     return null;
 
-                return MainLoop.CurrentMod.GetDialog(dialogId);
+                return MainLoop.Mod.GetDialog(dialogId);
             });
         }
     }

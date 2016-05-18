@@ -13,7 +13,7 @@ namespace Zelda.Game.Script
         #region 메인 루프
         public static void Initialize()
         {
-            _objectCreator = new ObjectCreator(MainLoop.CurrentMod.Resources);
+            _objectCreator = new ObjectCreator(MainLoop.Mod.Resources);
 
             CreateScriptMain();
             CoreToScript.Call(_scriptMain.OnStarted);

@@ -4,7 +4,7 @@ using Zelda.Game.LowLevel;
 
 namespace Zelda.Game
 {
-    public class CurrentMod : IDisposable
+    public class Mod : IDisposable
     {
         readonly Dictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
 
@@ -15,7 +15,7 @@ namespace Zelda.Game
         public StringResources Strings { get; } = new StringResources();
         public ModProperties Properties { get; }
 
-        public CurrentMod(string programName, string modPath)
+        public Mod(string programName, string modPath)
         {
             ModFiles = new ModFiles(this, programName, modPath);
 
