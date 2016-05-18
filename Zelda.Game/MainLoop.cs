@@ -5,13 +5,15 @@ using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
-    static class MainLoop
+    public static class MainLoop
     {
         public static bool Exiting { get; set; }
         public static Mod Mod { get; private set; }
-        public static Platform Platform { get; private set; }
-        public static Game Game { get; private set; }
-        public static uint Now { get; private set; }
+        public static Video Video => Platform.Video;
+
+        internal static Game Game { get; private set; }
+        internal static uint Now { get; private set; }
+        internal static Platform Platform { get; private set; }
 
         static readonly uint TimeStep = 10;  // 업데이트시마다 추가될 게임 시간, 밀리초
 
@@ -19,15 +21,15 @@ namespace Zelda.Game
         static ScriptSurface _rootScriptSurface;
         static Game _nextGame;
 
-        public static void Initialize(Arguments args)
+        internal static void Initialize(Arguments args)
         {
             Logger.Info("Zelda " + ZeldaVersion.Version);
+
+            Platform = new Platform(args);
 
             var modPath = GetModPath(args);
             Logger.Info("Opening mod '{0}'".F(modPath));
             Mod = new Mod(args.ProgramName, modPath);
-
-            Platform = new Platform(args);
 
             LoadModProperties();
 
@@ -48,7 +50,7 @@ namespace Zelda.Game
             return Properties.Settings.Default.DefaultMod;
         }
 
-        public static int Run()
+        internal static int Run()
         {
             try
             {
@@ -177,28 +179,23 @@ namespace Zelda.Game
 
         static void LoadModProperties()
         {
-            var properties = MainLoop.Mod.Properties;
+            var properties = Mod.Properties;
 
-            CheckVersionCompatibility(properties.ZeldaVersion);
+            CheckVersionCompatibility(Version.Parse(properties.ZeldaVersion));
 
             if (!properties.TitleBar.IsNullOrEmpty())
-                Video.WindowTitle = properties.TitleBar;
+                Video.WindowTitle = Mod.Properties.TitleBar;
 
             Video.SetModSizeRange(properties.NormalModSize, properties.MinModSize, properties.MaxModSize);
         }
 
-        static void CheckVersionCompatibility(string zeldaRequiredVersion)
+        static void CheckVersionCompatibility(Version required)
         {
-            if (string.IsNullOrWhiteSpace(zeldaRequiredVersion))
-                Debug.Die("No Zelda version is specified in your mod.xml file!");
-
-            var requiredVersion = Version.Parse(zeldaRequiredVersion);
-            if (requiredVersion.Major != ZeldaVersion.Version.Major ||
-                requiredVersion.Minor != ZeldaVersion.Version.Minor)
+            if (required.Major != ZeldaVersion.Version.Major || required.Minor != ZeldaVersion.Version.Minor)
             {
-                string msg = "This mod is made for Zelda {0}.{1}".F(requiredVersion.Major, requiredVersion.Minor);
-                msg += ".x but you are running Zelda {0}".F(ZeldaVersion.Version.ToString());
-                Debug.Die(msg);
+                var msg = "This mod is made for Zelda {0}.{1}.x but you are running Zelda {0}"
+                    .F(required.Major, required.Minor, ZeldaVersion.Version);
+                throw new Exception(msg);
             }
         }
 
@@ -207,7 +204,7 @@ namespace Zelda.Game
             _nextGame = game;
         }
 
-        public static void SetResetting()
+        internal static void SetResetting()
         {
             if (Game != null)
                 Game.Stop();

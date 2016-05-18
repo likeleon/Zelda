@@ -3,28 +3,28 @@ using System;
 
 namespace Zelda.Game.LowLevel
 {
-    public static class Video
+    public class Video : IDisposable
     {
         // 렌더링할 모드 표면 크기
-        public static Size ModSize { get; private set; } = Size.Zero;
+        public Size ModSize { get; private set; } = Size.Zero;
 
-        internal static string WindowTitle
+        public string WindowTitle
         {
             get { return SDL.SDL_GetWindowTitle(_mainWindow); }
             set { SDL.SDL_SetWindowTitle(_mainWindow, value); }
         }
 
-        internal static IntPtr PixelFormat { get; private set; }
-        internal static IntPtr Renderer { get; private set; }
+        internal IntPtr PixelFormat { get; private set; }
+        internal IntPtr Renderer { get; private set; }
 
-        static IntPtr _mainWindow;
+        IntPtr _mainWindow;
 
-        static Size _normalModSize;     // 모드에 설정된 기본 크기
-        static Size _minModSize;        // 모드에 설정된 최소 크기
-        static Size _maxModSize;        // 모드에 설정된 최대 크기
-        static Size _wantedModSize;     // 유저가 원한 크기
+        Size _normalModSize;     // 모드에 설정된 기본 크기
+        Size _minModSize;        // 모드에 설정된 최소 크기
+        Size _maxModSize;        // 모드에 설정된 최대 크기
+        Size _wantedModSize;     // 유저가 원한 크기
 
-        internal static void Initialize(Arguments args, string zeldaVersion)
+        internal Video(Arguments args, string zeldaVersion)
         {
             var defaultModSize = new Size(Properties.Settings.Default.DefaultModWidth, Properties.Settings.Default.DefaultModHeight);
             _wantedModSize = args.GetArgumentValue("-mod-size")?.ToSize() ?? defaultModSize;
@@ -32,29 +32,19 @@ namespace Zelda.Game.LowLevel
             CreateWindow(args, zeldaVersion);
         }
 
-        internal static void Quit()
+        public void Dispose()
         {
             if (PixelFormat != IntPtr.Zero)
-            {
                 SDL.SDL_FreeFormat(PixelFormat);
-                PixelFormat = IntPtr.Zero;
-            }
-            if (Renderer != IntPtr.Zero)
-            {
-                SDL.SDL_DestroyRenderer(Renderer);
-                Renderer = IntPtr.Zero;
-            }
-            if (_mainWindow != IntPtr.Zero)
-            {
-                SDL.SDL_DestroyWindow(_mainWindow);
-                _mainWindow = IntPtr.Zero;
-            }
 
-            ModSize = Size.Zero;
-            _wantedModSize = Size.Zero;
+            if (Renderer != IntPtr.Zero)
+                SDL.SDL_DestroyRenderer(Renderer);
+
+            if (_mainWindow != IntPtr.Zero)
+                SDL.SDL_DestroyWindow(_mainWindow);
         }
 
-        static void CreateWindow(Arguments args, string zeldaVersion)
+        void CreateWindow(Arguments args, string zeldaVersion)
         {
             _mainWindow = SDL.SDL_CreateWindow(
                 "Zelda " + zeldaVersion,
@@ -99,19 +89,19 @@ namespace Zelda.Game.LowLevel
                 Console.WriteLine("2D acceleration: no");
         }
 
-        static void InitializeVideoModes()
+        void InitializeVideoModes()
         {
             SDL.SDL_SetWindowFullscreen(_mainWindow, 0);
             SDL.SDL_RenderSetLogicalSize(Renderer, ModSize.Width, ModSize.Height);
             SDL.SDL_ShowCursor(SDL.SDL_ENABLE);
         }
 
-        internal static void ShowWindow()
+        internal void ShowWindow()
         {
             SDL.SDL_ShowWindow(_mainWindow);
         }
 
-        internal static void Render(Surface surface)
+        internal void Render(Surface surface)
         {
             SDL.SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255);
             SDL.SDL_RenderSetClipRect(Renderer, IntPtr.Zero);
@@ -120,7 +110,7 @@ namespace Zelda.Game.LowLevel
             SDL.SDL_RenderPresent(Renderer);
         }
 
-        public static void SetModSizeRange(Size normalSize, Size minSize, Size maxSize)
+        internal void SetModSizeRange(Size normalSize, Size minSize, Size maxSize)
         {
             Debug.CheckAssertion(
                 normalSize.Width >= minSize.Width ||

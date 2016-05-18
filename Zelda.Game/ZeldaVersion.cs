@@ -5,6 +5,6 @@ namespace Zelda.Game
 {
     public static class ZeldaVersion
     {
-        public static Version Version { get; } = Assembly.GetExecutingAssembly().GetName().Version;
+        public static Version Version => Assembly.GetExecutingAssembly().GetName().Version;
     }
 }

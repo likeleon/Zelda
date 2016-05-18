@@ -41,7 +41,7 @@ namespace Zelda.Game
         public Map(string id)
         {
             Id = id;
-            CameraPosition = new Rectangle(new Point(), Video.ModSize);
+            CameraPosition = new Rectangle(new Point(), MainLoop.Video.ModSize);
             ScriptMap = ScriptContext.CreateScriptMap(this);
         }
 
@@ -67,10 +67,10 @@ namespace Zelda.Game
 
         public void Load(Game game)
         {
-            VisibleSurface = Surface.Create(Video.ModSize);
+            VisibleSurface = Surface.Create(MainLoop.Video.ModSize);
             VisibleSurface.IsSoftwareDestination = false;
 
-            _backgroundSurface = Surface.Create(Video.ModSize);
+            _backgroundSurface = Surface.Create(MainLoop.Video.ModSize);
             _backgroundSurface.IsSoftwareDestination = false;
 
             LoadMapData(game);

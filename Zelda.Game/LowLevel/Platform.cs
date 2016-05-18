@@ -5,17 +5,19 @@ namespace Zelda.Game.LowLevel
 {
     class Platform : IDisposable
     {
-        readonly uint _initialTime = 0;       // 초기화 시점의 실제 시각, 밀리초
-        public string Os { get { return SDL.SDL_GetPlatform(); } }
+        public string Os => SDL.SDL_GetPlatform();
+        public Video Video { get; }
 
-        internal Platform(Arguments args)
+        readonly uint _initialTime;       // 초기화 시점의 실제 시각, 밀리초
+
+        public Platform(Arguments args)
         {
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
             _initialTime = GetRealTime();
 
             Sound.Initialize(args);
             InputEvent.Initialize();
-            Video.Initialize(args, ZeldaVersion.Version.ToString());
+            Video = new Video(args, ZeldaVersion.Version.ToString());
             FontResource.Initialize();
             Sprite.Initialize();
         }
@@ -26,7 +28,8 @@ namespace Zelda.Game.LowLevel
             Sound.Quit();
             Sprite.Quit();
             FontResource.Quit();
-            Video.Quit();
+            if (Video != null)
+                Video.Dispose();
 
             SDL.SDL_Quit();
         }

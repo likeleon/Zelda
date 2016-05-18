@@ -12,7 +12,7 @@ namespace Zelda.Game.Script
 
         public static ScriptSurface Create()
         {
-            return ScriptToCore.Call(() => Create(Video.ModSize.Width, Video.ModSize.Height));
+            return ScriptToCore.Call(() => Create(MainLoop.Video.ModSize.Width, MainLoop.Video.ModSize.Height));
         }
 
         public static ScriptSurface Create(Size size)

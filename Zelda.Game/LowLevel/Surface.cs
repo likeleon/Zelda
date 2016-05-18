@@ -422,7 +422,7 @@ namespace Zelda.Game.LowLevel
         {
             Debug.CheckAssertion(_internalSurface == IntPtr.Zero, "Software surface already exists");
 
-            SDL.SDL_PixelFormat format = Video.PixelFormat.ToSDLPixelFormat();
+            var format = MainLoop.Video.PixelFormat.ToSDLPixelFormat();
             _internalSurface = SDL.SDL_CreateRGBSurface(
                 0,
                 _width,
@@ -443,15 +443,15 @@ namespace Zelda.Game.LowLevel
         {
             Debug.CheckAssertion(_internalSurface != IntPtr.Zero, "Missing software surface to convert");
 
-            SDL.SDL_PixelFormat videoPixelFormat = Video.PixelFormat.ToSDLPixelFormat();
-            SDL.SDL_PixelFormat surfacePixelFormat = _internalSurface.ToSDLSurface().format.ToSDLPixelFormat();
+            var videoPixelFormat = MainLoop.Video.PixelFormat.ToSDLPixelFormat();
+            var surfacePixelFormat = _internalSurface.ToSDLSurface().format.ToSDLPixelFormat();
             if (surfacePixelFormat.format != videoPixelFormat.format)
             {
                 byte opacity;
                 SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out opacity);
                 IntPtr convertedSurface = SDL.SDL_ConvertSurface(
                     _internalSurface,
-                    Video.PixelFormat,
+                    MainLoop.Video.PixelFormat,
                     0);
                 Debug.CheckAssertion(convertedSurface != IntPtr.Zero, "Failed to convert software surface");
 
@@ -463,13 +463,13 @@ namespace Zelda.Game.LowLevel
         // 색상 값을 현재 비디오 픽셀 포맷에 맞는 32-bit 값으로 변환합니다
         uint GetColorValue(Color color)
         {
-            return SDL.SDL_MapRGBA(Video.PixelFormat, color.R, color.G, color.B, color.A);
+            return SDL.SDL_MapRGBA(MainLoop.Video.PixelFormat, color.R, color.G, color.B, color.A);
         }
 
         // 소프트웨어 표면으로부터 하드웨어 텍스쳐를 생성합니다
         void CreateTextureFromSurface()
         {
-            IntPtr mainRenderer = Video.Renderer;
+            IntPtr mainRenderer = MainLoop.Video.Renderer;
             if (mainRenderer != IntPtr.Zero)
             {
                 Debug.CheckAssertion(_internalSurface != IntPtr.Zero, "Missing software surface to create texture from");
@@ -480,7 +480,7 @@ namespace Zelda.Game.LowLevel
 
                 IntPtr sdlTexture = SDL.SDL_CreateTexture(
                     mainRenderer,
-                    Video.PixelFormat.ToSDLPixelFormat().format,
+                    MainLoop.Video.PixelFormat.ToSDLPixelFormat().format,
                     (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_STATIC,
                     _internalSurface.ToSDLSurface().w,
                     _internalSurface.ToSDLSurface().h);
