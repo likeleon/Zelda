@@ -46,7 +46,7 @@ namespace Zelda.Game.Entities
             // 타일셋 데이터 파일을 읽습니다
             string fileName = "tilesets/" + _id + ".xml";
             TilesetData data = new TilesetData();
-            bool success = data.ImportFromModFile(MainLoop.Mod.ModFiles, fileName);
+            bool success = data.ImportFromModFile(Core.Mod.ModFiles, fileName);
             if (success)
             {
                 _backgroundColor = data.BackgroundColor;

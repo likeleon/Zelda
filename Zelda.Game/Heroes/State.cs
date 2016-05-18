@@ -68,7 +68,7 @@ namespace Zelda.Game.Heroes
             _suspended = suspended;
 
             if (suspended)
-                _whenSuspended = MainLoop.Now;
+                _whenSuspended = Core.Now;
         }
 
         public void NotifyCommandPressed(GameCommand command)

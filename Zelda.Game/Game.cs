@@ -52,7 +52,7 @@ namespace Zelda.Game
             bool validMapSaved = false;
             if (!startingMapId.IsNullOrEmpty())
             {
-                if (MainLoop.Mod.ResourceExists(ResourceType.Map, startingMapId))
+                if (Core.Mod.ResourceExists(ResourceType.Map, startingMapId))
                     validMapSaved = true;
                 else
                 {
@@ -65,7 +65,7 @@ namespace Zelda.Game
             if (!validMapSaved)
             {
                 // 유효한 시작 맵이 없을 경우 리소스 목록에서 첫번째 맵을 사용합니다
-                var maps = MainLoop.Mod.GetResources(ResourceType.Map);
+                var maps = Core.Mod.GetResources(ResourceType.Map);
                 if (maps.Count <= 0)
                     Debug.Die("This mod has no map");
 
@@ -177,7 +177,7 @@ namespace Zelda.Game
 
         public void StartDialog(string dialogId, object info, Action<object> callback)
         {
-            if (!MainLoop.Mod.DialogExists(dialogId))
+            if (!Core.Mod.DialogExists(dialogId))
                 Debug.Error("No such dialog: '{0}'".F(dialogId));
             else
                 _dialogBox.Open(dialogId, info, callback);

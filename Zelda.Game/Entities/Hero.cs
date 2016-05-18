@@ -70,13 +70,13 @@ namespace Zelda.Game.Entities
             _invincible = invincible;
             _endInvincibleDate = 0;
             if (invincible)
-                _endInvincibleDate = MainLoop.Now + duration;
+                _endInvincibleDate = Core.Now + duration;
         }
 
         void UpdateInvincibility()
         {
             if (IsInvincible &&
-                MainLoop.Now >= _endInvincibleDate)
+                Core.Now >= _endInvincibleDate)
                 SetInvincible(false, 0);
         }
 
@@ -384,7 +384,7 @@ namespace Zelda.Game.Entities
 
             if (!suspended)
             {
-                uint diff = MainLoop.Now - WhenSuspended;
+                uint diff = Core.Now - WhenSuspended;
 
                 if (_endInvincibleDate != 0)
                     _endInvincibleDate += diff;

@@ -41,7 +41,7 @@ namespace Zelda.Game
         public Map(string id)
         {
             Id = id;
-            CameraPosition = new Rectangle(new Point(), MainLoop.Video.ModSize);
+            CameraPosition = new Rectangle(new Point(), Core.Video.ModSize);
             ScriptMap = ScriptContext.CreateScriptMap(this);
         }
 
@@ -67,10 +67,10 @@ namespace Zelda.Game
 
         public void Load(Game game)
         {
-            VisibleSurface = Surface.Create(MainLoop.Video.ModSize);
+            VisibleSurface = Surface.Create(Core.Video.ModSize);
             VisibleSurface.IsSoftwareDestination = false;
 
-            _backgroundSurface = Surface.Create(MainLoop.Video.ModSize);
+            _backgroundSurface = Surface.Create(Core.Video.ModSize);
             _backgroundSurface.IsSoftwareDestination = false;
 
             LoadMapData(game);
@@ -100,7 +100,7 @@ namespace Zelda.Game
         {
             MapData data = new MapData();
             string fileName = "maps/" + Id + ".xml";
-            bool success = data.ImportFromModFile(MainLoop.Mod.ModFiles, fileName);
+            bool success = data.ImportFromModFile(Core.Mod.ModFiles, fileName);
 
             if (!success)
                 Debug.Die("Failed to load map data file '{0}'".F(fileName));

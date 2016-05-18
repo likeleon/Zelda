@@ -83,9 +83,9 @@ namespace Zelda.Game.Entities
 
             if (CanOpen())
             {
-                MainLoop.Audio.Play("chest_open");
+                Core.Audio.Play("chest_open");
                 SetOpen(true);
-                _treasureDate = MainLoop.Now + 300;
+                _treasureDate = Core.Now + 300;
 
                 CommandsEffects.ActionCommandEffect = ActionCommandEffect.None;
                 Hero.StartFreezed();
@@ -98,7 +98,7 @@ namespace Zelda.Game.Entities
         {
             if (IsOpen && !IsSuspended)
             {
-                if (!_treasureGiven && _treasureDate != 0 && MainLoop.Now >= _treasureDate)
+                if (!_treasureGiven && _treasureDate != 0 && Core.Now >= _treasureDate)
                 {
                     _treasureDate = 0;
                     _treasure.EnsureObtainable();

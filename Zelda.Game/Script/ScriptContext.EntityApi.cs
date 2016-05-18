@@ -12,7 +12,7 @@ namespace Zelda.Game.Script
 
             Action<object> dialogCallback = (_) => TreasureDialogFinished(treasure.Item, treasure.Variant, treasure.SavegameVariable, callback);
 
-            if (!MainLoop.Mod.DialogExists(dialogId))
+            if (!Core.Mod.DialogExists(dialogId))
             {
                 Debug.Error("Missing treasure dialog: '{0}'".F(dialogId));
                 dialogCallback(null);

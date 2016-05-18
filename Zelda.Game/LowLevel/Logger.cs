@@ -19,7 +19,7 @@ namespace Zelda.Game.LowLevel
 
         public static void Print(string message, TextWriter tw)
         {
-            tw.WriteLineAsync("[Zelda] [" + MainLoop.Now + "] " + message).ConfigureAwait(false);
+            tw.WriteLineAsync("[Zelda] [" + Core.Now + "] " + message).ConfigureAwait(false);
         }
 
         public static void Debug(string message)

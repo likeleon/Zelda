@@ -184,7 +184,7 @@
     <Compile Include="LowLevel\Video.cs" />
     <Compile Include="Exts.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="MainLoop.cs" />
+    <Compile Include="Core.cs" />
     <Compile Include="ModProperties.cs" />
     <Compile Include="ModResources.cs" />
     <Compile Include="ObjectCreator.cs" />

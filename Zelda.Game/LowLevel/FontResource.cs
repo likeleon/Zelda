@@ -47,7 +47,7 @@ namespace Zelda.Game.LowLevel
                     BitmapFont = Surface.Create(_fileName, Surface.ImageDirectory.Data);
                 else
                 {
-                    _buffer = MainLoop.Mod.ModFiles.DataFileRead(_fileName);
+                    _buffer = Core.Mod.ModFiles.DataFileRead(_fileName);
                     _bufferHandle = GCHandle.Alloc(_buffer, GCHandleType.Pinned);
                     OutlineFonts = new Dictionary<int, OutlineFontReader>();
                 }
@@ -102,7 +102,7 @@ namespace Zelda.Game.LowLevel
 
         static void LoadFonts()
         {
-            foreach (var kvp in MainLoop.Mod.GetResources(ResourceType.Font))
+            foreach (var kvp in Core.Mod.GetResources(ResourceType.Font))
             {
                 string fontId = kvp.Key;
                 
@@ -119,7 +119,7 @@ namespace Zelda.Game.LowLevel
                 };
                 
                 string fileNameStart = "fonts/" + fontId;
-                var fontExt = fontExts.FirstOrDefault(e => MainLoop.Mod.ModFiles.DataFileExists(fileNameStart + e.ext));
+                var fontExt = fontExts.FirstOrDefault(e => Core.Mod.ModFiles.DataFileExists(fileNameStart + e.ext));
                 if (fontExt == null)
                 {
                     Debug.Error("Cannot find font file 'fonts/{0}' (tried with extensions {1}"

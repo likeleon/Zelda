@@ -114,7 +114,7 @@ namespace Zelda.Game.LowLevel
         {
             uint buffer = AL10.AL_NONE;
 
-            if (!MainLoop.Mod.ModFiles.DataFileExists(fileName))
+            if (!Core.Mod.ModFiles.DataFileExists(fileName))
             {
                 Debug.Error("Cannot find sound file '{0}'".F(fileName));
                 return AL10.AL_NONE;
@@ -124,7 +124,7 @@ namespace Zelda.Game.LowLevel
             SoundFromMemory mem = new SoundFromMemory();
             mem.loop = false;
             mem.position = 0;
-            mem.data = MainLoop.Mod.ModFiles.DataFileRead(fileName);
+            mem.data = Core.Mod.ModFiles.DataFileRead(fileName);
             GCHandle memHandle = GCHandle.Alloc(mem);
 
             IntPtr file;
@@ -306,7 +306,7 @@ namespace Zelda.Game.LowLevel
             if (_soundsPreloaded)
                 return;
 
-            var soundElements = MainLoop.Mod.GetResources(ResourceType.Sound);
+            var soundElements = Core.Mod.GetResources(ResourceType.Sound);
             foreach (var soundId in soundElements.Keys)
             {
                 _allSounds[soundId] = new Sound(soundId);
@@ -318,7 +318,7 @@ namespace Zelda.Game.LowLevel
 
         internal bool Exists(string soundId)
         {
-            return MainLoop.Mod.ModFiles.DataFileExists("sounds/{0}.ogg".F(soundId));
+            return Core.Mod.ModFiles.DataFileExists("sounds/{0}.ogg".F(soundId));
         }
 
         public void Play(string soundId)

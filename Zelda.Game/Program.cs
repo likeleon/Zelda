@@ -29,8 +29,8 @@ namespace Zelda.Game
 
         static int Run(string[] args)
         {
-            MainLoop.Initialize(new Arguments(args));
-            return MainLoop.Run();
+            Core.Initialize(new Arguments(args));
+            return Core.Run();
         }
 
         static void FatalError(Exception e)

@@ -52,7 +52,7 @@ namespace Zelda.Game.Entities
         public Bomb(string name, Layer layer, Point xy)
             : base(CollisionMode.Facing, name, layer, xy, new Size(16, 16))
         {
-            _explosionDate = MainLoop.Now + 6000;
+            _explosionDate = Core.Now + 6000;
 
             CreateSprite("entities/bomb");
             Sprite.EnablePixelCollisions();
@@ -90,7 +90,7 @@ namespace Zelda.Game.Entities
                 Hero.IsFacingPointIn(BoundingBox))
             {
                 Hero.StartLifting(new CarriedItem(Hero, this, "entities/bomb", String.Empty, 0, _explosionDate));
-                MainLoop.Audio.Play("lift");
+                Core.Audio.Play("lift");
                 RemoveFromMap();
                 return true;
             }
@@ -110,7 +110,7 @@ namespace Zelda.Game.Entities
 
             if (!suspended && WhenSuspended != 0)
             {
-                uint diff = MainLoop.Now - WhenSuspended;
+                uint diff = Core.Now - WhenSuspended;
                 _explosionDate += diff;
             }
         }
@@ -122,7 +122,7 @@ namespace Zelda.Game.Entities
             if (IsSuspended)
                 return;
 
-            uint now = MainLoop.Now;
+            uint now = Core.Now;
             if (now >= _explosionDate)
                 Explode();
             else if (now >= _explosionDate - 1500 && Sprite.CurrentAnimation != "stopped_explosion_soon")
@@ -137,7 +137,7 @@ namespace Zelda.Game.Entities
         void Explode()
         {
             Entities.ScheduleAddEntity(new Explosion(String.Empty, Layer, CenterPoint, true));
-            MainLoop.Audio.Play("explosion");
+            Core.Audio.Play("explosion");
             RemoveFromMap();
         }
     }

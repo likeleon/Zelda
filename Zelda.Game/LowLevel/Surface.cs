@@ -145,11 +145,11 @@ namespace Zelda.Game.LowLevel
             }
             string prefixedFileName = prefix + fileName;
 
-            if (!MainLoop.Mod.ModFiles.DataFileExists(prefixedFileName, languageSpecific))
+            if (!Core.Mod.ModFiles.DataFileExists(prefixedFileName, languageSpecific))
                 return IntPtr.Zero;
 
             IntPtr softwareSurface;
-            byte[] buffer = MainLoop.Mod.ModFiles.DataFileRead(prefixedFileName, languageSpecific);
+            byte[] buffer = Core.Mod.ModFiles.DataFileRead(prefixedFileName, languageSpecific);
             GCHandle bufferHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             IntPtr rw = SDL.SDL_RWFromMem(bufferHandle.AddrOfPinnedObject(), buffer.Length);
             softwareSurface = SDL_image.IMG_Load_RW(rw, 0);
@@ -422,7 +422,7 @@ namespace Zelda.Game.LowLevel
         {
             Debug.CheckAssertion(_internalSurface == IntPtr.Zero, "Software surface already exists");
 
-            var format = MainLoop.Video.PixelFormat.ToSDLPixelFormat();
+            var format = Core.Video.PixelFormat.ToSDLPixelFormat();
             _internalSurface = SDL.SDL_CreateRGBSurface(
                 0,
                 _width,
@@ -443,7 +443,7 @@ namespace Zelda.Game.LowLevel
         {
             Debug.CheckAssertion(_internalSurface != IntPtr.Zero, "Missing software surface to convert");
 
-            var videoPixelFormat = MainLoop.Video.PixelFormat.ToSDLPixelFormat();
+            var videoPixelFormat = Core.Video.PixelFormat.ToSDLPixelFormat();
             var surfacePixelFormat = _internalSurface.ToSDLSurface().format.ToSDLPixelFormat();
             if (surfacePixelFormat.format != videoPixelFormat.format)
             {
@@ -451,7 +451,7 @@ namespace Zelda.Game.LowLevel
                 SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out opacity);
                 IntPtr convertedSurface = SDL.SDL_ConvertSurface(
                     _internalSurface,
-                    MainLoop.Video.PixelFormat,
+                    Core.Video.PixelFormat,
                     0);
                 Debug.CheckAssertion(convertedSurface != IntPtr.Zero, "Failed to convert software surface");
 
@@ -463,13 +463,13 @@ namespace Zelda.Game.LowLevel
         // 색상 값을 현재 비디오 픽셀 포맷에 맞는 32-bit 값으로 변환합니다
         uint GetColorValue(Color color)
         {
-            return SDL.SDL_MapRGBA(MainLoop.Video.PixelFormat, color.R, color.G, color.B, color.A);
+            return SDL.SDL_MapRGBA(Core.Video.PixelFormat, color.R, color.G, color.B, color.A);
         }
 
         // 소프트웨어 표면으로부터 하드웨어 텍스쳐를 생성합니다
         void CreateTextureFromSurface()
         {
-            IntPtr mainRenderer = MainLoop.Video.Renderer;
+            IntPtr mainRenderer = Core.Video.Renderer;
             if (mainRenderer != IntPtr.Zero)
             {
                 Debug.CheckAssertion(_internalSurface != IntPtr.Zero, "Missing software surface to create texture from");
@@ -480,7 +480,7 @@ namespace Zelda.Game.LowLevel
 
                 IntPtr sdlTexture = SDL.SDL_CreateTexture(
                     mainRenderer,
-                    MainLoop.Video.PixelFormat.ToSDLPixelFormat().format,
+                    Core.Video.PixelFormat.ToSDLPixelFormat().format,
                     (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_STATIC,
                     _internalSurface.ToSDLSurface().w,
                     _internalSurface.ToSDLSurface().h);

@@ -6,7 +6,7 @@ namespace Zelda.Game.Script
     {
         public static bool Exists(string fileName)
         {
-            return ScriptToCore.Call(() => MainLoop.Mod.ModFiles.DataFileExists(fileName, false));
+            return ScriptToCore.Call(() => Core.Mod.ModFiles.DataFileExists(fileName, false));
         }
     }
 }

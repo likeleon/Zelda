@@ -24,7 +24,7 @@ namespace Zelda.Game.Heroes
         {
             base.Start(previousState);
 
-            MainLoop.Audio.Play("hero_hurt");
+            Core.Audio.Play("hero_hurt");
 
             uint invincibilityDuration = 2000;
             Hero.SetInvincible(true, invincibilityDuration);
@@ -40,7 +40,7 @@ namespace Zelda.Game.Heroes
                 movement.SetAngle(angle);
                 Hero.SetMovement(movement);
             }
-            _endHurtDate = MainLoop.Now + 200;
+            _endHurtDate = Core.Now + 200;
 
             if (_damage != 0)
             {
@@ -64,7 +64,7 @@ namespace Zelda.Game.Heroes
             base.Update();
 
             if ((Hero.Movement != null && Hero.Movement.IsFinished) ||
-                MainLoop.Now >= _endHurtDate)
+                Core.Now >= _endHurtDate)
             {
                 Hero.ClearMovement();
                 Hero.StartStateFromGround();
@@ -77,7 +77,7 @@ namespace Zelda.Game.Heroes
 
             if (!suspended)
             {
-                uint diff = MainLoop.Now - WhenSuspended;
+                uint diff = Core.Now - WhenSuspended;
                 _endHurtDate += diff;
             }
         }

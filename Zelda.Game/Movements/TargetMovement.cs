@@ -26,7 +26,7 @@ namespace Zelda.Game.Movements
             _signX = 0;
             _signY = 0;
             _movingSpeed = movingSpeed;
-            _nextRecomputationDate = MainLoop.Now;
+            _nextRecomputationDate = Core.Now;
         }
 
         public void SetMovingSpeed(int movingSpeed)
@@ -40,7 +40,7 @@ namespace Zelda.Game.Movements
             _target = xy;
 
             RecomputeMovement();
-            _nextRecomputationDate = MainLoop.Now + RecomputationDelay;
+            _nextRecomputationDate = Core.Now + RecomputationDelay;
         }
 
         // 타겟에 기반해 방향과 속력을 계산합니다
@@ -76,7 +76,7 @@ namespace Zelda.Game.Movements
 
         public override void Update()
         {
-            if (MainLoop.Now >= _nextRecomputationDate)
+            if (Core.Now >= _nextRecomputationDate)
             {
                 RecomputeMovement();
                 _nextRecomputationDate += RecomputationDelay;

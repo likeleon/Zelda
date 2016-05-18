@@ -100,7 +100,7 @@ namespace Zelda.Game.Movements
                 _trajectoryEnumerator = _trajectory.GetEnumerator();
 
                 if (_nextMoveDate == 0)
-                    _nextMoveDate = MainLoop.Now;
+                    _nextMoveDate = Core.Now;
                 _nextMoveDate += Delay;
 
                 NotifyMovementChanged();
@@ -109,7 +109,7 @@ namespace Zelda.Game.Movements
 
         public override void Update()
         {
-            uint now = MainLoop.Now;
+            uint now = Core.Now;
 
             while (now >= _nextMoveDate &&
                    !IsSuspended &&
@@ -164,7 +164,7 @@ namespace Zelda.Game.Movements
                 WhenSuspended != 0 &&
                 _nextMoveDate != 0)
             {
-                _nextMoveDate += MainLoop.Now - WhenSuspended;
+                _nextMoveDate += Core.Now - WhenSuspended;
             }
         }
         #endregion

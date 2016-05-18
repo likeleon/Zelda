@@ -118,12 +118,12 @@ namespace Zelda.Game.LowLevel
             format = MusicFormat.Ogg;
 
             string fileNameStart = "musics/" + musicId;
-            if (MainLoop.Mod.ModFiles.DataFileExists(fileNameStart + ".ogg"))
+            if (Core.Mod.ModFiles.DataFileExists(fileNameStart + ".ogg"))
             {
                 format = MusicFormat.Ogg;
                 fileName = fileNameStart + ".ogg";
             }
-            else if (MainLoop.Mod.ModFiles.DataFileExists(fileNameStart + ".it"))
+            else if (Core.Mod.ModFiles.DataFileExists(fileNameStart + ".it"))
             {
                 format = MusicFormat.It;
                 fileName = fileNameStart + ".it";
@@ -221,7 +221,7 @@ namespace Zelda.Game.LowLevel
             {
                 case MusicFormat.It:
                     {
-                        soundBuffer = MainLoop.Mod.ModFiles.DataFileRead(_fileName);
+                        soundBuffer = Core.Mod.ModFiles.DataFileRead(_fileName);
 
                         _itDecoder.Load(soundBuffer);
 
@@ -234,7 +234,7 @@ namespace Zelda.Game.LowLevel
                     {
                         _oggMem.position = 0;
                         _oggMem.loop = _loop;
-                        _oggMem.data = MainLoop.Mod.ModFiles.DataFileRead(_fileName);
+                        _oggMem.data = Core.Mod.ModFiles.DataFileRead(_fileName);
                         _oggMemHandle = GCHandle.Alloc(_oggMem);
                         // 이제 _oggmem은 인코딩된 데이터를 가집니다
 

@@ -75,7 +75,7 @@ namespace Zelda.Game
         public void LoadItems()
         {
             // project_db.xml에 정의된 각 장비 아이템들을 생성합니다
-            foreach (var kvp in MainLoop.Mod.GetResources(ResourceType.Item))
+            foreach (var kvp in Core.Mod.GetResources(ResourceType.Item))
             {
                 var itemId = kvp.Key;
                 var item = new EquipmentItem(this);

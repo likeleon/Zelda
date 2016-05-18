@@ -14,7 +14,7 @@ namespace Zelda.Game
             set
             {
                 _expirationDate = value;
-                IsFinished = MainLoop.Now >= _expirationDate;
+                IsFinished = Core.Now >= _expirationDate;
             }
         }
 
@@ -24,9 +24,9 @@ namespace Zelda.Game
 
         public Timer(uint duration)
         {
-            _expirationDate = MainLoop.Now + duration;
+            _expirationDate = Core.Now + duration;
             InitialDuration = duration;
-            IsFinished = (MainLoop.Now >= _expirationDate);
+            IsFinished = (Core.Now >= _expirationDate);
         }
 
         public void Update()
@@ -34,7 +34,7 @@ namespace Zelda.Game
             if (IsSuspended || IsFinished)
                 return;
 
-            var now = MainLoop.Now;
+            var now = Core.Now;
             IsFinished = (now >= _expirationDate);
         }
 
@@ -43,7 +43,7 @@ namespace Zelda.Game
             if (IsSuspended == suspended)
                 return;
 
-            var now = MainLoop.Now;
+            var now = Core.Now;
 
             if (suspended)
                 _whenSuspended = now;

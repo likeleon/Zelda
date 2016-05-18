@@ -5,7 +5,7 @@ using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
-    public static class MainLoop
+    public static class Core
     {
         public static bool Exiting { get; set; }
         public static Mod Mod { get; private set; }
@@ -68,7 +68,7 @@ namespace Zelda.Game
                     Platform.Dispose();
 
                 if (Mod != null)
-                    MainLoop.Mod.Dispose();
+                    Core.Mod.Dispose();
             }
 
             return 0;
