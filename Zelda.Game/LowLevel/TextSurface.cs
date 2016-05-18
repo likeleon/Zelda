@@ -62,7 +62,7 @@ namespace Zelda.Game.LowLevel
             HorizontalAlignment = horizontalAlignment;
             VerticalAlignment = verticalAlignment;
 
-            Font = FontResource.GetDefaultFontId();
+            Font = Core.FontResource.GetDefaultFontId();
             RenderingMode = TextRenderingMode.Solid;
             TextColor = Color.White;
             FontSize = 11;
@@ -189,9 +189,9 @@ namespace Zelda.Game.LowLevel
             if (IsEmpty)
                 return;
 
-            Debug.CheckAssertion(FontResource.Exists(Font), "No such font: '{0}'".F(Font));
+            Debug.CheckAssertion(Core.FontResource.Exists(Font), "No such font: '{0}'".F(Font));
 
-            if (FontResource.IsBitmapFont(Font))
+            if (Core.FontResource.IsBitmapFont(Font))
                 RebuildBitmap();
             else
                 RebuildTtf();
@@ -236,7 +236,7 @@ namespace Zelda.Game.LowLevel
             int numChars = Text.Length;
 
             // 표면 크기로부터 글자 크기를 결정합니다
-            Surface bitmap = FontResource.GetBitmapFont(Font);
+            Surface bitmap = Core.FontResource.GetBitmapFont(Font);
             Size bitmapSize = bitmap.Size;
             int charWidth = bitmapSize.Width / 128;
             int charHeight = bitmapSize.Height / 16;
@@ -272,7 +272,7 @@ namespace Zelda.Game.LowLevel
         void RebuildTtf()
         {
             IntPtr internalSurface = IntPtr.Zero;
-            IntPtr internalFont = FontResource.GetOutlineFont(Font, FontSize);
+            IntPtr internalFont = Core.FontResource.GetOutlineFont(Font, FontSize);
             SDL.SDL_Color internalColor;
             TextColor.GetComponents(out internalColor.r, out internalColor.g, out internalColor.b, out internalColor.a);
 

@@ -6,59 +6,52 @@ using System.Runtime.InteropServices;
 
 namespace Zelda.Game.LowLevel
 {
-    class FontResource
+    class FontResource : IDisposable
     {
-        class OutlineFontReader : DisposableObject
+        class OutlineFontReader : IDisposable
         {
-            readonly IntPtr _rw;
-            readonly IntPtr _outlineFont;
+            public IntPtr OutlineFont { get; }
 
-            public IntPtr OutlineFont { get { return _outlineFont; } }
+            readonly IntPtr _rw;
 
             public OutlineFontReader(IntPtr rw, IntPtr outlineFont)
             {
                 _rw = rw;
-                _outlineFont = outlineFont;
+                OutlineFont = outlineFont;
             }
 
-            protected override void OnDispose(bool disposing)
+            public void Dispose()
             {
-                SDL_ttf.TTF_CloseFont(_outlineFont);
+                SDL_ttf.TTF_CloseFont(OutlineFont);
                 // TODO: 네이티브의 SDL_RWclose(rw)에 해당하는 구현 방법을 찾지 못했다. _rw에 대한 메모리 릭 확인할 것.
             }
         }
 
-        class FontFile : DisposableObject
+        class FontFile : IDisposable
         {
-            readonly string _fileName;
+            public string FileName { get; }
+            public int BufferLength => _buffer.Length;
+            public Surface BitmapFont { get; }
+            public Dictionary<int, OutlineFontReader> OutlineFonts { get; }
+
             readonly byte[] _buffer;
             readonly GCHandle _bufferHandle;
 
-            public string FileName { get { return _fileName; } }
-            public int BufferLength { get { return _buffer.Length; } }
-            public Surface BitmapFont { get; set; }
-            public Dictionary<int, OutlineFontReader> OutlineFonts { get; private set; }
-
             public FontFile(string fileName, bool is_bitmap)
             {
-                _fileName = fileName;
+                FileName = fileName;
 
                 if (is_bitmap)
-                    BitmapFont = Surface.Create(_fileName, Surface.ImageDirectory.Data);
+                    BitmapFont = Surface.Create(FileName, Surface.ImageDirectory.Data);
                 else
                 {
-                    _buffer = Core.Mod.ModFiles.DataFileRead(_fileName);
+                    _buffer = Core.Mod.ModFiles.DataFileRead(FileName);
                     _bufferHandle = GCHandle.Alloc(_buffer, GCHandleType.Pinned);
                     OutlineFonts = new Dictionary<int, OutlineFontReader>();
                 }
             }
-            
-            public IntPtr GetBufferPtr()
-            {
-                return _bufferHandle.AddrOfPinnedObject(); 
-            }
 
-            protected override void OnDispose(bool disposing)
+            public void Dispose()
             {
                 if (OutlineFonts != null)
                 {
@@ -69,38 +62,39 @@ namespace Zelda.Game.LowLevel
                 if (_bufferHandle.IsAllocated)
                     _bufferHandle.Free();
             }
+            
+            public IntPtr GetBufferPtr()
+            {
+                return _bufferHandle.AddrOfPinnedObject(); 
+            }
         }
 
-        static bool _fontsLoaded;
-        static readonly Dictionary<string, FontFile> _fonts = new Dictionary<string, FontFile>();
+        readonly Dictionary<string, FontFile> _fonts = new Dictionary<string, FontFile>();
+        bool _fontsLoaded;
 
-        public static void Initialize()
+        public FontResource()
         {
             SDL_ttf.TTF_Init();
         }
 
-        public static void Quit()
+        public void Dispose()
         {
-            foreach (var font in _fonts.Values)
-                font.Dispose();
-
-            _fonts.Clear();
-            _fontsLoaded = false;
+            _fonts.Values.Do(f => f.Dispose());
             SDL_ttf.TTF_Quit();
         }
 
-        public static string GetDefaultFontId()
+        public string GetDefaultFontId()
         {
             if (!_fontsLoaded)
                 LoadFonts();
 
             if (_fonts.Count <= 0)
-                return String.Empty;
+                return null;
 
             return _fonts.First().Key;
         }
 
-        static void LoadFonts()
+        void LoadFonts()
         {
             foreach (var kvp in Core.Mod.GetResources(ResourceType.Font))
             {
@@ -121,20 +115,16 @@ namespace Zelda.Game.LowLevel
                 string fileNameStart = "fonts/" + fontId;
                 var fontExt = fontExts.FirstOrDefault(e => Core.Mod.ModFiles.DataFileExists(fileNameStart + e.ext));
                 if (fontExt == null)
-                {
-                    Debug.Error("Cannot find font file 'fonts/{0}' (tried with extensions {1}"
-                        .F(fontId, String.Join(", ", fontExts.Select(f => f.ext))));
-                    continue;
-                }
+                    throw new Exception("Cannot find font file 'fonts/{0}' (tried with extensions {1})"
+                        .F(fontId, fontExts.Select(f => f.ext).JoinWith(", ")));
 
-                var font = new FontFile(fileNameStart + fontExt.ext, fontExt.bitmap);
-                _fonts.Add(fontId, font);
+                _fonts.Add(fontId, new FontFile(fileNameStart + fontExt.ext, fontExt.bitmap));
             }
 
             _fontsLoaded = true;
         }
 
-        public static bool Exists(string fontId)
+        public bool Exists(string fontId)
         {
             if (!_fontsLoaded)
                 LoadFonts();
@@ -142,7 +132,7 @@ namespace Zelda.Game.LowLevel
             return _fonts.ContainsKey(fontId);
         }
 
-        public static bool IsBitmapFont(string fontId)
+        public bool IsBitmapFont(string fontId)
         {
             if (!_fontsLoaded)
                 LoadFonts();
@@ -151,7 +141,7 @@ namespace Zelda.Game.LowLevel
             return (_fonts[fontId].BitmapFont != null);
         }
 
-        public static Surface GetBitmapFont(string fontId)
+        public Surface GetBitmapFont(string fontId)
         {
             if (!_fontsLoaded)
                 LoadFonts();
@@ -161,7 +151,7 @@ namespace Zelda.Game.LowLevel
             return (_fonts[fontId].BitmapFont);
         }
 
-        public static IntPtr GetOutlineFont(string fontId, int size)
+        public IntPtr GetOutlineFont(string fontId, int size)
         {
             if (!_fontsLoaded)
                 LoadFonts();

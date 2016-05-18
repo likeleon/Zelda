@@ -299,5 +299,10 @@ namespace Zelda.Game
                 }
             }
         }
+
+        public static string JoinWith(this IEnumerable<string> e, string separator)
+        {
+            return string.Join(separator, e);
+        }
     }
 }

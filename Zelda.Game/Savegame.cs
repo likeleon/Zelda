@@ -117,15 +117,15 @@ namespace Zelda.Game
 
         void SetDefaultKeyboardControls()
         {
-            SetString(Key.KeyboardAction, InputEvent.GetKeyboardKeyName(KeyboardKey.Space));
-            SetString(Key.KeyboardAttack, InputEvent.GetKeyboardKeyName(KeyboardKey.C));
-            SetString(Key.KeyboardItem1, InputEvent.GetKeyboardKeyName(KeyboardKey.X));
-            SetString(Key.KeyboardItem2, InputEvent.GetKeyboardKeyName(KeyboardKey.V));
-            SetString(Key.KeyboardPause, InputEvent.GetKeyboardKeyName(KeyboardKey.D));
-            SetString(Key.KeyboardRight, InputEvent.GetKeyboardKeyName(KeyboardKey.Right));
-            SetString(Key.KeyboardUp, InputEvent.GetKeyboardKeyName(KeyboardKey.Up));
-            SetString(Key.KeyboardLeft, InputEvent.GetKeyboardKeyName(KeyboardKey.Left));
-            SetString(Key.KeyboardDown, InputEvent.GetKeyboardKeyName(KeyboardKey.Down));
+            SetString(Key.KeyboardAction, Core.Input.KeyNames[KeyboardKey.Space]);
+            SetString(Key.KeyboardAttack, Core.Input.KeyNames[KeyboardKey.C]);
+            SetString(Key.KeyboardItem1, Core.Input.KeyNames[KeyboardKey.X]);
+            SetString(Key.KeyboardItem2, Core.Input.KeyNames[KeyboardKey.V]);
+            SetString(Key.KeyboardPause, Core.Input.KeyNames[KeyboardKey.D]);
+            SetString(Key.KeyboardRight, Core.Input.KeyNames[KeyboardKey.Right]);
+            SetString(Key.KeyboardUp, Core.Input.KeyNames[KeyboardKey.Up]);
+            SetString(Key.KeyboardLeft, Core.Input.KeyNames[KeyboardKey.Left]);
+            SetString(Key.KeyboardDown, Core.Input.KeyNames[KeyboardKey.Down]);
         }
 
         void ImportFromFile()

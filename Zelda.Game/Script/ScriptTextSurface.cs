@@ -22,8 +22,8 @@ namespace Zelda.Game.Script
         {
             return ScriptToCore.Call(() =>
             {
-                font = font ?? FontResource.GetDefaultFontId();
-                if (!FontResource.Exists(font))
+                font = font ?? Core.FontResource.GetDefaultFontId();
+                if (!Core.FontResource.Exists(font))
                     throw new ArgumentException("No such font: '{0}'".F(font), "font");
 
                 TextSurface textSurface = new TextSurface(0, 0);
@@ -80,7 +80,7 @@ namespace Zelda.Game.Script
         {
             ScriptToCore.Call(() =>
             {
-                if (!FontResource.Exists(fontId))
+                if (!Core.FontResource.Exists(fontId))
                     throw new ArgumentException("No such font: '{0}'".F(fontId));
                 _textSurface.SetFont(fontId);
             });

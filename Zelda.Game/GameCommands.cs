@@ -73,7 +73,7 @@ namespace Zelda.Game
         {
             var savegameKey = GetKeyboardBindingSavegameKey(command);
             var keyboardKeyName = Savegame.GetString(savegameKey);
-            return InputEvent.GetKeyboardKeyByName(keyboardKeyName);
+            return Core.Input.GetKeyboardKeyByName(keyboardKeyName);
         }
 
         Savegame.Key GetKeyboardBindingSavegameKey(GameCommand command)

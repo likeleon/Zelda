@@ -67,6 +67,7 @@
     <Compile Include="Arguments.cs" />
     <Compile Include="CommandsEffects.cs" />
     <Compile Include="Containers\Grid.cs" />
+    <Compile Include="LowLevel\Input.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Dialog.cs" />

@@ -11,6 +11,8 @@ namespace Zelda.Game
         public static Mod Mod { get; private set; }
         public static Video Video => Platform.Video;
         public static Audio Audio => Platform.Audio;
+        public static Input Input => Platform.Input;
+        internal static FontResource FontResource => Platform.FontResource;
 
         internal static Game Game { get; private set; }
         internal static uint Now { get; private set; }
@@ -151,11 +153,11 @@ namespace Zelda.Game
 
         static void CheckInput()
         {
-            var inputEvent = InputEvent.GetEvent();
-            while (inputEvent != null)
+            var evt = Input.GetEvent();
+            while (evt != null)
             {
-                NotifyInput(inputEvent);
-                inputEvent = InputEvent.GetEvent();
+                NotifyInput(evt);
+                evt = Input.GetEvent();
             }
         }
 
