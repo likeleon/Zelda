@@ -1,6 +1,6 @@
 ﻿using OpenAL;
 using System;
-using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Zelda.Game.LowLevel
@@ -15,204 +15,53 @@ namespace Zelda.Game.LowLevel
 
     class Music
     {
-        #region Static
-        public static readonly string None = "None";
-        public static readonly string Unchanged = "Same";
+        public static string None { get; } = "None";
+        public static string Unchanged { get; } = "Same";
 
-        static readonly int _numBuffers = 8;
-        static uint[] _buffers = new uint[_numBuffers];
-        static ItDecoder _itDecoder;
-        static float _volume = 1.0f;
-        static Music _currentMusic;
+        public string Id { get; }
+        public bool Loop { get; }
+        public Action Callback { get; private set; }
+        public MusicFormat Format => _format;
+        public uint Source => _source;
 
-        public static bool IsInitialized { get; private set; }
+        readonly ItDecoder _itDecoder;
+        readonly uint[] _buffers;
 
-        public static string CurrentMusicId { get { return (_currentMusic != null) ? _currentMusic._id : None; } }
-
-        public static MusicFormat Format
-        {
-            get
-            {
-                if (_currentMusic == null)
-                    return MusicFormat.NoFormat;
-
-                return _currentMusic._format;
-            }
-        }
-
-        public static int Volume { get { return (int)(_volume * 100.0 + 0.5); } }
-
-        public static void Initialize()
-        {
-            _itDecoder = new ItDecoder();
-
-            SetVolume(100);
-            IsInitialized = true;
-        }
-
-        public static void Quit()
-        {
-            if (IsInitialized)
-            {
-                _currentMusic = null;
-                _itDecoder = null;
-            }
-        }
-
-        public static void Update()
-        {
-            if (!IsInitialized)
-                return;
-
-            if (_currentMusic != null)
-            {
-                bool playing = _currentMusic.UpdatePlaying();
-                if (!playing)
-                {
-                    var callback = _currentMusic._callback;
-                    _currentMusic = null;
-                    if (callback != null)
-                        callback.Invoke();
-                }
-            }
-        }
-
-        public static bool Exists(string musicId)
-        {
-            if (musicId == None || musicId == Unchanged)
-                return true;
-
-            string fileName;
-            MusicFormat format;
-            FindMusicFile(musicId, out fileName, out format);
-            return !String.IsNullOrEmpty(fileName);
-        }
-
-        public static void Play(string musicId, bool loop, Action callback = null)
-        {
-            if (musicId == Unchanged || musicId == CurrentMusicId)
-                return;
-
-            if (_currentMusic != null)
-            {
-                _currentMusic.Stop();
-                _currentMusic = null;
-            }
-
-            if (musicId != None)
-            {
-                _currentMusic = new Music(musicId, loop, callback);
-                if (!_currentMusic.Start())
-                    _currentMusic = null;
-            }
-        }
-
-        public static void StopPlaying()
-        {
-            Play(None, false);
-        }
-
-        public static void FindMusicFile(string musicId, out string fileName, out MusicFormat format)
-        {
-            fileName = null;
-            format = MusicFormat.Ogg;
-
-            string fileNameStart = "musics/" + musicId;
-            if (Core.Mod.ModFiles.DataFileExists(fileNameStart + ".ogg"))
-            {
-                format = MusicFormat.Ogg;
-                fileName = fileNameStart + ".ogg";
-            }
-            else if (Core.Mod.ModFiles.DataFileExists(fileNameStart + ".it"))
-            {
-                format = MusicFormat.It;
-                fileName = fileNameStart + ".it";
-            }
-        }
-
-        public static void SetVolume(int volume)
-        {
-            volume = Math.Min(100, Math.Max(0, volume));
-            _volume = volume / 100.0f;
-
-            if (_currentMusic != null)
-                AL10.alSourcef(_currentMusic._source, AL10.AL_GAIN, _volume);
-        }
-
-        public static int GetNumChannels()
-        {
-            Debug.CheckAssertion(Format == MusicFormat.It,
-                "This function is only supported for .it musics");
-
-            return _itDecoder.GetNumChannels();
-        }
-
-        public static int GetChannelVolume(int channel)
-        {
-            Debug.CheckAssertion(Format == MusicFormat.It,
-                "This function is only supported for .it musics");
-
-            return _itDecoder.GetChannelVolume(channel);
-        }
-
-        public static void SetChannelVolume(int channel, int volume)
-        {
-            Debug.CheckAssertion(Format == MusicFormat.It,
-                "This function is only supported for .it musics");
-
-            _itDecoder.SetChannelVolume(channel, volume);
-        }
-        #endregion
-
-        #region Instance
-        readonly string _id;
-        readonly bool _loop;
-
-        MusicFormat _format;
+        MusicFormat _format = MusicFormat.Ogg;
         uint _source = AL10.AL_NONE;
         string _fileName;
-        Action _callback;
 
         // OGG 한정
         IntPtr _oggFile;
         readonly SoundFromMemory _oggMem = new SoundFromMemory();
         GCHandle _oggMemHandle;
 
-        Music(string musicId, bool loop, Action callback)
+        public Music(ItDecoder itDecoder, string musicId, bool loop, Action callback)
         {
-            _id = musicId;
-            _format = MusicFormat.Ogg;
-            _loop = loop;
-            _callback = callback;
+            if (loop && callback != null)
+                throw new Exception("Attemp to set both a loop and a callback to music");
 
-            Debug.CheckAssertion(!loop || callback == null,
-                "Attemp to set both a loop and a callback to music");
+            _itDecoder = itDecoder;
+            Id = musicId;
+            Loop = loop;
+            Callback = callback;
 
-            for (int i = 0; i < _numBuffers; ++i)
-                _buffers[i] = AL10.AL_NONE;
+            _buffers = Enumerable.Repeat<uint>(AL10.AL_NONE, 8).ToArray();
         }
 
-        bool Start()
+        public void Start(int volume)
         {
-            if (!IsInitialized)
-                return false;
-
             if (_fileName == null)
             {
-                FindMusicFile(_id, out _fileName, out _format);
+                _fileName = MusicSystem.FindMusicFile(Id, out _format);
                 if (_fileName == null)
-                {
-                    Debug.Error("Cannot find music file 'musics/{0}' (tried with extentions .ogg)".F(_id));
-                    return false;
-                }
+                    throw new Exception("Cannot find music file 'musics/{0}' (tried with extentions .ogg)".F(Id));
             }
 
-            bool success = true;
-
             // 버퍼와 소스를 만듭니다
-            AL10.alGenBuffers((IntPtr)_numBuffers, _buffers);
+            AL10.alGenBuffers((IntPtr)_buffers.Length, _buffers);
             AL10.alGenSources((IntPtr)1, out _source);
-            AL10.alSourcef(_source, AL10.AL_GAIN, _volume);
+            AL10.alSourcef(_source, AL10.AL_GAIN, volume);
 
             // 음악을 메모리로 읽어옵니다
             byte[] soundBuffer;
@@ -220,76 +69,55 @@ namespace Zelda.Game.LowLevel
             switch (_format)
             {
                 case MusicFormat.It:
-                    {
-                        soundBuffer = Core.Mod.ModFiles.DataFileRead(_fileName);
-
-                        _itDecoder.Load(soundBuffer);
-
-                        for (int i = 0; i < _numBuffers; ++i)
-                            DecodeIt(_buffers[i], 4096);
-                        break;
-                    }
+                    soundBuffer = Core.Mod.ModFiles.DataFileRead(_fileName);
+                    _itDecoder.Load(soundBuffer);
+                    _buffers.Do(b => DecodeIt(b, 4096));
+                    break;
 
                 case MusicFormat.Ogg:
-                    {
-                        _oggMem.position = 0;
-                        _oggMem.loop = _loop;
-                        _oggMem.data = Core.Mod.ModFiles.DataFileRead(_fileName);
-                        _oggMemHandle = GCHandle.Alloc(_oggMem);
-                        // 이제 _oggmem은 인코딩된 데이터를 가집니다
+                    _oggMem.position = 0;
+                    _oggMem.loop = Loop;
+                    _oggMem.data = Core.Mod.ModFiles.DataFileRead(_fileName);
+                    _oggMemHandle = GCHandle.Alloc(_oggMem);
+                    // 이제 _oggmem은 인코딩된 데이터를 가집니다
 
-                        int error = Vorbisfile.ov_open_callback(GCHandle.ToIntPtr(_oggMemHandle), out _oggFile, IntPtr.Zero, 0, Audio.OggCallbacks);
-                        if (error != 0)
-                            Debug.Error("Cannot load music file '{0}' from memory: error {1}".F(_fileName, error));
-                        else
-                        {
-                            for (int i = 0; i < _numBuffers; ++i)
-                                DecodeOgg(_buffers[i], 4096);
-                        }
-                        break;
-                    }
+                    int error = Vorbisfile.ov_open_callback(GCHandle.ToIntPtr(_oggMemHandle), out _oggFile, IntPtr.Zero, 0, Audio.OggCallbacks);
+                    if (error != 0)
+                        throw new Exception("Cannot load music file '{0}' from memory: error {1}".F(_fileName, error));
+
+                    _buffers.Do(b => DecodeOgg(b, 4096));
+                    break;
 
                 default:
-                    Debug.Die("Invalid music format");
-                    break;
+                    throw new Exception("Invalid music format");
             }
 
             // 스트리밍을 시작합니다
-            AL10.alSourceQueueBuffers(_source, (IntPtr)_numBuffers, _buffers);
+            AL10.alSourceQueueBuffers(_source, (IntPtr)_buffers.Length, _buffers);
             int alError = AL10.alGetError();
             if (alError != AL10.AL_NO_ERROR)
-            {
-                string msg = "Cannot initialize buffers for music '{0}': error {1}".F(_fileName, alError);
-                Debug.Error(msg);
-                success = false;
-            }
+                throw new Exception("Cannot initialize buffers for music '{0}': error {1}".F(_fileName, alError));
 
             AL10.alSourcePlay(_source);
-
-            return success;
         }
 
-        void Stop()
+        public void Stop()
         {
-            if (!IsInitialized)
-                return;
-
-            _callback = null;
+            Callback = null;
 
             AL10.alSourceStop(_source);
 
             int nbQueued;
             uint buffer = 0;
             AL10.alGetSourcei(_source, AL10.AL_BUFFERS_QUEUED, out nbQueued);
-            for (int i = 0; i < nbQueued; ++i)
-                AL10.alSourceUnqueueBuffers(_source, (IntPtr)1, ref buffer);
+            nbQueued.Times(() => AL10.alSourceUnqueueBuffers(_source, (IntPtr)1, ref buffer));
             AL10.alSourcei(_source, AL10.AL_BUFFER, 0);
 
             // 소스를 삭제합니다
             AL10.alDeleteSources((IntPtr)1, ref _source);
 
             // 퍼버들을 삭제합니다
-            AL10.alDeleteBuffers((IntPtr)_numBuffers, _buffers);
+            AL10.alDeleteBuffers((IntPtr)_buffers.Length, _buffers);
 
             switch (_format)
             {
@@ -308,7 +136,7 @@ namespace Zelda.Game.LowLevel
             }
         }
 
-        bool UpdatePlaying()
+        public bool UpdatePlaying()
         {
             // 빈 버퍼를 얻습니다
             int nbEmpty;
@@ -332,8 +160,7 @@ namespace Zelda.Game.LowLevel
                         break;
 
                     default:
-                        Debug.Die("Invalid music format");
-                        break;
+                        throw new Exception("Invalid music format");
                 }
 
                 AL10.alSourceQueueBuffers(_source, (IntPtr)1, ref buffer);  // 큐에 추가
@@ -355,7 +182,7 @@ namespace Zelda.Game.LowLevel
         void DecodeOgg(uint destinationBuffer, int nbSamples)
         {
             // 인코딩된 음악의 속성을 얻습니다
-            Vorbisfile.vorbis_info info = Vorbisfile.ov_info(_oggFile, -1);
+            var info = Vorbisfile.ov_info(_oggFile, -1);
             int sampleRate = info.rate;
 
             int alFormat = AL10.AL_NONE;
@@ -365,7 +192,7 @@ namespace Zelda.Game.LowLevel
                 alFormat = AL10.AL_FORMAT_STEREO16;
 
             // OGG 데이터 디코딩
-            byte[] rawData = new byte[nbSamples * info.channels];
+            var rawData = new byte[nbSamples * info.channels];
             int bitstream;
             int bytesRead;
             int totalBytesRead = 0;
@@ -379,10 +206,7 @@ namespace Zelda.Game.LowLevel
                 if (bytesRead < 0)
                 {
                     if (bytesRead != Vorbisfile.OV_HOLE) // 루프타입일 경우 OV_HOLE은 에러가 아닙니다
-                    {
-                        Debug.Error("Error while decoding ogg chunk: {0}".F(bytesRead));
-                        return;
-                    }
+                        throw new Exception("Error while decoding ogg chunk: {0}".F(bytesRead));
                 }
                 else
                 {
@@ -397,28 +221,22 @@ namespace Zelda.Game.LowLevel
 
             int error = AL10.alGetError();
             if (error != AL10.AL_NO_ERROR)
-            {
-                string msg = "Failed to fill the audio buffer with decoded OGG data for music file '{0}': error {1}"
-                    .F(_fileName, error);
-                Debug.Error(msg);
-            }
+                throw new Exception("Failed to fill the audio buffer with decoded OGG data for music file '{0}': error {1}".F(_fileName, error));
         }
 
         void DecodeIt(uint destinationBuffer, int nbSamples)
         {
-            byte[] rawData = new byte[nbSamples * 2];
-            int bytesRead = _itDecoder.Decode(rawData, nbSamples);
+            var rawData = new byte[nbSamples * 2];
+            var bytesRead = _itDecoder.Decode(rawData, nbSamples);
 
-            if (bytesRead > 0)
-            {
-                AL10.alBufferData(destinationBuffer, AL10.AL_FORMAT_STEREO16, rawData, (IntPtr)bytesRead, (IntPtr)44100);
+            if (bytesRead <= 0)
+                return;
 
-                int error = AL10.alGetError();
-                if (error != AL10.AL_NO_ERROR)
-                    Debug.Die("Failed to fill the audio buffer with decoded IT data for music file '{0}': error {1}"
-                        .F(_fileName, error));
-            }
+            AL10.alBufferData(destinationBuffer, AL10.AL_FORMAT_STEREO16, rawData, (IntPtr)bytesRead, (IntPtr)44100);
+
+            int error = AL10.alGetError();
+            if (error != AL10.AL_NO_ERROR)
+                throw new Exception("Failed to fill the audio buffer with decoded IT data for music file '{0}': error {1}".F(_fileName, error));
         }
-        #endregion
     }
 }

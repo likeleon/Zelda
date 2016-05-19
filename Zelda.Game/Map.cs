@@ -234,7 +234,7 @@ namespace Zelda.Game
             IsStarted = true;
             VisibleSurface.SetOpacity(255);
 
-            Music.Play(MusicId, true);
+            Core.Audio.PlayMusic(MusicId);
             Entities.NotifyMapStarted();
             ScriptMap.NotifyStarted(GetDestination());
         }

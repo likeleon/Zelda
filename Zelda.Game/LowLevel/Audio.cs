@@ -15,12 +15,13 @@ namespace Zelda.Game.LowLevel
 
         public int MusicVolume
         {
-            get { return Music.Volume; }
-            set { Music.SetVolume(value); }
+            get { return _musicSystem.Volume; }
+            set { _musicSystem.Volume = value; }
         }
 
         internal static readonly Vorbisfile.ov_callbacks OggCallbacks = CreateCallbacks();
 
+        readonly MusicSystem _musicSystem = new MusicSystem();
         readonly List<Sound> _currentSounds = new List<Sound>();
         readonly Dictionary<string, Sound> _allSounds = new Dictionary<string, Sound>();
         IntPtr _device;
@@ -60,12 +61,12 @@ namespace Zelda.Game.LowLevel
 
             SoundVolume = 100;
 
-            Music.Initialize();
+            _musicSystem = new MusicSystem();
         }
 
         public void Dispose()
         {
-            Music.Quit();
+            _musicSystem?.Dispose();
 
             _allSounds.Values.Do(s => s.Dispose());
 
@@ -90,7 +91,7 @@ namespace Zelda.Game.LowLevel
 
             soundsToRemove.Do(s => _currentSounds.Remove(s));
 
-            Music.Update();
+            _musicSystem.Update();
         }
 
         static uint CbRead(IntPtr ptr, uint size, uint nbBytes, IntPtr datasource)
@@ -162,12 +163,12 @@ namespace Zelda.Game.LowLevel
 
         void PlayMusic(string musicId, bool loop, Action callback)
         {
-            if (!Music.Exists(musicId))
+            if (!_musicSystem.Exists(musicId))
                 throw new ArgumentException("No such music: '{0}'".F(musicId), "musicId");
 
-            Music.Play(musicId, loop, callback);
+            _musicSystem.Play(musicId, loop, callback);
         }
 
-        public void StopMusic() => Music.StopPlaying();
+        public void StopMusic() => _musicSystem.StopPlaying();
     }
 }

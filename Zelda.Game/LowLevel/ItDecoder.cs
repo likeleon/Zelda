@@ -3,7 +3,7 @@ using System;
 
 namespace Zelda.Game.LowLevel
 {
-    class ItDecoder
+    class ItDecoder : IDisposable
     {
         IntPtr _modplugFile;
 
@@ -14,6 +14,12 @@ namespace Zelda.Game.LowLevel
             settings.bits = 16;
             settings.loopCount = -1;
             LibModPlugNative.SetModPlugSettings(settings);
+        }
+
+        public void Dispose()
+        {
+            if (_modplugFile != IntPtr.Zero)
+                Unload();
         }
 
         public void Load(byte[] soundBuffer)
