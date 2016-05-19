@@ -62,16 +62,14 @@ namespace Zelda.Game
             }
             finally
             {
-                if (Game != null)
-                    Game.Stop();
+                Game?.Stop();
 
                 ScriptContext.Exit();
 
                 if (Platform != null)
                     Platform.Dispose();
 
-                if (Mod != null)
-                    Core.Mod.Dispose();
+                Mod?.Dispose();
             }
 
             return 0;
@@ -210,9 +208,7 @@ namespace Zelda.Game
 
         internal static void SetResetting()
         {
-            if (Game != null)
-                Game.Stop();
-            
+            Game?.Stop();
             SetGame(null);
         }
     }

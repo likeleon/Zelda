@@ -77,7 +77,7 @@ namespace Alttp.Menus.SavegameScreens
             RepeatMoveClouds();
 
             ReadSavegames();
-            ScriptAudio.PlayMusic("game_over");
+            Core.Audio.PlayMusic("game_over");
             InitPhaseSelectFile();
 
             Surface.FadeIn();
@@ -243,7 +243,7 @@ namespace Alttp.Menus.SavegameScreens
 
         public void MoveCursorUp()
         {
-            ScriptAudio.PlaySound("cursor");
+            Core.Audio.PlaySound("cursor");
             var cursorPosition = CursorPosition - 1;
             if (cursorPosition == 0)
                 cursorPosition = 4;
@@ -260,7 +260,7 @@ namespace Alttp.Menus.SavegameScreens
 
         public void MoveCursorDown()
         {
-            ScriptAudio.PlaySound("cursor");
+            Core.Audio.PlaySound("cursor");
             var cursorPosition = CursorPosition + 1;
             if (cursorPosition >= 5)
                 cursorPosition = 1;
@@ -271,12 +271,12 @@ namespace Alttp.Menus.SavegameScreens
         {
             if (CursorPosition == 4)
             {
-                ScriptAudio.PlaySound("cursor");
+                Core.Audio.PlaySound("cursor");
                 SetCursorPosition(5);
             }
             else if (CursorPosition == 5)
             {
-                ScriptAudio.PlaySound("cursor");
+                Core.Audio.PlaySound("cursor");
                 SetCursorPosition(4);
             }
         }

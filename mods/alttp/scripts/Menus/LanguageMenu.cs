@@ -145,13 +145,13 @@ namespace Alttp.Menus
             var n = _languages.Length;
             if (direction == Direction8.Up)
             {
-                ScriptAudio.PlaySound("cursor");
+                Core.Audio.PlaySound("cursor");
                 SetCursorPosition((_cursorPosition + n - 1) % n);
                 return true;
             }
             else if (direction == Direction8.Down)
             {
-                ScriptAudio.PlaySound("cursor");
+                Core.Audio.PlaySound("cursor");
                 SetCursorPosition((_cursorPosition + 1) % n);
                 return true;
             }

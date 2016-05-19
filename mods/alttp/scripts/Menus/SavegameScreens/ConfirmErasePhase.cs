@@ -46,7 +46,7 @@ namespace Alttp.Menus.SavegameScreens
 
             if (_screen.CursorPosition == 5)
             {
-                ScriptAudio.PlaySound("boss_killed");
+                Core.Audio.PlaySound("boss_killed");
                 var slot = _screen.Slots[_saveNumberToErase - 1];
                 ScriptGame.Delete(slot.FileName);
                 _screen.CursorPosition = _saveNumberToErase;
@@ -55,7 +55,7 @@ namespace Alttp.Menus.SavegameScreens
             }
             else if (_screen.CursorPosition == 4)
             {
-                ScriptAudio.PlaySound("ok");
+                Core.Audio.PlaySound("ok");
                 _screen.InitPhaseSelectFile();
             }
             return true;

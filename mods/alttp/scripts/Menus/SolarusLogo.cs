@@ -115,7 +115,7 @@ namespace Alttp.Menus
             _sword.StopMovement();
             _sword.XY = new Point(-48, 48);
 
-            ScriptAudio.PlaySound("solarus_logo");
+            Core.Audio.PlaySound("solarus_logo");
 
             RebuildSurface();
         }

@@ -20,7 +20,7 @@ namespace Alttp.Maps
             Game.StartDialog("intro0", null, (_) =>
             {
                 GetEntity<ScriptDynamicTile>("black_screen").SetEnabled(false);
-                ScriptAudio.PlayMusic("legend");
+                Core.Audio.PlayMusic("legend");
                 NextFresco();
             });
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Zelda.Game;
 using Zelda.Game.LowLevel;
 using Zelda.Game.Script;
 
@@ -19,7 +20,7 @@ namespace Alttp.Menus.TitleScreens
             _zsPresentsImg = ScriptSurface.Create("title_screen_initialization.png", true);
 
             _zsPresentsPos = new Point(160 - _zsPresentsImg.Width / 2, 120 - _zsPresentsImg.Height / 2);
-            ScriptAudio.PlaySound("intro");
+            Core.Audio.PlaySound("intro");
 
             ScriptTimer.Start(_titleScreen, 2000, () => Finished(this, EventArgs.Empty));
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Zelda.Game;
 using Zelda.Game.Script;
 
 namespace Alttp.Menus.TitleScreens
@@ -10,7 +11,7 @@ namespace Alttp.Menus.TitleScreens
         public BlackPhase(TitleScreen titleScreen)
         {
             // 0.3초의 시간 동안 사운드 이펙트들을 미리 로딩합니다.
-            ScriptAudio.PreloadSounds();
+            Core.Audio.PreloadSounds();
 
             ScriptTimer.Start(titleScreen, 300, () => Finished(this, EventArgs.Empty));
         }

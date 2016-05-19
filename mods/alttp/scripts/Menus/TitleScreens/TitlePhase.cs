@@ -27,7 +27,7 @@ namespace Alttp.Menus.TitleScreens
         {
             _titleScreen = titleScreen;
 
-            ScriptAudio.PlayMusic("title_screen");
+            Core.Audio.PlayMusic("title_screen");
 
             var hours = DateTime.Now.Hour;
             var timeOfDay = string.Empty;
@@ -62,7 +62,7 @@ namespace Alttp.Menus.TitleScreens
 
             ScriptTimer.Start(_titleScreen, 5000, () =>
             {
-                ScriptAudio.PlaySound("ok");
+                Core.Audio.PlaySound("ok");
                 _dxImg = ScriptSurface.Create("menus/title_dx.png");
             });
 

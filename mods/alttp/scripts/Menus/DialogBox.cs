@@ -247,7 +247,7 @@ namespace Alttp.Menus
                 AddCharacter();
             else
             {
-                ScriptAudio.PlaySound("message_end");
+                Core.Audio.PlaySound("message_end");
                 if (HasMoreLines || _dialog.HasProperty("Next") || _selectedAnswer != DialogBoxSelectedAnswer.NoQuestion)
                     _endLinesSprite.SetAnimation("next");
                 else
@@ -306,7 +306,7 @@ namespace Alttp.Menus
 
             if (!special && _needLetterSound)
             {
-                ScriptAudio.PlaySound("message_letter");
+                Core.Audio.PlaySound("message_letter");
                 _needLetterSound = false;
                 ScriptTimer.Start(this, _letterSoundDelay, () => _needLetterSound = true);
             }
@@ -421,7 +421,7 @@ namespace Alttp.Menus
                     !HasMoreLines &&
                     _isFull)
                 {
-                    ScriptAudio.PlaySound("cursor");
+                    Core.Audio.PlaySound("cursor");
                     _selectedAnswer = (DialogBoxSelectedAnswer)(3 - (int)_selectedAnswer);
                     var yOffset = (_selectedAnswer == DialogBoxSelectedAnswer.One) ? 27 : 40;
                     _questionDstPosition.Y = _boxDstPosition.Y + yOffset;

@@ -50,7 +50,7 @@ namespace Alttp.Menus.SavegameScreens
                 return false;
 
             var handled = false;
-            ScriptAudio.PlaySound("ok");
+            Core.Audio.PlaySound("ok");
             if (_screen.CursorPosition == 5)
                 _screen.InitPhaseOptions();
             else if (_screen.CursorPosition == 4)

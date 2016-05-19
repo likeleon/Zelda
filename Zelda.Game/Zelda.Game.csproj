@@ -68,6 +68,7 @@
     <Compile Include="CommandsEffects.cs" />
     <Compile Include="Containers\Grid.cs" />
     <Compile Include="LowLevel\Input.cs" />
+    <Compile Include="LowLevel\Sound.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Dialog.cs" />
@@ -142,7 +143,6 @@
     <Compile Include="Movements\PixelMovement.cs" />
     <Compile Include="Movements\PlayerMovement.cs" />
     <Compile Include="Script\CoreToScript.cs" />
-    <Compile Include="Script\ScriptAudio.cs" />
     <Compile Include="Script\ScriptBlock.cs" />
     <Compile Include="Script\ScriptBomb.cs" />
     <Compile Include="Script\ScriptChest.cs" />

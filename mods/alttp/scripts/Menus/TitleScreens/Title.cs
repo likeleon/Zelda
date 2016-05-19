@@ -75,7 +75,7 @@ namespace Alttp.Menus.TitleScreens
 
         void FinishTitle()
         {
-            ScriptAudio.StopMusic();
+            Core.Audio.StopMusic();
             ScriptMenu.Stop(this);
         }
     }
