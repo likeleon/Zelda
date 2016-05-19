@@ -1,7 +1,6 @@
 ﻿using SDL2;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Zelda.Game.Script;
 
@@ -18,16 +17,12 @@ namespace Zelda.Game.LowLevel
 
         class SubSurfaceNode
         {
-            public Surface SrcSurface { get; private set; }
-            public Rectangle SrcRect { get; private set; }
-            public Rectangle DstRect { get; private set; }
-            public HashSet<SubSurfaceNode> Subsurfaces { get; private set; }
+            public Surface SrcSurface { get; }
+            public Rectangle SrcRect { get; }
+            public Rectangle DstRect { get; }
+            public HashSet<SubSurfaceNode> Subsurfaces { get; }
 
-            public SubSurfaceNode(
-                Surface srcSurface,
-                Rectangle srcRect,
-                Rectangle dstRect,
-                HashSet<SubSurfaceNode> subsurfaces)
+            public SubSurfaceNode(Surface srcSurface, Rectangle srcRect, Rectangle dstRect, HashSet<SubSurfaceNode> subsurfaces)
             {
                 SrcSurface = srcSurface;
                 SrcRect = srcRect;
@@ -36,46 +31,42 @@ namespace Zelda.Game.LowLevel
             }
         }
 
-        class Texture : DisposableObject
+        class Texture : IDisposable
         {
-            readonly IntPtr _internalTexture;
-            public IntPtr InternalTexture
-            {
-                get { return _internalTexture; }
-            }
+            public IntPtr InternalTexture { get; }
 
             public Texture(IntPtr internalTexture)
             {
-                Debug.CheckAssertion(internalTexture != IntPtr.Zero, "interalTexture should not be IntPtr.Zero");
+                if (internalTexture == IntPtr.Zero)
+                    throw new ArgumentException("interalTexture should not be IntPtr.Zero", nameof(internalTexture));
 
-                _internalTexture = internalTexture;
+                InternalTexture = internalTexture;
             }
 
-            protected override void OnDispose(bool disposing)
+            public void Dispose()
             {
-                SDL.SDL_DestroyTexture(_internalTexture);
+                SDL.SDL_DestroyTexture(InternalTexture);
             }
         }
 
-        readonly int _width;
-        public int Width
-        {
-            get { return _width; }
-        }
+        public int Width { get; }
+        public int Height { get; }
+        public Size Size => new Size(Width, Height);
+        public bool IsSoftwareDestination { get; set; }
+        public ScriptSurface ScriptSurface => _scriptSurface.Value;
+        public override Surface TransitionSurface => this;
 
-        readonly int _height;
-        public int Height
-        {
-            get { return _height; }
-        }
-
-        public Size Size
-        {
-            get { return new Size(_width, _height); }
-        }
-
-        [Description("투명도")]
         byte _internalOpacity = 255;
+
+        readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
+        readonly Lazy<ScriptSurface> _scriptSurface;
+
+        internal IntPtr _internalSurface;
+        Texture _internalTexture;
+        Color? _internalColor;
+        bool _isRendered;
+        bool _disposed;
+
         public void SetOpacity(byte opacity)
         {
             if (IsSoftwareDestination)
@@ -87,28 +78,13 @@ namespace Zelda.Game.LowLevel
 
                 int error = SDL.SDL_SetSurfaceAlphaMod(_internalSurface, opacity);
                 if (error != 0)
-                    Debug.Error(SDL.SDL_GetError());
+                    throw new Exception(SDL.SDL_GetError());
 
                 _isRendered = false;
             }
             else
                 _internalOpacity = opacity;
         }
-
-        [Description("그리기 동작이 RAM과 GPU 어디에서 일어나는지를 의미합니다.")]
-        public bool IsSoftwareDestination { get; set; }
-
-        readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
-        readonly Lazy<ScriptSurface> _scriptSurface;
-
-        internal IntPtr _internalSurface;
-        Texture _internalTexture;
-        Color? _internalColor;
-        bool _isRendered;
-        bool _disposed;
-
-        public ScriptSurface ScriptSurface { get { return _scriptSurface.Value; } }
-        public override Surface TransitionSurface { get { return this; } }
 
         public static Surface Create(int width, int height)
         {
@@ -156,7 +132,8 @@ namespace Zelda.Game.LowLevel
             bufferHandle.Free();
             // TODO: 네이티브의 SDL_RWclose(rw)에 해당하는 구현 방법을 찾지 못했다. 메모리 릭 확인할 것.
 
-            Debug.CheckAssertion(softwareSurface != IntPtr.Zero, "Cannot load image '{0}'".F(prefixedFileName));
+            if (softwareSurface == IntPtr.Zero)
+                throw new Exception("Cannot load image '{0}'".F(prefixedFileName));
 
             return softwareSurface;
         }
@@ -164,18 +141,19 @@ namespace Zelda.Game.LowLevel
         public Surface(int width, int height)
             : this()
         {
-            Debug.CheckAssertion(width > 0 && height > 0, "Attempt to create a surface with an empty size");
+            if (width <= 0 || height <= 0)
+                throw new Exception("Attempt to create a surface with an empty size");
 
-            _width = width;
-            _height = height;
+            Width = width;
+            Height = height;
         }
 
         public Surface(IntPtr internalSurface)
             : this()
         {
             _internalSurface = internalSurface;
-            _width = _internalSurface.ToSDLSurface().w;
-            _height = _internalSurface.ToSDLSurface().h;
+            Width = _internalSurface.ToSDLSurface().w;
+            Height = _internalSurface.ToSDLSurface().h;
         }
         
         Surface()
@@ -200,6 +178,7 @@ namespace Zelda.Game.LowLevel
             if (_disposed)
                 return;
 
+            _internalTexture?.Dispose();
             if (_internalSurface != IntPtr.Zero)
                 SDL.SDL_FreeSurface(_internalSurface);
 
@@ -208,17 +187,11 @@ namespace Zelda.Game.LowLevel
 
         public void Render(IntPtr renderer)
         {
-            Rectangle size = new Rectangle(Size);
+            var size = new Rectangle(Size);
             Render(renderer, size, size, size, 255, _subsurfaces);
         }
 
-        void Render(
-            IntPtr renderer,
-            Rectangle srcRect,
-            Rectangle dstRect,
-            Rectangle clipRect,
-            byte opacity,
-            HashSet<SubSurfaceNode> subsurfaces)
+        void Render(IntPtr renderer, Rectangle srcRect, Rectangle dstRect, Rectangle clipRect, byte opacity, HashSet<SubSurfaceNode> subsurfaces)
         {
             if (_internalSurface != IntPtr.Zero)
             {
@@ -229,8 +202,7 @@ namespace Zelda.Game.LowLevel
                 else if (IsSoftwareDestination && !_isRendered)
                 {
                     ConvertSoftwareSurface();
-                    SDL.SDL_UpdateTexture(
-                        _internalTexture.InternalTexture,
+                    SDL.SDL_UpdateTexture(_internalTexture.InternalTexture,
                         IntPtr.Zero,
                         _internalSurface.ToSDLSurface().pixels,
                         _internalSurface.ToSDLSurface().pitch);
@@ -262,10 +234,10 @@ namespace Zelda.Game.LowLevel
             }
 
             // 현재 표면은 모두 그려졌고 이어서 하위 표면들의 텍스쳐들을 그립니다
-            foreach (SubSurfaceNode subsurface in _subsurfaces)
+            foreach (var subsurface in _subsurfaces)
             {
                 // 스크린 상의 절대 좌표 계산
-                Rectangle subsurfaceDstRect = new Rectangle(
+                var subsurfaceDstRect = new Rectangle(
                     x: dstRect.X + subsurface.DstRect.X - srcRect.X,
                     y: dstRect.Y + subsurface.DstRect.Y - srcRect.Y,
                     width: subsurface.SrcRect.Width,
@@ -308,8 +280,8 @@ namespace Zelda.Game.LowLevel
 
         public void Clear(Rectangle where)
         {
-            Debug.CheckAssertion(IsSoftwareDestination,
-                "Partial surface clear is only supported with software surfaces");
+            if (!IsSoftwareDestination)
+                throw new Exception("Partial surface clear is only supported with software surfaces");
 
             if (_internalSurface == null)
                 return;
@@ -325,7 +297,7 @@ namespace Zelda.Game.LowLevel
 
         public override void RawDraw(Surface dstSurface, Point dstPosition)
         {
-            Rectangle region = new Rectangle(0, 0, _width, _height);
+            var region = new Rectangle(0, 0, Width, Height);
             RawDrawRegion(region, dstSurface, dstPosition);
         }
 
@@ -404,11 +376,7 @@ namespace Zelda.Game.LowLevel
 
         void AddSubSurface(Surface srcSurface, Rectangle region, Point dstPosistion)
         {
-            SubSurfaceNode node = new SubSurfaceNode(
-                srcSurface,
-                region,
-                new Rectangle(dstPosistion),
-                srcSurface._subsurfaces);
+            var node = new SubSurfaceNode(srcSurface, region, new Rectangle(dstPosistion), srcSurface._subsurfaces);
 
             // 현재 dst_surface가 이미 렌더링된 상태라면 subsurface 리스트를 비운다
             if (_isRendered)
@@ -420,28 +388,23 @@ namespace Zelda.Game.LowLevel
         // 내부 표면을 소프트웨어 모드로 생성합니다
         void CreateSoftwareSurface()
         {
-            Debug.CheckAssertion(_internalSurface == IntPtr.Zero, "Software surface already exists");
+            if (_internalSurface != IntPtr.Zero)
+                throw new Exception("Software surface already exists");
 
             var format = Core.Video.PixelFormat.ToSDLPixelFormat();
-            _internalSurface = SDL.SDL_CreateRGBSurface(
-                0,
-                _width,
-                _height,
-                32,
-                format.Rmask,
-                format.Gmask,
-                format.Bmask,
-                format.Amask);
+            _internalSurface = SDL.SDL_CreateRGBSurface(0, Width, Height, 32, format.Rmask, format.Gmask, format.Bmask, format.Amask);
             SDL.SDL_SetSurfaceBlendMode(_internalSurface, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
             _isRendered = false;
 
-            Debug.CheckAssertion(_internalSurface != IntPtr.Zero, "Failed to create software surface");
+            if (_internalSurface == IntPtr.Zero)
+                throw new Exception("Failed to create software surface");
         }
 
         // 소프트웨어 표면을 32-bit 알파 채널의 픽셀 포맷으로 변경합니다
         void ConvertSoftwareSurface()
         {
-            Debug.CheckAssertion(_internalSurface != IntPtr.Zero, "Missing software surface to convert");
+            if (_internalSurface == IntPtr.Zero)
+                throw new Exception("Missing software surface to convert");
 
             var videoPixelFormat = Core.Video.PixelFormat.ToSDLPixelFormat();
             var surfacePixelFormat = _internalSurface.ToSDLSurface().format.ToSDLPixelFormat();
@@ -449,11 +412,9 @@ namespace Zelda.Game.LowLevel
             {
                 byte opacity;
                 SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out opacity);
-                IntPtr convertedSurface = SDL.SDL_ConvertSurface(
-                    _internalSurface,
-                    Core.Video.PixelFormat,
-                    0);
-                Debug.CheckAssertion(convertedSurface != IntPtr.Zero, "Failed to convert software surface");
+                IntPtr convertedSurface = SDL.SDL_ConvertSurface(_internalSurface, Core.Video.PixelFormat, 0);
+                if (convertedSurface == IntPtr.Zero)
+                    throw new Exception("Failed to convert software surface");
 
                 _internalSurface = convertedSurface;
                 SDL.SDL_SetSurfaceAlphaMod(_internalSurface, opacity);  // alpha값 복구 
@@ -469,37 +430,38 @@ namespace Zelda.Game.LowLevel
         // 소프트웨어 표면으로부터 하드웨어 텍스쳐를 생성합니다
         void CreateTextureFromSurface()
         {
-            IntPtr mainRenderer = Core.Video.Renderer;
-            if (mainRenderer != IntPtr.Zero)
-            {
-                Debug.CheckAssertion(_internalSurface != IntPtr.Zero, "Missing software surface to create texture from");
+            var mainRenderer = Core.Video.Renderer;
+            if (mainRenderer == IntPtr.Zero)
+                return;
 
-                // 성능의 이유로 SDL_UpdateTexture가 픽셀 포맷을 인자로 받아들이지 않기 때문에
-                // 소프트웨어 표면이 텍스쳐와 같은 포맷이어야 합니다
-                ConvertSoftwareSurface();
+            if (_internalSurface == IntPtr.Zero)
+                throw new Exception("Missing software surface to create texture from");
 
-                IntPtr sdlTexture = SDL.SDL_CreateTexture(
-                    mainRenderer,
-                    Core.Video.PixelFormat.ToSDLPixelFormat().format,
-                    (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_STATIC,
-                    _internalSurface.ToSDLSurface().w,
-                    _internalSurface.ToSDLSurface().h);
-                _internalTexture = new Texture(sdlTexture);
-                SDL.SDL_SetTextureBlendMode(_internalTexture.InternalTexture, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
+            // 성능의 이유로 SDL_UpdateTexture가 픽셀 포맷을 인자로 받아들이지 않기 때문에
+            // 소프트웨어 표면이 텍스쳐와 같은 포맷이어야 합니다
+            ConvertSoftwareSurface();
 
-                // 소프트웨어 표면의 픽셀들을 GPU 텍스쳐로 복사합니다
-                SDL.SDL_UpdateTexture(_internalTexture.InternalTexture,
-                    IntPtr.Zero,
-                    _internalSurface.ToSDLSurface().pixels,
-                    _internalSurface.ToSDLSurface().pitch);
-                SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out _internalOpacity);
-            }
+            var sdlTexture = SDL.SDL_CreateTexture(
+                mainRenderer,
+                Core.Video.PixelFormat.ToSDLPixelFormat().format,
+                (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_STATIC,
+                _internalSurface.ToSDLSurface().w,
+                _internalSurface.ToSDLSurface().h);
+            _internalTexture = new Texture(sdlTexture);
+            SDL.SDL_SetTextureBlendMode(_internalTexture.InternalTexture, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
+
+            // 소프트웨어 표면의 픽셀들을 GPU 텍스쳐로 복사합니다
+            SDL.SDL_UpdateTexture(_internalTexture.InternalTexture,
+                IntPtr.Zero,
+                _internalSurface.ToSDLSurface().pixels,
+                _internalSurface.ToSDLSurface().pitch);
+            SDL.SDL_GetSurfaceAlphaMod(_internalSurface, out _internalOpacity);
         }
 
         public void FillWithColor(Color color, Rectangle? where = null)
         {
-            Rectangle fillwhere = where ?? new Rectangle(0, 0, _width, _height);
-            Surface coloredSurface = Surface.Create(fillwhere.Size);
+            var fillwhere = where ?? new Rectangle(0, 0, Width, Height);
+            var coloredSurface = Create(fillwhere.Size);
             coloredSurface.IsSoftwareDestination = false;
             coloredSurface._internalColor = color;
             coloredSurface.RawDrawRegion(new Rectangle(coloredSurface.Size), this, fillwhere.XY);
@@ -523,10 +485,10 @@ namespace Zelda.Game.LowLevel
 
         uint GetPixel(int index)
         {
-            Debug.CheckAssertion(_internalSurface != null,
-                "Attempt to read a pixel on a hardware or a buffer surface.");
+            if (_internalSurface == null)
+                throw new Exception("Attempt to read a pixel on a hardware or a buffer surface.");
 
-            SDL.SDL_PixelFormat format = _internalSurface.ToSDLSurface().format.ToSDLPixelFormat();
+            var format = _internalSurface.ToSDLSurface().format.ToSDLPixelFormat();
 
             unsafe 
             {
@@ -547,8 +509,7 @@ namespace Zelda.Game.LowLevel
                 }
             }
 
-            Debug.Die("Unknown pixel depth: {0}".F(format.BitsPerPixel));
-            return 0;
+            throw new Exception("Unknown pixel depth: {0}".F(format.BitsPerPixel));
         }
 
         public override void DrawTransition(Transition transition)
