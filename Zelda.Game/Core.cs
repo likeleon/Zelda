@@ -13,6 +13,7 @@ namespace Zelda.Game
         public static Audio Audio => Platform.Audio;
         public static Input Input => Platform.Input;
         internal static FontResource FontResource => Platform.FontResource;
+        internal static SpriteSystem SpriteSystem => Platform.SpriteSystem;
 
         internal static Game Game { get; private set; }
         internal static uint Now { get; private set; }

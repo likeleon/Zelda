@@ -2,7 +2,7 @@
 
 namespace Zelda.Game.Script
 {
-    public class ScriptSprite : ScriptDrawable
+    public class ScriptSprite : ScriptDrawable, IDisposable
     {
         readonly Sprite _sprite;
 
@@ -22,6 +22,11 @@ namespace Zelda.Game.Script
             : base(sprite)
         {
             _sprite = sprite;
+        }
+
+        public void Dispose()
+        {
+            _sprite.Dispose();
         }
 
         public void SetAnimation(string animationName)

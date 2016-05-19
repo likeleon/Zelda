@@ -1,14 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using Zelda.Game.LowLevel;
 using Zelda.Game.Entities;
+using Zelda.Game.LowLevel;
 using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
-    class Sprite : Drawable
+    class Sprite : Drawable, IDisposable
     {
-        static readonly Dictionary<string, SpriteAnimationSet> _allAnimationSets = new Dictionary<string, SpriteAnimationSet>();
+        public Point Origin => _currentAnimation.GetDirection(CurrentDirection).Origin;
+        public ScriptSprite ScriptSprite => _scriptSprite.Value;
+        public string AnimationSetId { get; }
+        public SpriteAnimationSet AnimationSet { get; }
+        public bool IsAnimationFinished { get; private set; }
+        public bool IsAnimationStarted => !IsAnimationFinished;
+        public int CurrentFrame { get; private set; } = -1;
+        public bool HasFrameChanged { get; set; }
+        public Direction4 CurrentDirection { get; private set; }
+        public int NumDirections => _currentAnimation.NumDirections;
+        public string CurrentAnimation { get; private set; }
+        public Size Size => _currentAnimation.GetDirection(CurrentDirection).Size;
+        public Size MaxSize => AnimationSet.MaxSize;
+        public bool IsBlinking => _blinkDelay != 0;
+        public override Surface TransitionSurface => IntermediateSurface;
+
+        Surface IntermediateSurface => _intermediateSurface.Value;
 
         readonly Lazy<Surface> _intermediateSurface;
         readonly Lazy<ScriptSprite> _scriptSprite;
@@ -20,30 +35,23 @@ namespace Zelda.Game
         bool _blinkIsSpriteVisible;
         uint _blinkNextChangeDate;
 
-        public Point Origin { get { return _currentAnimation.GetDirection(CurrentDirection).Origin; } }
-        public ScriptSprite ScriptSprite { get { return _scriptSprite.Value; } }
-        public string AnimationSetId { get; }
-        public SpriteAnimationSet AnimationSet { get; }
-        public bool IsAnimationFinished { get; private set; }
-        public bool IsAnimationStarted { get { return !IsAnimationFinished; } }
-        public int CurrentFrame { get; private set; } = -1;
-        public bool HasFrameChanged { get; set; }
-        public Direction4 CurrentDirection { get; private set; }
-        public int NumDirections { get { return _currentAnimation.NumDirections; } }
-        public string CurrentAnimation { get; private set; }
-        public Size Size { get { return _currentAnimation.GetDirection(CurrentDirection).Size; } }
-        public Size MaxSize { get { return AnimationSet.MaxSize; } }
-        public bool IsBlinking { get { return _blinkDelay != 0; } }
-
-        Surface IntermediateSurface { get { return _intermediateSurface.Value; } }
-
-        public static void Initialize()
+        public Sprite(string id)
         {
+            AnimationSetId = id;
+            AnimationSet = Core.SpriteSystem.GetAnimationSet(id);
+            SetCurrentAnimation(AnimationSet.DefaultAnimation);
+
+            _intermediateSurface = Exts.Lazy(() => Surface.Create(MaxSize));
+            _scriptSprite = Exts.Lazy(() => new ScriptSprite(this));
         }
 
-        public static void Quit()
+        public void Dispose()
         {
-            _allAnimationSets.Clear();
+            if (_scriptSprite.IsValueCreated)
+                _scriptSprite.Value.Dispose();
+
+            if (_intermediateSurface.IsValueCreated)
+                _intermediateSurface.Value.Dispose();
         }
 
         public void EnablePixelCollisions()
@@ -98,10 +106,7 @@ namespace Zelda.Game
         public void SetCurrentDirection(Direction4 currentDirection)
         {
             if (currentDirection < 0 || (int)currentDirection >= NumDirections)
-            {
-                Debug.Die("Invalid direction {0} for sprite '{1}' in animation {2}"
-                    .F(currentDirection, AnimationSetId, CurrentAnimation));
-            }
+                throw new Exception("Invalid direction {0} for sprite '{1}' in animation {2}".F(currentDirection, AnimationSetId, CurrentAnimation));
 
             if (currentDirection == CurrentDirection)
                 return;
@@ -127,16 +132,6 @@ namespace Zelda.Game
             }
             else
                 _blinkIsSpriteVisible = true;
-        }
-
-        public Sprite(string id)
-        {
-            AnimationSetId = id;
-            AnimationSet = GetAnimationSet(id);
-            SetCurrentAnimation(AnimationSet.DefaultAnimation);
-
-            _intermediateSurface = Exts.Lazy(() => Surface.Create(MaxSize));
-            _scriptSprite = Exts.Lazy<ScriptSprite>(() => new ScriptSprite(this));
         }
 
         public void SetTileset(Tileset tileset)
@@ -213,11 +208,6 @@ namespace Zelda.Game
             throw new NotImplementedException();
         }
 
-        public override Surface TransitionSurface
-        {
-            get { return IntermediateSurface; }
-        }
-
         public override void DrawTransition(Transition transition)
         {
             Transition.Draw(IntermediateSurface);
@@ -249,20 +239,6 @@ namespace Zelda.Game
             var pixelBits2 = direction2.GetPixelBits(other.CurrentFrame);
 
             return pixelBits1.TestCollision(pixelBits2, location1, location2);
-        }
-
-        static SpriteAnimationSet GetAnimationSet(string id)
-        {
-            SpriteAnimationSet animationSet;
-            if (!_allAnimationSets.TryGetValue(id, out animationSet))
-            {
-                animationSet = new SpriteAnimationSet(id);
-                _allAnimationSets.Add(id, animationSet);
-            }
-
-            Debug.CheckAssertion(animationSet != null, "No animation set");
-
-            return animationSet;
         }
 
         public void SetIgnoreSuspended(bool ignoreSuspended)

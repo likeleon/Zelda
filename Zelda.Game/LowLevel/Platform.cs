@@ -10,6 +10,7 @@ namespace Zelda.Game.LowLevel
         public Audio Audio { get; }
         public Input Input { get; }
         public FontResource FontResource { get; }
+        public SpriteSystem SpriteSystem { get; }
 
         readonly uint _initialTime;       // 초기화 시점의 실제 시각, 밀리초
 
@@ -22,14 +23,14 @@ namespace Zelda.Game.LowLevel
             Input = new Input();
             Video = new Video(args, ZeldaVersion.Version.ToString());
             FontResource = new FontResource();
-            Sprite.Initialize();
+            SpriteSystem = new SpriteSystem();
         }
 
         public void Dispose()
         {
             Input?.Dispose();
             Audio?.Dispose();
-            Sprite.Quit();
+            SpriteSystem?.Dispose();
             FontResource?.Dispose();
             Video?.Dispose();
 

@@ -161,6 +161,7 @@
     <Compile Include="Script\ScriptToCore.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SpriteData.cs" />
+    <Compile Include="SpriteSystem.cs" />
     <Compile Include="StringResources.cs" />
     <Compile Include="Transition.cs" />
     <Compile Include="TransitionFade.cs" />

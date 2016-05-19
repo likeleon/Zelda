@@ -6,7 +6,7 @@ using Zelda.Game.Entities;
 
 namespace Zelda.Game
 {
-    class SpriteAnimationSet
+    class SpriteAnimationSet : IDisposable
     {
         public string DefaultAnimation { get; private set; }
         public Size MaxSize { get; private set; }
@@ -19,6 +19,11 @@ namespace Zelda.Game
             _id = id;
 
             Load();
+        }
+
+        public void Dispose()
+        {
+            _animations.Values.Do(a => a.Dispose());
         }
 
         void Load()
