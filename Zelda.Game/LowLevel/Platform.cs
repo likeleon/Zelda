@@ -19,7 +19,8 @@ namespace Zelda.Game.LowLevel
             SDL.SDL_Init(SDL.SDL_INIT_VIDEO);
             _initialTime = GetRealTime();
 
-            Audio = new Audio(args);
+            if (!args.HasArgument("-no-audio"))
+                Audio = new Audio(args);
             Input = new Input();
             Video = new Video(args, ZeldaVersion.Version.ToString());
             FontResource = new FontResource();
@@ -39,7 +40,7 @@ namespace Zelda.Game.LowLevel
 
         public void Update()
         {
-            Audio.Update();
+            Audio?.Update();
         }
 
         public int GetRealTime()

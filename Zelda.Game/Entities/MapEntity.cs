@@ -249,7 +249,7 @@ namespace Zelda.Game.Entities
                     sprite.SetSuspended(true);
 
                 if (IsOnMap)
-                    ScriptTimer.SetEntityTimersSuspended(ScriptEntity, true);
+                    Timer.SetEntityTimersSuspended(ScriptEntity, true);
             }
             // TODO: NotifyEnabled(false);
         }
@@ -440,7 +440,7 @@ namespace Zelda.Game.Entities
                 Movement.SetSuspended(suspended || !IsEnabled);
 
             if (IsOnMap)
-                ScriptTimer.SetEntityTimersSuspended(ScriptEntity, suspended || !IsEnabled);
+                Timer.SetEntityTimersSuspended(ScriptEntity, suspended || !IsEnabled);
         }
 
         public virtual void Update()
@@ -496,7 +496,7 @@ namespace Zelda.Game.Entities
                 sprite.SetSuspended(false);
 
             if (IsOnMap)
-                ScriptTimer.SetEntityTimersSuspended(ScriptEntity, false);
+                Timer.SetEntityTimersSuspended(ScriptEntity, false);
         }
 
         public virtual void DrawOnMap()

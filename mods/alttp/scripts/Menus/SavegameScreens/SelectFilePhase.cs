@@ -50,7 +50,7 @@ namespace Alttp.Menus.SavegameScreens
                 return false;
 
             var handled = false;
-            Core.Audio.PlaySound("ok");
+            Core.Audio?.PlaySound("ok");
             if (_screen.CursorPosition == 5)
                 _screen.InitPhaseOptions();
             else if (_screen.CursorPosition == 4)
@@ -62,7 +62,7 @@ namespace Alttp.Menus.SavegameScreens
                 {
                     _screen.IsFinished = true;
                     _screen.Surface.FadeOut();
-                    ScriptTimer.Start(_screen, 700, () =>
+                    Timer.Start(_screen, 700, () =>
                     {
                         _screen.Stop();
                         _screen.Main.StartSavegame(slot.Savegame);

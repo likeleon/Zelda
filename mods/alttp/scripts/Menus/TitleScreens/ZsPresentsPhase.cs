@@ -20,9 +20,9 @@ namespace Alttp.Menus.TitleScreens
             _zsPresentsImg = ScriptSurface.Create("title_screen_initialization.png", true);
 
             _zsPresentsPos = new Point(160 - _zsPresentsImg.Width / 2, 120 - _zsPresentsImg.Height / 2);
-            Core.Audio.PlaySound("intro");
+            Core.Audio?.PlaySound("intro");
 
-            ScriptTimer.Start(_titleScreen, 2000, () => Finished(this, EventArgs.Empty));
+            Timer.Start(_titleScreen, 2000, () => Finished(this, EventArgs.Empty));
         }
 
         public void OnDraw(ScriptSurface dstSurface)

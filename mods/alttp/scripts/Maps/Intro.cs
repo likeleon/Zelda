@@ -20,7 +20,7 @@ namespace Alttp.Maps
             Game.StartDialog("intro0", null, (_) =>
             {
                 GetEntity<ScriptDynamicTile>("black_screen").SetEnabled(false);
-                Core.Audio.PlayMusic("legend");
+                Core.Audio?.PlayMusic("legend");
                 NextFresco();
             });
         }
@@ -33,7 +33,7 @@ namespace Alttp.Maps
                 Game.StartDialog("intro{0}".F(_frescoIndex), null, (_) =>
                 {
                     _frescoSprite.FadeOut();
-                    ScriptTimer.Start(null, 600, (Action)NextFresco);
+                    Timer.Start(null, 600, (Action)NextFresco);
                 });
                 _frescoSprite.SetAnimation(_frescoIndex.ToString());
                 _frescoSprite.FadeIn();

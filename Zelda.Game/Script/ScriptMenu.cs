@@ -102,7 +102,7 @@ namespace Zelda.Game.Script
         {
             RemoveMenus(menu);  // 먼저 모든 자식 메뉴들을 정지시킵니다
             menu.NotifyFinished();
-            ScriptTimer.RemoveTimers(menu); // 이 메뉴에 관련된 타이머들을 모두 정지시킵니다
+            Timer.StopAll(menu); // 이 메뉴에 관련된 타이머들을 모두 정지시킵니다
         }
 
         // context와 관련된 모든 메뉴를 해제합니다

@@ -77,7 +77,7 @@ namespace Alttp.Menus.SavegameScreens
             RepeatMoveClouds();
 
             ReadSavegames();
-            Core.Audio.PlayMusic("game_over");
+            Core.Audio?.PlayMusic("game_over");
             InitPhaseSelectFile();
 
             Surface.FadeIn();
@@ -99,7 +99,7 @@ namespace Alttp.Menus.SavegameScreens
                 _cloudPositions[i] = position;
             }
 
-            ScriptTimer.Start(this, 100, (Action)RepeatMoveClouds);
+            Timer.Start(this, 100, (Action)RepeatMoveClouds);
         }
 
         public void ReadSavegames()
@@ -236,14 +236,14 @@ namespace Alttp.Menus.SavegameScreens
                 return false;
 
             _allowCursorMove = false;
-            ScriptTimer.Start(this, 100, () => _allowCursorMove = true);
+            Timer.Start(this, 100, () => _allowCursorMove = true);
 
             return _phase.DirectionPressed(direction8);
         }
 
         public void MoveCursorUp()
         {
-            Core.Audio.PlaySound("cursor");
+            Core.Audio?.PlaySound("cursor");
             var cursorPosition = CursorPosition - 1;
             if (cursorPosition == 0)
                 cursorPosition = 4;
@@ -260,7 +260,7 @@ namespace Alttp.Menus.SavegameScreens
 
         public void MoveCursorDown()
         {
-            Core.Audio.PlaySound("cursor");
+            Core.Audio?.PlaySound("cursor");
             var cursorPosition = CursorPosition + 1;
             if (cursorPosition >= 5)
                 cursorPosition = 1;
@@ -271,12 +271,12 @@ namespace Alttp.Menus.SavegameScreens
         {
             if (CursorPosition == 4)
             {
-                Core.Audio.PlaySound("cursor");
+                Core.Audio?.PlaySound("cursor");
                 SetCursorPosition(5);
             }
             else if (CursorPosition == 5)
             {
-                Core.Audio.PlaySound("cursor");
+                Core.Audio?.PlaySound("cursor");
                 SetCursorPosition(4);
             }
         }

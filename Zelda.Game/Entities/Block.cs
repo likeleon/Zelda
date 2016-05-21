@@ -164,7 +164,7 @@ namespace Zelda.Game.Entities
         {
             if (Movement != null && !_soundPlayed)
             {
-                Core.Audio.Play("hero_pushes");
+                Core.Audio?.Play("hero_pushes");
                 _soundPlayed = true;
             }
 

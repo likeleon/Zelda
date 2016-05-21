@@ -230,7 +230,7 @@ namespace Alttp.Menus
             _charIndex = 0;
 
             if (_gradual)
-                ScriptTimer.Start(this, (int)_charDelay, (Action)RepeatShowCharacter);
+                Timer.Start(this, (int)_charDelay, (Action)RepeatShowCharacter);
         }
 
         void RepeatShowCharacter()
@@ -247,7 +247,7 @@ namespace Alttp.Menus
                 AddCharacter();
             else
             {
-                Core.Audio.PlaySound("message_end");
+                Core.Audio?.PlaySound("message_end");
                 if (HasMoreLines || _dialog.HasProperty("Next") || _selectedAnswer != DialogBoxSelectedAnswer.NoQuestion)
                     _endLinesSprite.SetAnimation("next");
                 else
@@ -306,13 +306,13 @@ namespace Alttp.Menus
 
             if (!special && _needLetterSound)
             {
-                Core.Audio.PlaySound("message_letter");
+                Core.Audio?.PlaySound("message_letter");
                 _needLetterSound = false;
-                ScriptTimer.Start(this, _letterSoundDelay, () => _needLetterSound = true);
+                Timer.Start(this, _letterSoundDelay, () => _needLetterSound = true);
             }
 
             if (_gradual)
-                ScriptTimer.Start(this, (int)_charDelay + additionalDelay, (Action)RepeatShowCharacter);
+                Timer.Start(this, (int)_charDelay + additionalDelay, (Action)RepeatShowCharacter);
         }
 
         void ShowNextDialog()
@@ -421,7 +421,7 @@ namespace Alttp.Menus
                     !HasMoreLines &&
                     _isFull)
                 {
-                    Core.Audio.PlaySound("cursor");
+                    Core.Audio?.PlaySound("cursor");
                     _selectedAnswer = (DialogBoxSelectedAnswer)(3 - (int)_selectedAnswer);
                     var yOffset = (_selectedAnswer == DialogBoxSelectedAnswer.One) ? 27 : 40;
                     _questionDstPosition.Y = _boxDstPosition.Y + yOffset;

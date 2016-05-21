@@ -96,13 +96,17 @@ namespace Alttp.Menus.SavegameScreens
                 : base(phase)
             {
                 Values = (new[] { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 }).Select(i => i.ToString()).ToArray();
-                InitialValue = (((Core.Audio.MusicVolume + 5) / 10) * 10).ToString();
+                if (Core.Audio != null)
+                    InitialValue = (((Core.Audio?.MusicVolume + 5) / 10) * 10).ToString();
+                else
+                    InitialValue = Values[0];
             }
 
             protected override void ApplyValue(string value)
             {
                 ValueText.SetText(value);
-                Core.Audio.MusicVolume = int.Parse(value);
+                if (Core.Audio != null)
+                    Core.Audio.MusicVolume = int.Parse(value);
             }
         }
 
@@ -114,13 +118,17 @@ namespace Alttp.Menus.SavegameScreens
                 : base(phase)
             {
                 Values = (new[] { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 }).Select(i => i.ToString()).ToArray();
-                InitialValue = (((Core.Audio.SoundVolume + 5) / 10) * 10).ToString();
+                if (Core.Audio != null)
+                    InitialValue = (((Core.Audio?.SoundVolume + 5) / 10) * 10).ToString();
+                else
+                    InitialValue = Values[0];
             }
 
             protected override void ApplyValue(string value)
             {
                 ValueText.SetText(value);
-                Core.Audio.SoundVolume = int.Parse(value);
+                if (Core.Audio != null)
+                    Core.Audio.SoundVolume = int.Parse(value);
             }
         }
 
@@ -211,7 +219,7 @@ namespace Alttp.Menus.SavegameScreens
             {
                 if (direction8 == Direction8.Up)
                 {
-                    Core.Audio.PlaySound("cursor");
+                    Core.Audio?.PlaySound("cursor");
                     _leftArrowSprite.SetFrame(0);
                     var position = _optionsCursorPosition - 1;
                     if (position == 0)
@@ -221,7 +229,7 @@ namespace Alttp.Menus.SavegameScreens
                 }
                 else if (direction8 == Direction8.Down)
                 {
-                    Core.Audio.PlaySound("cursor");
+                    Core.Audio?.PlaySound("cursor");
                     _leftArrowSprite.SetFrame(0);
                     var position = _optionsCursorPosition + 1;
                     if (position > _options.Length + 1)
@@ -237,7 +245,7 @@ namespace Alttp.Menus.SavegameScreens
                     var option = _options[_optionsCursorPosition - 1];
                     var index = (option.CurrentIndex % option.Values.Length) + 1;
                     option.SetValue(index);
-                    Core.Audio.PlaySound("cursor");
+                    Core.Audio?.PlaySound("cursor");
                     _leftArrowSprite.SetFrame(0);
                     _rightArrowSprite.SetFrame(0);
                     return true;
@@ -247,7 +255,7 @@ namespace Alttp.Menus.SavegameScreens
                     var option = _options[_optionsCursorPosition - 1];
                     var index = (option.CurrentIndex + option.Values.Length - 2) % option.Values.Length + 1;
                     option.SetValue(index);
-                    Core.Audio.PlaySound("cursor");
+                    Core.Audio?.PlaySound("cursor");
                     _leftArrowSprite.SetFrame(0);
                     _rightArrowSprite.SetFrame(0);
                     return true;
@@ -263,7 +271,7 @@ namespace Alttp.Menus.SavegameScreens
 
             if (_optionsCursorPosition > _options.Length)
             {
-                Core.Audio.PlaySound("ok");
+                Core.Audio?.PlaySound("ok");
                 _screen.InitPhaseSelectFile();
             }
             else
@@ -271,7 +279,7 @@ namespace Alttp.Menus.SavegameScreens
                 var option = _options[_optionsCursorPosition - 1];
                 if (!_modifyingOption)
                 {
-                    Core.Audio.PlaySound("ok");
+                    Core.Audio?.PlaySound("ok");
                     _leftArrowSprite.SetFrame(0);
                     _rightArrowSprite.SetFrame(0);
                     option.LabelText.SetColor(Color.White);
@@ -281,7 +289,7 @@ namespace Alttp.Menus.SavegameScreens
                 }
                 else
                 {
-                    Core.Audio.PlaySound("danger");
+                    Core.Audio?.PlaySound("danger");
                     option.LabelText.SetColor(Color.Yellow);
                     option.ValueText.SetColor(Color.White);
                     _leftArrowSprite.SetFrame(0);

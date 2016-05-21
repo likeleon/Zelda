@@ -63,6 +63,7 @@ namespace Zelda.Game
             finally
             {
                 Game?.Stop();
+                Timer.DestroyTimers();
 
                 ScriptContext.Exit();
 
@@ -128,7 +129,7 @@ namespace Zelda.Game
         static void Update()
         {
             Game?.Update();
-
+            Timer.UpdateTimers();
             ScriptContext.Update();
 
             Now += TimeStep;

@@ -49,17 +49,17 @@ namespace Alttp.Menus.SavegameScreens
 
             if (_screen.CursorPosition == 4)
             {
-                Core.Audio.PlaySound("ok");
+                Core.Audio?.PlaySound("ok");
                 _screen.InitPhaseSelectFile();
             }
             else if (_screen.CursorPosition > 0 && _screen.CursorPosition <= 3)
             {
                 var slot = _screen.Slots[_screen.CursorPosition - 1];
                 if (!ScriptGame.Exists(slot.FileName))
-                    Core.Audio.PlaySound("wrong");
+                    Core.Audio?.PlaySound("wrong");
                 else
                 {
-                    Core.Audio.PlaySound("ok");
+                    Core.Audio?.PlaySound("ok");
                     _screen.InitPhaseConfirmErase();
                 }
             }

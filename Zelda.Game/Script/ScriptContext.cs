@@ -27,7 +27,6 @@ namespace Zelda.Game.Script
             ScriptMain.Current = null;
 
             ScriptMenu.DestroyMenus();
-            ScriptTimer.DestroyTimers();
             ScriptDrawable.DestroyDrawables();
         }
 
@@ -35,7 +34,6 @@ namespace Zelda.Game.Script
         {
             ScriptDrawable.UpdateDrawables();
             ScriptMenu.UpdateMenus();
-            ScriptTimer.UpdateTimers();
 
             CoreToScript.Call(_scriptMain.OnUpdate);
         }

@@ -48,22 +48,22 @@ namespace Alttp.Menus.SavegameScreens
             var handled = true;
             if (direction8 == Direction8.Right)
             {
-                Core.Audio.PlaySound("cursor");
+                Core.Audio?.PlaySound("cursor");
                 _letterCursor.X = (_letterCursor.X + 1) % 13;
             }
             else if (direction8 == Direction8.Up)
             {
-                Core.Audio.PlaySound("cursor");
+                Core.Audio?.PlaySound("cursor");
                 _letterCursor.Y = (_letterCursor.Y + 4) % 5;
             }
             else if (direction8 == Direction8.Left)
             {
-                Core.Audio.PlaySound("cursor");
+                Core.Audio?.PlaySound("cursor");
                 _letterCursor.X = (_letterCursor.X + 12) % 13;
             }
             else if (direction8 == Direction8.Down)
             {
-                Core.Audio.PlaySound("cursor");
+                Core.Audio?.PlaySound("cursor");
                 _letterCursor.Y = (_letterCursor.Y + 1) % 5;
             }
             else
@@ -87,7 +87,7 @@ namespace Alttp.Menus.SavegameScreens
                     finished = AddLetterPlayerName();
                     _playerNameText.SetText(_playerName);
                     _canAddLetterPlayerName = false;
-                    ScriptTimer.Start(_screen, 300, () => _canAddLetterPlayerName = true);
+                    Timer.Start(_screen, 300, () => _canAddLetterPlayerName = true);
                     handled = true;
                 }
             }
@@ -126,10 +126,10 @@ namespace Alttp.Menus.SavegameScreens
                     if (letterCursor.X == 10)   // 마지막 문자 삭제
                     {
                         if (size == 0)
-                            Core.Audio.PlaySound("wrong");
+                            Core.Audio?.PlaySound("wrong");
                         else
                         {
-                            Core.Audio.PlaySound("danger");
+                            Core.Audio?.PlaySound("danger");
                             _playerName = _playerName.Substring(0, size - 1);
                         }
                     }
@@ -139,7 +139,7 @@ namespace Alttp.Menus.SavegameScreens
                     }
                     else if (letterCursor.X == 12)  // 취소
                     {
-                        Core.Audio.PlaySound("danger");
+                        Core.Audio?.PlaySound("danger");
                         finished = true;
                     }
                 }
@@ -149,11 +149,11 @@ namespace Alttp.Menus.SavegameScreens
             {
                 if (size < 6)
                 {
-                    Core.Audio.PlaySound("danger");
+                    Core.Audio?.PlaySound("danger");
                     _playerName = _playerName + letterToAdd;
                 }
                 else
-                    Core.Audio.PlaySound("wrong");
+                    Core.Audio?.PlaySound("wrong");
             }
 
             return finished;
@@ -163,11 +163,11 @@ namespace Alttp.Menus.SavegameScreens
         {
             if (_playerName.Length == 0)
             {
-                Core.Audio.PlaySound("wrong");
+                Core.Audio?.PlaySound("wrong");
                 return false;
             }
 
-            Core.Audio.PlaySound("ok");
+            Core.Audio?.PlaySound("ok");
 
             var savegame = _screen.Slots[_screen.CursorPosition - 1].Savegame;
             _screen.SetInitialValues(savegame, _playerName);

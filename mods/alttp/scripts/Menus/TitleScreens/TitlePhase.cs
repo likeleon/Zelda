@@ -27,7 +27,7 @@ namespace Alttp.Menus.TitleScreens
         {
             _titleScreen = titleScreen;
 
-            Core.Audio.PlayMusic("title_screen");
+            Core.Audio?.PlayMusic("title_screen");
 
             var hours = DateTime.Now.Hour;
             var timeOfDay = string.Empty;
@@ -60,13 +60,13 @@ namespace Alttp.Menus.TitleScreens
                 textKey: "title_screen.press_space",
                 horizontalAlignment: TextHorizontalAlignment.Center);
 
-            ScriptTimer.Start(_titleScreen, 5000, () =>
+            Timer.Start(_titleScreen, 5000, () =>
             {
-                Core.Audio.PlaySound("ok");
+                Core.Audio?.PlaySound("ok");
                 _dxImg = ScriptSurface.Create("menus/title_dx.png");
             });
 
-            ScriptTimer.Start(_titleScreen, 6000, () =>
+            Timer.Start(_titleScreen, 6000, () =>
             {
                 _starImg = ScriptSurface.Create("menus/title_star.png");
             });
@@ -75,9 +75,9 @@ namespace Alttp.Menus.TitleScreens
             switchPressSpace = () =>
             {
                 _showPressSpace = !_showPressSpace;
-                ScriptTimer.Start(_titleScreen, 500, switchPressSpace);
+                Timer.Start(_titleScreen, 500, switchPressSpace);
             };
-            ScriptTimer.Start(_titleScreen, 6500, switchPressSpace);
+            Timer.Start(_titleScreen, 6500, switchPressSpace);
 
             _cloudsXY = new Point(320, 240);
             Action moveClouds = null;
@@ -89,13 +89,13 @@ namespace Alttp.Menus.TitleScreens
                     _cloudsXY.X -= 535;
                 if (_cloudsXY.Y < 0)
                     _cloudsXY.Y += 299;
-                ScriptTimer.Start(_titleScreen, 50, moveClouds);
+                Timer.Start(_titleScreen, 50, moveClouds);
             };
-            ScriptTimer.Start(_titleScreen, 50, moveClouds);
+            Timer.Start(_titleScreen, 50, moveClouds);
 
             _titleScreen.Surface.FadeIn(30);
 
-            ScriptTimer.Start(_titleScreen, 2000, () => _allowSkip = true);
+            Timer.Start(_titleScreen, 2000, () => _allowSkip = true);
         }
 
         public void OnDraw(ScriptSurface dstSurface)
@@ -130,7 +130,7 @@ namespace Alttp.Menus.TitleScreens
                 _finished = true;
 
                 _titleScreen.Surface.FadeOut(30);
-                ScriptTimer.Start(_titleScreen, 700, () => Finished(this, EventArgs.Empty));
+                Timer.Start(_titleScreen, 700, () => Finished(this, EventArgs.Empty));
                 return true;
             }
             return false;

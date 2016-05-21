@@ -88,7 +88,7 @@ namespace Zelda.Game.Entities
             IsBeingLifted = false;
             IsBeingThrown = true;
 
-            Core.Audio.Play("throw");
+            Core.Audio?.Play("throw");
 
             Sprite.SetCurrentAnimation("stopped");
 
@@ -129,13 +129,13 @@ namespace Zelda.Game.Entities
                     break;
 
                 case Ground.Hole:
-                    Core.Audio.Play("jump");
+                    Core.Audio?.Play("jump");
                     RemoveFromMap();
                     break;
 
                 case Ground.DeepWater:
                 case Ground.Lava:
-                    Core.Audio.Play("walk_on_water");
+                    Core.Audio?.Play("walk_on_water");
                     RemoveFromMap();
                     break;
 
@@ -161,7 +161,7 @@ namespace Zelda.Game.Entities
             if (!CanExplode)
             {
                 if (!String.IsNullOrEmpty(_destructionSoundId))
-                    Core.Audio.Play(_destructionSoundId);
+                    Core.Audio?.Play(_destructionSoundId);
 
                 if (Sprite.HasAnimation("destroy"))
                     Sprite.SetCurrentAnimation("destroy");
@@ -169,7 +169,7 @@ namespace Zelda.Game.Entities
             else
             {
                 Console.WriteLine("Create explosion entity here");
-                Core.Audio.Play("explosion");
+                Core.Audio?.Play("explosion");
                 if (IsBeingThrown)
                     RemoveFromMap();
             }

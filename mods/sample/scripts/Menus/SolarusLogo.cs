@@ -14,7 +14,7 @@ namespace Sample.Menus
         readonly ScriptSprite _sword;
         readonly ScriptSurface _blackSquare;
         int _animationStep;
-        ScriptTimer _timer;
+        Timer _timer;
 
         public SolarusLogo()
         {
@@ -94,7 +94,7 @@ namespace Sample.Menus
                         Step1();
 
                         // 스텝 2를 위한 타이머를 생성합니다.
-                        _timer = ScriptTimer.Start(this, 250, () =>
+                        _timer = Timer.Start(this, 250, () =>
                         {
                             if (_animationStep <= 1)
                                 Step2();
@@ -124,10 +124,10 @@ namespace Sample.Menus
 
             RebuildSurface();
 
-            ScriptTimer.Start(this, 500, () =>
+            Timer.Start(this, 500, () =>
             {
                 _surface.FadeOut(null, null);
-                ScriptTimer.Start(this, 700, (Action)Stop);
+                Timer.Start(this, 700, (Action)Stop);
             });
         }
         

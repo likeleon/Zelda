@@ -32,7 +32,7 @@ namespace Alttp.Menus.TitleScreens
             _phase.Finished += (_, e) => 
             {
                 Surface.FadeOut(10);
-                ScriptTimer.Start(this, 700, (Action)PhaseTitle);
+                Timer.Start(this, 700, (Action)PhaseTitle);
             };
         }
 
@@ -75,7 +75,7 @@ namespace Alttp.Menus.TitleScreens
 
         void FinishTitle()
         {
-            Core.Audio.StopMusic();
+            Core.Audio?.StopMusic();
             ScriptMenu.Stop(this);
         }
     }

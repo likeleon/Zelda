@@ -122,7 +122,7 @@ namespace Alttp.Menus
                     ScriptLanguage.SetLanguage(language.Id);
                     _finished = true;
                     _surface.FadeOut();
-                    ScriptTimer.Start(this, 700, (Action)Stop);
+                    Timer.Start(this, 700, (Action)Stop);
                 }
             }
             else if (key == KeyboardKey.Right)
@@ -145,13 +145,13 @@ namespace Alttp.Menus
             var n = _languages.Length;
             if (direction == Direction8.Up)
             {
-                Core.Audio.PlaySound("cursor");
+                Core.Audio?.PlaySound("cursor");
                 SetCursorPosition((_cursorPosition + n - 1) % n);
                 return true;
             }
             else if (direction == Direction8.Down)
             {
-                Core.Audio.PlaySound("cursor");
+                Core.Audio?.PlaySound("cursor");
                 SetCursorPosition((_cursorPosition + 1) % n);
                 return true;
             }
