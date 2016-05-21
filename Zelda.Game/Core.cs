@@ -62,10 +62,7 @@ namespace Zelda.Game
             }
             finally
             {
-                Game?.Stop();
-                Timer.DestroyTimers();
-
-                ScriptContext.Exit();
+                StopGame();
 
                 if (Platform != null)
                     Platform.Dispose();
@@ -74,6 +71,27 @@ namespace Zelda.Game
             }
 
             return 0;
+        }
+
+        static void PrepareGame()
+        {
+            ScriptContext.Initialize();
+        }
+
+        static void UpdateGame()
+        {
+            Game?.Update();
+            Timer.UpdateTimers();
+            Drawable.UpdateDrawables();
+            ScriptContext.Update();
+        }
+
+        static void StopGame()
+        {
+            Game?.Stop();
+            Timer.DestroyTimers();
+            Drawable.DestroyDrawables();
+            ScriptContext.Exit();
         }
 
         // 유저가 프로그램에 대한 종료 요청을 보내기 전까지 메인 루프를 실행한다.
@@ -128,26 +146,21 @@ namespace Zelda.Game
 
         static void Update()
         {
-            Game?.Update();
-            Timer.UpdateTimers();
-            ScriptContext.Update();
+            UpdateGame();
 
             Now += TimeStep;
             Platform.Update();
 
-            if (_nextGame != Game)
-            {
-                Game = _nextGame;
+            if (_nextGame == Game)
+                return;
 
-                if (Game != null)
-                {
-                    Game.Start();
-                }
-                else
-                {
-                    ScriptContext.Exit();
-                    ScriptContext.Initialize();
-                }
+            Game = _nextGame;
+            if (Game != null)
+                Game.Start();
+            else
+            {
+                StopGame();
+                PrepareGame();
             }
         }
 
@@ -205,12 +218,6 @@ namespace Zelda.Game
         internal static void SetGame(Game game)
         {
             _nextGame = game;
-        }
-
-        internal static void SetResetting()
-        {
-            Game?.Stop();
-            SetGame(null);
         }
     }
 }

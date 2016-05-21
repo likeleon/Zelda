@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.LowLevel
 {
-    class Surface : Drawable, IDisposable
+    public class Surface : Drawable, IDisposable
     {
         public enum ImageDirectory
         {
@@ -52,15 +51,11 @@ namespace Zelda.Game.LowLevel
         public int Width { get; }
         public int Height { get; }
         public Size Size => new Size(Width, Height);
-        public bool IsSoftwareDestination { get; set; }
-        public ScriptSurface ScriptSurface => _scriptSurface.Value;
-        public override Surface TransitionSurface => this;
-
-        byte _internalOpacity = 255;
+        internal bool IsSoftwareDestination { get; set; } = true;
+        internal override Surface TransitionSurface => this;
 
         readonly HashSet<SubSurfaceNode> _subsurfaces = new HashSet<SubSurfaceNode>();
-        readonly Lazy<ScriptSurface> _scriptSurface;
-
+        byte _internalOpacity = 255;
         internal IntPtr _internalSurface;
         Texture _internalTexture;
         Color? _internalColor;
@@ -86,28 +81,39 @@ namespace Zelda.Game.LowLevel
                 _internalOpacity = opacity;
         }
 
-        public static Surface Create(int width, int height)
+        public static Surface Create(bool add)
         {
-            return new Surface(width, height);
+            return Create(Core.Video.ModSize, add);
         }
 
-        public static Surface Create(Size size)
+        public static Surface Create(int width, int height, bool add)
         {
-            return new Surface(size.Width, size.Height);
+            return Create(new Size(width, height), add);
         }
 
-        public static Surface Create(string fileName, ImageDirectory baseDirectory = ImageDirectory.Sprites)
+        public static Surface Create(Size size, bool add)
+        {
+            var surface = new Surface(size.Width, size.Height);
+            if (add)
+                AddDrawable(surface);
+            return surface;
+        }
+
+        public static Surface Create(string fileName, bool add, ImageDirectory baseDirectory = ImageDirectory.Sprites)
         {
             IntPtr sdlSurface = GetSurfaceFromFile(fileName, baseDirectory);
             if (sdlSurface == IntPtr.Zero)
                 return null;
 
-            return new Surface(sdlSurface);
+            var surface = new Surface(sdlSurface);
+            if (add)
+                AddDrawable(surface);
+            return surface;
         }
 
-        private static IntPtr GetSurfaceFromFile(string fileName, ImageDirectory baseDirectory)
+        static IntPtr GetSurfaceFromFile(string fileName, ImageDirectory baseDirectory)
         {
-            string prefix = String.Empty;
+            string prefix = "";
             bool languageSpecific = false;
 
             if (baseDirectory == ImageDirectory.Sprites)
@@ -138,8 +144,7 @@ namespace Zelda.Game.LowLevel
             return softwareSurface;
         }
 
-        public Surface(int width, int height)
-            : this()
+        internal Surface(int width, int height)
         {
             if (width <= 0 || height <= 0)
                 throw new Exception("Attempt to create a surface with an empty size");
@@ -148,18 +153,11 @@ namespace Zelda.Game.LowLevel
             Height = height;
         }
 
-        public Surface(IntPtr internalSurface)
-            : this()
+        internal Surface(IntPtr internalSurface)
         {
             _internalSurface = internalSurface;
             Width = _internalSurface.ToSDLSurface().w;
             Height = _internalSurface.ToSDLSurface().h;
-        }
-        
-        Surface()
-        {
-            _scriptSurface = Exts.Lazy<ScriptSurface>(() => new ScriptSurface(this));
-            IsSoftwareDestination = true;
         }
 
         ~Surface()
@@ -185,7 +183,7 @@ namespace Zelda.Game.LowLevel
             _disposed = true;
         }
 
-        public void Render(IntPtr renderer)
+        internal void Render(IntPtr renderer)
         {
             var size = new Rectangle(Size);
             Render(renderer, size, size, size, 255, _subsurfaces);
@@ -278,7 +276,7 @@ namespace Zelda.Game.LowLevel
             }
         }
 
-        public void Clear(Rectangle where)
+        internal void Clear(Rectangle where)
         {
             if (!IsSoftwareDestination)
                 throw new Exception("Partial surface clear is only supported with software surfaces");
@@ -295,13 +293,13 @@ namespace Zelda.Game.LowLevel
             _subsurfaces.Clear();
         }
 
-        public override void RawDraw(Surface dstSurface, Point dstPosition)
+        internal override void RawDraw(Surface dstSurface, Point dstPosition)
         {
             var region = new Rectangle(0, 0, Width, Height);
             RawDrawRegion(region, dstSurface, dstPosition);
         }
 
-        public override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
+        internal override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
         {
             if (dstSurface.IsSoftwareDestination)
             {
@@ -461,13 +459,13 @@ namespace Zelda.Game.LowLevel
         public void FillWithColor(Color color, Rectangle? where = null)
         {
             var fillwhere = where ?? new Rectangle(0, 0, Width, Height);
-            var coloredSurface = Create(fillwhere.Size);
+            var coloredSurface = Create(fillwhere.Size, false);
             coloredSurface.IsSoftwareDestination = false;
             coloredSurface._internalColor = color;
             coloredSurface.RawDrawRegion(new Rectangle(coloredSurface.Size), this, fillwhere.XY);
         }
 
-        public bool IsPixelTransparent(int index)
+        internal bool IsPixelTransparent(int index)
         {
             uint pixel = GetPixel(index);
             uint colorkey;
@@ -512,7 +510,7 @@ namespace Zelda.Game.LowLevel
             throw new Exception("Unknown pixel depth: {0}".F(format.BitsPerPixel));
         }
 
-        public override void DrawTransition(Transition transition)
+        internal override void DrawTransition(Transition transition)
         {
             Transition.Draw(this);
         }

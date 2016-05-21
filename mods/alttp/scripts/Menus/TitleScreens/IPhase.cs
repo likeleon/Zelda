@@ -1,5 +1,5 @@
 ﻿using System;
-using Zelda.Game.Script;
+using Zelda.Game.LowLevel;
 
 namespace Alttp.Menus.TitleScreens
 {
@@ -7,7 +7,7 @@ namespace Alttp.Menus.TitleScreens
     {
         event EventHandler Finished;
         
-        void OnDraw(ScriptSurface dstSurface);
+        void OnDraw(Surface dstSurface);
         bool TryFinishTitle();
     }
 }

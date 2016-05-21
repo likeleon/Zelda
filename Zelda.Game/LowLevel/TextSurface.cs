@@ -24,9 +24,9 @@ namespace Zelda.Game.LowLevel
         Antialising
     }
 
-    class TextSurface : Drawable
+    public class TextSurface : Drawable
     {
-        public static readonly int DefaultFontSize = 11;
+        internal static readonly int DefaultFontSize = 11;
 
         Surface _surface;
         Point _textPosition;
@@ -40,22 +40,58 @@ namespace Zelda.Game.LowLevel
         public Color TextColor { get; private set; }
         public int FontSize { get; private set; }
         public string Text { get; private set; }
-        public bool IsEmpty { get { return String.IsNullOrWhiteSpace(Text); } }
+        public bool IsEmpty => Text.IsNullOrEmpty();
 
-        public int Width { get { return _surface != null ? _surface.Width : 0; } }
-        public int Height { get { return _surface != null ? _surface.Height : 0; } }
-        public Size Size { get { return new Size(Width, Height); } }
+        public int Width => _surface?.Width ?? 0;
+        public int Height => _surface?.Height ?? 0;
+        public Size Size => new Size(Width, Height);
 
-        public override Surface TransitionSurface { get { return _surface; } }
-   
-        public TextSurface(int x, int y)
+        internal override Surface TransitionSurface { get { return _surface; } }
+
+        public static TextSurface Create(
+            bool add = true,
+            string font = null,
+            TextRenderingMode renderingMode = TextRenderingMode.Solid,
+            TextHorizontalAlignment horizontalAlignment = TextHorizontalAlignment.Left,
+            TextVerticalAlignment verticalAlignment = TextVerticalAlignment.Middle,
+            Color? color = null,
+            int? fontSize = null,
+            string text = null,
+            string textKey = null)
+        {
+            font = font ?? Core.FontResource.GetDefaultFontId();
+            if (!Core.FontResource.Exists(font))
+                throw new ArgumentException("No such font: '{0}'".F(font), "font");
+
+            var textSurface = new TextSurface(0, 0);
+            textSurface.SetFont(font);
+            textSurface.SetRenderingMode(renderingMode);
+            textSurface.SetHorizontalAlignment(horizontalAlignment);
+            textSurface.SetVerticalAlignment(verticalAlignment);
+            textSurface.SetTextColor(color ?? Color.White);
+            textSurface.SetFontSize(fontSize ?? TextSurface.DefaultFontSize);
+
+            if (!text.IsNullOrEmpty())
+                textSurface.SetText(text);
+            else if (textKey != null)
+            {
+                if (!Core.Mod.StringExists(textKey))
+                    throw new ArgumentException("No value with key '{0}' in strings.xml for language '{1}'".F(textKey, Core.Mod.Language));
+
+                textSurface.SetText(Core.Mod.GetString(textKey));
+            }
+
+            if (add)
+                AddDrawable(textSurface);
+            return textSurface;
+        }
+
+        internal TextSurface(int x, int y)
             : this(x, y, TextHorizontalAlignment.Left, TextVerticalAlignment.Middle)
         {
         }
 
-        public TextSurface(int x, int y, 
-            TextHorizontalAlignment horizontalAlignment, 
-            TextVerticalAlignment verticalAlignment)
+        internal TextSurface(int x, int y, TextHorizontalAlignment horizontalAlignment, TextVerticalAlignment verticalAlignment)
         {
             X = x;
             Y = y;
@@ -69,7 +105,7 @@ namespace Zelda.Game.LowLevel
             Text = String.Empty;
         }
 
-        public void SetX(int x)
+        internal void SetX(int x)
         {
             if (x == X)
                 return;
@@ -78,7 +114,7 @@ namespace Zelda.Game.LowLevel
             Rebuild();
         }
 
-        public void SetY(int y)
+        internal void SetY(int y)
         {
             if (y == Y)
                 return;
@@ -87,7 +123,7 @@ namespace Zelda.Game.LowLevel
             Rebuild();
         }
 
-        public void SetPosition(int x, int y)
+        internal void SetPosition(int x, int y)
         {
             if (x == X && y == Y)
                 return;
@@ -131,6 +167,9 @@ namespace Zelda.Game.LowLevel
         
         public void SetFont(string fontId)
         {
+            if (!Core.FontResource.Exists(fontId))
+                throw new ArgumentException("No such font: '{0}'".F(fontId), nameof(fontId));
+
             if (fontId == Font)
                 return;
 
@@ -165,6 +204,14 @@ namespace Zelda.Game.LowLevel
             Rebuild();
         }
 
+        public void SetTextKey(string key)
+        {
+            if (!Core.Mod.StringExists(key))
+                throw new ArgumentException("No value with key '{0}' in strings.xml for language '{1}'".F(key, Core.Mod.Language));
+
+            SetText(Core.Mod.GetString(key));
+        }
+
         public void SetText(string text)
         {
             if (text == Text)
@@ -174,7 +221,7 @@ namespace Zelda.Game.LowLevel
             Rebuild();
         }
 
-        public void AddChar(char c)
+        internal void AddChar(char c)
         {
             SetText(Text + c);
         }
@@ -183,7 +230,7 @@ namespace Zelda.Game.LowLevel
         {
             _surface = null;
 
-            if (String.IsNullOrEmpty(Font))
+            if (Font.IsNullOrEmpty())
                 return;
 
             if (IsEmpty)
@@ -241,7 +288,7 @@ namespace Zelda.Game.LowLevel
             int charWidth = bitmapSize.Width / 128;
             int charHeight = bitmapSize.Height / 16;
 
-            _surface = Surface.Create((charWidth - 1) * numChars + 1, charHeight);
+            _surface = Surface.Create((charWidth - 1) * numChars + 1, charHeight, false);
 
             // 문자들을 그립니다
             Point dstPosition = new Point();
@@ -293,19 +340,19 @@ namespace Zelda.Game.LowLevel
             _surface = new Surface(internalSurface);
         }
 
-        public override void RawDraw(Surface dstSurface, Point dstPosition)
+        internal override void RawDraw(Surface dstSurface, Point dstPosition)
         {
             if (_surface != null)
                 _surface.RawDraw(dstSurface, dstPosition + _textPosition);
         }
 
-        public override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
+        internal override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
         {
             if (_surface != null)
                 _surface.RawDrawRegion(region, dstSurface, dstPosition + _textPosition);
         }
 
-        public override void DrawTransition(Transition transition)
+        internal override void DrawTransition(Transition transition)
         {
             Transition.Draw(_surface);
         }

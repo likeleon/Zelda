@@ -156,7 +156,6 @@
     <Compile Include="Script\ScriptMap.cs" />
     <Compile Include="Script\ScriptContext.EntityApi.cs" />
     <Compile Include="Script\ScriptNpc.cs" />
-    <Compile Include="Script\ScriptTextSurface.cs" />
     <Compile Include="Script\ScriptToCore.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SpriteData.cs" />
@@ -172,7 +171,6 @@
     <Compile Include="Movements\StraightMovement.cs" />
     <Compile Include="Movements\TargetMovement.cs" />
     <Compile Include="Savegame.cs" />
-    <Compile Include="Script\ScriptDrawable.cs" />
     <Compile Include="Script\ScriptGame.cs" />
     <Compile Include="Script\IInputEventHandler.cs" />
     <Compile Include="Script\ScriptMovement.cs" />

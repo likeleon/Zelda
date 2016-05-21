@@ -38,11 +38,6 @@ namespace Zelda.Game.Script
             ScriptToCore.Call(() => Core.Exiting = true);
         }
 
-        public static void Reset()
-        {
-            ScriptToCore.Call(Core.SetResetting);
-        }
-
         public virtual bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)
         {
             return false;

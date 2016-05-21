@@ -10,7 +10,7 @@ namespace Alttp.Menus.TitleScreens
         readonly bool _debugEnabled;
 
         IPhase _phase;
-        public ScriptSurface Surface { get; private set; }
+        public Surface Surface { get; private set; }
 
         public TitleScreen(bool debugEnabled)
         {
@@ -19,7 +19,7 @@ namespace Alttp.Menus.TitleScreens
 
         protected override void OnStarted()
         {
-            Surface = ScriptSurface.Create(320, 240);
+            Surface = Surface.Create(320, 240, true);
             
             // 0.3초 동안 검정 스크린을 유지합니다.
             _phase = new BlackPhase(this);
@@ -42,7 +42,7 @@ namespace Alttp.Menus.TitleScreens
             _phase.Finished += (_, e) => FinishTitle();
         }
 
-        protected override void OnDraw(ScriptSurface dstSurface)
+        protected override void OnDraw(Surface dstSurface)
         {
             _phase.OnDraw(dstSurface);
             Surface.Draw(dstSurface, dstSurface.Width / 2 - 160, dstSurface.Height / 2 - 120);

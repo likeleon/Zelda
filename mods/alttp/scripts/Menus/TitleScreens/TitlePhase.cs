@@ -1,21 +1,20 @@
 ﻿using System;
 using Zelda.Game;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Alttp.Menus.TitleScreens
 {
     class TitlePhase : IPhase
     {
         readonly TitleScreen _titleScreen;
-        readonly ScriptSurface _backgroundImg;
-        readonly ScriptSurface _cloudsImg;
-        readonly ScriptSurface _logoImg;
-        readonly ScriptSurface _bordersImg;
-        readonly ScriptTextSurface _websiteImg;
-        readonly ScriptTextSurface _pressSpaceImg;
-        ScriptSurface _dxImg;
-        ScriptSurface _starImg;
+        readonly Surface _backgroundImg;
+        readonly Surface _cloudsImg;
+        readonly Surface _logoImg;
+        readonly Surface _bordersImg;
+        readonly TextSurface _websiteImg;
+        readonly TextSurface _pressSpaceImg;
+        Surface _dxImg;
+        Surface _starImg;
         bool _showPressSpace;
         Point _cloudsXY;
         bool _allowSkip;
@@ -38,22 +37,22 @@ namespace Alttp.Menus.TitleScreens
             else
                 timeOfDay = "night";
 
-            _backgroundImg = ScriptSurface.Create("menus/title_{0}_background.png".F(timeOfDay));
-            _cloudsImg = ScriptSurface.Create("menus/title_{0}_clouds.png".F(timeOfDay));
-            _logoImg = ScriptSurface.Create("menus/title_logo.png");
-            _bordersImg = ScriptSurface.Create("menus/title_borders.png");
+            _backgroundImg = Surface.Create("menus/title_{0}_background.png".F(timeOfDay), true);
+            _cloudsImg = Surface.Create("menus/title_{0}_clouds.png".F(timeOfDay), true);
+            _logoImg = Surface.Create("menus/title_logo.png", true);
+            _bordersImg = Surface.Create("menus/title_borders.png", true);
 
             var dialogFont = Fonts.GetDialogFont();
             var menuFont = Fonts.GetMenuFont();
 
-            _websiteImg = ScriptTextSurface.Create(
+            _websiteImg = TextSurface.Create(
                 font: menuFont.Id,
                 fontSize: menuFont.Size,
                 color: new Color(240, 200, 56),
                 textKey: "title_screen.website",
                 horizontalAlignment: TextHorizontalAlignment.Center);
 
-            _pressSpaceImg = ScriptTextSurface.Create(
+            _pressSpaceImg = TextSurface.Create(
                 font: dialogFont.Id,
                 fontSize: dialogFont.Size,
                 color: Color.White,
@@ -63,12 +62,12 @@ namespace Alttp.Menus.TitleScreens
             Timer.Start(_titleScreen, 5000, () =>
             {
                 Core.Audio?.PlaySound("ok");
-                _dxImg = ScriptSurface.Create("menus/title_dx.png");
+                _dxImg = Surface.Create("menus/title_dx.png", true);
             });
 
             Timer.Start(_titleScreen, 6000, () =>
             {
-                _starImg = ScriptSurface.Create("menus/title_star.png");
+                _starImg = Surface.Create("menus/title_star.png", true);
             });
 
             Action switchPressSpace = null;
@@ -98,9 +97,9 @@ namespace Alttp.Menus.TitleScreens
             Timer.Start(_titleScreen, 2000, () => _allowSkip = true);
         }
 
-        public void OnDraw(ScriptSurface dstSurface)
+        public void OnDraw(Surface dstSurface)
         {
-            _titleScreen.Surface.FillColor(Color.Black);
+            _titleScreen.Surface.FillWithColor(Color.Black);
             _backgroundImg.Draw(_titleScreen.Surface);
 
             _cloudsImg.Draw(_titleScreen.Surface, _cloudsXY.X, _cloudsXY.Y);

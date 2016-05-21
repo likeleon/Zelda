@@ -1,20 +1,55 @@
 ﻿using System;
-using System.Drawing;
+using System.Collections.Generic;
 using Zelda.Game.Movements;
 
 namespace Zelda.Game.LowLevel
 {
-    abstract class Drawable
+    public abstract class Drawable
     {
-        Movement _movement;
-        Action _transitionCallback;
-        
         public Point XY { get; set; }
-        public Movement Movement { get { return _movement; } }
-        public bool IsSuspended { get; private set; }
-        public Transition Transition { get; private set; }
+        internal Movement Movement { get; private set; }
+        internal bool IsSuspended { get; private set; }
+        internal Transition Transition { get; private set; }
+        internal abstract Surface TransitionSurface { get; }
 
-        public abstract Surface TransitionSurface { get; }
+        static readonly HashSet<Drawable> _drawables = new HashSet<Drawable>();
+        static readonly HashSet<Drawable> _drawablesToRemove = new HashSet<Drawable>();
+
+        Action _transitionCallback;
+
+        internal static bool HasDrawable(Drawable drawable)
+        {
+            return _drawables.Contains(drawable);
+        }
+
+        internal static void AddDrawable(Drawable drawable)
+        {
+            if (HasDrawable(drawable))
+                throw new ArgumentException("This drawable object is already registered", nameof(drawable));
+
+            _drawables.Add(drawable);
+        }
+
+        internal static void RemoveDrawable(Drawable drawable)
+        {
+            if (!HasDrawable(drawable))
+                throw new ArgumentException("This drawable object was not created by Mod");
+
+            _drawables.Remove(drawable);
+            _drawablesToRemove.Add(drawable);
+        }
+
+        internal static void UpdateDrawables()
+        {
+            _drawables.Do(d => d.Update());
+            _drawablesToRemove.Clear();
+        }
+
+        internal static void DestroyDrawables()
+        {
+            _drawables.Clear();
+            _drawablesToRemove.Clear();
+        }
 
         protected Drawable()
         {
@@ -51,21 +86,40 @@ namespace Zelda.Game.LowLevel
             RawDrawRegion(region, dstSurface, dstPosition + XY);
         }
 
-        public void StartMovement(Movement movement)
+        internal void StartMovement(Movement movement)
         {
             StopMovement();
-            _movement = movement;
+            Movement = movement;
             movement.SetDrawable(this);
 
             movement.SetSuspended(IsSuspended);
         }
 
-        public void StopMovement()
+        internal void StopMovement()
         {
-            _movement = null;
+            Movement = null;
         }
 
-        public void StartTransition(Transition transition, Action callback)
+        public void FadeIn(int? delay = null, Action callback = null)
+        {
+            var transition = new TransitionFade(TransitionDirection.Opening, TransitionSurface);
+            StartTransitionFade(transition, delay, callback);
+        }
+
+        public void FadeOut(int? delay = null, Action callback = null)
+        {
+            var transition = new TransitionFade(TransitionDirection.Closing, TransitionSurface);
+            StartTransitionFade(transition, delay, callback);
+        }
+
+        void StartTransitionFade(TransitionFade fade, int? delay, Action callback)
+        {
+            fade.ClearColor();
+            fade.Delay = delay ?? 20;
+            StartTransition(fade, callback);
+        }
+        
+        internal void StartTransition(Transition transition, Action callback)
         {
             StopTransition();
             Transition = transition;
@@ -74,13 +128,13 @@ namespace Zelda.Game.LowLevel
             Transition.SetSuspended(IsSuspended);
         }
 
-        public void StopTransition()
+        internal void StopTransition()
         {
             Transition = null;
             _transitionCallback = null;
         }
 
-        public virtual void Update()
+        internal virtual void Update()
         {
             if (Transition != null)
             {
@@ -94,15 +148,15 @@ namespace Zelda.Game.LowLevel
                 }
             }
 
-            if (_movement != null)
+            if (Movement != null)
             {
-                _movement.Update();
-                if (_movement != null && _movement.IsFinished)
+                Movement.Update();
+                if (Movement != null && Movement.IsFinished)
                     StopMovement();
             }
         }
 
-        public virtual void SetSuspended(bool suspended)
+        internal virtual void SetSuspended(bool suspended)
         {
             if (IsSuspended == suspended)
                 return;
@@ -112,12 +166,12 @@ namespace Zelda.Game.LowLevel
             if (Transition != null)
                 Transition.SetSuspended(suspended);
 
-            if (_movement != null)
-                _movement.SetSuspended(suspended);
+            if (Movement != null)
+                Movement.SetSuspended(suspended);
         }
 
-        public abstract void RawDraw(Surface dstSurface, Point dstPosition);
-        public abstract void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition);
-        public abstract void DrawTransition(Transition transition);
+        internal abstract void RawDraw(Surface dstSurface, Point dstPosition);
+        internal abstract void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition);
+        internal abstract void DrawTransition(Transition transition);
     }
 }

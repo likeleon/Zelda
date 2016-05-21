@@ -55,12 +55,12 @@ namespace Alttp.Menus
 
         readonly ScriptGame _game;
         readonly string[] _visibleLines = new string[_numVisibleLines];
-        readonly ScriptTextSurface[] _visibleLineSurfaces = new ScriptTextSurface[_numVisibleLines];
+        readonly TextSurface[] _visibleLineSurfaces = new TextSurface[_numVisibleLines];
 
         DialogBoxStyle _style;
-        ScriptSurface _dialogSurface;
-        ScriptSurface _boxImg;
-        ScriptSurface _iconsImg;
+        Surface _dialogSurface;
+        Surface _boxImg;
+        Surface _iconsImg;
         ScriptSprite _endLinesSprite;
 
         Dialog _dialog;
@@ -100,16 +100,16 @@ namespace Alttp.Menus
             for (int i = 0; i < _numVisibleLines; ++i)
             {
                 _visibleLines[i] = string.Empty;
-                _visibleLineSurfaces[i] = ScriptTextSurface.Create(
+                _visibleLineSurfaces[i] = TextSurface.Create(
                     horizontalAlignment: TextHorizontalAlignment.Left,
                     verticalAlignment: TextVerticalAlignment.Top,
                     font: font.Id,
                     fontSize: font.Size);
             }
-            _dialogSurface = ScriptSurface.Create(Core.Video.ModSize);
-            _boxImg = ScriptSurface.Create("hud/dialog_box.png");
-            _iconsImg = ScriptSurface.Create("hud/dialog_icons.png");
-            _endLinesSprite = ScriptSprite.Create("hud/dialog_box_message_end");
+            _dialogSurface = Surface.Create(Core.Video.ModSize, true);
+            _boxImg = Surface.Create("hud/dialog_box.png", true);
+            _iconsImg = Surface.Create("hud/dialog_icons.png", true);
+            _endLinesSprite = Sprite.Create("hud/dialog_box_message_end");
             SetDialogStyle(DialogBoxStyle.Box);
         }
 
@@ -340,7 +340,7 @@ namespace Alttp.Menus
             }
         }
 
-        protected override void OnDraw(ScriptSurface dstSurface)
+        protected override void OnDraw(Surface dstSurface)
         {
             _dialogSurface.Clear();
 
@@ -386,7 +386,7 @@ namespace Alttp.Menus
             if (_isFull)
                 _endLinesSprite.Draw(_dialogSurface, x + 103, y + 56);
 
-            _dialogSurface.Draw(dstSurface);
+            _dialogSurface.Draw(dstSurface.);
         }
 
         protected override void OnFinished()

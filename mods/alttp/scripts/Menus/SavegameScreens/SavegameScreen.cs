@@ -12,10 +12,10 @@ namespace Alttp.Menus.SavegameScreens
         static readonly int _cloudHeight = 88;
 
         Color _backgroundColor;
-        ScriptSurface _backgroundImg;
-        ScriptSurface _cloudImg;
-        ScriptSurface _saveContainerImg;
-        ScriptSurface _optionContainerImg;
+        Surface _backgroundImg;
+        Surface _cloudImg;
+        Surface _saveContainerImg;
+        Surface _optionContainerImg;
         
         bool _allowCursorMove = true;
         Point[] _cloudPositions;
@@ -25,11 +25,11 @@ namespace Alttp.Menus.SavegameScreens
         public int CursorPosition { get; set; }
         public Slot[] Slots { get; private set; }
         public bool IsFinished { get; set; }
-        public ScriptSurface Surface { get; private set; }
-        public ScriptTextSurface TitleText { get; private set; }
-        public ScriptTextSurface Option1Text { get; private set; }
-        public ScriptTextSurface Option2Text { get; private set; }
-        public ScriptSprite CursorSprite { get; private set; }
+        public Surface Surface { get; private set; }
+        public TextSurface TitleText { get; private set; }
+        public TextSurface Option1Text { get; private set; }
+        public TextSurface Option2Text { get; private set; }
+        public Sprite CursorSprite { get; private set; }
 
         public SavegameScreen(Main main)
         {
@@ -39,20 +39,20 @@ namespace Alttp.Menus.SavegameScreens
 
         protected override void OnStarted()
         {
-            Surface = ScriptSurface.Create(320, 240);
+            Surface = Surface.Create(320, 240, true);
             _backgroundColor = new Color(104, 144, 240);
-            _backgroundImg = ScriptSurface.Create("menus/selection_menu_background.png");
-            _cloudImg = ScriptSurface.Create("menus/selection_menu_cloud.png");
-            _saveContainerImg = ScriptSurface.Create("menus/selection_menu_save_container.png");
-            _optionContainerImg = ScriptSurface.Create("menus/selection_menu_option_container.png");
+            _backgroundImg = Surface.Create("menus/selection_menu_background.png", true);
+            _cloudImg = Surface.Create("menus/selection_menu_cloud.png", true);
+            _saveContainerImg = Surface.Create("menus/selection_menu_save_container.png", true);
+            _optionContainerImg = Surface.Create("menus/selection_menu_option_container.png", true);
 
             var dialogFont = Fonts.GetDialogFont();
             var menuFont = Fonts.GetMenuFont();
-            Option1Text = ScriptTextSurface.Create(font: dialogFont.Id, fontSize: dialogFont.Size);
-            Option2Text = ScriptTextSurface.Create(font: dialogFont.Id, fontSize: dialogFont.Size);
-            TitleText = ScriptTextSurface.Create(font: menuFont.Id, fontSize: menuFont.Size, horizontalAlignment: TextHorizontalAlignment.Center);
+            Option1Text = TextSurface.Create(font: dialogFont.Id, fontSize: dialogFont.Size);
+            Option2Text = TextSurface.Create(font: dialogFont.Id, fontSize: dialogFont.Size);
+            TitleText = TextSurface.Create(font: menuFont.Id, fontSize: menuFont.Size, horizontalAlignment: TextHorizontalAlignment.Center);
 
-            CursorSprite = ScriptSprite.Create("menus/selection_menu_cursor");
+            CursorSprite = Sprite.Create("menus/selection_menu_cursor", true);
 
             _cloudPositions = new Point[]
             {
@@ -145,9 +145,9 @@ namespace Alttp.Menus.SavegameScreens
                 Option2Text.SetText(string.Empty);
         }
 
-        protected override void OnDraw(ScriptSurface dstSurface)
+        protected override void OnDraw(Surface dstSurface)
         {
-            Surface.FillColor(_backgroundColor);
+            Surface.FillWithColor(_backgroundColor);
 
             var width = Surface.Width;
             var height = Surface.Height;

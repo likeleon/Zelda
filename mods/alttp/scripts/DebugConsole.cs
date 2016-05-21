@@ -13,8 +13,8 @@ namespace Alttp
 
         readonly List<string> _history = new List<string>(_historyCapacity);
         readonly Color _color = new Color(64, 64, 64);
-        readonly ScriptTextSurface _inputTextSurface;
-        readonly ScriptTextSurface _outputTextSurface;
+        readonly TextSurface _inputTextSurface;
+        readonly TextSurface _outputTextSurface;
         int _historyPosition;
 
         public bool IsEnabled { get; private set; }
@@ -23,11 +23,10 @@ namespace Alttp
 
         public DebugConsole()
         {
-            _inputTextSurface = ScriptTextSurface.Create(font: "minecraftia", fontSize: 8);
-            _outputTextSurface = ScriptTextSurface.Create(font: "minecraftia", fontSize: 8);
+            _inputTextSurface = TextSurface.Create(font: "minecraftia", fontSize: 8);
+            _outputTextSurface = TextSurface.Create(font: "minecraftia", fontSize: 8);
 
-            for (int i = 0; i < _historyCapacity; ++i)
-                _history.Add(string.Empty);
+            _history.AddRange(Enumerable.Repeat("", _historyCapacity));
         }
 
         protected override void OnStarted()
@@ -47,11 +46,11 @@ namespace Alttp
             _inputTextSurface.SetText(text);
         }
 
-        protected override void OnDraw(ScriptSurface dstSurface)
+        protected override void OnDraw(Surface dstSurface)
         {
             var width = dstSurface.Width;
             var height = dstSurface.Height;
-            dstSurface.FillColor(_color, new Rectangle(32, height - 64, width - 64, 40));
+            dstSurface.FillWithColor(_color, new Rectangle(32, height - 64, width - 64, 40));
             _inputTextSurface.Draw(dstSurface, 40, height - 56);
             _outputTextSurface.Draw(dstSurface, 40, height - 40);
         }

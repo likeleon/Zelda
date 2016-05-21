@@ -1,9 +1,9 @@
-﻿using System;
-
-namespace Zelda.Game.LowLevel
+﻿namespace Zelda.Game.LowLevel
 {
     public struct Point
     {
+        public static readonly Point Zero = new Point(0, 0);
+
         public int X;
         public int Y;
 

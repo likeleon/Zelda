@@ -8,9 +8,9 @@ namespace Alttp.Menus.SavegameScreens
     class ChooseNamePhase : IPhase
     {
         readonly SavegameScreen _screen;
-        readonly ScriptTextSurface _playerNameText;
-        readonly ScriptSurface _lettersImg;
-        readonly ScriptSprite _nameArrowSprite;
+        readonly TextSurface _playerNameText;
+        readonly Surface _lettersImg;
+        readonly Sprite _nameArrowSprite;
         
         string _playerName = string.Empty;
         Point _letterCursor;
@@ -25,9 +25,9 @@ namespace Alttp.Menus.SavegameScreens
             _screen.TitleText.SetTextKey("selection_menu.phase.choose_name");
             _screen.CursorSprite.SetAnimation("letters");
             var font = Fonts.GetMenuFont();
-            _playerNameText = ScriptTextSurface.Create(font: font.Id, fontSize: font.Size);
-            _lettersImg = ScriptSurface.Create("menus/selection_menu_letters.png");
-            _nameArrowSprite = ScriptSprite.Create("menus/arrow");
+            _playerNameText = TextSurface.Create(font: font.Id, fontSize: font.Size);
+            _lettersImg = Surface.Create("menus/selection_menu_letters.png", true);
+            _nameArrowSprite = Sprite.Create("menus/arrow");
             _nameArrowSprite.SetDirection(Direction4.Right);
         }
 

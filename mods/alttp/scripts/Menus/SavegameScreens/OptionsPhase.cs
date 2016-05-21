@@ -13,8 +13,8 @@ namespace Alttp.Menus.SavegameScreens
             protected readonly OptionsPhase _phase;
 
             public abstract string Name { get; }
-            public ScriptTextSurface LabelText { get; private set; }
-            public ScriptTextSurface ValueText { get; private set; }
+            public TextSurface LabelText { get; private set; }
+            public TextSurface ValueText { get; private set; }
             public string[] Values { get; protected set; }
             public string InitialValue { get; protected set; }
             public int CurrentIndex { get; set; }
@@ -24,11 +24,11 @@ namespace Alttp.Menus.SavegameScreens
                 _phase = phase;
 
                 var font = Fonts.GetMenuFont();
-                LabelText = ScriptTextSurface.Create(
+                LabelText = TextSurface.Create(
                     font: font.Id,
                     fontSize: font.Size,
                     textKey: "selection_menu.options.{0}".F(Name));
-                ValueText = ScriptTextSurface.Create(
+                ValueText = TextSurface.Create(
                     font: font.Id,
                     fontSize: font.Size,
                     horizontalAlignment: TextHorizontalAlignment.Right);
@@ -134,8 +134,8 @@ namespace Alttp.Menus.SavegameScreens
 
         readonly SavegameScreen _screen;
         readonly Option[] _options;
-        readonly ScriptSprite _leftArrowSprite;
-        readonly ScriptSprite _rightArrowSprite;
+        readonly Sprite _leftArrowSprite;
+        readonly Sprite _rightArrowSprite;
 
         bool _modifyingOption;
         int _optionsCursorPosition = 1;
@@ -154,11 +154,11 @@ namespace Alttp.Menus.SavegameScreens
                     if (option.Values[i - 1] == option.InitialValue)
                         option.SetValue(i);
 
-            _leftArrowSprite = ScriptSprite.Create("menus/arrow");
+            _leftArrowSprite = Sprite.Create("menus/arrow");
             _leftArrowSprite.SetAnimation("blink");
             _leftArrowSprite.SetDirection(Direction4.Left);
 
-            _rightArrowSprite = ScriptSprite.Create("menus/arrow");
+            _rightArrowSprite = Sprite.Create("menus/arrow");
             _rightArrowSprite.SetAnimation("blink");
             _rightArrowSprite.SetDirection(Direction4.Right);
 
@@ -199,7 +199,7 @@ namespace Alttp.Menus.SavegameScreens
             if (_optionsCursorPosition <= _options.Length)
             {
                 var option = _options[_optionsCursorPosition - 1];
-                option.LabelText.SetColor(Color.White);
+                option.LabelText.SetTextColor(Color.White);
             }
 
             _optionsCursorPosition = position;
@@ -209,7 +209,7 @@ namespace Alttp.Menus.SavegameScreens
             if (position <= _options.Length)
             {
                 var option = _options[_optionsCursorPosition - 1];
-                option.LabelText.SetColor(Color.Yellow);
+                option.LabelText.SetTextColor(Color.Yellow);
             }
         }
 

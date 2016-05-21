@@ -10,17 +10,14 @@ namespace Alttp.Menus
     {
         sealed class Language
         {
-            readonly string _id;
-            readonly ScriptTextSurface _text;
-
-            public string Id { get { return _id; } }
-            public ScriptTextSurface Text { get { return _text; } }
+            public string Id { get; }
+            public TextSurface Text { get; }
             public int Y { get; set; }
 
             public Language(string id, string font, int fontSize)
             {
-                _id = id;
-                _text = ScriptTextSurface.Create(
+                Id = id;
+                Text = TextSurface.Create(
                     font: font, 
                     fontSize: fontSize, 
                     text: ScriptLanguage.GetLanguageName(id),
@@ -28,7 +25,7 @@ namespace Alttp.Menus
             }
         }
 
-        ScriptSurface _surface;
+        Surface _surface;
         bool _finished;
         int _cursorPosition = -1;
         int _firstVisibleLanguage = 0;
@@ -44,7 +41,7 @@ namespace Alttp.Menus
                 return;
             }
 
-            _surface = ScriptSurface.Create(320, 240);
+            _surface = Surface.Create(320, 240, true);
             _numVisibleLanguages = Math.Min(ScriptLanguage.Languages.Count(), _maxVisibleLanguages);
 
             _languages = new Language[ScriptLanguage.Languages.Count()];
@@ -77,8 +74,8 @@ namespace Alttp.Menus
         void SetCursorPosition(int cursorPosition)
         {
             if (_cursorPosition != -1)
-                _languages[_cursorPosition].Text.SetColor(Color.White);
-            _languages[cursorPosition].Text.SetColor(Color.Yellow);
+                _languages[_cursorPosition].Text.SetTextColor(Color.White);
+            _languages[cursorPosition].Text.SetTextColor(Color.Yellow);
 
             if (cursorPosition < _firstVisibleLanguage)
                 _firstVisibleLanguage = cursorPosition;
@@ -89,7 +86,7 @@ namespace Alttp.Menus
             _cursorPosition = cursorPosition;
         }
 
-        protected override void OnDraw(ScriptSurface dstSurface)
+        protected override void OnDraw(Surface dstSurface)
         {
             _surface.Clear();
 

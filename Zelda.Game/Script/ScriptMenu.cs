@@ -65,13 +65,13 @@ namespace Zelda.Game.Script
             _menus.Clear();
         }
 
-        internal static void MenusOnDraw(IMenuContext context, ScriptSurface dstSurface)
+        internal static void MenusOnDraw(IMenuContext context, Surface dstSurface)
         {
             foreach (var menu in _menus.Where(m => m.Context == context))
                 MenuOnDraw(menu.Menu, dstSurface);
         }
 
-        static void MenuOnDraw(ScriptMenu menu, ScriptSurface dstSurface)
+        static void MenuOnDraw(ScriptMenu menu, Surface dstSurface)
         {
             CoreToScript.Call(() => menu.OnDraw(dstSurface));
             MenusOnDraw(menu, dstSurface);  // 자식 메뉴들을 그려줍니다
@@ -207,7 +207,7 @@ namespace Zelda.Game.Script
         {
         }
 
-        protected virtual void OnDraw(ScriptSurface dstSurface)
+        protected virtual void OnDraw(Surface dstSurface)
         {
         }
 

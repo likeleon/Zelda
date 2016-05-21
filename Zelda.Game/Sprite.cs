@@ -5,7 +5,7 @@ using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
-    class Sprite : Drawable, IDisposable
+    public class Sprite : Drawable, IDisposable
     {
         public Point Origin => _currentAnimation.GetDirection(CurrentDirection).Origin;
         public ScriptSprite ScriptSprite => _scriptSprite.Value;
