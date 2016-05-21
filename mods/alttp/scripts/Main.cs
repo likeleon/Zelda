@@ -19,7 +19,7 @@ namespace Alttp
         {
             LoadSettings();
 
-            _debugEnabled = ScriptFile.Exists("debug");
+            _debugEnabled = Core.Mod.ModFiles.DataFileExists("debug");
 
             var solarusLogo = new SolarusLogo();
             var languageMenu = new LanguageMenu();

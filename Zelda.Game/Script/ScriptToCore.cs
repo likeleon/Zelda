@@ -10,10 +10,6 @@ namespace Zelda.Game.Script
             {
                 return func.Invoke();
             }
-            catch (ScriptException ex)
-            {
-                Debug.Error(ex.ToString());
-            }
             catch (ZeldaFatalException ex)
             {
                 Debug.Error("Internal error: " + ex.ToString());
@@ -30,10 +26,6 @@ namespace Zelda.Game.Script
             try
             {
                 action.Invoke();
-            }
-            catch (ScriptException ex)
-            {
-                Debug.Error(ex.ToString());
             }
             catch (ZeldaFatalException ex)
             {
