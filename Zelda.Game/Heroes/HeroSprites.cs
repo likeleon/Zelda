@@ -42,7 +42,7 @@ namespace Zelda.Game.Heroes
                 _tunicSprite = null;
             }
 
-            _tunicSprite = new Sprite(spriteId);
+            _tunicSprite = Sprite.Create(spriteId, false);
             _tunicSprite.EnablePixelCollisions();
             if (!String.IsNullOrEmpty(animation))
             {

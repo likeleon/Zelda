@@ -51,7 +51,7 @@ namespace Zelda.Game.Entities
             Sprite.SetCurrentAnimation("stopped");
             SetMovement(movement);
 
-            _shadowSprite = new Sprite("entities/shadow");
+            _shadowSprite = Sprite.Create("entities/shadow", false);
             _shadowSprite.SetCurrentAnimation("big");
         }
 

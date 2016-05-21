@@ -56,19 +56,19 @@ namespace Zelda.Game.Entities
 
             // 타일셋 이미지들을 읽습니다
             fileName = "tilesets/" + _id + ".tiles.png";
-            _tilesImage = Surface.Create(fileName, Surface.ImageDirectory.Data);
+            _tilesImage = Surface.Create(fileName, false, Surface.ImageDirectory.Data);
             if (_tilesImage == null)
             {
                 Debug.Error("Missing tiles image for tileset '{0}': {1}".F(_id, fileName));
-                _tilesImage = Surface.Create(16, 16);
+                _tilesImage = Surface.Create(16, 16, false);
             }
 
             fileName = "tilesets/" + _id + ".entities.png";
-            _entitiesImage = Surface.Create(fileName, Surface.ImageDirectory.Data);
+            _entitiesImage = Surface.Create(fileName, false, Surface.ImageDirectory.Data);
             if (_entitiesImage == null)
             {
                 Debug.Error("Missing entities image for tileset '{0}': {1}".F(_id, fileName));
-                _entitiesImage = Surface.Create(16, 16);
+                _entitiesImage = Surface.Create(16, 16, false);
             }
         }
 

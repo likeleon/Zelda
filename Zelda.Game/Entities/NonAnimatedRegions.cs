@@ -173,7 +173,7 @@ namespace Zelda.Game.Entities
             Size cellSize = _nonAnimatedTiles.CellSize;
             Point cellXY = new Point(column * cellSize.Width, row * cellSize.Height);
 
-            Surface cellSurface = Surface.Create(cellSize);
+            Surface cellSurface = Surface.Create(cellSize, false);
             _optimizedTilesSurfaces[cellIndex] = cellSurface;
 
             foreach (Tile tile in _nonAnimatedTiles.GetElements(cellIndex))

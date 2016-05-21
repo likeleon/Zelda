@@ -45,10 +45,10 @@ namespace Zelda.Game.Script
             {
                 Stop();
 
-                if (objectToMove is ScriptDrawable)
+                if (objectToMove is Drawable)
                 {
-                    ScriptDrawable drawable = objectToMove as ScriptDrawable;
-                    drawable.Drawable.StartMovement(_movement);
+                    var drawable = objectToMove as Drawable;
+                    drawable.StartMovement(_movement);
                 }
                 else
                 {

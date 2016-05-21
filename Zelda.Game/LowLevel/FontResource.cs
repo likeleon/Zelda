@@ -42,7 +42,7 @@ namespace Zelda.Game.LowLevel
                 FileName = fileName;
 
                 if (is_bitmap)
-                    BitmapFont = Surface.Create(FileName, Surface.ImageDirectory.Data);
+                    BitmapFont = Surface.Create(FileName, false, Surface.ImageDirectory.Data);
                 else
                 {
                     _buffer = Core.Mod.ModFiles.DataFileRead(FileName);

@@ -8,25 +8,24 @@ namespace Zelda.Game
     public class Sprite : Drawable, IDisposable
     {
         public Point Origin => _currentAnimation.GetDirection(CurrentDirection).Origin;
-        public ScriptSprite ScriptSprite => _scriptSprite.Value;
         public string AnimationSetId { get; }
-        public SpriteAnimationSet AnimationSet { get; }
-        public bool IsAnimationFinished { get; private set; }
-        public bool IsAnimationStarted => !IsAnimationFinished;
-        public int CurrentFrame { get; private set; } = -1;
-        public bool HasFrameChanged { get; set; }
         public Direction4 CurrentDirection { get; private set; }
-        public int NumDirections => _currentAnimation.NumDirections;
         public string CurrentAnimation { get; private set; }
         public Size Size => _currentAnimation.GetDirection(CurrentDirection).Size;
-        public Size MaxSize => AnimationSet.MaxSize;
-        public bool IsBlinking => _blinkDelay != 0;
-        public override Surface TransitionSurface => IntermediateSurface;
+
+        internal SpriteAnimationSet AnimationSet { get; }
+        internal bool IsAnimationFinished { get; private set; }
+        internal bool IsAnimationStarted => !IsAnimationFinished;
+        internal int CurrentFrame { get; private set; } = -1;
+        internal bool HasFrameChanged { get; set; }
+        internal int NumDirections => _currentAnimation.NumDirections;
+        internal Size MaxSize => AnimationSet.MaxSize;
+        internal bool IsBlinking => _blinkDelay != 0;
+        internal override Surface TransitionSurface => IntermediateSurface;
 
         Surface IntermediateSurface => _intermediateSurface.Value;
 
         readonly Lazy<Surface> _intermediateSurface;
-        readonly Lazy<ScriptSprite> _scriptSprite;
         bool _ignoreSuspended;
         int _frameDelay;
         SpriteAnimation _currentAnimation;
@@ -35,41 +34,54 @@ namespace Zelda.Game
         bool _blinkIsSpriteVisible;
         int _blinkNextChangeDate;
 
-        public Sprite(string id)
+        public static Sprite Create(string animationSetId, bool add)
+        {
+            var sprite = new Sprite(animationSetId);
+            if (add)
+                AddDrawable(sprite);
+            return sprite;
+        }
+
+        Sprite(string id)
         {
             AnimationSetId = id;
             AnimationSet = Core.SpriteSystem.GetAnimationSet(id);
             SetCurrentAnimation(AnimationSet.DefaultAnimation);
 
-            _intermediateSurface = Exts.Lazy(() => Surface.Create(MaxSize));
-            _scriptSprite = Exts.Lazy(() => new ScriptSprite(this));
+            _intermediateSurface = Exts.Lazy(() => Surface.Create(MaxSize, false));
         }
 
         public void Dispose()
         {
-            if (_scriptSprite.IsValueCreated)
-                _scriptSprite.Value.Dispose();
-
             if (_intermediateSurface.IsValueCreated)
                 _intermediateSurface.Value.Dispose();
         }
 
-        public void EnablePixelCollisions()
+        internal void EnablePixelCollisions()
         {
             AnimationSet.EnablePixelCollisions();
         }
 
-        public bool ArePixelCollisionsEnabled()
+        internal bool ArePixelCollisionsEnabled()
         {
             return AnimationSet.ArePixelCollisionsEnabled();
         }
 
-        public int GetNumFrames()
+        internal int GetNumFrames()
         {
             return _currentAnimation.GetDirection(CurrentDirection).NumFrames;
         }
 
-        public void SetCurrentAnimation(string animationName)
+        public void SetAnimation(string animationName)
+        {
+            if (!HasAnimation(animationName))
+                throw new Exception("Animation '{0}' does not exist in sprite '{1}'".F(animationName, AnimationSetId));
+
+            SetCurrentAnimation(animationName);
+            RestartAnimation();
+        }
+
+        internal void SetCurrentAnimation(string animationName)
         {
             if (animationName != CurrentAnimation || !IsAnimationStarted)
             {
@@ -81,24 +93,30 @@ namespace Zelda.Game
             }
         }
 
-        public bool HasAnimation(string animationName)
+        internal bool HasAnimation(string animationName)
         {
             return AnimationSet.HasAnimation(animationName);
         }
 
-        public void SetCurrentFrame(int currentFrame)
+        public void SetCurrentFrame(int frame)
         {
+            if (frame < 0 || frame >= GetNumFrames())
+            {
+                var msg = "Illegal frame {0} for sprite '{1}' in direction {2} of animation '{3}'".F(frame, AnimationSetId, CurrentDirection, CurrentAnimation);
+                throw new ArgumentOutOfRangeException(nameof(frame), msg);
+            }
+
             IsAnimationFinished = false;
             _nextFrameDate = Core.Now + _frameDelay;
 
-            if (currentFrame != CurrentFrame)
+            if (frame != CurrentFrame)
             {
-                CurrentFrame = currentFrame;
+                CurrentFrame = frame;
                 HasFrameChanged = true;
             }
         }
 
-        public void RestartAnimation()
+        internal void RestartAnimation()
         {
             SetCurrentFrame(0);
         }
@@ -116,7 +134,7 @@ namespace Zelda.Game
             SetCurrentFrame(0);
         }
 
-        public override void SetSuspended(bool suspended)
+        internal override void SetSuspended(bool suspended)
         {
             if (suspended == IsSuspended || _ignoreSuspended)
                 return;
@@ -134,12 +152,12 @@ namespace Zelda.Game
                 _blinkIsSpriteVisible = true;
         }
 
-        public void SetTileset(Tileset tileset)
+        internal void SetTileset(Tileset tileset)
         {
             AnimationSet.SetTileset(tileset);
         }
 
-        public override void Update()
+        internal override void Update()
         {
             base.Update();
 
@@ -187,7 +205,7 @@ namespace Zelda.Game
             return _currentAnimation.GetNextFrame(CurrentDirection, CurrentFrame);
         }
 
-        public override void RawDraw(Surface dstSurface, Point dstPosition)
+        internal override void RawDraw(Surface dstSurface, Point dstPosition)
         {
             if (!IsAnimationFinished &&
                 (_blinkDelay == 0 || _blinkIsSpriteVisible))
@@ -203,17 +221,17 @@ namespace Zelda.Game
             }
         }
 
-        public override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
+        internal override void RawDrawRegion(Rectangle region, Surface dstSurface, Point dstPosition)
         {
             throw new NotImplementedException();
         }
 
-        public override void DrawTransition(Transition transition)
+        internal override void DrawTransition(Transition transition)
         {
             Transition.Draw(IntermediateSurface);
         }
 
-        public void SetBlinking(int blinkDelay)
+        internal void SetBlinking(int blinkDelay)
         {
             _blinkDelay = blinkDelay;
 
@@ -224,7 +242,7 @@ namespace Zelda.Game
             }
         }
 
-        public bool TestCollision(Sprite other, int x1, int y1, int x2, int y2)
+        internal bool TestCollision(Sprite other, int x1, int y1, int x2, int y2)
         {
             var direction1 = _currentAnimation.GetDirection(CurrentDirection);
             var origin1 = direction1.Origin;

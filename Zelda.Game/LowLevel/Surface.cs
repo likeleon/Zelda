@@ -144,7 +144,7 @@ namespace Zelda.Game.LowLevel
             return softwareSurface;
         }
 
-        internal Surface(int width, int height)
+        Surface(int width, int height)
         {
             if (width <= 0 || height <= 0)
                 throw new Exception("Attempt to create a surface with an empty size");

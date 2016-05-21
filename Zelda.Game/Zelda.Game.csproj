@@ -175,7 +175,6 @@
     <Compile Include="Script\IInputEventHandler.cs" />
     <Compile Include="Script\ScriptMovement.cs" />
     <Compile Include="Script\MovementType.cs" />
-    <Compile Include="Script\ScriptSprite.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="LowLevel\Surface.cs" />
     <Compile Include="LowLevel\Platform.cs" />
@@ -199,7 +198,6 @@
     <Compile Include="Script\ScriptMain.cs" />
     <Compile Include="Script\ScriptMenu.cs" />
     <Compile Include="Script\ScriptContext.cs" />
-    <Compile Include="Script\ScriptSurface.cs" />
     <Compile Include="SpriteAnimation.cs" />
     <Compile Include="SpriteAnimationDirection.cs" />
     <Compile Include="SpriteAnimationSet.cs" />

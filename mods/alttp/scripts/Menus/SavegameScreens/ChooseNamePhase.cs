@@ -1,7 +1,5 @@
-﻿using System;
-using Zelda.Game;
+﻿using Zelda.Game;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Alttp.Menus.SavegameScreens
 {
@@ -27,8 +25,8 @@ namespace Alttp.Menus.SavegameScreens
             var font = Fonts.GetMenuFont();
             _playerNameText = TextSurface.Create(font: font.Id, fontSize: font.Size);
             _lettersImg = Surface.Create("menus/selection_menu_letters.png", true);
-            _nameArrowSprite = Sprite.Create("menus/arrow");
-            _nameArrowSprite.SetDirection(Direction4.Right);
+            _nameArrowSprite = Sprite.Create("menus/arrow", true);
+            _nameArrowSprite.SetCurrentDirection(Direction4.Right);
         }
 
         public void OnDraw()

@@ -389,7 +389,7 @@ namespace Zelda.Game.Entities
 
         public Sprite CreateSprite(string animationSetId, bool enablePixelCollisions = false)
         {
-            Sprite sprite = new Sprite(animationSetId);
+            var sprite = Sprite.Create(animationSetId, false);
 
             if (enablePixelCollisions)
                 sprite.EnablePixelCollisions();

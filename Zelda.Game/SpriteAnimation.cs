@@ -26,7 +26,7 @@ namespace Zelda.Game
 
             if (!_srcImageIsTileset)
             {
-                _srcImage = Surface.Create(imageFileName);
+                _srcImage = Surface.Create(imageFileName, false);
                 Debug.CheckAssertion(_srcImage != null, "Cannot load image '{0}'".F(imageFileName));
             }
         }

@@ -7,33 +7,33 @@ namespace Alttp.Menus
 {
     class SolarusLogo : ScriptMenu
     {
-        readonly ScriptSurface _surface;
-        readonly ScriptSprite _title;
-        readonly ScriptSprite _subtitle;
-        readonly ScriptSprite _sun;
-        readonly ScriptSprite _sword;
-        readonly ScriptSurface _blackSquare;
+        readonly Surface _surface;
+        readonly Sprite _title;
+        readonly Sprite _subtitle;
+        readonly Sprite _sun;
+        readonly Sprite _sword;
+        readonly Surface _blackSquare;
         int _animationStep;
         Timer _timer;
 
         public SolarusLogo()
         {
-            _surface = ScriptSurface.Create(201, 48);
+            _surface = Surface.Create(201, 48, true);
 
-            _title = ScriptSprite.Create("menus/solarus_logo");
+            _title = Sprite.Create("menus/solarus_logo", true);
             _title.SetAnimation("title");
 
-            _subtitle = ScriptSprite.Create("menus/solarus_logo");
+            _subtitle = Sprite.Create("menus/solarus_logo", true);
             _subtitle.SetAnimation("subtitle");
 
-            _sun = ScriptSprite.Create("menus/solarus_logo");
+            _sun = Sprite.Create("menus/solarus_logo", true);
             _sun.SetAnimation("sun");
 
-            _sword = ScriptSprite.Create("menus/solarus_logo");
+            _sword = Sprite.Create("menus/solarus_logo", true);
             _sword.SetAnimation("sword");
 
-            _blackSquare = ScriptSurface.Create(48, 15);
-            _blackSquare.FillColor(Color.Black);
+            _blackSquare = Surface.Create(48, 15, true);
+            _blackSquare.FillWithColor(Color.Black);
         }
 
         void RebuildSurface()
@@ -55,7 +55,7 @@ namespace Alttp.Menus
         {
             _animationStep = 0;
             _surface.SetOpacity(255);
-            _sun.SetDirection(0);
+            _sun.SetCurrentDirection(0);
             _sun.XY = new Point(0, 0);
             _sword.XY = new Point(0, 0);
 
@@ -66,13 +66,13 @@ namespace Alttp.Menus
         void StartAnimation()
         {
             // 태양의 이동
-            ScriptTargetMovement sunMovement = ScriptMovement.Create(MovementType.Target) as ScriptTargetMovement;
+            var sunMovement = ScriptMovement.Create(MovementType.Target) as ScriptTargetMovement;
             sunMovement.SetSpeed(64);
             sunMovement.SetTarget(new Point(0, -33));
             sunMovement.PositionChanged += (o, e) => RebuildSurface();
 
             // 검의 이동
-            ScriptTargetMovement swordMovement = ScriptMovement.Create(MovementType.Target) as ScriptTargetMovement;
+            var swordMovement = ScriptMovement.Create(MovementType.Target) as ScriptTargetMovement;
             swordMovement.SetSpeed(96);
             swordMovement.SetTarget(new Point(-48, 48));
             swordMovement.PositionChanged += (o, e) => RebuildSurface();
@@ -108,7 +108,7 @@ namespace Alttp.Menus
         {
             _animationStep = 1;
 
-            _sun.SetDirection(Direction4.Up);
+            _sun.SetCurrentDirection(Direction4.Up);
             _sun.StopMovement();
             _sun.XY = new Point(0, -33);
 
@@ -133,7 +133,7 @@ namespace Alttp.Menus
             });
         }
 
-        protected override void OnDraw(ScriptSurface screen)
+        protected override void OnDraw(Surface screen)
         {
             _surface.Draw(screen, screen.Width / 2 - 100, screen.Height / 2 - 24);
         }

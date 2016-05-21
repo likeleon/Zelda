@@ -27,12 +27,10 @@ namespace Zelda.Game.Script
             ScriptMain.Current = null;
 
             ScriptMenu.DestroyMenus();
-            ScriptDrawable.DestroyDrawables();
         }
 
         public static void Update()
         {
-            ScriptDrawable.UpdateDrawables();
             ScriptMenu.UpdateMenus();
 
             CoreToScript.Call(_scriptMain.OnUpdate);
@@ -91,13 +89,13 @@ namespace Zelda.Game.Script
             return scriptMap;
         }
 
-        internal static void MainOnDraw(ScriptSurface dstSurface)
+        internal static void MainOnDraw(Surface dstSurface)
         {
             CoreToScript.Call(() => _scriptMain.OnDraw(dstSurface));
             ScriptMenu.MenusOnDraw(_scriptMain, dstSurface);
         }
 
-        internal static void GameOnDraw(Game game, ScriptSurface dstSurface)
+        internal static void GameOnDraw(Game game, Surface dstSurface)
         {
             game.SaveGame.ScriptGame.NotifyDraw(dstSurface);
             ScriptMenu.MenusOnDraw(game.SaveGame.ScriptGame, dstSurface);

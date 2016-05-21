@@ -255,7 +255,7 @@ namespace Alttp.Menus.SavegameScreens
         public void SetCursorPosition(int cursorPosition)
         {
             CursorPosition = cursorPosition;
-            CursorSprite.SetFrame(0);
+            CursorSprite.SetCurrentFrame(0);
         }
 
         public void MoveCursorDown()

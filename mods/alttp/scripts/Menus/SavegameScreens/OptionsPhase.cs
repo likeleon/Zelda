@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Zelda.Game;
 using Zelda.Game.LowLevel;
 using Zelda.Game.Script;
@@ -154,13 +153,13 @@ namespace Alttp.Menus.SavegameScreens
                     if (option.Values[i - 1] == option.InitialValue)
                         option.SetValue(i);
 
-            _leftArrowSprite = Sprite.Create("menus/arrow");
+            _leftArrowSprite = Sprite.Create("menus/arrow", true);
             _leftArrowSprite.SetAnimation("blink");
-            _leftArrowSprite.SetDirection(Direction4.Left);
+            _leftArrowSprite.SetCurrentDirection(Direction4.Left);
 
-            _rightArrowSprite = Sprite.Create("menus/arrow");
+            _rightArrowSprite = Sprite.Create("menus/arrow", true);
             _rightArrowSprite.SetAnimation("blink");
-            _rightArrowSprite.SetDirection(Direction4.Right);
+            _rightArrowSprite.SetCurrentDirection(Direction4.Right);
 
             _screen.SetBottomButtons("selection_menu.back", null);
             SetOptionsCursorPosition(1);
@@ -220,7 +219,7 @@ namespace Alttp.Menus.SavegameScreens
                 if (direction8 == Direction8.Up)
                 {
                     Core.Audio?.PlaySound("cursor");
-                    _leftArrowSprite.SetFrame(0);
+                    _leftArrowSprite.SetCurrentFrame(0);
                     var position = _optionsCursorPosition - 1;
                     if (position == 0)
                         position = _options.Length + 1;
@@ -230,7 +229,7 @@ namespace Alttp.Menus.SavegameScreens
                 else if (direction8 == Direction8.Down)
                 {
                     Core.Audio?.PlaySound("cursor");
-                    _leftArrowSprite.SetFrame(0);
+                    _leftArrowSprite.SetCurrentFrame(0);
                     var position = _optionsCursorPosition + 1;
                     if (position > _options.Length + 1)
                         position = 1;
@@ -246,8 +245,8 @@ namespace Alttp.Menus.SavegameScreens
                     var index = (option.CurrentIndex % option.Values.Length) + 1;
                     option.SetValue(index);
                     Core.Audio?.PlaySound("cursor");
-                    _leftArrowSprite.SetFrame(0);
-                    _rightArrowSprite.SetFrame(0);
+                    _leftArrowSprite.SetCurrentFrame(0);
+                    _rightArrowSprite.SetCurrentFrame(0);
                     return true;
                 }
                 else if (direction8 == Direction8.Left)
@@ -256,8 +255,8 @@ namespace Alttp.Menus.SavegameScreens
                     var index = (option.CurrentIndex + option.Values.Length - 2) % option.Values.Length + 1;
                     option.SetValue(index);
                     Core.Audio?.PlaySound("cursor");
-                    _leftArrowSprite.SetFrame(0);
-                    _rightArrowSprite.SetFrame(0);
+                    _leftArrowSprite.SetCurrentFrame(0);
+                    _rightArrowSprite.SetCurrentFrame(0);
                     return true;
                 }
             }
@@ -280,20 +279,20 @@ namespace Alttp.Menus.SavegameScreens
                 if (!_modifyingOption)
                 {
                     Core.Audio?.PlaySound("ok");
-                    _leftArrowSprite.SetFrame(0);
-                    _rightArrowSprite.SetFrame(0);
-                    option.LabelText.SetColor(Color.White);
-                    option.ValueText.SetColor(Color.Yellow);
+                    _leftArrowSprite.SetCurrentFrame(0);
+                    _rightArrowSprite.SetCurrentFrame(0);
+                    option.LabelText.SetTextColor(Color.White);
+                    option.ValueText.SetTextColor(Color.Yellow);
                     _screen.TitleText.SetTextKey("selection_menu.phase.options.changing");
                     _modifyingOption = true;
                 }
                 else
                 {
                     Core.Audio?.PlaySound("danger");
-                    option.LabelText.SetColor(Color.Yellow);
-                    option.ValueText.SetColor(Color.White);
-                    _leftArrowSprite.SetFrame(0);
-                    _rightArrowSprite.SetFrame(0);
+                    option.LabelText.SetTextColor(Color.Yellow);
+                    option.ValueText.SetTextColor(Color.White);
+                    _leftArrowSprite.SetCurrentFrame(0);
+                    _rightArrowSprite.SetCurrentFrame(0);
                     _screen.TitleText.SetTextKey("selection_menu.phase.options");
                     _modifyingOption = false;
                 }

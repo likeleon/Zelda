@@ -67,10 +67,10 @@ namespace Zelda.Game
 
         public void Load(Game game)
         {
-            VisibleSurface = Surface.Create(Core.Video.ModSize);
+            VisibleSurface = Surface.Create(Core.Video.ModSize, false);
             VisibleSurface.IsSoftwareDestination = false;
 
-            _backgroundSurface = Surface.Create(Core.Video.ModSize);
+            _backgroundSurface = Surface.Create(Core.Video.ModSize, false);
             _backgroundSurface.IsSoftwareDestination = false;
 
             LoadMapData(game);
@@ -154,7 +154,7 @@ namespace Zelda.Game
             if (Width >= screenWidth && Height >= screenHeight)
                 return; // 해당 사항이 없습니다
 
-            _foregroundSurface = Surface.Create(VisibleSurface.Size);
+            _foregroundSurface = Surface.Create(VisibleSurface.Size, false);
 
             if (Width < screenWidth)
             {

@@ -95,7 +95,7 @@ namespace Zelda.Game.LowLevel
             movement.SetSuspended(IsSuspended);
         }
 
-        internal void StopMovement()
+        public void StopMovement()
         {
             Movement = null;
         }
@@ -142,9 +142,7 @@ namespace Zelda.Game.LowLevel
                 if (Transition.IsFinished)
                 {
                     Transition = null;
-
-                    if (_transitionCallback != null)
-                        _transitionCallback.Invoke();
+                    _transitionCallback?.Invoke();
                 }
             }
 
@@ -163,11 +161,8 @@ namespace Zelda.Game.LowLevel
 
             IsSuspended = suspended;
 
-            if (Transition != null)
-                Transition.SetSuspended(suspended);
-
-            if (Movement != null)
-                Movement.SetSuspended(suspended);
+            Transition?.SetSuspended(suspended);
+            Movement?.SetSuspended(suspended);
         }
 
         internal abstract void RawDraw(Surface dstSurface, Point dstPosition);

@@ -22,7 +22,6 @@ namespace Zelda.Game
         static readonly int TimeStep = 10;  // 업데이트시마다 추가될 게임 시간, 밀리초
 
         static Surface _rootSurface;
-        static ScriptSurface _rootScriptSurface;
         static Game _nextGame;
 
         internal static void Initialize(Arguments args)
@@ -37,10 +36,8 @@ namespace Zelda.Game
 
             LoadModProperties();
 
-            _rootSurface = Surface.Create(Video.ModSize);
+            _rootSurface = Surface.Create(Video.ModSize, false);
             _rootSurface.IsSoftwareDestination = false;
-
-            _rootScriptSurface = new ScriptSurface(_rootSurface);
 
             ScriptContext.Initialize();
 
@@ -189,7 +186,7 @@ namespace Zelda.Game
             _rootSurface.Clear();
 
             Game?.Draw(_rootSurface);
-            ScriptContext.MainOnDraw(_rootScriptSurface);
+            ScriptContext.MainOnDraw(_rootSurface);
             Video.Render(_rootSurface);
         }
 

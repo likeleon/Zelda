@@ -9,7 +9,7 @@ namespace Alttp.Maps
     class Intro : ScriptMap
     {
         int _frescoIndex;
-        ScriptSprite _frescoSprite;
+        Sprite _frescoSprite;
 
         protected override void OnStarted(ScriptDestination destination)
         {

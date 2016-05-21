@@ -61,7 +61,7 @@ namespace Alttp.Menus
         Surface _dialogSurface;
         Surface _boxImg;
         Surface _iconsImg;
-        ScriptSprite _endLinesSprite;
+        Sprite _endLinesSprite;
 
         Dialog _dialog;
         object _info;
@@ -109,7 +109,7 @@ namespace Alttp.Menus
             _dialogSurface = Surface.Create(Core.Video.ModSize, true);
             _boxImg = Surface.Create("hud/dialog_box.png", true);
             _iconsImg = Surface.Create("hud/dialog_icons.png", true);
-            _endLinesSprite = Sprite.Create("hud/dialog_box_message_end");
+            _endLinesSprite = Sprite.Create("hud/dialog_box_message_end", true);
             SetDialogStyle(DialogBoxStyle.Box);
         }
 
@@ -345,7 +345,7 @@ namespace Alttp.Menus
             _dialogSurface.Clear();
 
             if (_style == DialogBoxStyle.Empty)
-                dstSurface.FillColor(Color.Black, new Rectangle(_boxDstPosition, _boxSize));
+                dstSurface.FillWithColor(Color.Black, new Rectangle(_boxDstPosition, _boxSize));
             else
                 _boxImg.DrawRegion(new Rectangle(_boxSize), _dialogSurface, _boxDstPosition);
 
@@ -386,7 +386,7 @@ namespace Alttp.Menus
             if (_isFull)
                 _endLinesSprite.Draw(_dialogSurface, x + 103, y + 56);
 
-            _dialogSurface.Draw(dstSurface.);
+            _dialogSurface.Draw(dstSurface);
         }
 
         protected override void OnFinished()

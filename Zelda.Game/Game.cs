@@ -142,7 +142,7 @@ namespace Zelda.Game
                     _dialogBox.Draw(dstSurface);
             }
 
-            ScriptContext.GameOnDraw(this, dstSurface.ScriptSurface);
+            ScriptContext.GameOnDraw(this, dstSurface);
         }
 
         public bool NotifyDialogStarted(Dialog dialog, object info)

@@ -65,7 +65,7 @@ namespace Zelda.Game.Script
         {
         }
 
-        internal protected virtual void OnDraw(ScriptSurface dstSurface)
+        internal protected virtual void OnDraw(Surface dstSurface)
         {
         }
     }

@@ -251,7 +251,7 @@ namespace Zelda.Game.Script
             CoreToScript.Call(() => OnDialogFinished(dialog));
         }
 
-        internal void NotifyDraw(ScriptSurface dstSurface)
+        internal void NotifyDraw(Surface dstSurface)
         {
             CoreToScript.Call(() => OnDraw(dstSurface));
         }
@@ -284,7 +284,7 @@ namespace Zelda.Game.Script
         {
         }
 
-        protected virtual void OnDraw(ScriptSurface dstSurface)
+        protected virtual void OnDraw(Surface dstSurface)
         {
         }
 

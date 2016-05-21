@@ -58,7 +58,7 @@ namespace Zelda.Game
         {
             if (_sprite == null)
             {
-                _sprite = new Sprite("entities/items");
+                _sprite = Sprite.Create("entities/items", false);
                 _sprite.SetCurrentAnimation(ItemName);
                 _sprite.SetCurrentDirection((Direction4)(Variant - 1));
             }
