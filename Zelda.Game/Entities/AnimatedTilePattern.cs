@@ -21,8 +21,8 @@ namespace Zelda.Game.Entities
 
         static int _frameCounter;
         static int[] _currentFrames = new int[3] { 0, 0, 0};
-        static uint _nextFrameDate;
-        static readonly uint _tileFrameInterval = 250;
+        static int _nextFrameDate;
+        static readonly int _tileFrameInterval = 250;
         static readonly int[,] _frames = new int[,]
         {
             { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 },
@@ -44,8 +44,7 @@ namespace Zelda.Game.Entities
 
         public new static void Update()
         {
-            uint now = Core.Now;
-            while (now >= _nextFrameDate)
+            while (Core.Now >= _nextFrameDate)
             {
                 _frameCounter = (_frameCounter + 1) % 12;
                 _currentFrames[1] = _frames[0, _frameCounter];

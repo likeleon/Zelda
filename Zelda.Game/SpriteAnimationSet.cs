@@ -63,7 +63,7 @@ namespace Zelda.Game
         void AddAnimation(string animationName, SpriteAnimationData animationData)
         {
             string srcImage = animationData.SrcImage;
-            uint frameDelay = animationData.FrameDelay;
+            int frameDelay = animationData.FrameDelay;
             int frameToLoopOn = animationData.LoopOnFrame;
             List<SpriteAnimationDirection> directions = new List<SpriteAnimationDirection>();
 

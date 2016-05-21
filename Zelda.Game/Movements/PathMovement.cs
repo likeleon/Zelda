@@ -36,7 +36,7 @@ namespace Zelda.Game.Movements
 
         List<Direction8> _remainingPath;
         bool _snapping;
-        uint _stopSnappingDate;
+        int _stopSnappingDate;
         bool _stoppedByObstacle;
 
         readonly static string[] _elementaryMoves = new string[]
@@ -127,11 +127,11 @@ namespace Zelda.Game.Movements
         }
 
         // 속력을 각 픽셀 이동 사이의 지연 시간(밀리초)로 변환합니다
-        static uint SpeedToDelay(int speed, Direction8 direction)
+        static int SpeedToDelay(int speed, Direction8 direction)
         {
-            uint delay = (uint)(1000 / speed);  // 초당 속력 (in 픽셀)
+            int delay = (int)(1000 / speed);  // 초당 속력 (in 픽셀)
             if ((int)direction % 2 != 0)
-                delay = (uint)(delay * Geometry.Sqrt2);
+                delay = (int)(delay * Geometry.Sqrt2);
             return delay;
         }
 
@@ -145,7 +145,7 @@ namespace Zelda.Game.Movements
             snappedX -= snappedX % 8;
             snappedY -= snappedY % 8;
 
-            uint now = Core.Now;
+            int now = Core.Now;
 
             if (!_snapping)
             {

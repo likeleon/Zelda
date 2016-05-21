@@ -67,7 +67,7 @@ namespace Zelda.Game.Movements
         #endregion
 
         #region 갱신
-        uint _lastMoveDate;     // 마지막으로 X나 Y방향으로 이동한 시각
+        int _lastMoveDate;     // 마지막으로 X나 Y방향으로 이동한 시각
         bool _finished;
 
         public virtual void Update()
@@ -89,8 +89,8 @@ namespace Zelda.Game.Movements
             get { return _suspended; }
         }
 
-        uint _whenSuspended;
-        protected uint WhenSuspended
+        int _whenSuspended;
+        protected int WhenSuspended
         {
             get { return _whenSuspended; }
         }

@@ -7,7 +7,7 @@ namespace Zelda.Game
     // 각 시퀀스는 이 애니메이션에서의 스프라이트 방향입니다
     class SpriteAnimation : DisposableObject
     {
-        public uint FrameDelay { get; }
+        public int FrameDelay { get; }
         public bool IsLooping { get { return _loopOnFrame != -1; } }
         public int NumDirections { get { return _directions.Length; } }
 
@@ -17,7 +17,7 @@ namespace Zelda.Game
         Surface _srcImage;
         bool _shoudEnablePixelCollisions;
 
-        public SpriteAnimation(string imageFileName, SpriteAnimationDirection[] directions, uint frameDelay, int loopOnframe)
+        public SpriteAnimation(string imageFileName, SpriteAnimationDirection[] directions, int frameDelay, int loopOnframe)
         {
             _srcImageIsTileset = imageFileName == "tileset";
             FrameDelay = frameDelay;

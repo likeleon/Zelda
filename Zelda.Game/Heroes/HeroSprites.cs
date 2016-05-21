@@ -89,7 +89,7 @@ namespace Zelda.Game.Heroes
             _tunicSprite.SetSuspended(suspended);
 
             // 타이머
-            uint now = Core.Now;
+            int now = Core.Now;
             if (suspended)
                 _whenSuspended = now;
             else if (_endBlinkDate != 0)
@@ -278,7 +278,7 @@ namespace Zelda.Game.Heroes
         #endregion
 
         #region 상태
-        uint _whenSuspended;
+        int _whenSuspended;
 
         bool _blinking;
         public bool IsBlinking
@@ -286,11 +286,11 @@ namespace Zelda.Game.Heroes
             get { return _blinking; }
         }
 
-        uint _endBlinkDate;
+        int _endBlinkDate;
 
-        public void Blink(uint duration)
+        public void Blink(int duration)
         {
-            uint blinkDelay = 50;
+            int blinkDelay = 50;
 
             _blinking = true;
             _tunicSprite.SetBlinking(blinkDelay);

@@ -6,7 +6,7 @@ namespace Zelda.Game.Entities
 {
     class Bomb : Detector
     {
-        uint _explosionDate;
+        int _explosionDate;
 
         public override EntityType Type
         {
@@ -110,7 +110,7 @@ namespace Zelda.Game.Entities
 
             if (!suspended && WhenSuspended != 0)
             {
-                uint diff = Core.Now - WhenSuspended;
+                int diff = Core.Now - WhenSuspended;
                 _explosionDate += diff;
             }
         }
@@ -122,7 +122,7 @@ namespace Zelda.Game.Entities
             if (IsSuspended)
                 return;
 
-            uint now = Core.Now;
+            int now = Core.Now;
             if (now >= _explosionDate)
                 Explode();
             else if (now >= _explosionDate - 1500 && Sprite.CurrentAnimation != "stopped_explosion_soon")

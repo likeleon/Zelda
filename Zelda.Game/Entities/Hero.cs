@@ -63,9 +63,9 @@ namespace Zelda.Game.Entities
             get { return _invincible; }
         }
 
-        uint _endInvincibleDate;
+        int _endInvincibleDate;
 
-        public void SetInvincible(bool invincible, uint duration)
+        public void SetInvincible(bool invincible, int duration)
         {
             _invincible = invincible;
             _endInvincibleDate = 0;
@@ -384,7 +384,7 @@ namespace Zelda.Game.Entities
 
             if (!suspended)
             {
-                uint diff = Core.Now - WhenSuspended;
+                int diff = Core.Now - WhenSuspended;
 
                 if (_endInvincibleDate != 0)
                     _endInvincibleDate += diff;

@@ -10,8 +10,7 @@ namespace Zelda.Game.Script
     {
         readonly Timer _timer;
 
-        [CLSCompliant(false)]
-        public static ScriptTimer Start(ITimerContext context, uint delay, Func<bool> callback)
+        public static ScriptTimer Start(ITimerContext context, int delay, Func<bool> callback)
         {
             return ScriptToCore.Call(() =>
             {
@@ -35,8 +34,7 @@ namespace Zelda.Game.Script
             });
         }
 
-        [CLSCompliant(false)]
-        public static ScriptTimer Start(ITimerContext context, uint delay, Action callback)
+        public static ScriptTimer Start(ITimerContext context, int delay, Action callback)
         {
             return Start(context, delay, () =>
             {

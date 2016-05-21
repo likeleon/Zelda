@@ -48,8 +48,8 @@ namespace Zelda.Game.Heroes
             Sprites.DrawOnMap();
         }
 
-        uint _whenSuspended;
-        public uint WhenSuspended
+        int _whenSuspended;
+        public int WhenSuspended
         {
             get { return _whenSuspended; }
         }

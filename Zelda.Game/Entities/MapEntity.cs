@@ -202,7 +202,7 @@ namespace Zelda.Game.Entities
         protected Equipment Equipment { get { return Game.Equipment; } }
         protected Hero Hero { get { return Entities.Hero; } }
         protected Savegame Savegame { get { return Game.SaveGame; } }
-        protected uint WhenSuspended { get; private set; }
+        protected int WhenSuspended { get; private set; }
 
         protected MapEntity(string name, Direction4 direction, Layer layer, Point xy, Size size)
         {

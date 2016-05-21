@@ -6,10 +6,10 @@ namespace Zelda.Game.Movements
 {
     class StraightMovement : Movement
     {
-        uint _nextMoveDateX = Core.Now;    // 다음 X 이동 시각
-        uint _nextMoveDateY = Core.Now;    // 다음 Y 이동 시각
-        uint _xDelay;           // x축으로의 1픽셀 이동시의 딜레이
-        uint _yDelay;           // y축으로의 1픽셀 이동시의 딜레이
+        int _nextMoveDateX = Core.Now;    // 다음 X 이동 시각
+        int _nextMoveDateY = Core.Now;    // 다음 Y 이동 시각
+        int _xDelay;           // x축으로의 1픽셀 이동시의 딜레이
+        int _yDelay;           // y축으로의 1픽셀 이동시의 딜레이
         int _xMove;             // x축으로의 다음 이동량 (0, 1, -1)
         int _yMove;             // y축으로의 다음 이동량 (0, 1, -1)
         Point _initialXY;       // 초기 위치 (속도나 방향이 변할 때 리셋)
@@ -24,7 +24,7 @@ namespace Zelda.Game.Movements
         {
             if (!IsSuspended)
             {
-                uint now = Core.Now;
+                int now = Core.Now;
 
                 bool xMoveNow = _xMove != 0 && now >= _nextMoveDateX;
                 bool yMoveNow = _yMove != 0 && now >= _nextMoveDateY;
@@ -95,7 +95,7 @@ namespace Zelda.Game.Movements
             {
                 if (WhenSuspended != 0)
                 {
-                    uint diff = Core.Now - WhenSuspended;
+                    int diff = Core.Now - WhenSuspended;
                     _nextMoveDateX += diff;
                     _nextMoveDateY += diff;
                 }
@@ -154,7 +154,7 @@ namespace Zelda.Game.Movements
                 xSpeed = 0;
 
             _xSpeed = xSpeed;
-            uint now = Core.Now;
+            int now = Core.Now;
 
             // _xDelay, _xMove, _nextMoveDateX를 다시 계산합니다
             if (_xSpeed == 0)
@@ -165,12 +165,12 @@ namespace Zelda.Game.Movements
             {
                 if (xSpeed > 0)
                 {
-                    _xDelay = (uint)(1000 / xSpeed);
+                    _xDelay = (int)(1000 / xSpeed);
                     _xMove = 1;
                 }
                 else    // xSpeed < 0
                 {
-                    _xDelay = (uint)(1000 / -xSpeed);
+                    _xDelay = (int)(1000 / -xSpeed);
                     _xMove = -1;
                 }
                 SetNextMoveDateX(now + _xDelay);
@@ -189,7 +189,7 @@ namespace Zelda.Game.Movements
                 ySpeed = 0;
 
             _ySpeed = ySpeed;
-            uint now = Core.Now;
+            int now = Core.Now;
 
             // _xDelay, _xMove, _nextMoveDateX를 다시 계산합니다
             if (_ySpeed == 0)
@@ -200,12 +200,12 @@ namespace Zelda.Game.Movements
             {
                 if (ySpeed > 0)
                 {
-                    _yDelay = (uint)(1000 / ySpeed);
+                    _yDelay = (int)(1000 / ySpeed);
                     _yMove = 1;
                 }
                 else
                 {
-                    _yDelay = (uint)(1000 / -ySpeed);
+                    _yDelay = (int)(1000 / -ySpeed);
                     _yMove = -1;
                 }
                 SetNextMoveDateY(now + _yDelay);
@@ -271,22 +271,22 @@ namespace Zelda.Game.Movements
         }
         #endregion
 
-        protected void SetNextMoveDateX(uint nextMoveDateX)
+        protected void SetNextMoveDateX(int nextMoveDateX)
         {
             if (IsSuspended)
             {
-                uint delay = nextMoveDateX - Core.Now;
+                int delay = nextMoveDateX - Core.Now;
                 _nextMoveDateX = WhenSuspended + delay;
             }
             else
                 _nextMoveDateX = nextMoveDateX;
         }
 
-        protected void SetNextMoveDateY(uint nextMoveDateY)
+        protected void SetNextMoveDateY(int nextMoveDateY)
         {
             if (IsSuspended)
             {
-                uint delay = nextMoveDateY - Core.Now;
+                int delay = nextMoveDateY - Core.Now;
                 _nextMoveDateY = WhenSuspended + delay;
             }
             else
@@ -306,7 +306,7 @@ namespace Zelda.Game.Movements
             if (_xMove == 0)
                 return;
 
-            uint nextMoveDateXIncrement = _xDelay;
+            int nextMoveDateXIncrement = _xDelay;
 
             if (!TestCollisionWithObstacles(_xMove, 0))
             {
@@ -314,7 +314,7 @@ namespace Zelda.Game.Movements
                 if (_yMove != 0 && TestCollisionWithObstacles(0, _yMove))
                 {
                     // Y 이동이 무효하다면 X 이동으로 속력 전부를 줍니다
-                    nextMoveDateXIncrement = (uint)(1000.0 / GetSpeed());
+                    nextMoveDateXIncrement = (int)(1000.0 / GetSpeed());
                 }
             }
             else
@@ -326,13 +326,13 @@ namespace Zelda.Game.Movements
                         (TestCollisionWithObstacles(0, -1) || TestCollisionWithObstacles(0, 1)))
                     {
                         TranslateXY(_xMove, 1);
-                        nextMoveDateXIncrement = (uint)(_xDelay * Geometry.Sqrt2);  // 속력 보정
+                        nextMoveDateXIncrement = (int)(_xDelay * Geometry.Sqrt2);  // 속력 보정
                     }
                     else if (!TestCollisionWithObstacles(_xMove, -1) &&
                              (TestCollisionWithObstacles(0, 1) || TestCollisionWithObstacles(0, -1)))
                     {
                         TranslateXY(_xMove, -1);
-                        nextMoveDateXIncrement = (uint)(_xDelay * Geometry.Sqrt2);
+                        nextMoveDateXIncrement = (int)(_xDelay * Geometry.Sqrt2);
                     }
                     else
                     {
@@ -404,14 +404,14 @@ namespace Zelda.Game.Movements
             if (_yMove == 0)
                 return;
 
-            uint nextMoveDateYIncrement = _yDelay;
+            int nextMoveDateYIncrement = _yDelay;
 
             if (!TestCollisionWithObstacles(0, _yMove))
             {
                 TranslateY(_yMove);
 
                 if (_xMove != 0 && TestCollisionWithObstacles(_xMove, 0))
-                    nextMoveDateYIncrement = (uint)(1000.0 / GetSpeed());
+                    nextMoveDateYIncrement = (int)(1000.0 / GetSpeed());
             }
             else
             {
@@ -421,13 +421,13 @@ namespace Zelda.Game.Movements
                         (TestCollisionWithObstacles(-1, 0) || TestCollisionWithObstacles(1, 0)))
                     {
                         TranslateXY(1, _yMove);
-                        nextMoveDateYIncrement = (uint)(_yDelay * Geometry.Sqrt2);
+                        nextMoveDateYIncrement = (int)(_yDelay * Geometry.Sqrt2);
                     }
                     else if (!TestCollisionWithObstacles(-1, _yMove) &&
                              (TestCollisionWithObstacles(1, 0) || TestCollisionWithObstacles(-1, 0)))
                     {
                         TranslateXY(-1, _yMove);
-                        nextMoveDateYIncrement = (uint)(_yDelay * Geometry.Sqrt2);
+                        nextMoveDateYIncrement = (int)(_yDelay * Geometry.Sqrt2);
                     }
                     else
                     {

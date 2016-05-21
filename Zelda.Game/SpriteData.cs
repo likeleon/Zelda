@@ -65,11 +65,11 @@ namespace Zelda.Game
     {
         public string SrcImage { get; }
         public bool SrcImageIsTileset { get { return SrcImage == "tileset"; } }
-        public uint FrameDelay { get; }
+        public int FrameDelay { get; }
         public int LoopOnFrame { get; }
         public IEnumerable<SpriteAnimationDirectionData> Directions { get; }
 
-        public SpriteAnimationData(string srcImage, List<SpriteAnimationDirectionData> directions, uint frameDelay, int loopOnFrame)
+        public SpriteAnimationData(string srcImage, List<SpriteAnimationDirectionData> directions, int frameDelay, int loopOnFrame)
         {
             SrcImage = srcImage;
             Directions = directions;
@@ -94,7 +94,7 @@ namespace Zelda.Game
                 {
                     string animationName = animation.Name.CheckField("Name");
                     string srcImage = animation.SrcImage.CheckField("SrcImage");
-                    uint frameDelay = (uint)animation.FrameDelay.OptField(0);
+                    int frameDelay = animation.FrameDelay.OptField(0);
                     int frameToLoopOn = animation.FrameToLoopOn.OptField(-1);
 
                     if (frameToLoopOn < -1)

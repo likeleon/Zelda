@@ -7,7 +7,7 @@ namespace Zelda.Game.Movements
 {
     class PixelMovement : Movement
     {
-        public PixelMovement(string trajectoryString, uint delay, bool loop, bool ignoreObstacles)
+        public PixelMovement(string trajectoryString, int delay, bool loop, bool ignoreObstacles)
             : base(ignoreObstacles)
         {
             Delay = delay;
@@ -16,7 +16,7 @@ namespace Zelda.Game.Movements
         }
 
         #region 속성
-        public uint Delay { get; set; }
+        public int Delay { get; set; }
 
         bool _loop;
         public bool Loop
@@ -87,7 +87,7 @@ namespace Zelda.Game.Movements
 
         int _nbStepsDone;
         IEnumerator<Point> _trajectoryEnumerator;
-        uint _nextMoveDate;
+        int _nextMoveDate;
 
         void Restart()
         {
@@ -109,7 +109,7 @@ namespace Zelda.Game.Movements
 
         public override void Update()
         {
-            uint now = Core.Now;
+            int now = Core.Now;
 
             while (now >= _nextMoveDate &&
                    !IsSuspended &&

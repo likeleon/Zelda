@@ -8,7 +8,6 @@ namespace Zelda.Game
     class Arguments
     {
         public string ProgramName { get; }
-
         public IEnumerable<string> Args { get; }
 
         public Arguments(string[] args)

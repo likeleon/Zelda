@@ -54,8 +54,7 @@ namespace Zelda.Game.Script
             ScriptToCore.Call(_drawable.StopMovement);
         }
 
-        [CLSCompliant(false)]
-        public void FadeIn(uint? delay = null, Action callback = null)
+        public void FadeIn(int? delay = null, Action callback = null)
         {
             ScriptToCore.Call(() =>
             {
@@ -66,8 +65,7 @@ namespace Zelda.Game.Script
             });
         }
 
-        [CLSCompliant(false)]
-        public void FadeOut(uint? delay = null, Action callback = null)
+        public void FadeOut(int? delay = null, Action callback = null)
         {
             ScriptToCore.Call(() =>
             {

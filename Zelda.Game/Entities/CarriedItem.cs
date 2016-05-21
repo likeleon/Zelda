@@ -29,7 +29,7 @@ namespace Zelda.Game.Entities
             string animationSetId,
             string destructionSoundId,
             int damageOnEnemies,
-            uint explosionDate)
+            int explosionDate)
             : base("", Direction4.Right, hero.Layer, new Point(0, 0), new Size(0, 0))
         {
             _hero = hero;
@@ -78,7 +78,7 @@ namespace Zelda.Game.Entities
 
         Direction4 _throwingDirection = Direction4.Right;
         int _yIncrement;
-        uint _nextDownDate;
+        int _nextDownDate;
         int _itemHeight;
         Sprite _shadowSprite;
 
@@ -181,7 +181,7 @@ namespace Zelda.Game.Entities
         #endregion
 
         #region 폭파
-        uint _explosionDate;
+        int _explosionDate;
 
         public bool CanExplode
         {
@@ -232,7 +232,7 @@ namespace Zelda.Game.Entities
                     BreakItemOnGround();
                 else
                 {
-                    uint now = Core.Now;
+                    int now = Core.Now;
                     while (now >= _nextDownDate)
                     {
                         _nextDownDate += 40;
@@ -278,7 +278,7 @@ namespace Zelda.Game.Entities
 
             if (!suspended && WhenSuspended != 0)
             {
-                uint diff = Core.Now - WhenSuspended;
+                int diff = Core.Now - WhenSuspended;
                 if (IsBeingThrown)
                     _nextDownDate += diff;
                 if (CanExplode)

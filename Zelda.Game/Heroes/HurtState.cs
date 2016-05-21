@@ -10,7 +10,7 @@ namespace Zelda.Game.Heroes
         readonly bool _hasSource;
         readonly Point _sourceXY;
         readonly int _damage;
-        uint _endHurtDate;
+        int _endHurtDate;
 
         public HurtState(Hero hero, Point sourceXY, int damage)
             : base(hero, "hurt")
@@ -26,7 +26,7 @@ namespace Zelda.Game.Heroes
 
             Core.Audio.Play("hero_hurt");
 
-            uint invincibilityDuration = 2000;
+            int invincibilityDuration = 2000;
             Hero.SetInvincible(true, invincibilityDuration);
             Sprites.SetAnimationHurt();
             Sprites.Blink(invincibilityDuration);
@@ -77,7 +77,7 @@ namespace Zelda.Game.Heroes
 
             if (!suspended)
             {
-                uint diff = Core.Now - WhenSuspended;
+                int diff = Core.Now - WhenSuspended;
                 _endHurtDate += diff;
             }
         }

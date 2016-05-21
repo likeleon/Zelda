@@ -118,7 +118,7 @@ namespace Zelda.Game.Entities
 
             if (Equipment.HasAbility(Ability.Lift, Weight))
             {
-                uint explosionDate = 0;
+                int explosionDate = 0;
                 Hero.StartLifting(new CarriedItem(
                     Hero,
                     this,

@@ -52,11 +52,11 @@ namespace Zelda.Game.Entities
         }
 
         int _initialMaximumMoves;
-        uint _whenCanMove;
+        int _whenCanMove;
         Point _lastPosition;
         Point _initialPosition;
         bool _soundPlayed;
-        static uint _movingDelay = 500;
+        static int _movingDelay = 500;
 
         public override EntityType Type
         {

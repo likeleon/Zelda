@@ -1,54 +1,39 @@
-﻿using System.ComponentModel;
-using Zelda.Game.LowLevel;
+﻿using System;
 
 namespace Zelda.Game
 {
-    class Timer
+    public interface ITimerContext { }
+
+    public class Timer
     {
-        uint _expirationDate;
-        uint _whenSuspended;
+        internal int ExpirationDate { get; set; }
+        internal int InitialDuration { get; }
+        internal bool IsFinished => Core.Now >= ExpirationDate;
+        internal bool IsSuspended { get; private set; }
 
-        public uint ExpirationDate
+        int _whenSuspended;
+
+        internal Timer(int duration)
         {
-            get { return _expirationDate; }
-            set
-            {
-                _expirationDate = value;
-                IsFinished = Core.Now >= _expirationDate;
-            }
-        }
-
-        public uint InitialDuration { get; private set; }
-        public bool IsFinished { get; private set; }
-        public bool IsSuspended { get; private set; }
-
-        public Timer(uint duration)
-        {
-            _expirationDate = Core.Now + duration;
+            ExpirationDate = Core.Now + duration;
             InitialDuration = duration;
-            IsFinished = (Core.Now >= _expirationDate);
         }
 
-        public void Update()
+        internal void Update()
         {
             if (IsSuspended || IsFinished)
                 return;
-
-            var now = Core.Now;
-            IsFinished = (now >= _expirationDate);
         }
 
-        public void SetSuspended(bool suspended)
+        internal void SetSuspended(bool suspended)
         {
             if (IsSuspended == suspended)
                 return;
 
-            var now = Core.Now;
-
             if (suspended)
-                _whenSuspended = now;
+                _whenSuspended = Core.Now;
             else if (_whenSuspended != 0)
-                _expirationDate += now - _whenSuspended;
+                ExpirationDate += Core.Now - _whenSuspended;
         }
     }
 }

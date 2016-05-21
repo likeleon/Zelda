@@ -15,7 +15,7 @@ namespace Zelda.Game.Entities
     {        
         readonly Treasure _treasure;
         bool _treasureGiven;
-        uint _treasureDate;
+        int _treasureDate;
         readonly ScriptChest _scriptChest;
         
         public Chest(

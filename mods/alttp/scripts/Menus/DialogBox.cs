@@ -44,7 +44,7 @@ namespace Alttp.Menus
     class DialogBox : ScriptMenu
     {
         static readonly int _numVisibleLines = 3;
-        static readonly uint _letterSoundDelay = 100;
+        static readonly int _letterSoundDelay = 100;
         static readonly Size _boxSize = new Size(220, 60);
 
         static readonly string _specialCharSlow = "$1";
@@ -230,7 +230,7 @@ namespace Alttp.Menus
             _charIndex = 0;
 
             if (_gradual)
-                ScriptTimer.Start(this, (uint)_charDelay, (Action)RepeatShowCharacter);
+                ScriptTimer.Start(this, (int)_charDelay, (Action)RepeatShowCharacter);
         }
 
         void RepeatShowCharacter()
@@ -274,7 +274,7 @@ namespace Alttp.Menus
             var currentChar = CurrentLine[_charIndex++];
             var textSurface = _visibleLineSurfaces[_visibleLineIndex];
 
-            uint additionalDelay = 0;
+            int additionalDelay = 0;
             var special = false;
             if (currentChar == '$')
             {
@@ -285,11 +285,11 @@ namespace Alttp.Menus
                 if (word == _specialCharPause)
                     additionalDelay = 1000;
                 else if (word == _specialCharSlow)
-                    additionalDelay = (uint)DialogBoxCharDelays.Slow;
+                    additionalDelay = (int)DialogBoxCharDelays.Slow;
                 else if (word == _specialCharMedium)
-                    additionalDelay = (uint)DialogBoxCharDelays.Medium;
+                    additionalDelay = (int)DialogBoxCharDelays.Medium;
                 else if (word == _specialCharFast)
-                    additionalDelay = (uint)DialogBoxCharDelays.Fast;
+                    additionalDelay = (int)DialogBoxCharDelays.Fast;
                 else
                 {
                     textSurface.SetText(textSurface.Text + "$");
@@ -301,7 +301,7 @@ namespace Alttp.Menus
             {
                 textSurface.SetText(textSurface.Text + currentChar);
                 if (currentChar == ' ')
-                    additionalDelay -= (uint)_charDelay;
+                    additionalDelay -= (int)_charDelay;
             }
 
             if (!special && _needLetterSound)
@@ -312,7 +312,7 @@ namespace Alttp.Menus
             }
 
             if (_gradual)
-                ScriptTimer.Start(this, (uint)_charDelay + additionalDelay, (Action)RepeatShowCharacter);
+                ScriptTimer.Start(this, (int)_charDelay + additionalDelay, (Action)RepeatShowCharacter);
         }
 
         void ShowNextDialog()

@@ -12,7 +12,7 @@ namespace Zelda.Game.LowLevel
         public FontResource FontResource { get; }
         public SpriteSystem SpriteSystem { get; }
 
-        readonly uint _initialTime;       // 초기화 시점의 실제 시각, 밀리초
+        readonly int _initialTime;       // 초기화 시점의 실제 시각, 밀리초
 
         public Platform(Arguments args)
         {
@@ -42,14 +42,14 @@ namespace Zelda.Game.LowLevel
             Audio.Update();
         }
 
-        public uint GetRealTime()
+        public int GetRealTime()
         {
-            return (SDL.SDL_GetTicks() - _initialTime);
+            return (int)(SDL.SDL_GetTicks() - _initialTime);
         }
 
-        public void Sleep(uint duration)
+        public void Sleep(int duration)
         {
-            SDL.SDL_Delay(duration);
+            SDL.SDL_Delay((uint)duration);
         }
     }
 }

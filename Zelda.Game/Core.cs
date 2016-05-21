@@ -16,10 +16,10 @@ namespace Zelda.Game
         internal static SpriteSystem SpriteSystem => Platform.SpriteSystem;
 
         internal static Game Game { get; private set; }
-        internal static uint Now { get; private set; }
+        internal static int Now { get; private set; }
         internal static Platform Platform { get; private set; }
 
-        static readonly uint TimeStep = 10;  // 업데이트시마다 추가될 게임 시간, 밀리초
+        static readonly int TimeStep = 10;  // 업데이트시마다 추가될 게임 시간, 밀리초
 
         static Surface _rootSurface;
         static ScriptSurface _rootScriptSurface;
@@ -79,15 +79,15 @@ namespace Zelda.Game
         // 메인 루프는 게임 시간을 컨트롤하고 반복해서 월드를 갱신, 화면을 그린다.
         static void Loop()
         {
-            uint lastFrameDate = Platform.GetRealTime();
-            uint lag = 0;               // 따라잡아야 하는 게임 시간
-            uint timeDropped = 0;      // 따라잡지 못한 시간
+            int lastFrameDate = Platform.GetRealTime();
+            int lag = 0;               // 따라잡아야 하는 게임 시간
+            int timeDropped = 0;      // 따라잡지 못한 시간
 
             while (!Exiting)
             {
                 // 마지막 이터레이션 시간 측정
-                uint now = Platform.GetRealTime() - timeDropped;
-                uint lastFrameDuration = now - lastFrameDate;
+                int now = Platform.GetRealTime() - timeDropped;
+                int lastFrameDuration = now - lastFrameDate;
                 lastFrameDate = now;
                 lag += lastFrameDuration;
                 // 이제 lag은 게임 시각이 실제 시각과 비교해서 얼마나 늦었는지를 의미.

@@ -13,11 +13,11 @@ namespace Zelda.Game.Movements
 
         Point _target;
         int _movingSpeed;
-        uint _nextRecomputationDate;
+        int _nextRecomputationDate;
         int _signX;         // X 방향 (1: 우, -1: 좌)
         int _signY;         // Y 방향 (1: 아래, -1: 위)
 
-        static readonly uint RecomputationDelay = 150;
+        static readonly int RecomputationDelay = 150;
 
         public TargetMovement(Point target, int movingSpeed, bool ignoreObstacles)
             : base(ignoreObstacles, true)

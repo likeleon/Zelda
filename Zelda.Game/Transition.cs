@@ -21,7 +21,7 @@ namespace Zelda.Game
         public Game Game { get; private set; }
         public TransitionDirection Direction { get; }
         public bool IsSuspended { get; private set; }
-        public uint WhenSuspended { get; private set; }
+        public int WhenSuspended { get; private set; }
 
         public Surface PreviousSurface
         {

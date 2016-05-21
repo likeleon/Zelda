@@ -28,12 +28,12 @@ namespace Zelda.Game
         readonly Lazy<Surface> _intermediateSurface;
         readonly Lazy<ScriptSprite> _scriptSprite;
         bool _ignoreSuspended;
-        uint _frameDelay;
+        int _frameDelay;
         SpriteAnimation _currentAnimation;
-        uint _nextFrameDate;
-        uint _blinkDelay;
+        int _nextFrameDate;
+        int _blinkDelay;
         bool _blinkIsSpriteVisible;
-        uint _blinkNextChangeDate;
+        int _blinkNextChangeDate;
 
         public Sprite(string id)
         {
@@ -126,7 +126,7 @@ namespace Zelda.Game
             // 복귀라면 _nextFrameDate를 다시 계산해줍니다
             if (!suspended)
             {
-                uint now = Core.Now;
+                int now = Core.Now;
                 _nextFrameDate = now + _frameDelay;
                 _blinkNextChangeDate = now;
             }
@@ -147,7 +147,7 @@ namespace Zelda.Game
                 return;
 
             HasFrameChanged = false;
-            uint now = Core.Now;
+            int now = Core.Now;
 
             // 시간에 따라 프레임을 갱신해 줍니다
             int nextFrame = 0;
@@ -213,7 +213,7 @@ namespace Zelda.Game
             Transition.Draw(IntermediateSurface);
         }
 
-        public void SetBlinking(uint blinkDelay)
+        public void SetBlinking(int blinkDelay)
         {
             _blinkDelay = blinkDelay;
 

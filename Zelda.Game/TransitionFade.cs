@@ -10,11 +10,11 @@ namespace Zelda.Game
         int _alphaLimit;
         int _alphaIncrement;
         int _alpha = -1;
-        uint _nextFrameDate;
+        int _nextFrameDate;
         Color _transitionColor = Color.Black;
         Surface _dstSurface;
 
-        public uint Delay { get; set; }
+        public int Delay { get; set; }
         public bool IsColored { get; private set; }
         public Color Color 
         { 
