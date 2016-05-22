@@ -2,17 +2,11 @@
 
 namespace Zelda.Game.Entities
 {
-    class Explosion : Detector
+    public class Explosion : Detector
     {
-        public override EntityType Type
-        {
-            get { return EntityType.Explosion; }
-        }
+        public override EntityType Type => EntityType.Explosion;
 
-        public override bool CanBeObstacle
-        {
-            get { return false; }
-        }
+        internal override bool CanBeObstacle => false;
 
         public Explosion(string name, Layer layer, Point xy, bool withDamage)
             : base(CollisionMode.Sprite | CollisionMode.Overlapping, name, layer, xy, new Size(48, 48))
@@ -28,8 +22,7 @@ namespace Zelda.Game.Entities
             }
         }
 
-        #region 상태
-        public override void Update()
+        internal override void Update()
         {
             base.Update();
 
@@ -37,7 +30,7 @@ namespace Zelda.Game.Entities
                 RemoveFromMap();
         }
 
-        public override void NotifySpriteFrameChanged(Sprite sprite, string animation, int frame)
+        internal override void NotifySpriteFrameChanged(Sprite sprite, string animation, int frame)
         {
             if (frame == 1)
             {
@@ -45,13 +38,10 @@ namespace Zelda.Game.Entities
                 CheckCollisionWithDetectors();
             }
         }
-        #endregion
 
-        #region 충돌
-        public override void NotifyCollision(MapEntity otherEntity, Sprite thisSprite, Sprite otherSprite)
+        internal override void NotifyCollision(MapEntity otherEntity, Sprite thisSprite, Sprite otherSprite)
         {
             otherEntity.NotifyCollisionWithExplosion(this, otherSprite);
         }
-        #endregion
     }
 }

@@ -1,73 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
-using Zelda.Game.LowLevel;
 using Zelda.Game.Heroes;
-using Zelda.Game.Script;
+using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Entities
 {
-    class Hero : MapEntity
+    public class Hero : MapEntity
     {
-        public Hero(Equipment equipment)
+        public override EntityType Type => EntityType.Hero;
+        public bool IsInvincible { get; private set; }
+        public Direction4 AnimationDirection => HeroSprites.AnimationDirection;
+        public int NormalWalkingSpeed { get; private set; }
+
+        internal HeroSprites HeroSprites { get; }
+        internal State State { get; private set; }
+        internal string StateName => State.Name;
+        internal bool IsUsingItem => State.IsUsingItem;
+        internal EquipmentItemUsage ItemBeingUsed => State.ItemBeingUsed;
+        internal bool IsBrandishingTreasure => State.IsBrandishingTreasure;
+        internal bool IsGrabbingOrPulling => State.IsGrabbingOrPulling;
+        internal bool IsFree => State.IsFree;
+        internal int WalkingSpeed { get; private set; }
+        internal Direction8 WantedMovementDirection8 => State.WantedMovementDirection8;
+        internal override bool IsShallowWaterObstacle => State.IsShallowWaterObstacle;
+        internal override bool IsDeepWaterObstacle => State.IsDeepWaterObstacle;
+        internal override bool IsHoleObstacle => State.IsHoleObstacle;
+        internal override bool IsLavaObstacle => State.IsLadderObstacle;
+        internal override bool IsPrickleObstacle => State.IsPrickleObstacle;
+        internal override bool IsLadderObstacle => State.IsLadderObstacle;
+
+        readonly List<State> _oldStates = new List<State>();
+        int _endInvincibleDate;
+
+        internal Hero(Equipment equipment)
             : base("hero", 0, Layer.Low, new Point(), new Size(16, 16))
         {
-            _normalWalkingSpeed = 88;
-            _walkingSpeed = _normalWalkingSpeed;
-            _scriptHero = new ScriptHero(this);
-
+            NormalWalkingSpeed = 88;
+            WalkingSpeed = NormalWalkingSpeed;
             Origin = new Point(8, 13);
-
-            // 스프라이트
             IsDrawnInYOrder = true;
-            _sprites = new HeroSprites(this, equipment);
+            HeroSprites = new HeroSprites(this, equipment);
 
-            // 상태
             SetState(new FreeState(this));
         }
 
-        #region 특성
-        public override EntityType Type
+        internal void RebuildEquipment()
         {
-            get { return EntityType.Hero; }
+            HeroSprites.RebuildEquipment();
         }
-
-        readonly ScriptHero _scriptHero;
-        public override ScriptEntity ScriptEntity
-        {
-            get { return _scriptHero; }
-        }
-        #endregion
-
-        #region 스프라이트
-        readonly HeroSprites _sprites;
-        public HeroSprites HeroSprites
-        {
-            get { return _sprites; }
-        }
-
-        public Direction4 AnimationDirection
-        {
-            get { return _sprites.AnimationDirection; }
-        }
-
-        public void RebuildEquipment()
-        {
-            _sprites.RebuildEquipment();
-        }
-        #endregion
-
-        #region 적들
-        bool _invincible;
-        public bool IsInvincible
-        {
-            get { return _invincible; }
-        }
-
-        int _endInvincibleDate;
 
         public void SetInvincible(bool invincible, int duration)
         {
-            _invincible = invincible;
+            IsInvincible = invincible;
             _endInvincibleDate = 0;
             if (invincible)
                 _endInvincibleDate = Core.Now + duration;
@@ -80,74 +64,35 @@ namespace Zelda.Game.Entities
                 SetInvincible(false, 0);
         }
 
-        public virtual bool CanBeHurt(MapEntity attacker)
+        internal virtual bool CanBeHurt(MapEntity attacker)
         {
-            return !IsInvincible && _state.CanBeHurt(attacker);
+            return !IsInvincible && State.CanBeHurt(attacker);
         }
 
-        public void Hurt(MapEntity source, Sprite sourceSprite, int damage)
+        internal void Hurt(MapEntity source, Sprite sourceSprite, int damage)
         {
-            Point sourceXY = source.XY;
+            var sourceXY = source.XY;
             if (sourceSprite != null)
                 sourceXY += sourceSprite.XY;
 
             SetState(new HurtState(this, sourceXY, damage));
         }
-        #endregion
 
-        #region 상태
-        State _state;
-        internal State State
-        {
-            get { return _state; }
-        }
-
-        public string StateName
-        {
-            get { return _state.Name; }
-        }
-
-        public bool IsUsingItem
-        {
-            get { return _state.IsUsingItem; }
-        }
-
-        public EquipmentItemUsage ItemBeingUsed
-        {
-            get { return _state.ItemBeingUsed; }
-        }
-
-        public bool IsBrandishingTreasure
-        {
-            get { return _state.IsBrandishingTreasure; }
-        }
-
-        public bool IsGrabbingOrPulling
-        {
-            get { return _state.IsGrabbingOrPulling; }
-        }
-
-        public bool IsFree
-        {
-            get { return _state.IsFree; }
-        }
-
-        readonly List<State> _oldStates = new List<State>();
 
         internal void SetState(State newState)
         {
             // 이전 상태를 정지시킵니다
-            State oldState = _state;
+            State oldState = State;
             if (oldState != null)
             {
                 oldState.Stop(newState);    // 여기서 다시 상태를 바꾸면 안 됩니다
 
                 // 유효성 검사
-                if (oldState != _state)
+                if (oldState != State)
                 {
                     Debug.Error("Hero state '{0}' did not stop properly to let state '{1}' go, " +
                         "it started state '{2}' instead. " +
-                        "State '{3}' will be forced.".F(oldState.Name, newState.Name, _state.Name, newState.Name));
+                        "State '{3}' will be forced.".F(oldState.Name, newState.Name, State.Name, newState.Name));
 
                     // 원래 시작하려고 했던 상태를 시작합니다.
                     // oldState는 이미 oldStates 리스트에 포함된 상태입니다
@@ -157,55 +102,55 @@ namespace Zelda.Game.Entities
             }
 
             // 이전 상태가 이 함수의 호출자일 수 있기 때문에, 이전 상태를 바로 파괴하지 않고 파괴를 지연시키도록 합니다.
-            _oldStates.Add(_state);
+            _oldStates.Add(State);
             
-            _state = newState;
-            _state.Start(oldState); // 여기서 상태를 다시 바꿀 수도 있습니다
+            State = newState;
+            State.Start(oldState); // 여기서 상태를 다시 바꿀 수도 있습니다
 
-            if (_state == newState) // 다시 상태가 바뀐게 아니라면
+            if (State == newState) // 다시 상태가 바뀐게 아니라면
                 CheckPosition();
         }
 
         void UpdateState()
         {
-            _state.Update();
+            State.Update();
             _oldStates.Clear();
         }
 
-        public void StartFree()
+        internal void StartFree()
         {
             SetState(new FreeState(this));
         }
 
-        public void StartFreeCarryingLoadingOrRunning()
+        internal void StartFreeCarryingLoadingOrRunning()
         {
-            if (_state.IsCarryingItem)
-                SetState(new CarryingState(this, _state.CarriedItem));
+            if (State.IsCarryingItem)
+                SetState(new CarryingState(this, State.CarriedItem));
             else
                 SetState(new FreeState(this));
         }
 
-        public void StartFreezed()
+        internal void StartFreezed()
         {
             SetState(new FreezedState(this));
         }
 
-        public void StartGrabbing()
+        internal void StartGrabbing()
         {
             SetState(new GrabbingState(this));
         }
 
-        public void StartLifting(CarriedItem itemToLift)
+        internal void StartLifting(CarriedItem itemToLift)
         {
             SetState(new LiftingState(this, itemToLift));
         }
 
-        public void StartTreasure(Treasure treasure, Action callback)
+        internal void StartTreasure(Treasure treasure, Action callback)
         {
             SetState(new TreasureState(this, treasure, callback));
         }
 
-        public bool CanStartItem(EquipmentItem item)
+        internal bool CanStartItem(EquipmentItem item)
         {
             if (!item.IsAssignable)
                 return false;
@@ -213,16 +158,16 @@ namespace Zelda.Game.Entities
             if (item.Variant == 0)
                 return false;
 
-            return _state.CanStartItem(item);
+            return State.CanStartItem(item);
         }
 
-        public void StartItem(EquipmentItem item)
+        internal void StartItem(EquipmentItem item)
         {
             Debug.CheckAssertion(CanStartItem(item), "The hero cannot start using item '{0}' now".F(item.Name));
             SetState(new UsingItemState(this, item));
         }
 
-        public void StartStateFromGround()
+        internal void StartStateFromGround()
         {
             switch (GroundBelow)
             {
@@ -234,42 +179,23 @@ namespace Zelda.Game.Entities
                     break;
             }
         }
-        #endregion
-
-        #region 이동
-        int _normalWalkingSpeed;
-        public int NormalWalkingSpeed
-        {
-            get { return _normalWalkingSpeed; }
-        }
 
         public void SetNormalWalkingSpeed(int normalWalkingSpeed)
         {
-            bool wasNormal = (_walkingSpeed == _normalWalkingSpeed);
-            _normalWalkingSpeed = normalWalkingSpeed;
+            bool wasNormal = (WalkingSpeed == NormalWalkingSpeed);
+            NormalWalkingSpeed = normalWalkingSpeed;
             if (wasNormal)
                 SetWalkingSpeed(normalWalkingSpeed);
         }
 
-        int _walkingSpeed;
-        public int WalkingSpeed
+        internal void SetWalkingSpeed(int walkingSpeed)
         {
-            get { return _walkingSpeed; }
-        }
-
-        public void SetWalkingSpeed(int walkingSpeed)
-        {
-            if (walkingSpeed != _walkingSpeed)
-                _walkingSpeed = walkingSpeed;
-        }
-
-        public Direction8 WantedMovementDirection8
-        {
-            get { return _state.WantedMovementDirection8; }
+            if (walkingSpeed != WalkingSpeed)
+                WalkingSpeed = walkingSpeed;
         }
 
         // 장애물을 고려한 주인공의 실제 이동 방향을 반환합니다
-        public Direction8 GetRealMovementDirection8()
+        internal Direction8 GetRealMovementDirection8()
         {
             Direction8 result = 0;
 
@@ -310,57 +236,54 @@ namespace Zelda.Game.Entities
             return result;
         }
 
-        public override void NotifyMovementChanged()
+        internal override void NotifyMovementChanged()
         {
             Direction8 wantedDirection8 = WantedMovementDirection8;
             if (wantedDirection8 != Direction8.None)
             {
-                Direction4 oldAnimationDirection = _sprites.AnimationDirection;
-                Direction4 animationDirection = _sprites.GetAnimationDirection(wantedDirection8, GetRealMovementDirection8());
+                Direction4 oldAnimationDirection = HeroSprites.AnimationDirection;
+                Direction4 animationDirection = HeroSprites.GetAnimationDirection(wantedDirection8, GetRealMovementDirection8());
 
                 if (animationDirection != oldAnimationDirection &&
                     animationDirection != Direction4.None)
                 {
-                    _sprites.SetAnimationDirection(animationDirection);
+                    HeroSprites.SetAnimationDirection(animationDirection);
                 }
             }
 
-            _state.NotifyMovementChanged();
+            State.NotifyMovementChanged();
             CheckPosition();
         }
 
-        public override void NotifyMovementFinished()
+        internal override void NotifyMovementFinished()
         {
-            _state.NotifyMovementFinished();
+            State.NotifyMovementFinished();
         }
 
-        public override void NotifyPositionChanged()
+        internal override void NotifyPositionChanged()
         {
             CheckPosition();
-            _state.NotifyPositionChanged();
+            State.NotifyPositionChanged();
 
         }
 
-        public override void NotifyLayerChanged()
+        internal override void NotifyLayerChanged()
         {
-            _state.NotifyLayerChanged();
+            State.NotifyLayerChanged();
         }
 
         internal void UpdateMovement()
         {
-            if (Movement != null)
-                Movement.Update();
+            Movement?.Update();
 
             // TODO: ClearOldMovements() 누락
         }
-        #endregion
 
-        #region 게임 루프
-        public override void Update()
+        internal override void Update()
         {
             UpdateInvincibility();
             UpdateMovement();
-            _sprites.Update();
+            HeroSprites.Update();
 
             // 상태는 이동과 스프라이트에 영향을 받기 때문에 이 시점에 업데이트를 수행합니다
             UpdateState();
@@ -369,13 +292,13 @@ namespace Zelda.Game.Entities
                 CheckCollisionWithDetectors();
         }
 
-        public override void DrawOnMap()
+        internal override void DrawOnMap()
         {
-            if (_state.IsHeroVisible)
-                _state.DrawOnMap();
+            if (State.IsHeroVisible)
+                State.DrawOnMap();
         }
 
-        public override void SetSuspended(bool suspended)
+        internal override void SetSuspended(bool suspended)
         {
             base.SetSuspended(suspended);
 
@@ -387,28 +310,26 @@ namespace Zelda.Game.Entities
                     _endInvincibleDate += diff;
             }
 
-            _sprites.SetSuspended(suspended);
-            _state.SetSuspended(suspended);
+            HeroSprites.SetSuspended(suspended);
+            State.SetSuspended(suspended);
         }
 
-        public void NotifyCommandPressed(GameCommand command)
+        internal void NotifyCommandPressed(GameCommand command)
         {
-            _state.NotifyCommandPressed(command);
+            State.NotifyCommandPressed(command);
         }
-        #endregion
 
-        #region 맵 변경
-        public void SetMap(Map map, Direction4 initialDirection)
+        internal void SetMap(Map map, Direction4 initialDirection)
         {
             if (initialDirection != Direction4.None)
-                _sprites.SetAnimationDirection(initialDirection);
+                HeroSprites.SetAnimationDirection(initialDirection);
 
-            _state.SetMap(map);
+            State.SetMap(map);
             
             base.SetMap(map);
         }
 
-        public void PlaceOnDestination(Map map, Rectangle previousMapLocation)
+        internal void PlaceOnDestination(Map map, Rectangle previousMapLocation)
         {
             string destinationName = map.DestinationName;
 
@@ -474,29 +395,27 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public override void NotifyMapStarted()
+        internal override void NotifyMapStarted()
         {
             base.NotifyMapStarted();
-            _sprites.NotifyMapStarted();
+            HeroSprites.NotifyMapStarted();
 
             // 이 시점에 맵을 결정할 수 있게 됩니다. 상태에게 알려줍니다.
-            _state.SetMap(Map);
+            State.SetMap(Map);
         }
 
-        public override void NotifyTilesetChanged()
+        internal override void NotifyTilesetChanged()
         {
             base.NotifyTilesetChanged();
-            _sprites.NotifyTilesetChanged();
+            HeroSprites.NotifyTilesetChanged();
         }
-        #endregion
 
-        #region 위치
-        public override Point GetFacingPoint()
+        internal override Point GetFacingPoint()
         {
             return GetTouchingPoint(AnimationDirection);
         }
 
-        public override void NotifyFacingEntityChanged(Detector facingEntity)
+        internal override void NotifyFacingEntityChanged(Detector facingEntity)
         {
             if (facingEntity == null &&
                 CommandsEffects.IsActionCommandActingOnFacingEntity)
@@ -505,10 +424,10 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public bool IsFacingObstacle()
+        internal bool IsFacingObstacle()
         {
             Rectangle collisionBox = BoundingBox;
-            switch (_sprites.AnimationDirection)
+            switch (HeroSprites.AnimationDirection)
             {
                 case Direction4.Right:
                     collisionBox.AddX(1);
@@ -534,7 +453,7 @@ namespace Zelda.Game.Entities
             return Map.TestCollisionWithObstacles(Layer, collisionBox, this);
         }
 
-        public bool IsFacingDirection4(Direction4 direction4)
+        internal bool IsFacingDirection4(Direction4 direction4)
         {
             return AnimationDirection == direction4;
         }
@@ -559,69 +478,28 @@ namespace Zelda.Game.Entities
                 NotifyPositionChanged();
             }
         }
-        #endregion
+
+        internal override bool IsObstacleFor(MapEntity other) => other.IsHeroObstacle(this);
+        internal override bool IsBlockObstacle(Block block) => block.IsHeroObstacle(this);
         
-        #region Obstacles
-        public override bool IsObstacleFor(MapEntity other)
-        {
-            return other.IsHeroObstacle(this);
-        }
-
-        public override bool IsShallowWaterObstacle
-        {
-            get { return _state.IsShallowWaterObstacle; }
-        }
-
-        public override bool IsDeepWaterObstacle
-        {
-            get { return _state.IsDeepWaterObstacle; }
-        }
-
-        public override bool IsHoleObstacle
-        {
-            get { return _state.IsHoleObstacle; }
-        }
-
-        public override bool IsLavaObstacle
-        {
-            get { return _state.IsLavaObstacle; }
-        }
-
-        public override bool IsPrickleObstacle
-        {
-            get { return _state.IsPrickleObstacle; }
-        }
-
-        public override bool IsLadderObstacle
-        {
-            get { return _state.IsLadderObstacle; }
-        }
-
-        public override bool IsBlockObstacle(Block block)
-        {
-            return block.IsHeroObstacle(this);
-        }
-        #endregion
-        
-        #region 충돌
-        public void CheckPosition()
+        internal void CheckPosition()
         {
             if (!IsOnMap)
                 return;
 
-            if (_state.AreCollisionsIgnored)
+            if (State.AreCollisionsIgnored)
                 return;
 
             FacingEntity = null;
             CheckCollisionWithDetectors();
         }
 
-        public override void NotifyCollisionWithDestructible(Destructible destructible, CollisionMode collisionMode)
+        internal override void NotifyCollisionWithDestructible(Destructible destructible, CollisionMode collisionMode)
         {
             destructible.NotifyCollisionWithHero(this, collisionMode);
         }
 
-        public override void NotifyCollisionWithChest(Chest chest)
+        internal override void NotifyCollisionWithChest(Chest chest)
         {
  	         if (CommandsEffects.ActionCommandEffect == ActionCommandEffect.None &&
                  IsFree &&
@@ -632,13 +510,13 @@ namespace Zelda.Game.Entities
              }
         }
 
-        public override void NotifyCollisionWithBlock(Block block)
+        internal override void NotifyCollisionWithBlock(Block block)
         {
             if (CommandsEffects.ActionCommandEffect == ActionCommandEffect.None && IsFree)
                 CommandsEffects.ActionCommandEffect = ActionCommandEffect.Grab;
         }
 
-        public override void NotifyCollisionWithBomb(Bomb bomb, CollisionMode collisionMode)
+        internal override void NotifyCollisionWithBomb(Bomb bomb, CollisionMode collisionMode)
         {
             if (CommandsEffects.ActionCommandEffect == ActionCommandEffect.None &&
                 FacingEntity == bomb &&
@@ -648,16 +526,15 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public override void NotifyCollisionWithExplosion(Explosion explosion, Sprite spriteOverlapping)
+        internal override void NotifyCollisionWithExplosion(Explosion explosion, Sprite spriteOverlapping)
         {
             string spriteId = spriteOverlapping.AnimationSetId;
-            if (!_state.CanAvoidExplosion &&
+            if (!State.CanAvoidExplosion &&
                 spriteId == HeroSprites.TunicSpriteId &&
                 CanBeHurt(explosion))
             {
                 Hurt(explosion, null, 2);
             }
         }
-        #endregion
     }
 }

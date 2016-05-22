@@ -4,15 +4,8 @@ using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
-    class Destructible : Detector
+    public class Destructible : Detector
     {
-        readonly Ground _modifiedGround;
-        readonly ScriptDestructible _scriptDestructible;
-        int _weight;
-        bool _canBeCut;
-
-        public string AnimationSetId { get; private set; }
-        public bool IsWaitingForRegeneration { get { return false; } }
         public Treasure Treasure { get; set; }
         public string DestructionSound { get; set; }
         public bool CanExplode { get; set; }
@@ -50,10 +43,9 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public override EntityType Type { get { return EntityType.Destructible; } }
-        public override ScriptEntity ScriptEntity { get { return _scriptDestructible; } }
+        public override EntityType Type => EntityType.Destructible;
 
-        public override bool IsGroundModifier
+        internal override bool IsGroundModifier
         {
             get
             {
@@ -63,13 +55,15 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public Destructible(
-            string name,
-            Layer layer,
-            Point xy,
-            string animationSetId,
-            Treasure treasure,
-            Ground modifiedGround)
+        internal string AnimationSetId { get; }
+        internal bool IsWaitingForRegeneration => false;
+
+        readonly Ground _modifiedGround;
+        readonly ScriptDestructible _scriptDestructible;
+        int _weight;
+        bool _canBeCut;
+
+        internal Destructible(string name, Layer layer, Point xy, string animationSetId, Treasure treasure, Ground modifiedGround)
             : base((int)CollisionMode.None, name, layer, xy, new Size(16, 16))
         {
             _modifiedGround = modifiedGround;
@@ -85,18 +79,18 @@ namespace Zelda.Game.Entities
             _scriptDestructible = new ScriptDestructible(this);
         }
 
-        public override bool IsObstacleFor(MapEntity other)
+        internal override bool IsObstacleFor(MapEntity other)
         {
             return ModifiedGround == Ground.Wall &&
                    other.IsDestructibleObstacle(this);
         }
 
-        public override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        internal override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
         {
             entityOverlapping.NotifyCollisionWithDestructible(this, collisionMode);
         }
 
-        public void NotifyCollisionWithHero(Hero hero, CollisionMode collisionMode)
+        internal void NotifyCollisionWithHero(Hero hero, CollisionMode collisionMode)
         {
             if (Weight != -1 &&
                 CommandsEffects.ActionCommandEffect == ActionCommandEffect.None)
@@ -108,9 +102,9 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public override bool NotifyActionCommandPressed()
+        internal override bool NotifyActionCommandPressed()
         {
-            ActionCommandEffect effect = CommandsEffects.ActionCommandEffect;
+            var effect = CommandsEffects.ActionCommandEffect;
             
             if ((effect != ActionCommandEffect.Lift && effect != ActionCommandEffect.Look) ||
                 Weight == -1)

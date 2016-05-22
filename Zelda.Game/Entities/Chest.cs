@@ -1,6 +1,5 @@
 ﻿using System;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
@@ -11,19 +10,22 @@ namespace Zelda.Game.Entities
         ByInteractionIfItem
     }
 
-    class Chest : Detector
+    public class Chest : Detector
     {        
+        public override EntityType Type => EntityType.Chest;
+        public bool IsOpen => _open;
+
+        internal ChestOpeningMethod OpeningMethod { get; set; }
+        internal string OpeningCondition { get; set; }
+        internal bool OpeningConditionConsumed { get; set; }
+        internal string CannotOpenDialogId { get; set; }
+
         readonly Treasure _treasure;
         bool _treasureGiven;
         int _treasureDate;
-        readonly ScriptChest _scriptChest;
-        
-        public Chest(
-            string name, 
-            Layer layer, 
-            Point xy, 
-            string spriteName, 
-            Treasure treasure)
+        bool _open;
+
+        internal Chest(string name, Layer layer, Point xy, string spriteName, Treasure treasure)
             : base(CollisionMode.Facing, name, layer, xy, new Size(16, 16))
         {
             _treasure = treasure;
@@ -31,50 +33,23 @@ namespace Zelda.Game.Entities
             _treasureGiven = _open;
             OpeningMethod = ChestOpeningMethod.ByInteraction;
 
-            Sprite sprite = CreateSprite(spriteName);
-            string animation = IsOpen ? "open" : "closed";
-            sprite.SetCurrentAnimation(animation);
+            var sprite = CreateSprite(spriteName);
+            sprite.SetCurrentAnimation(IsOpen ? "open" : "closed");
 
             Origin = new Point(Width / 2, Height - 3);
 
             IsDrawnInYOrder = sprite.MaxSize.Height > Height;
-
-            _scriptChest = new ScriptChest(this);
-        }
-        
-        public override EntityType Type
-        {
-            get { return EntityType.Chest; }
         }
 
-        public override ScriptEntity ScriptEntity
-        {
-            get { return _scriptChest; }
-        }
+        internal override bool IsObstacleFor(MapEntity other) => true;
 
-        bool _open;
-        public bool IsOpen
-        {
-            get { return _open; }
-        }
-
-        public ChestOpeningMethod OpeningMethod { get; set; }
-        public string OpeningCondition { get; set; }
-        public bool OpeningConditionConsumed { get; set; }
-        public string CannotOpenDialogId { get; set; }
-
-        public override bool IsObstacleFor(MapEntity other)
-        {
-            return true;
-        }
-
-        public override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        internal override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
         {
             if (!IsSuspended)
                 entityOverlapping.NotifyCollisionWithChest(this);
         }
 
-        public override bool NotifyActionCommandPressed()
+        internal override bool NotifyActionCommandPressed()
         {
             if (!IsEnabled ||
                 !Hero.IsFree ||
@@ -94,7 +69,7 @@ namespace Zelda.Game.Entities
             return true;
         }
 
-        public override void Update()
+        internal override void Update()
         {
             if (IsOpen && !IsSuspended)
             {
@@ -127,7 +102,7 @@ namespace Zelda.Game.Entities
             base.Update();
         }
 
-        public bool CanOpen()
+        internal bool CanOpen()
         {
             switch (OpeningMethod)
             {

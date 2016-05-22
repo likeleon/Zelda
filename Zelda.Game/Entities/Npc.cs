@@ -18,6 +18,10 @@ namespace Zelda.Game.Entities
 
     public class Npc : Detector
     {
+        public override EntityType Type => EntityType.Npc;
+        public bool IsSolid => _subtype != NpcSubtype.UsualNpc;
+        public bool CanBeLifted => HasSprite && Sprite.AnimationSetId == "entities/sign";
+
         readonly NpcSubtype _subtype;
         readonly NpcBehavior _behavior;
         readonly string _itemName;
@@ -49,14 +53,6 @@ namespace Zelda.Game.Entities
             }
             else
                 throw new Exception("Invalid behavior string for NPC '{0}': '{1'}".F(name, behaviorString));
-        }
-
-        public override EntityType Type => EntityType.Npc;
-        public bool IsSolid => _subtype != NpcSubtype.UsualNpc;
-
-        public bool CanBeLifted
-        {
-            get { return HasSprite && Sprite.AnimationSetId == "entities/sign"; }
         }
 
         void InitializeSprite(string spriteName, Direction4 initialDirection)

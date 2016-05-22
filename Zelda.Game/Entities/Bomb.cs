@@ -1,75 +1,38 @@
 ﻿using System;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
-    class Bomb : Detector
+    public class Bomb : Detector
     {
-        int _explosionDate;
+        public override EntityType Type => EntityType.Bomb;
 
-        public override EntityType Type
-        {
-            get { return EntityType.Bomb; }
-        }
+        internal override bool CanBeObstacle => false;
+        internal override bool IsDeepWaterObstacle => false;
+        internal override bool IsHoleObstacle => false;
+        internal override bool IsLavaObstacle => false;
+        internal override bool IsPrickleObstacle => false;
+        internal override bool IsLadderObstacle => false;
 
-        public override bool CanBeObstacle
-        {
-            get { return false; }
-        }
+        int _explosionDate = Core.Now + 6000;
 
-        public override bool IsDeepWaterObstacle
-        {
-            get { return false; }
-        }
-
-        public override bool IsHoleObstacle
-        {
-            get { return false; }
-        }
-
-        public override bool IsLavaObstacle
-        {
-            get { return false; }
-        }
-
-        public override bool IsPrickleObstacle
-        {
-            get { return false; }
-        }
-
-        public override bool IsLadderObstacle
-        {
-            get { return false; }
-        }
-
-        readonly ScriptBomb _scriptBomb;
-        public override ScriptEntity ScriptEntity
-        {
-            get { return _scriptBomb; }
-        }
-
-        public Bomb(string name, Layer layer, Point xy)
+        internal Bomb(string name, Layer layer, Point xy)
             : base(CollisionMode.Facing, name, layer, xy, new Size(16, 16))
         {
-            _explosionDate = Core.Now + 6000;
-
             CreateSprite("entities/bomb");
             Sprite.EnablePixelCollisions();
             Size = new Size(16, 16);
             Origin = new Point(8, 13);
             IsDrawnInYOrder = true;
             OptimizationDistance = 0;   // 주인공이 멀리 있더라도 폭파될 수 있도록
-
-            _scriptBomb = new ScriptBomb(this);
         }
 
-        public override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        internal override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
         {
             entityOverlapping.NotifyCollisionWithBomb(this, collisionMode);
         }
 
-        public override void NotifyPositionChanged()
+        internal override void NotifyPositionChanged()
         {
             base.NotifyPositionChanged();
 
@@ -81,11 +44,9 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public override bool NotifyActionCommandPressed()
+        internal override bool NotifyActionCommandPressed()
         {
-            ActionCommandEffect effect = CommandsEffects.ActionCommandEffect;
-            
-            if (effect == ActionCommandEffect.Lift &&
+            if (CommandsEffects.ActionCommandEffect == ActionCommandEffect.Lift &&
                 Hero.FacingEntity == this &&
                 Hero.IsFacingPointIn(BoundingBox))
             {
@@ -98,13 +59,13 @@ namespace Zelda.Game.Entities
             return false;
         }
 
-        public override void NotifyCollisionWithExplosion(Explosion explosion, Sprite spriteOverlapping)
+        internal override void NotifyCollisionWithExplosion(Explosion explosion, Sprite spriteOverlapping)
         {
             if (!IsBeingRemoved)
                 Explode();
         }
 
-        public override void SetSuspended(bool suspended)
+        internal override void SetSuspended(bool suspended)
         {
             base.SetSuspended(suspended);
 
@@ -115,20 +76,19 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public override void Update()
+        internal override void Update()
         {
             base.Update();
 
             if (IsSuspended)
                 return;
 
-            int now = Core.Now;
-            if (now >= _explosionDate)
+            if (Core.Now >= _explosionDate)
                 Explode();
-            else if (now >= _explosionDate - 1500 && Sprite.CurrentAnimation != "stopped_explosion_soon")
+            else if (Core.Now >= _explosionDate - 1500 && Sprite.CurrentAnimation != "stopped_explosion_soon")
                 Sprite.SetCurrentAnimation("stopped_explosion_soon");
 
-            if (Movement != null && Movement.IsFinished)
+            if (Movement?.IsFinished == true)
                 ClearMovement();
 
             CheckCollisionWithDetectors();

@@ -9,6 +9,9 @@ namespace Zelda.Game.Entities
     {
         public bool IsPushable { get; set; }
         public bool IsPullable { get; set; }
+        public override EntityType Type => EntityType.Block;
+
+        internal override bool IsHoleObstacle => false;
 
         public int MaximumMoves
         {
@@ -23,12 +26,20 @@ namespace Zelda.Game.Entities
             }
         }
 
+        static int _movingDelay = 500;
+
+        int _maximumMoves;
+        int _initialMaximumMoves;
+        int _whenCanMove = Core.Now;
+        Point _lastPosition;
+        Point _initialPosition;
+        bool _soundPlayed;
+
         public Block(string name, Layer layer, Point xy, Direction4 direction, string spriteName, bool canBePushed, bool canBePulled, int maximumMoves)
             : base(CollisionMode.Facing, name, layer, xy, new Size(16, 16))
         {
             _maximumMoves = maximumMoves;
             _initialMaximumMoves = maximumMoves;
-            _whenCanMove = Core.Now;
             _lastPosition = xy;
             _initialPosition = xy;
             IsPushable = canBePushed;
@@ -40,22 +51,9 @@ namespace Zelda.Game.Entities
             Direction = direction;
             CreateSprite(spriteName);
             IsDrawnInYOrder = Sprite.Size.Height > 16;
-
-            _scriptBlock = new ScriptBlock(this);
         }
 
-        int _maximumMoves;
-        int _initialMaximumMoves;
-        int _whenCanMove;
-        Point _lastPosition;
-        Point _initialPosition;
-        bool _soundPlayed;
-        static int _movingDelay = 500;
-
-        public override EntityType Type => EntityType.Block;
-
         internal override bool IsObstacleFor(MapEntity other) => other.IsBlockObstacle(this);
-        internal override bool IsHoleObstacle => false;
         internal override bool IsDestructibleObstacle(Destructible destructible) => true;
         internal override bool IsHeroObstacle(Hero hero) => Movement == null;
 
@@ -84,8 +82,8 @@ namespace Zelda.Game.Entities
         internal override bool StartMovementByHero()
         {
             bool pulling = Hero.IsGrabbingOrPulling;
-            Direction4 allowedDirection = Direction;
-            Direction4 heroDirection = Hero.AnimationDirection;
+            var allowedDirection = Direction;
+            var heroDirection = Hero.AnimationDirection;
             if (pulling)
                 heroDirection = (Direction4)(((int)heroDirection + 2) % 4);
 
@@ -108,7 +106,7 @@ namespace Zelda.Game.Entities
             return true;
         }
 
-        public override void StopMovementByHero()
+        internal override void StopMovementByHero()
         {
             ClearMovement();
             _whenCanMove = Core.Now + _movingDelay;
@@ -122,15 +120,15 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public override void NotifyMovingBy(MapEntity entity)
+        internal override void NotifyMovingBy(MapEntity entity)
         {
         }
 
-        public override void NotifyMovedBy(MapEntity entity)
+        internal override void NotifyMovedBy(MapEntity entity)
         {
         }
 
-        public override void NotifyPositionChanged()
+        internal override void NotifyPositionChanged()
         {
             if (Movement != null && !_soundPlayed)
             {

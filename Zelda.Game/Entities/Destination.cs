@@ -5,42 +5,20 @@ namespace Zelda.Game.Entities
 {
     class Destination : MapEntity
     {
-        public override EntityType Type
-        {
-            get { return EntityType.Destination; }
-        }
+        public override EntityType Type => EntityType.Destination;
 
-        public override bool CanBeObstacle
-        {
-            get { return false; }
-        }
+        internal override bool CanBeObstacle => false;
+        internal bool IsDefault { get; }
 
-        readonly bool _isDefaultDestination;
-        public bool IsDefault
-        {
-            get { return _isDefaultDestination; }
-        }
-
-        readonly ScriptDestination _scriptDestination;
-        public override ScriptEntity ScriptEntity { get { return _scriptDestination; } }
-
-        public Destination(
-            string name,
-            Layer layer,
-            Point xy,
-            Direction4 heroDirection,
-            string spriteName,
-            bool isDefault)
+        internal Destination(string name, Layer layer, Point xy, Direction4 heroDirection, string spriteName, bool isDefault)
             : base(name, heroDirection, layer, xy, new Size(16, 16))
         {
-            _isDefaultDestination = isDefault;
+            IsDefault = isDefault;
             
             Origin = new Point(8, 13);
 
             if (!spriteName.IsNullOrEmpty())
                 CreateSprite(spriteName);
-
-            _scriptDestination = new ScriptDestination(this);
         }
     }
 
