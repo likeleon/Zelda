@@ -2,13 +2,11 @@
 
 namespace Zelda.Game
 {
-    class EquipmentItem
+    public class EquipmentItem
     {
-        readonly Equipment _equipment;
-
-        public Equipment Equipment { get { return _equipment; } }
-        public Game Game { get { return _equipment.Game; } }
-        public Savegame Savegame { get { return _equipment.Savegame; } }
+        internal Equipment Equipment { get; }
+        public Game Game => Equipment.Game;
+        public Savegame Savegame => Equipment.Savegame;
 
         public string Name { get; set; }
 
@@ -43,9 +41,9 @@ namespace Zelda.Game
             }
         }
 
-        public EquipmentItem(Equipment equipment)
+        internal EquipmentItem(Equipment equipment)
         {
-            _equipment = equipment;
+            Equipment = equipment;
             Name = "";
             SavegameVariable = "";
             IsObtainable = true;

@@ -7,27 +7,26 @@ using Key = Zelda.Game.Savegame.Key;
 
 namespace Zelda.Game
 {
-    class Game
+    public class Game : ITimerContext, IMenuContext
     {
+        public Hero Hero { get; }
+        public bool IsPaused { get; private set; }
+        public bool IsDialogEnabled => _dialogBox.IsEnabled;
+        public bool IsSuspended => CurrentMap == null || IsPaused;
+        public Map CurrentMap { get; private set; }
+
+        internal Equipment Equipment => SaveGame.Equipment;
+        internal Savegame SaveGame { get; }
+        internal GameCommands Commands { get; }
+        internal CommandsEffects CommandsEffects { get; } = new CommandsEffects();
+
+        internal bool CanPause => !IsSuspended && Equipment.GetLife() > 0; // 게임 오버 처리가 시작되려고 할 때에는 일시 정지를 허용하면 안 됩니다
+        internal bool CanUnpause => IsPaused;
+        internal bool HasCurrentMap => CurrentMap != null;
+
         readonly DialogBoxSystem _dialogBox;
         bool _started;
         Map _nextMap;
-
-        public Equipment Equipment { get { return SaveGame.Equipment; } }
-        public Savegame SaveGame { get; }
-        public Hero Hero { get; }
-        public GameCommands Commands { get; }
-        public CommandsEffects CommandsEffects { get; } = new CommandsEffects();
-
-        public bool IsPaused { get; private set; }
-        public bool IsDialogEnabled { get { return _dialogBox.IsEnabled; } }
-        public bool IsSuspended { get { return CurrentMap == null || IsPaused; } }
-
-        public bool CanPause { get { return !IsSuspended && Equipment.GetLife() > 0; } } // 게임 오버 처리가 시작되려고 할 때에는 일시 정지를 허용하면 안 됩니다
-        public bool CanUnpause { get { return IsPaused; } }
-
-        public bool HasCurrentMap { get { return CurrentMap != null; } }
-        public Map CurrentMap { get; private set; }
 
         public Game(Savegame saveGame)
         {
@@ -76,16 +75,18 @@ namespace Zelda.Game
             SetCurrentMap(startingMapId, startingDestinationName);
         }
 
-        public void Start()
+        internal void Start()
         {
             if (_started)
                 return;
 
             _started = true;
-            SaveGame.ScriptGame.NotifyStarted();
+            OnStarted();
         }
 
-        public void Stop()
+        protected virtual void OnStarted() { }
+
+        internal void Stop()
         {
             if (!_started)
                 return;
@@ -96,26 +97,32 @@ namespace Zelda.Game
                     Hero.NotifyBeingRemoved();
             }
 
-            SaveGame.ScriptGame.NotifyFinished();
+            OnFinished();
+            Timer.RemoveTimers(this);
+            ScriptMenu.RemoveMenus(this);
             SaveGame.NotifyGameFinished();
             SaveGame.Game = null;
 
             _started = false;
         }
 
-        public void Restart()
+        protected virtual void OnFinished()
+        {
+        }
+
+        internal void Restart()
         {
             throw new NotImplementedException();
         }
 
-        public bool NotifyInput(InputEvent inputEvent)
+        internal bool NotifyInput(InputEvent inputEvent)
         {
             if (CurrentMap != null && CurrentMap.IsLoaded)
                 Commands.NotifyInput(inputEvent);
             return true;
         }
 
-        public void Update()
+        internal void Update()
         {
             UpdateTransitions();
 
@@ -128,7 +135,7 @@ namespace Zelda.Game
             UpdateCommandsEffects();
         }
 
-        public void Draw(Surface dstSurface)
+        internal void Draw(Surface dstSurface)
         {
             if (CurrentMap == null)
                 return; // 게임의 초기화가 완료되기 전입니다
@@ -145,20 +152,22 @@ namespace Zelda.Game
             ScriptContext.GameOnDraw(this, dstSurface);
         }
 
-        public bool NotifyDialogStarted(Dialog dialog, object info)
+        internal bool NotifyDialogStarted(Dialog dialog, object info)
         {
-            return SaveGame.ScriptGame.NotifyDialogStarted(dialog, info);
+            return OnDialogStarted(dialog, info);
         }
 
-        public void NotifyDialogFinished(Dialog dialog, Action<object> callback, object status)
-        {
-            SaveGame.ScriptGame.NotifyDialogFinished(dialog);
+        protected virtual bool OnDialogStarted(Dialog dialog, object info) { return false; }
 
-            if (callback != null)
-                CoreToScript.Call(() => callback(status));
+        internal void NotifyDialogFinished(Dialog dialog, Action<object> callback, object status)
+        {
+            OnDialogFinished(dialog);
+            callback?.Invoke(status);
         }
 
-        public void SetPaused(bool paused)
+        protected virtual void OnDialogFinished(Dialog dialog) { }
+
+        internal void SetPaused(bool paused)
         {
             if (IsPaused == paused)
                 return;
@@ -175,7 +184,7 @@ namespace Zelda.Game
             }
         }
 
-        public void StartDialog(string dialogId, object info, Action<object> callback)
+        internal void StartDialog(string dialogId, object info, Action<object> callback)
         {
             if (!Core.Mod.DialogExists(dialogId))
                 Debug.Error("No such dialog: '{0}'".F(dialogId));
@@ -185,10 +194,13 @@ namespace Zelda.Game
 
         public void StopDialog(object status)
         {
+            if (!IsDialogEnabled)
+                throw new InvalidOperationException("Cannot stop dialog: no dialog is active.");
+
             _dialogBox.Close(status);
         }
 
-        public void NotifyCommandPressed(GameCommand command)
+        internal void NotifyCommandPressed(GameCommand command)
         {
             if (IsDialogEnabled)
             {
@@ -216,7 +228,7 @@ namespace Zelda.Game
                 Hero.NotifyCommandPressed(command);
         }
 
-        public void SetCurrentMap(string mapId, string destinationName)
+        internal void SetCurrentMap(string mapId, string destinationName)
         {
             // 다음 맵을 준비합니다
             if (CurrentMap == null || mapId != CurrentMap.Id)

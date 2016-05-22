@@ -1,6 +1,5 @@
 ﻿using Zelda.Game;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Alttp.Menus.SavegameScreens
 {
@@ -39,7 +38,7 @@ namespace Alttp.Menus.SavegameScreens
             return false;
         }
 
-        public bool KeyPressed(Zelda.Game.LowLevel.KeyboardKey key)
+        public bool KeyPressed(KeyboardKey key)
         {
             if (key != KeyboardKey.Space && key != KeyboardKey.Return)
                 return false;
@@ -48,7 +47,7 @@ namespace Alttp.Menus.SavegameScreens
             {
                 Core.Audio?.PlaySound("boss_killed");
                 var slot = _screen.Slots[_saveNumberToErase - 1];
-                ScriptGame.Delete(slot.FileName);
+                Savegame.Delete(slot.FileName);
                 _screen.CursorPosition = _saveNumberToErase;
                 _screen.ReadSavegames();
                 _screen.InitPhaseSelectFile();

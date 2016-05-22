@@ -1,6 +1,5 @@
 ﻿using Zelda.Game;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Alttp.Menus.SavegameScreens
 {
@@ -58,7 +57,7 @@ namespace Alttp.Menus.SavegameScreens
             else
             {
                 var slot = _screen.Slots[_screen.CursorPosition - 1];
-                if (ScriptGame.Exists(slot.FileName))
+                if (Savegame.Exists(slot.FileName))
                 {
                     _screen.IsFinished = true;
                     _screen.Surface.FadeOut();

@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
@@ -35,7 +34,7 @@ namespace Zelda.Game
         public int IntData { get; set; }
     }
 
-    class Savegame
+    public class Savegame
     {
         public enum Key
         {
@@ -62,22 +61,47 @@ namespace Zelda.Game
             AbilityRun,             // 달리기 레벨
             AbilityDetectWeakWalls, // 약한 벽 감지 레벨
         }
-
-        static readonly int SaveGameVersion = 2;
-
-        readonly Dictionary<string, SavedValue> _savedValues = new Dictionary<string, SavedValue>();
         
         public string FileName { get; }
         public bool IsEmpty { get; private set; }
 
-        public ScriptGame ScriptGame { get; set; }
-        public Equipment Equipment { get; private set; }
-        public Game Game { get; set; }
+        internal Equipment Equipment { get; }
+        internal Game Game { get; set; }
 
-        public void Initialize()
+        static readonly int SaveGameVersion = 2;
+        readonly Dictionary<string, SavedValue> _savedValues = new Dictionary<string, SavedValue>();
+
+        public static bool Exists(string fileName)
         {
-            Debug.CheckAssertion(!Core.Mod.ModFiles.ModWriteDir.IsNullOrWhiteSpace(),
-                "The mod write directory for savegames was not set in mod.xml");
+            if (Core.Mod.ModFiles.ModWriteDir == null)
+                throw new InvalidOperationException("Cannot check savegame: no write directory was specified in mod.xml");
+
+            return Core.Mod.ModFiles.DataFileExists(fileName);
+        }
+
+        public static void Delete(string fileName)
+        {
+            if (Core.Mod.ModFiles.ModWriteDir == null)
+                throw new InvalidOperationException("Cannot delete savegame: no mod directory was specified in mod.xml");
+
+            Core.Mod.ModFiles.DataFileDelete(fileName);
+        }
+
+        public static Savegame Load(string filename)
+        {
+            if (Core.Mod.ModFiles.ModWriteDir == null)
+                throw new InvalidOperationException("Cannot delete savegame: no mod directory was specified in mod.xml");
+
+            return new Savegame(filename);
+        }
+
+        public Savegame(string fileName)
+        {
+            FileName = fileName;
+            Equipment = new Equipment(this);
+
+            if (Core.Mod.ModFiles.ModWriteDir == null)
+                throw new Exception("The mod write directory for savegames was not set in mod.xml");
 
             if (!Core.Mod.ModFiles.DataFileExists(FileName))
             {
@@ -91,17 +115,6 @@ namespace Zelda.Game
             }
 
             Equipment.LoadItems();
-        }
-
-        public void NotifyGameFinished()
-        {
-            Equipment.NotifyGameFinished();
-        }
-
-        public Savegame(string fileName)
-        {
-            FileName = fileName;
-            Equipment = new Equipment(this);
         }
 
         void SetInitialValues()
@@ -141,6 +154,31 @@ namespace Zelda.Game
                 Debug.Die("Failed to load savegame file '{0}': {1}".F(FileName, ex.Message));
             }
         }
+
+        public void Start(Game game)
+        {
+            if (Core.Mod.GetResources(ResourceType.Map).Count <= 0)
+                throw new InvalidOperationException("Cannot start game: there is no map in this mod");
+
+            if (Game != null)
+            {
+                Game.Restart();
+                return;
+            }
+
+            Core.Game?.Stop();
+            Game = game;
+            Core.SetGame(Game);
+        }
+
+        public int GetLife() => Equipment.GetMaxLife();
+        public void SetLife(int life) => Equipment.SetMaxLife(life);
+        public int GetMaxLife() => Equipment.GetMaxLife();
+        public void SetMaxLife(int life) => Equipment.SetMaxLife(life);
+        public void SetAbility(Ability ability, int level) => Equipment.SetAbility(ability, level);
+        public int GetAbility(Ability ability) => Equipment.GetAbility(ability);
+
+        internal void NotifyGameFinished() => Equipment.NotifyGameFinished();
 
         public void Save()
         {
@@ -268,6 +306,20 @@ namespace Zelda.Game
         public bool GetBoolean(Key key)
         {
             return GetBoolean(key.ToString());
+        }
+
+        public void SetStartingLocation(string mapId, string destinationName = null)
+        {
+            SetString(Key.StartingMap, mapId);
+            SetString(Key.StartingPoint, destinationName);
+        }
+
+        public EquipmentItem GetItem(string itemName)
+        {
+            if (!Equipment.ItemExists(itemName))
+                throw new ArgumentException("No such item: '{0}'".F(itemName));
+
+            return Equipment.GetItem(itemName);
         }
     }
 }

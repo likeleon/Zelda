@@ -1,39 +1,37 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Zelda.Game.LowLevel;
 using Zelda.Game.Entities;
-using Zelda.Game.Script;
+using Zelda.Game.LowLevel;
 
 namespace Zelda.Game
 {
-    class Map
+    public class Map
     {
         public string Id { get; }
         public string TilesetId { get; private set; }
-        public Tileset Tileset { get; private set; }
         public string MusicId { get; private set; }
-        public bool HasWorld { get { return string.IsNullOrEmpty(World); } }
         public string World { get; private set; }
+        public Game Game { get; private set; }
         public int Floor { get; private set; } = MapData.NoFloor;
         public Rectangle Location { get; private set; }
-        public Size Size { get { return Location.Size; } }
-        public int Width { get { return Location.Width; } }
-        public int Height { get { return Location.Height; } }
-        public int Width8 { get; private set; }
-        public int Height8 { get; private set; }
-
-        public bool IsStarted { get; private set; }
-        public ScriptMap ScriptMap { get; }
-
-        public string DestinationName { get; set; }
-
-        public Game Game { get; private set; }
-        public bool IsLoaded { get; private set; }
-
+        public Size Size => Location.Size;
+        public int Width => Location.Width;
+        public int Height => Location.Height;
         public MapEntities Entities { get; private set; }
+        public Rectangle CameraPosition { get; }
 
-        public Surface VisibleSurface { get; private set; }
-        public Rectangle CameraPosition { get; private set; }
+        internal Tileset Tileset { get; private set; }
+        internal bool HasWorld => !World.IsNullOrEmpty();
+        internal bool IsLoaded { get; private set; }
+        internal Surface VisibleSurface { get; private set; }
+        internal string DestinationName { get; set; }
+        internal bool IsStarted { get; private set; }
+        internal int Width8 { get; private set; }
+        internal int Height8 { get; private set; }
+        internal bool IsSuspended { get; private set; }
+
+        readonly Dictionary<EntityType, Action<EntityData>> _entityCreationMethods;
 
         Surface _backgroundSurface;
         Surface _foregroundSurface;
@@ -42,10 +40,20 @@ namespace Zelda.Game
         {
             Id = id;
             CameraPosition = new Rectangle(new Point(), Core.Video.ModSize);
-            ScriptMap = ScriptContext.CreateScriptMap(this);
+
+            _entityCreationMethods = new Dictionary<EntityType, Action<EntityData>>()
+             {
+                { EntityType.Tile, CreateTile },
+                { EntityType.Destination, CreateDestination },
+                { EntityType.Destructible, CreateDestructible },
+                { EntityType.Chest, CreateChest },
+                { EntityType.Npc, CreateNpc },
+                { EntityType.Block, CreateBlock },
+                { EntityType.DynamicTile, CreateDynamicTile }
+             };
         }
 
-        public Destination GetDestination()
+        internal Destination GetDestination()
         {
             if (DestinationName == "_same" || DestinationName.SafeSubstring(0, 5) == "_side")
                 return null;
@@ -65,7 +73,7 @@ namespace Zelda.Game
             return destination ?? Entities.DefaultDestination;
         }
 
-        public void Load(Game game)
+        internal void Load(Game game)
         {
             VisibleSurface = Surface.Create(Core.Video.ModSize, false);
             VisibleSurface.IsSoftwareDestination = false;
@@ -81,18 +89,18 @@ namespace Zelda.Game
             IsLoaded = true;
         }
 
-        public void Unload()
+        internal void Unload()
         {
-            if (IsLoaded)
-            {
-                Tileset = null;
-                VisibleSurface = null;
-                _backgroundSurface = null;
-                _foregroundSurface = null;
-                Entities = null;
+            if (!IsLoaded)
+                return;
 
-                IsLoaded = false;
-            }
+            Tileset = null;
+            VisibleSurface = null;
+            _backgroundSurface = null;
+            _foregroundSurface = null;
+            Entities = null;
+
+            IsLoaded = false;
         }
 
         // 맵 데이터 파일을 읽습니다.
@@ -124,12 +132,12 @@ namespace Zelda.Game
             {
                 for (int i = 0; i < data.GetNumEntities((Layer)layer); ++i)
                 {
-                    EntityData entityData = data.GetEntity(new EntityIndex((Layer)layer, i));
-                    EntityType type = entityData.Type;
+                    var entityData = data.GetEntity(new EntityIndex((Layer)layer, i));
+                    var type = entityData.Type;
                     if (!type.CanBeStoredInMapFile())
                         Debug.Error("Illegal entity type in map file: " + type);
 
-                    ScriptMap.CreateMapEntityFromData(this, entityData);
+                    _entityCreationMethods[type](entityData);
                 }
             }
         }
@@ -186,7 +194,7 @@ namespace Zelda.Game
                 _foregroundSurface.Draw(VisibleSurface);
         }
 
-        public void Draw()
+        internal void Draw()
         {
             if (IsLoaded)
             {
@@ -206,15 +214,13 @@ namespace Zelda.Game
             sprite.Draw(VisibleSurface, x - CameraPosition.X, y - CameraPosition.Y);
         }
 
-        public void Update()
+        internal void Update()
         {
             CheckSuspended();
 
             TilePattern.Update();
             Entities.Update();
         }
-
-        public bool IsSuspended { get; private set; }
 
         public void CheckSuspended()
         {
@@ -236,10 +242,12 @@ namespace Zelda.Game
 
             Core.Audio?.PlayMusic(MusicId);
             Entities.NotifyMapStarted();
-            ScriptMap.NotifyStarted(GetDestination());
+            OnStarted(GetDestination());
         }
 
-        public int GetDestinationSide()
+        protected virtual void OnStarted(Destination destination) { }
+
+        internal int GetDestinationSide()
         {
             if (DestinationName.SafeSubstring(0, 5) == "_side")
             {
@@ -249,12 +257,12 @@ namespace Zelda.Game
             return -1;
         }
 
-        public bool TestCollisionWithBorder(int x, int y)
+        internal bool TestCollisionWithBorder(int x, int y)
         {
             return (x < 0 || y < 0 || x >= Location.Width || y >= Location.Height);
         }
 
-        public bool TestCollisionWithBorder(Point point)
+        internal bool TestCollisionWithBorder(Point point)
         {
             return TestCollisionWithBorder(point.X, point.Y);
         }
@@ -262,7 +270,7 @@ namespace Zelda.Game
         // 특정 포인트가 맵의 그라운드와 충돌하는지를 체크합니다.
         // 그라운드는 타일 혹은 타일을 변화시키는 것들(예를 들면, 다이나믹 타일이나 파괴 가능한 아이템)입니다.
         // 포인트가 맵 외부일 경우에도 true를 반환합니다.
-        public bool TestCollisionWithGround(Layer layer, int x, int y, MapEntity entityToCheck, ref bool foundDiagonalWall)
+        internal bool TestCollisionWithGround(Layer layer, int x, int y, MapEntity entityToCheck, ref bool foundDiagonalWall)
         {
             bool onObstacle = false;
             int xInTile = 0, yInTile = 0;
@@ -351,7 +359,7 @@ namespace Zelda.Game
             return onObstacle;
         }
 
-        public bool TestCollisionWithObstacles(Layer layer, Rectangle collisionBox, MapEntity entityToCheck)
+        internal bool TestCollisionWithObstacles(Layer layer, Rectangle collisionBox, MapEntity entityToCheck)
         {
             // 이 함수는 매우 자주 불리우며, 성능상의 이유로 충돌 박스의 경계선만을 체크합니다.
 
@@ -409,7 +417,7 @@ namespace Zelda.Game
             return TestCollisionWithEntities(layer, collisionBox, entityToCheck);
         }
 
-        public bool TestCollisionWithEntities(Layer layer, Rectangle collisionBox, MapEntity entityToCheck)
+        internal bool TestCollisionWithEntities(Layer layer, Rectangle collisionBox, MapEntity entityToCheck)
         {
             var obstacleEntities = Entities.GetObstacleEntities(layer);
             foreach (var entity in obstacleEntities)
@@ -426,7 +434,7 @@ namespace Zelda.Game
             return false;
         }
 
-        public Ground GetGround(Layer layer, int x, int y)
+        internal Ground GetGround(Layer layer, int x, int y)
         {
             var groundModifiers = Entities.GetGroundModifiers(layer);
             foreach (var groundModifier in groundModifiers)
@@ -443,7 +451,7 @@ namespace Zelda.Game
             return Entities.GetTileGround(layer, x, y);
         }
 
-        public void CheckCollisionWithDetectors(MapEntity entity)
+        internal void CheckCollisionWithDetectors(MapEntity entity)
         {
             if (IsSuspended)
                 return;
@@ -452,7 +460,7 @@ namespace Zelda.Game
                 detector.CheckCollision(entity);
         }
 
-        public void CheckCollisionWithDetectors(MapEntity entity, Sprite sprite)
+        internal void CheckCollisionWithDetectors(MapEntity entity, Sprite sprite)
         {
             if (IsSuspended)
                 return;
@@ -461,7 +469,7 @@ namespace Zelda.Game
                 detector.CheckCollision(entity, sprite);
         }
 
-        public void CheckCollisionFromDetector(Detector detector)
+        internal void CheckCollisionFromDetector(Detector detector)
         {
             if (IsSuspended)
                 return;
@@ -470,6 +478,156 @@ namespace Zelda.Game
 
             foreach (var entity in Entities.Entities.Where(e => e.IsEnabled && !e.IsBeingRemoved))
                 detector.CheckCollision(entity);
+        }
+
+        void CreateTile(EntityData entityData)
+        {
+            var data = entityData as TileData;
+            var pattern = Tileset.GetTilePattern(data.Pattern);
+
+            var size = EntityCreationCheckSize(data.Width, data.Height);
+            for (int y = data.XY.Y; y < data.XY.Y + size.Height; y += pattern.Height)
+            {
+                for (int x = data.XY.X; x < data.XY.X + size.Width; x += pattern.Width)
+                {
+                    var tile = new Tile(data.Layer, new Point(x, y), pattern.Size, Tileset, data.Pattern);
+                    Entities.AddEntity(tile);
+                }
+            }
+        }
+
+        static Size EntityCreationCheckSize(int width, int height)
+        {
+            if (width < 0 || width % 8 != 0)
+                throw new Exception("Invalid width {0}: should be a positive multiple of 8".F(width));
+
+            if (height < 0 || height % 8 != 0)
+                throw new Exception("Invalid height {0}: should be a positive multiple of 8".F(height));
+
+            return new Size(width, height);
+        }
+
+        void CreateDestination(EntityData entityData)
+        {
+            var data = entityData as DestinationData;
+            var destination = new Destination(data.Name, data.Layer, data.XY, data.Direction, data.Sprite, data.Default);
+            Entities.AddEntity(destination);
+        }
+
+        void CreateDestructible(EntityData entityData)
+        {
+            var data = entityData as DestructibleData;
+            var destructible = new Destructible(
+                data.Name,
+                data.Layer,
+                data.XY,
+                data.Sprite,
+                new Treasure(Game, data.TreasureName, data.TreasureVariant, data.TreasureSavegameVariable),
+                data.Ground);
+            destructible.DestructionSound = data.DestructionSound;
+            destructible.Weight = data.Weight;
+            destructible.CanBeCut = data.CanBeCut;
+            destructible.CanExplode = data.CanExplode;
+            destructible.CanRegenerate = data.CanRegenerate;
+            destructible.DamageOnEnemies = data.DamageOnEnemies;
+            Entities.AddEntity(destructible);
+        }
+
+        void CreateChest(EntityData entityData)
+        {
+            var data = entityData as ChestData;
+            if (data.OpeningMethod == ChestOpeningMethod.ByInteractionIfItem)
+            {
+                if (!data.OpeningCondition.IsNullOrEmpty() ||
+                    !Game.Equipment.ItemExists(data.OpeningCondition))
+                {
+                    string msg = "Bad field 'OpeningCondition' (no such equipement item: '{0}'".F(data.OpeningCondition);
+                    throw new Exception(msg);
+                }
+                var item = Game.Equipment.GetItem(data.OpeningCondition);
+                if (!item.IsSaved)
+                {
+                    string msg = "Bad field 'OpeneingCondition' (equipment item '{0}' is not saved".F(data.OpeningCondition);
+                    throw new Exception(msg);
+                }
+            }
+
+            var chest = new Chest(
+                data.Name,
+                data.Layer,
+                data.XY,
+                data.Sprite,
+                new Treasure(Game, data.TreasureName, data.TreasureVariant, data.TreasureSavegameVariable));
+            chest.OpeningMethod = data.OpeningMethod;
+            chest.OpeningCondition = data.OpeningCondition;
+            chest.OpeningConditionConsumed = data.OpeningConditionConsumed;
+            chest.CannotOpenDialogId = data.CannotOpenDialog;
+            Entities.AddEntity(chest);
+        }
+
+        void CreateNpc(EntityData entityData)
+        {
+            var data = entityData as NpcData;
+            var npc = new Npc(
+                Game,
+                data.Name,
+                data.Layer,
+                data.XY,
+                data.Subtype,
+                data.Sprite,
+                data.Direction,
+                data.Behavior);
+            Entities.AddEntity(npc);
+        }
+
+        void CreateBlock(EntityData entityData)
+        {
+            var data = entityData as BlockData;
+            if (data.MaximumMoves < 0 || data.MaximumMoves > 2)
+                throw new Exception("Invalid MaximumMoves: {0}".F(data.MaximumMoves));
+
+            var block = new Block(
+                data.Name,
+                data.Layer,
+                data.XY,
+                data.Direction,
+                data.Sprite,
+                data.Pushable,
+                data.Pullable,
+                data.MaximumMoves);
+            Entities.AddEntity(block);
+        }
+
+        void CreateDynamicTile(EntityData entityData)
+        {
+            var data = entityData as DynamicTileData;
+
+            var dynamicTile = new DynamicTile(
+                data.Name,
+                data.Layer,
+                data.XY,
+                EntityCreationCheckSize(data.Width, data.Height),
+                Tileset,
+                data.Pattern,
+                data.EnabledAtStart);
+            Entities.AddEntity(dynamicTile);
+        }
+
+        void CreateBomb(EntityData entityData)
+        {
+            var data = entityData as BombData;
+
+            var bomb = new Bomb(data.Name, data.Layer, data.XY);
+            Entities.AddEntity(bomb);
+        }
+
+        public T GetEntity<T>(string name) where T : MapEntity
+        {
+            var entity = Entities.FindEntity(name);
+            if (entity?.IsBeingRemoved == true)
+                return null;
+
+            return entity as T;
         }
     }
 }

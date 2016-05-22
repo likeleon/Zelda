@@ -86,17 +86,17 @@ namespace Alttp
                 throw new ArgumentOutOfRangeException("saveIndex", "Should be in range of 1~3");
 
             var saveFileName = "save{0}.dat".F(saveIndex);
-            if (ScriptGame.Exists(saveFileName))
-            {
-                Game = ScriptGame.Load<PlayGame>(saveFileName);
-                ScriptMenu.StopAll(this);
-                StartSavegame(Game);
-            }
+            if (!Savegame.Exists(saveFileName))
+                return;
+
+            var savegame = Savegame.Load(saveFileName);
+            ScriptMenu.StopAll(this);
+            StartSavegame(savegame);
         }
 
-        public void StartSavegame(PlayGame game)
+        public void StartSavegame(Savegame savegame)
         {
-            game.Play(this);
+            PlayGame.Run(savegame, this);
         }
     }
 }

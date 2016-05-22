@@ -1,17 +1,28 @@
 ﻿using Alttp.Menus;
 using Zelda.Game;
-using Zelda.Game.Script;
 
 namespace Alttp
 {
-    class PlayGame : ScriptGame
+    class PlayGame : Game
     {
         public DialogBox DialogBox { get; private set; }
 
-        public void Play(Main main)
+        public static void Run(Savegame savegame, Main main)
         {
-            main.Game = this;
-            Start();
+            var game = new PlayGame(savegame);
+            main.Game = game;
+            savegame.Start(game);
+        }
+
+        PlayGame(Savegame savegame)
+            : base(savegame)
+        {
+            FixStartingLocation();
+        }
+
+        void FixStartingLocation()
+        {
+            // TODO
         }
 
         protected override void OnStarted()

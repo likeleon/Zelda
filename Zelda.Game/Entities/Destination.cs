@@ -1,9 +1,8 @@
 ﻿using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
-    class Destination : MapEntity
+    public class Destination : MapEntity
     {
         public override EntityType Type => EntityType.Destination;
 

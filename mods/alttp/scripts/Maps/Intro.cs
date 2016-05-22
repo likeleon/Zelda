@@ -1,17 +1,23 @@
 ﻿using Alttp.Menus;
 using System;
 using Zelda.Game;
+using Zelda.Game.Entities;
 using Zelda.Game.Script;
 
 namespace Alttp.Maps
 {
     [Id("0")]
-    class Intro : ScriptMap
+    class Intro : Map
     {
         int _frescoIndex;
         Sprite _frescoSprite;
 
-        protected override void OnStarted(ScriptDestination destination)
+        public Intro()
+            : base("0")
+        {
+        }
+
+        protected override void OnStarted(Destination destination)
         {
             (Game as PlayGame).DialogBox.SetDialogStyle(DialogBoxStyle.Empty);
 

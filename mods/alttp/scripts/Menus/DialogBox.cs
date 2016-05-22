@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Zelda.Game;
+using Zelda.Game.Entities;
 using Zelda.Game.LowLevel;
 using Zelda.Game.Script;
 
@@ -53,7 +53,7 @@ namespace Alttp.Menus
         static readonly string _specialCharPause = "$0";
         static readonly string _specialCharVariable = "$v";
 
-        readonly ScriptGame _game;
+        readonly Game _game;
         readonly string[] _visibleLines = new string[_numVisibleLines];
         readonly TextSurface[] _visibleLineSurfaces = new TextSurface[_numVisibleLines];
 
@@ -88,7 +88,7 @@ namespace Alttp.Menus
 
         private string CurrentLine { get { return _visibleLines[_visibleLineIndex]; } }
 
-        public DialogBox(ScriptGame game)
+        public DialogBox(Game game)
         {
             _game = game;
             DialogPosition = DialogBoxVerticalPosition.Auto;
@@ -148,14 +148,14 @@ namespace Alttp.Menus
             _charDelay = DialogBoxCharDelays.Fast;
             _selectedAnswer = DialogBoxSelectedAnswer.NoQuestion;
 
-            var map = _game.Map;
+            var map = _game.CurrentMap;
             var cameraPosition = map.CameraPosition;
             var top = false;
             if (DialogPosition == DialogBoxVerticalPosition.Top)
                 top = true;
             else if (DialogPosition == DialogBoxVerticalPosition.Auto)
             {
-                var heroPosition = map.GetEntity<ScriptHero>("hero").Position;
+                var heroPosition = map.GetEntity<Hero>("hero").XY;
                 if (heroPosition.Y >= cameraPosition.Y + (cameraPosition.Height / 2 + 10))
                     top = true;
             }

@@ -134,7 +134,7 @@ namespace Zelda.Game
             RemoveTimers(context);
         }
 
-        static void RemoveTimers(ITimerContext context)
+        internal static void RemoveTimers(ITimerContext context)
         {
             foreach (var kvp in _timers.Where(x => x.Value.Context == context))
             {

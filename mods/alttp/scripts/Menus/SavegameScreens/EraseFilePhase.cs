@@ -1,6 +1,5 @@
 ﻿using Zelda.Game;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Alttp.Menus.SavegameScreens
 {
@@ -30,7 +29,7 @@ namespace Alttp.Menus.SavegameScreens
                 _screen.DrawSavegameNumber(i);
         }
 
-        public bool DirectionPressed(Zelda.Game.Direction8 direction8)
+        public bool DirectionPressed(Direction8 direction8)
         {
             bool handled = true;
             if (direction8 == Direction8.Down)
@@ -42,7 +41,7 @@ namespace Alttp.Menus.SavegameScreens
             return handled;
         }
 
-        public bool KeyPressed(Zelda.Game.LowLevel.KeyboardKey key)
+        public bool KeyPressed(KeyboardKey key)
         {
             if (key != KeyboardKey.Space && key != KeyboardKey.Return)
                 return false;
@@ -55,7 +54,7 @@ namespace Alttp.Menus.SavegameScreens
             else if (_screen.CursorPosition > 0 && _screen.CursorPosition <= 3)
             {
                 var slot = _screen.Slots[_screen.CursorPosition - 1];
-                if (!ScriptGame.Exists(slot.FileName))
+                if (!Savegame.Exists(slot.FileName))
                     Core.Audio?.PlaySound("wrong");
                 else
                 {

@@ -106,7 +106,7 @@ namespace Zelda.Game.Script
         }
 
         // context와 관련된 모든 메뉴를 해제합니다
-        static void RemoveMenus(IMenuContext context)
+        internal static void RemoveMenus(IMenuContext context)
         {
             // 어떤 메뉴들은 OnFinished 시점에 새로운 메뉴들을 생성할 수 있는데, 이들은 제거되지 않아야 합니다
             _menus.ForEach(m => m.RecentlyAdded = false);

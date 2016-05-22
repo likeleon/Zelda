@@ -1,5 +1,4 @@
 ﻿using Zelda.Game;
-using Zelda.Game.Script;
 
 namespace Sample.Scripts
 {
@@ -7,8 +6,8 @@ namespace Sample.Scripts
     {
         public static void StartGame()
         {
-            var exists = ScriptGame.Exists("save1.dat");
-            var game = ScriptGame.Load<ScriptGame>("save1.dat");
+            var exists = Savegame.Exists("save1.dat");
+            var game = new Savegame("save1.dat");
             if (!exists)
             {
                 game.SetMaxLife(12);

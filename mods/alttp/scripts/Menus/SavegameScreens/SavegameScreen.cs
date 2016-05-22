@@ -281,10 +281,10 @@ namespace Alttp.Menus.SavegameScreens
             }
         }
 
-        public void SetInitialValues(ScriptGame savegame, string playerName)
+        public void SetInitialValues(Savegame savegame, string playerName)
         {
             savegame.SetStartingLocation("0", "start_position");
-            savegame.SetStringValue("player_name", playerName);
+            savegame.SetString("player_name", playerName);
 
             savegame.SetMaxLife(12);
             savegame.SetLife(savegame.GetMaxLife());
