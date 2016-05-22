@@ -44,7 +44,7 @@ namespace Zelda.Game.Entities
                 XY = new Point(hero.X, originalEntity.Y);
             Origin = originalEntity.Origin;
             Size = originalEntity.Size;
-            SetDrawnInYOrder(true);
+            IsDrawnInYOrder = true;
 
             PixelMovement movement = new PixelMovement(_liftingTrajectories[(int)direction], 100, false, true);
             CreateSprite(animationSetId);
@@ -257,9 +257,6 @@ namespace Zelda.Game.Entities
 
         public override void DrawOnMap()
         {
-            if (!IsDrawn())
-                return;
-
             if (!IsBeingThrown)
                 base.DrawOnMap();
             else

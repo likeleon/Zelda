@@ -37,7 +37,7 @@ namespace Zelda.Game.Entities
 
             Origin = new Point(Width / 2, Height - 3);
 
-            SetDrawnInYOrder(sprite.MaxSize.Height > Height);
+            IsDrawnInYOrder = sprite.MaxSize.Height > Height;
 
             _scriptChest = new ScriptChest(this);
         }

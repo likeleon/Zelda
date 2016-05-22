@@ -157,7 +157,7 @@ namespace Zelda.Game
             _timers.Clear();
         }
 
-        internal static void SetEntityTimersSuspended(ScriptEntity entity, bool suspended)
+        internal static void SetEntityTimersSuspended(MapEntity entity, bool suspended)
         {
             foreach (var kvp in _timers.Where(t => t.Value.Context == entity))
                 kvp.Key.SetSuspended(suspended);

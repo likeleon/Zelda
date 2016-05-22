@@ -5,7 +5,7 @@ using System.Linq;
 namespace Zelda.Game.Entities
 {
     // 맵 컨텐츠를 관리합니다 (타일, 주인공, 적과 같은 맵 엔티티들을 저장하고 관리)
-    class MapEntities
+    public class MapEntities
     {
         readonly Game _game;
         readonly Map _map;
@@ -25,12 +25,12 @@ namespace Zelda.Game.Entities
         readonly List<MapEntity> _allEntities = new List<MapEntity>();
         readonly Ground[,] _tilesGround;
 
-        public Hero Hero { get; private set; }
-        public Destination DefaultDestination { get; private set; }
-        public IEnumerable<MapEntity> Entities { get { return _allEntities; } }
-        public IEnumerable<Detector> Detectors { get { return _detectors; } }
+        internal Hero Hero { get; private set; }
+        internal Destination DefaultDestination { get; private set; }
+        internal IEnumerable<MapEntity> Entities { get { return _allEntities; } }
+        internal IEnumerable<Detector> Detectors { get { return _detectors; } }
 
-        public MapEntities(Game game, Map map)
+        internal MapEntities(Game game, Map map)
         {
             _game = game;
             _map = map;

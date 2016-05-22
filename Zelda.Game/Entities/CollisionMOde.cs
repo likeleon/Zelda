@@ -3,7 +3,7 @@
 namespace Zelda.Game.Entities
 {
     [Flags]
-    enum CollisionMode
+    public enum CollisionMode
     {
         None            = 0x0000,
         Overlapping     = 0x0001,

@@ -1,6 +1,5 @@
 ﻿using System;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
@@ -17,22 +16,14 @@ namespace Zelda.Game.Entities
         ItemScript
     }
 
-    class Npc : Detector
+    public class Npc : Detector
     {
         readonly NpcSubtype _subtype;
         readonly NpcBehavior _behavior;
         readonly string _itemName;
         readonly string _dialogToShow;
 
-        public Npc(
-            Game game, 
-            string name,
-            Layer layer,
-            Point xy,
-            NpcSubtype subtype,
-            string spriteName,
-            Direction4 initialDirection,
-            string behaviorString)
+        internal Npc(Game game, string name, Layer layer, Point xy, NpcSubtype subtype, string spriteName, Direction4 initialDirection, string behaviorString)
             : base(CollisionMode.Facing | CollisionMode.Overlapping, name, layer, xy, new Size(0, 0))
         {
             _subtype = subtype;
@@ -42,7 +33,7 @@ namespace Zelda.Game.Entities
             Origin = new Point(8, 13);
             Direction = initialDirection;
 
-            SetDrawnInYOrder(subtype == NpcSubtype.UsualNpc);
+            IsDrawnInYOrder = subtype == NpcSubtype.UsualNpc;
 
             if (behaviorString == "map")
                 _behavior = NpcBehavior.MapScript;
@@ -57,28 +48,11 @@ namespace Zelda.Game.Entities
                 _dialogToShow = behaviorString.Substring(7);
             }
             else
-            {
-                Debug.Die("Invalid behavior string for NPC '{0}': '{1'}".F(name, behaviorString));
-            }
-
-            _scriptNpc = new ScriptNpc(this);
+                throw new Exception("Invalid behavior string for NPC '{0}': '{1'}".F(name, behaviorString));
         }
 
-        public override EntityType Type
-        {
-            get { return EntityType.Npc; }
-        }
-
-        readonly ScriptNpc _scriptNpc;
-        public override ScriptEntity ScriptEntity
-        {
-            get { return _scriptNpc; }
-        }
-
-        public bool IsSolid
-        {
-            get { return _subtype != NpcSubtype.UsualNpc; }
-        }
+        public override EntityType Type => EntityType.Npc;
+        public bool IsSolid => _subtype != NpcSubtype.UsualNpc;
 
         public bool CanBeLifted
         {
@@ -87,7 +61,7 @@ namespace Zelda.Game.Entities
 
         void InitializeSprite(string spriteName, Direction4 initialDirection)
         {
-            if (!String.IsNullOrEmpty(spriteName))
+            if (!spriteName.IsNullOrEmpty())
             {
                 CreateSprite(spriteName);
                 if (initialDirection != Direction4.None)
@@ -95,22 +69,11 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public override bool IsObstacleFor(MapEntity other)
-        {
-            return other.IsNpcObstacle(this);
-        }
+        internal override bool IsObstacleFor(MapEntity other) => other.IsNpcObstacle(this);
+        internal override bool IsNpcObstacle(Npc npc) => (_subtype != NpcSubtype.UsualNpc || npc._subtype != NpcSubtype.UsualNpc);
+        internal override bool IsHeroObstacle(Hero hero) => true;
 
-        public override bool IsNpcObstacle(Npc npc)
-        {
-            return (_subtype != NpcSubtype.UsualNpc || npc._subtype != NpcSubtype.UsualNpc);
-        }
-
-        public override bool IsHeroObstacle(Hero hero)
-        {
-            return true;
-        }
-
-        public override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        internal override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
         {
             if (collisionMode == CollisionMode.Facing && entityOverlapping.IsHero)
             {
@@ -134,7 +97,7 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public override bool NotifyActionCommandPressed()
+        internal override bool NotifyActionCommandPressed()
         {
             if (!Hero.IsFree || CommandsEffects.ActionCommandEffect == ActionCommandEffect.None)
                 return false;
@@ -180,7 +143,7 @@ namespace Zelda.Game.Entities
             throw new NotImplementedException();
         }
 
-        public override void NotifyPositionChanged()
+        internal override void NotifyPositionChanged()
         {
             base.NotifyPositionChanged();
 
@@ -205,7 +168,7 @@ namespace Zelda.Game.Entities
             }
         }
 
-        public override void NotifyMovementFinished()
+        internal override void NotifyMovementFinished()
         {
             base.NotifyMovementFinished();
 

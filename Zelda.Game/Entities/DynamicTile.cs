@@ -1,33 +1,26 @@
 ﻿using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
-    class DynamicTile : MapEntity
+    public class DynamicTile : MapEntity
     {
+        public override EntityType Type => EntityType.DynamicTile;
+        public override Ground ModifiedGround => _tilePattern.Ground;
+        internal override bool IsGroundModifier => true;
+
         readonly string _tilePatternId;
         readonly TilePattern _tilePattern;
-        readonly ScriptDynamicTile _scriptDynamicTile;
 
-        public override EntityType Type { get { return EntityType.DynamicTile; } }
-        public override ScriptEntity ScriptEntity { get { return _scriptDynamicTile; } }
-        public override bool IsGroundModifier { get { return true; } }
-        public override Ground ModifiedGround { get { return _tilePattern.Ground; } }
-
-        public DynamicTile(string name, Layer layer, Point xy, Size size, Tileset tileset, string tilePatternId, bool enabled)
+        internal DynamicTile(string name, Layer layer, Point xy, Size size, Tileset tileset, string tilePatternId, bool enabled)
             : base(name, Direction4.Right, layer, xy, size)
         {
             _tilePatternId = tilePatternId;
             _tilePattern = tileset.GetTilePattern(tilePatternId);
             SetEnabled(enabled);
-            _scriptDynamicTile = new ScriptDynamicTile(this);
         }
 
-        public override void DrawOnMap()
+        internal override void DrawOnMap()
         {
-            if (!IsDrawn())
-                return;
-
             var cameraPosition = Map.CameraPosition;
             var dstPosition = new Rectangle(TopLeftX - cameraPosition.X, TopLeftY - cameraPosition.Y,Width, Height);
             _tilePattern.FillSurface(Map.VisibleSurface, dstPosition, Map.Tileset, cameraPosition.XY);

@@ -1,14 +1,147 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Zelda.Game.LowLevel;
 using Zelda.Game.Movements;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
-    abstract class MapEntity : DisposableObject
+    public abstract class MapEntity : DisposableObject
     {
+        public Layer Layer { get; private set; }
+
+        public Size Size
+        {
+            get { return BoudingBox.Size; }
+            set
+            {
+                if (value.Width % 8 != 0 || value.Height % 8 != 0)
+                    throw new Exception("Invalid entity size: width and height must be multiple of 8");
+                BoudingBox.Size = value;
+            }
+        }
+
+        public Point Origin
+        {
+            get { return _origin; }
+            set
+            {
+                BoudingBox.XY += (_origin - value);
+                _origin = value;
+            }
+        }
+
+        public Point XY
+        {
+            get { return new Point(X, Y); }
+            set { X = value.X; Y = value.Y; }
+        }
+
+        public int X
+        {
+            get { return BoudingBox.X + _origin.X; }
+            set { BoudingBox.X = value - _origin.X; }
+        }
+
+        public int Y
+        {
+            get { return BoudingBox.Y + _origin.Y; }
+            set { BoudingBox.Y = value - _origin.Y; }
+        }
+
+        public Point CenterPoint { get { return BoundingBox.Center; } }
+
+        public int OptimizationDistance
+        {
+            get { return _optimizationDistance; }
+            set
+            {
+                _optimizationDistance = value;
+                OptimizationDistance2 = value * value;
+            }
+        }
+
+        public bool IsVisible { get; private set; } = true;
+        public bool IsEnabled { get; private set; } = true;
+        public virtual bool HasLayerIndependentCollisions => false;
+        public virtual Ground ModifiedGround => Ground.Empty;
+        public abstract EntityType Type { get; }
+
+        internal Map Map { get; private set; }
+        internal bool IsOnMap => Map != null;
+        internal bool IsBeingRemoved { get; private set; }
+        internal bool IsHero => Type == EntityType.Hero;
+        internal bool IsDrawnInYOrder { get; set; }
+        internal string Name { get; set; }
+        internal Ground GroundBelow { get; private set; }
+        internal Game Game => Map.Game;
+        internal Direction4 Direction { get; set; }
+        internal Rectangle BoundingBox { get; set; }
+        internal int Width => BoundingBox.Width;
+        internal int Height => BoundingBox.Height;
+
+        internal int TopLeftX
+        {
+            get { return BoudingBox.X; }
+            set { BoudingBox.X = value; }
+        }
+
+        internal int TopLeftY
+        {
+            get { return BoudingBox.Y; }
+            set { BoudingBox.Y = value; }
+        }
+
+        internal Point TopLeftXY
+        {
+            get { return new Point(TopLeftX, TopLeftY); }
+            set { TopLeftX = value.X; TopLeftY = value.Y; }
+        }
+
+        internal Detector FacingEntity
+        {
+            get { return _facingEntity; }
+            set
+            {
+                _facingEntity = value;
+                NotifyFacingEntityChanged(value);
+            }
+        }
+
+        internal int OptimizationDistance2 { get; private set; }
+
+        internal bool IsAlignedToGrid => IsAlignedToGridX && IsAlignedToGridY;
+        internal bool IsAlignedToGridX => TopLeftX % 8 == 0;
+        internal bool IsAlignedToGridY => TopLeftY % 8 == 0;
+        internal IEnumerable<Sprite> Sprites => _sprites;
+        internal bool HasSprite => _sprites.Count > 0; 
+        internal Sprite Sprite => _sprites[0];
+        internal bool IsSuspended { get; private set; }
+        internal Movement Movement { get; private set; }
+
+        internal virtual bool IsDrawnAtItsPosition => true;
+        internal virtual bool CanBeDrawn => true;
+        internal virtual bool CanBeObstacle => true;
+        internal virtual bool IsDetector => false;
+        internal virtual bool IsGroundModifier => false;
+
+        internal virtual bool IsLowWallObstacle => true;
+        internal virtual bool IsShallowWaterObstacle => IsDeepWaterObstacle;
+        internal virtual bool IsDeepWaterObstacle => true;
+        internal virtual bool IsHoleObstacle => true;
+        internal virtual bool IsLavaObstacle => true;
+        internal virtual bool IsPrickleObstacle => true;
+        internal virtual bool IsLadderObstacle => true;
+
+        protected MapEntities Entities => Map.Entities;
+
+        internal CommandsEffects CommandsEffects => Game.CommandsEffects;
+        internal Equipment Equipment => Game.Equipment;
+        internal Hero Hero => Entities.Hero;
+        internal Savegame Savegame => Game.SaveGame;
+        internal int WhenSuspended { get; private set; }
+
         static readonly int DefaultOptimizationDistance = 400;
-        static readonly Point[] _directionsToXyMoves = new Point[]
+        static readonly Point[] DirectionsToXyMoves = new Point[]
         {
             new Point( 1,  0),
             new Point( 1, -1),
@@ -25,197 +158,22 @@ namespace Zelda.Game.Entities
         readonly List<Movement> _oldMovements = new List<Movement>();
 
         bool _initialized;
-        Direction4 _direction;
         Point _origin;
-        Rectangle _boundingBox;
+        Rectangle BoudingBox;
         int _optimizationDistance = DefaultOptimizationDistance;
         Detector _facingEntity;
         bool _waitingEnabled;
 
-        public Map Map { get; private set; }
-        public bool IsOnMap { get { return Map != null; } }
-        public bool IsBeingRemoved { get; private set; }
-        public bool IsHero { get { return Type == EntityType.Hero; } }
-        public bool IsDrawnInYOrder { get; private set; }
-        public string Name { get; set; }
-        public Layer Layer { get; private set; }
-        public Ground GroundBelow { get; private set; }
-        
-        internal Game Game
-        {
-            get
-            {
-                Debug.CheckAssertion(Map != null, "No map was set");
-                return Map.Game;
-            }
-        }
-        
-        public Direction4 Direction
-        {
-            get { return _direction; }
-            set
-            {
-                if (value != _direction)
-                {
-                    _direction = value;
-                }
-            }
-        }
-
-        public Rectangle BoundingBox
-        {
-            get { return _boundingBox; }
-            set { _boundingBox = value; }
-        }
-
-        public int Width
-        {
-            get { return _boundingBox.Width; }
-        }
-
-        public int Height
-        {
-            get { return _boundingBox.Height; }
-        }
-
-        public Size Size
-        {
-            get { return _boundingBox.Size; }
-            set
-            {
-                Debug.CheckAssertion(value.Width % 8 == 0 && value.Height % 8 == 0,
-                    "Invalid entity size: width and height must be multiple of 8");
-                _boundingBox.Size = value;
-            }
-        }
-
-        public int TopLeftX
-        {
-            get { return _boundingBox.X; }
-            set { _boundingBox.X = value; }
-        }
-
-        public int TopLeftY
-        {
-            get { return _boundingBox.Y; }
-            set { _boundingBox.Y = value; }
-        }
-
-        public Point TopLeftXY
-        {
-            get { return new Point(TopLeftX, TopLeftY); }
-            set { TopLeftX = value.X; TopLeftY = value.Y; }
-        }
-
-        public Point Origin
-        {
-            get { return _origin; }
-            set
-            {
-                _boundingBox.XY += (_origin - value);
-                _origin = value;
-            }
-        }
-
-        public int X
-        {
-            get { return _boundingBox.X + _origin.X; }
-            set { _boundingBox.X = value - _origin.X; }
-        }
-
-        public int Y
-        {
-            get { return _boundingBox.Y + _origin.Y; }
-            set { _boundingBox.Y = value - _origin.Y; }
-        }
-
-        public Point XY
-        {
-            get { return new Point(X, Y); }
-            set { X = value.X; Y = value.Y; }
-        }
-
-        public Point CenterPoint { get { return BoundingBox.Center; } }
-
-        public int OptimizationDistance
-        {
-            get { return _optimizationDistance; }
-            set
-            {
-                _optimizationDistance = value;
-                OptimizationDistance2 = value * value;
-            }
-        }
-
-        public Detector FacingEntity
-        {
-            get { return _facingEntity; }
-            set
-            {
-                _facingEntity = value;
-                NotifyFacingEntityChanged(value);
-            }
-        }
-
-        public int OptimizationDistance2 { get; private set; }
-
-        public bool IsAlignedToGrid { get { return IsAlignedToGridX && IsAlignedToGridY; } }
-        public bool IsAlignedToGridX { get { return TopLeftX % 8 == 0; } }
-        public bool IsAlignedToGridY { get { return TopLeftY % 8 == 0; } }
-        public bool IsVisible { get; private set; }
-        public bool IsEnabled { get; private set; }
-        public IEnumerable<Sprite> Sprites { get { return _sprites; } }
-        public bool HasSprite { get { return _sprites.Count > 0; } }
-        public Sprite Sprite { get { return _sprites[0]; } }
-        public bool IsSuspended { get; private set; }
-        public Movement Movement { get; private set; }
-
-        public virtual ScriptEntity ScriptEntity { get { return null; } }
-        public virtual bool IsDrawnAtItsPosition { get { return true; } }
-        public virtual bool CanBeDrawn { get { return true; } }
-        public virtual bool CanBeObstacle { get { return true; } }
-        public virtual bool IsDetector { get { return false; } }
-        public virtual bool HasLayerIndependentCollisions { get { return false; } }
-        public virtual bool IsGroundModifier { get { return false; } }
-        public virtual Ground ModifiedGround { get { return Ground.Empty; } }
-
-        public virtual bool IsLowWallObstacle { get { return true; } }
-        public virtual bool IsShallowWaterObstacle { get { return IsDeepWaterObstacle; } }
-        public virtual bool IsDeepWaterObstacle { get { return true; } }
-        public virtual bool IsHoleObstacle { get { return true; } }
-        public virtual bool IsLavaObstacle { get { return true; } }
-        public virtual bool IsPrickleObstacle { get { return true; } }
-        public virtual bool IsLadderObstacle { get { return true; } }
-
-        public abstract EntityType Type { get; }
-
-        protected MapEntities Entities
-        {
-            get
-            {
-                Debug.CheckAssertion(Map != null, "No map was set");
-                return Map.Entities;
-            }
-        }
-
-        protected CommandsEffects CommandsEffects { get { return Game.CommandsEffects; } }
-        protected Equipment Equipment { get { return Game.Equipment; } }
-        protected Hero Hero { get { return Entities.Hero; } }
-        protected Savegame Savegame { get { return Game.SaveGame; } }
-        protected int WhenSuspended { get; private set; }
-
         protected MapEntity(string name, Direction4 direction, Layer layer, Point xy, Size size)
         {
-            Debug.CheckAssertion(size.Width % 8 == 0 && size.Height % 8 == 0,
-                "Invalid entity size: width and height must be multiple of 8");
+            if (size.Width % 8 != 0 || size.Height % 8 != 0)
+                throw new ArgumentOutOfRangeException("Invalid entity size: width and height must be multiple of 8");
 
             Name = name;
-            _direction = direction;
+            Direction = direction;
             Layer = layer;
-            _boundingBox = new Rectangle(xy, size);
+            BoudingBox = new Rectangle(xy, size);
             OptimizationDistance2 = DefaultOptimizationDistance * DefaultOptimizationDistance;
-            IsVisible = true;
-            IsEnabled = true;
         }
 
         protected override void OnDispose(bool disposing)
@@ -249,7 +207,7 @@ namespace Zelda.Game.Entities
                     sprite.SetSuspended(true);
 
                 if (IsOnMap)
-                    Timer.SetEntityTimersSuspended(ScriptEntity, true);
+                    Timer.SetEntityTimersSuspended(this, false);
             }
             // TODO: NotifyEnabled(false);
         }
@@ -259,30 +217,12 @@ namespace Zelda.Game.Entities
             Map.Entities.RemoveEntity(this);
         }
 
-        public virtual void NotifyBeingRemoved()
+        internal virtual void NotifyBeingRemoved()
         {
             IsBeingRemoved = true;
         }
 
-        public bool IsDrawn()
-        {
-            bool far = (GetDistanceToCamera2() > OptimizationDistance2) &&
-                (_optimizationDistance > 0);
-            return IsVisible &&
-                (OverlapsCamera() || !far || !!IsDrawnAtItsPosition);
-        }
-
-        public void SetDrawnInYOrder(bool drawnInYOrder)
-        {
-            if (drawnInYOrder != IsDrawnInYOrder)
-            {
-                IsDrawnInYOrder = drawnInYOrder;
-                if (IsOnMap)
-                    Entities.SetEntityDrawnInYOrder(this, drawnInYOrder);
-            }
-        }
-
-        public void SetMap(Map map)
+        internal void SetMap(Map map)
         {
             Map = map;
             if (Game.CurrentMap == map)
@@ -310,45 +250,42 @@ namespace Zelda.Game.Entities
             NotifyCreated();
         }
 
-        public virtual void NotifyMapStarted()
+        internal virtual void NotifyMapStarted()
         {
             if (!_initialized)
                 FinishInitialization();
         }
 
-        public virtual void NotifyCreating()
+        internal virtual void NotifyCreating()
         {
         }
 
-        public virtual void NotifyCreated()
+        internal virtual void NotifyCreated()
         {
         }
 
-        public virtual void NotifyTilesetChanged()
+        internal virtual void NotifyTilesetChanged()
         {
             foreach (Sprite sprite in _sprites)
                 sprite.SetTileset(Map.Tileset);
         }
 
-        public void SetLayer(Layer layer)
+        internal void SetLayer(Layer layer)
         {
             Layer = layer;
             NotifyLayerChanged();
         }
 
-        public Point GetDisplayedXY()
+        internal Point GetDisplayedXY()
         {
-            if (Movement == null)
-                return XY;
-
-            return Movement.GetDisplayedXY();
+            return Movement?.GetDisplayedXY() ?? XY;
         }
 
         // 엔티티가 바라보는 위치 좌표를 반환합니다.
         // 스프라이트가 있다면 스프라이트의 방향에 기반한 위치입니다.
         // 스프라이트가 없거나 스프라이트가 4방향이 아니라면 이동을 고려한 위치입니다.
         // 이동도 없다면, 북쪽을 바라보는 것으로 가정합니다.
-        public virtual Point GetFacingPoint()
+        internal virtual Point GetFacingPoint()
         {
             Direction4 direction4 = Direction4.Up; // 기본으로 북쪽
             if (HasSprite && Sprite.NumDirections == 4)
@@ -359,9 +296,9 @@ namespace Zelda.Game.Entities
             return GetTouchingPoint(direction4);
         }
 
-        public Point GetTouchingPoint(Direction4 direction)
+        internal Point GetTouchingPoint(Direction4 direction)
         {
-            Point touchingPoint = CenterPoint;
+            var touchingPoint = CenterPoint;
             switch (direction)
             {
                 case Direction4.Right:
@@ -387,46 +324,52 @@ namespace Zelda.Game.Entities
             return touchingPoint;
         }
 
-        public Sprite CreateSprite(string animationSetId, bool enablePixelCollisions = false)
+        public Sprite CreateSpriteEx(string animationSetId, string spriteName = "")
+        {
+            var sprite = CreateSprite(animationSetId, spriteName);
+            sprite.EnablePixelCollisions();
+            if (IsSuspended)
+                sprite.SetSuspended(true);
+            return sprite;
+        }
+
+        internal Sprite CreateSprite(string animationSetId, string spriteName = "")
         {
             var sprite = Sprite.Create(animationSetId, false);
-
-            if (enablePixelCollisions)
-                sprite.EnablePixelCollisions();
-
             _sprites.Add(sprite);
             return sprite;
         }
 
         public void RemoveSprite(Sprite sprite)
         {
+            sprite = sprite ?? Sprite;
             if (_sprites.Contains(sprite))
                 _oldSprites.Add(sprite);
             else
                 Debug.Die("This sprite does not belong to this entity");
         }
 
-        public void ClearSprites()
+        internal void ClearSprites()
         {
             _oldSprites.AddRange(_sprites);
             _sprites.Clear();
         }
 
-        private void ClearOldSprites()
+        void ClearOldSprites()
         {
             _sprites.RemoveAll(_oldSprites.Contains);
             _oldSprites.Clear();
         }
 
-        public virtual void NotifySpriteFrameChanged(Sprite sprite, string animation, int frame)
+        internal virtual void NotifySpriteFrameChanged(Sprite sprite, string animation, int frame)
         {
         }
 
-        public virtual void NotifySpriteAnimationFinished(Sprite sprite, string animation)
+        internal virtual void NotifySpriteAnimationFinished(Sprite sprite, string animation)
         {
         }
 
-        public virtual void SetSuspended(bool suspended)
+        internal virtual void SetSuspended(bool suspended)
         {
             IsSuspended = suspended;
 
@@ -440,20 +383,21 @@ namespace Zelda.Game.Entities
                 Movement.SetSuspended(suspended || !IsEnabled);
 
             if (IsOnMap)
-                Timer.SetEntityTimersSuspended(ScriptEntity, suspended || !IsEnabled);
+                Timer.SetEntityTimersSuspended(this, suspended || !IsEnabled);
         }
 
-        public virtual void Update()
+        internal virtual void Update()
         {
-            Debug.CheckAssertion(Type != EntityType.Tile, "Attempt to update a static tile");
+            if (Type == EntityType.Tile)
+                throw new InvalidOperationException("Attempt to update a static tile");
 
             EnableIfNecessary();
 
-            if (_facingEntity != null && _facingEntity.IsBeingRemoved)
+            if (_facingEntity?.IsBeingRemoved == true)
                 FacingEntity = null;
 
             // 스프라이트 업데이트
-            foreach (Sprite sprite in _sprites)
+            foreach (var sprite in _sprites)
             {
                 sprite.Update();
                 if (sprite.HasFrameChanged)
@@ -469,8 +413,7 @@ namespace Zelda.Game.Entities
             ClearOldSprites();
 
             // 이동 업데이트
-            if (Movement != null)
-                Movement.Update();
+            Movement?.Update();
             ClearOldMovements();
         }
         
@@ -489,69 +432,44 @@ namespace Zelda.Game.Entities
             if (IsSuspended)
                 return;
 
-            if (Movement != null)
-                Movement.SetSuspended(false);
-
-            foreach (var sprite in _sprites)
-                sprite.SetSuspended(false);
+            Movement?.SetSuspended(false);
+            _sprites.Do(s => s.SetSuspended(false));
 
             if (IsOnMap)
-                Timer.SetEntityTimersSuspended(ScriptEntity, false);
+                Timer.SetEntityTimersSuspended(this, false);
         }
 
-        public virtual void DrawOnMap()
+        internal virtual void DrawOnMap()
         {
-            if (!IsDrawn())
-                return;
-
-            foreach (Sprite sprite in _sprites)
-                Map.DrawSprite(sprite, GetDisplayedXY());
+            _sprites.Do(s => Map.DrawSprite(s, GetDisplayedXY()));
         }
         
-        public bool Overlaps(Point point)
+        internal bool Overlaps(Point point)
         {
-            return _boundingBox.Contains(point);
+            return BoudingBox.Contains(point);
         }
 
-        public bool Overlaps(int x, int y)
+        internal bool Overlaps(int x, int y)
         {
-            return _boundingBox.Contains(x, y);
+            return BoudingBox.Contains(x, y);
         }
 
-        public bool Overlaps(Rectangle rectangle)
+        internal bool Overlaps(Rectangle rectangle)
         {
-            return _boundingBox.Overlaps(rectangle);
+            return BoudingBox.Overlaps(rectangle);
         }
 
-        public bool Overlaps(MapEntity other)
+        internal bool Overlaps(MapEntity other)
         {
             return Overlaps(other.BoundingBox);
         }
 
-        // 엔티티의 'origin' 지점과 맵 가시 영역의 중점사이의 거리의 제곱을 얻습니다
-        public int GetDistanceToCamera2()
-        {
-            return Geometry.GetDistance2(XY, Map.CameraPosition.Center);
-        }
-
-        // 엔티티의 바운딩 박스 혹은 스프라이트가 맵의 가시영역과 겹치는지를 확인합니다
-        public bool OverlapsCamera()
-        {
-            Rectangle cameraPosition = Map.CameraPosition;
-            if (_boundingBox.Overlaps(cameraPosition))
-                return true;
-
-            // TODO: 스프라이트와 겹치는지 확인
-
-            return false;
-        }
-
-        public bool IsFacingPointIn(Rectangle rectangle)
+        internal bool IsFacingPointIn(Rectangle rectangle)
         {
             return rectangle.Contains(GetFacingPoint());
         }
 
-        public void SetMovement(Movement movement)
+        internal void SetMovement(Movement movement)
         {
             ClearMovement();
             Movement = movement;
@@ -567,13 +485,13 @@ namespace Zelda.Game.Entities
 
         public void ClearMovement()
         {
-            if (Movement != null)
-            {
-                Movement.SetEntity(null);
-                Movement.ScriptMovement = null;
-                _oldMovements.Add(Movement);
-                Movement = null;
-            }
+            if (Movement == null)
+                return;
+
+            Movement.SetEntity(null);
+            Movement.ScriptMovement = null;
+            _oldMovements.Add(Movement);
+            Movement = null;
         }
 
         void ClearOldMovements()
@@ -581,54 +499,50 @@ namespace Zelda.Game.Entities
             _oldMovements.Clear();
         }
 
-        public virtual void NotifyPositionChanged()
+        internal virtual void NotifyPositionChanged()
         {
             CheckCollisionWithDetectors();
         }
 
         // 엔티티에게 이동 특성이 변했음을 알리기 위해 Movement 객체에 의해 호출됩니다.
-        public virtual void NotifyMovementChanged()
+        internal virtual void NotifyMovementChanged()
         {
         }
 
-        public virtual void NotifyMovementFinished()
+        internal virtual void NotifyMovementFinished()
         {
         }
 
-        public virtual void NotifyMovingBy(MapEntity entity)
+        internal virtual void NotifyMovingBy(MapEntity entity)
         {
         }
 
-        public virtual void NotifyMovedBy(MapEntity entity)
+        internal virtual void NotifyMovedBy(MapEntity entity)
         {
         }
 
-        public virtual void NotifyLayerChanged()
+        internal virtual void NotifyLayerChanged()
         {
             if (IsOnMap)
                 CheckCollisionWithDetectors();
         }
 
-        public virtual void NotifyFacingEntityChanged(Detector facingEntity)
+        internal virtual void NotifyFacingEntityChanged(Detector facingEntity)
         {
         }
 
-        public static Point DirectionToXyMove(Direction8 direction8)
+        internal static Point DirectionToXyMove(Direction8 direction8)
         {
-            return _directionsToXyMoves[(int)direction8];
+            return DirectionsToXyMoves[(int)direction8];
         }
 
-        public void CheckCollisionWithDetectors()
+        internal void CheckCollisionWithDetectors()
         {
             if (!IsOnMap)
                 return; // 초기화 중입니다
 
             if (!IsEnabled)
                 return;
-
-            if (GetDistanceToCamera2() > OptimizationDistance2 &&
-                _optimizationDistance > 0)
-                return; // 가시 영역으로부터 멀리 떨어진 엔티티들은 체크하지 않습니다
 
             // 간단한 충돌 검사
             Map.CheckCollisionWithDetectors(this);
@@ -639,64 +553,60 @@ namespace Zelda.Game.Entities
                     Map.CheckCollisionWithDetectors(this, sprite);
         }
 
-        public void CheckCollisionWithDetectors(Sprite sprite)
+        internal void CheckCollisionWithDetectors(Sprite sprite)
         {
             if (!IsEnabled)
-                return;
-
-            if (GetDistanceToCamera2() > OptimizationDistance2 &&
-                _optimizationDistance > 0)
                 return;
 
             Map.CheckCollisionWithDetectors(this, sprite);
         }
 
-        public virtual void NotifyCollisionWithDestructible(Destructible destructible, CollisionMode collisionMode)
+        internal virtual void NotifyCollisionWithDestructible(Destructible destructible, CollisionMode collisionMode)
         {
         }
 
-        public virtual void NotifyCollisionWithChest(Chest chest)
+        internal virtual void NotifyCollisionWithChest(Chest chest)
         {
         }
 
-        public virtual void NotifyCollisionWithBlock(Block block)
+        internal virtual void NotifyCollisionWithBlock(Block block)
         {
         }
 
-        public virtual void NotifyCollisionWithBomb(Bomb bomb, CollisionMode collisionMode)
+        internal virtual void NotifyCollisionWithBomb(Bomb bomb, CollisionMode collisionMode)
         {
         }
 
-        public virtual void NotifyCollisionWithExplosion(Explosion explosion, Sprite spriteOverlapping)
+        internal virtual void NotifyCollisionWithExplosion(Explosion explosion, Sprite spriteOverlapping)
         {
         }
 
-        public virtual bool IsObstacleFor(MapEntity other)
+        internal virtual bool IsObstacleFor(MapEntity other)
         {
             return false;
         }
 
-        public virtual bool IsObstacleFor(MapEntity other, Rectangle candidatePosition)
+        internal virtual bool IsObstacleFor(MapEntity other, Rectangle candidatePosition)
         {
             return IsObstacleFor(other);
         }
 
-        public virtual bool IsDestructibleObstacle(Destructible destructible)
+        internal virtual bool IsDestructibleObstacle(Destructible destructible)
         {
             return !destructible.IsWaitingForRegeneration;
         }
 
-        public virtual bool IsNpcObstacle(Npc npc)
+        internal virtual bool IsNpcObstacle(Npc npc)
         {
             return true;
         }
 
-        public virtual bool IsHeroObstacle(Hero hero)
+        internal virtual bool IsHeroObstacle(Hero hero)
         {
             return false;
         }
 
-        public virtual bool IsBlockObstacle(Block block)
+        internal virtual bool IsBlockObstacle(Block block)
         {
             return true;
         }

@@ -18,7 +18,7 @@ namespace Zelda.Game.Entities
             Origin = new Point(8, 13);
 
             // 스프라이트
-            SetDrawnInYOrder(true);
+            IsDrawnInYOrder = true;
             _sprites = new HeroSprites(this, equipment);
 
             // 상태
@@ -371,9 +371,6 @@ namespace Zelda.Game.Entities
 
         public override void DrawOnMap()
         {
-            if (!IsDrawn())
-                return;
-
             if (_state.IsHeroVisible)
                 _state.DrawOnMap();
         }

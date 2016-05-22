@@ -58,7 +58,7 @@ namespace Zelda.Game.Entities
             Sprite.EnablePixelCollisions();
             Size = new Size(16, 16);
             Origin = new Point(8, 13);
-            SetDrawnInYOrder(true);
+            IsDrawnInYOrder = true;
             OptimizationDistance = 0;   // 주인공이 멀리 있더라도 폭파될 수 있도록
 
             _scriptBomb = new ScriptBomb(this);

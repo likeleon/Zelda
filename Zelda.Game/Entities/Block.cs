@@ -1,4 +1,5 @@
-﻿using Zelda.Game.LowLevel;
+﻿using System;
+using Zelda.Game.LowLevel;
 using Zelda.Game.Movements;
 using Zelda.Game.Script;
 
@@ -6,15 +7,23 @@ namespace Zelda.Game.Entities
 {
     class Block : Detector
     {
-        public Block(
-            string name,
-            Layer layer,
-            Point xy,
-            Direction4 direction,
-            string spriteName,
-            bool canBePushed,
-            bool canBePulled,
-            int maximumMoves)
+        public bool IsPushable { get; set; }
+        public bool IsPullable { get; set; }
+
+        public int MaximumMoves
+        {
+            get { return _maximumMoves; }
+            set
+            {
+                if (value < 0 || value > 2)
+                    throw new Exception("MaximumMoves must be between 0 and 2");
+
+                _initialMaximumMoves = value;
+                _maximumMoves = value;
+            }
+        }
+
+        public Block(string name, Layer layer, Point xy, Direction4 direction, string spriteName, bool canBePushed, bool canBePulled, int maximumMoves)
             : base(CollisionMode.Facing, name, layer, xy, new Size(16, 16))
         {
             _maximumMoves = maximumMoves;
@@ -30,27 +39,12 @@ namespace Zelda.Game.Entities
             Origin = new Point(8, 13);
             Direction = direction;
             CreateSprite(spriteName);
-            SetDrawnInYOrder(Sprite.Size.Height > 16);
+            IsDrawnInYOrder = Sprite.Size.Height > 16;
 
             _scriptBlock = new ScriptBlock(this);
         }
 
-        public bool IsPushable { get; set; }
-        public bool IsPullable { get; set; }
-
         int _maximumMoves;
-        public int MaximumMoves
-        {
-            get { return _maximumMoves; }
-            set
-            {
-                Debug.CheckAssertion(value >= 0 && value <= 2,
-                    "MaximumMoves must be between 0 and 2");
-                _initialMaximumMoves = value;
-                _maximumMoves = value;
-            }
-        }
-
         int _initialMaximumMoves;
         int _whenCanMove;
         Point _lastPosition;
@@ -58,50 +52,26 @@ namespace Zelda.Game.Entities
         bool _soundPlayed;
         static int _movingDelay = 500;
 
-        public override EntityType Type
-        {
-            get { return EntityType.Block; }
-        }
+        public override EntityType Type => EntityType.Block;
 
-        readonly ScriptBlock _scriptBlock;
-        public override ScriptEntity ScriptEntity
-        {
-            get { return _scriptBlock; }
-        }
+        internal override bool IsObstacleFor(MapEntity other) => other.IsBlockObstacle(this);
+        internal override bool IsHoleObstacle => false;
+        internal override bool IsDestructibleObstacle(Destructible destructible) => true;
+        internal override bool IsHeroObstacle(Hero hero) => Movement == null;
 
-        public override bool IsObstacleFor(MapEntity other)
-        {
-            return other.IsBlockObstacle(this);
-        }
-
-        public override bool IsHoleObstacle
-        {
-            get { return false; }
-        }
-
-        public override bool IsDestructibleObstacle(Destructible destructible)
-        {
-            return true;
-        }
-
-        public override bool IsHeroObstacle(Hero hero)
-        {
-            return Movement == null;
-        }
-
-        public override void NotifyCreated()
+        internal override void NotifyCreated()
         {
             base.NotifyCreated();
 
             CheckCollisionWithDetectors();
         }
 
-        public override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        internal override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
         {
             entityOverlapping.NotifyCollisionWithBlock(this);
         }
 
-        public override bool NotifyActionCommandPressed()
+        internal override bool NotifyActionCommandPressed()
         {
             if (CommandsEffects.ActionCommandEffect == ActionCommandEffect.Grab)
             {
@@ -111,7 +81,7 @@ namespace Zelda.Game.Entities
             return false;
         }
 
-        public override bool StartMovementByHero()
+        internal override bool StartMovementByHero()
         {
             bool pulling = Hero.IsGrabbingOrPulling;
             Direction4 allowedDirection = Direction;
