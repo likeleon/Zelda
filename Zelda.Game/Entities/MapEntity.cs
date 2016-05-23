@@ -114,7 +114,7 @@ namespace Zelda.Game.Entities
         internal bool IsAlignedToGridY => TopLeftY % 8 == 0;
         internal IEnumerable<Sprite> Sprites => _sprites;
         internal bool HasSprite => _sprites.Count > 0; 
-        internal Sprite Sprite => _sprites[0];
+        public Sprite Sprite => _sprites[0];
         internal bool IsSuspended { get; private set; }
         internal Movement Movement { get; private set; }
 

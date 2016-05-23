@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Zelda.Game.Entities;
 using Zelda.Game.LowLevel;
@@ -184,12 +185,12 @@ namespace Zelda.Game
             }
         }
 
-        internal void StartDialog(string dialogId, object info, Action<object> callback)
+        public void StartDialog(string dialogId, object info, Action<object> callback)
         {
             if (!Core.Mod.DialogExists(dialogId))
-                Debug.Error("No such dialog: '{0}'".F(dialogId));
-            else
-                _dialogBox.Open(dialogId, info, callback);
+                throw new Exception("No such dialog: '{0}'".F(dialogId));
+
+            _dialogBox.Open(dialogId, info, callback);
         }
 
         public void StopDialog(object status)
@@ -233,8 +234,7 @@ namespace Zelda.Game
             // 다음 맵을 준비합니다
             if (CurrentMap == null || mapId != CurrentMap.Id)
             {
-                // 다른 맵입니다
-                _nextMap = new Map(mapId);
+                _nextMap = CreateMap(mapId);
                 _nextMap.Load(this);
             }
             else
@@ -244,6 +244,16 @@ namespace Zelda.Game
             }
 
             _nextMap.DestinationName = destinationName;
+        }
+
+        Map CreateMap(string mapId)
+        {
+            var type = Core.Mod.ObjectCreator.GetTypeById<Map>(mapId);
+            if (type == null)
+                return new Map(mapId);
+
+            var args = new Dictionary<string, object>() { { "id", mapId } };
+            return Core.Mod.ObjectCreator.CreateObject<Map>(type.Name, args);
         }
 
         void UpdateCommandsEffects()

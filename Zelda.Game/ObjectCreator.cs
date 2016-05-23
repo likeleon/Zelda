@@ -54,7 +54,6 @@ namespace Zelda.Game
             return null;
         }
 
-
         Type FindType(string className)
         {
             return _assemblies

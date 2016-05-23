@@ -31,7 +31,32 @@ namespace Zelda.Game.Heroes
 
             _treasure.GiveToPlayer();
 
-            ScriptContext.NotifyHeroBrandishTreasure(_treasure, _callback);
+            NotifyHeroBrandishTreasure(_treasure, _callback);
+        }
+
+        void NotifyHeroBrandishTreasure(Treasure treasure, Action callback)
+        {
+            string dialogId = "_treasure.{0}.{1}".F(treasure.ItemName, treasure.Variant);
+
+            if (!Core.Mod.DialogExists(dialogId))
+                throw new Exception("Missing treasure dialog: '{0}'".F(dialogId));
+
+            treasure.Game.StartDialog(dialogId, null, _ => TreasureDialogFinished(treasure.Item, treasure.Variant, treasure.SavegameVariable, callback));
+        }
+
+        void TreasureDialogFinished(EquipmentItem item, int treasureVariant, string treasureSavegameVariable, Action callback)
+        {
+            if (item.Game == null)
+                throw new InvalidOperationException("Equipment item without game");
+
+
+            callback?.Invoke();
+
+            var treasure = new Treasure(item.Game, item.Name, treasureVariant, treasureSavegameVariable);
+            item.OnObtained(treasure.Variant, treasure.IsSaved ? treasure.SavegameVariable : null);
+
+            if (item.Game.Hero.IsBrandishingTreasure)
+                item.Game.Hero.StartFree(); // 스크립트에서 주인공의 상태를 바꾸지 않았다면, 여기서 Treasure 상태를 풀어줍니다
         }
 
         public override void Stop(State nextState)

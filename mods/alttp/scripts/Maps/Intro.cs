@@ -12,8 +12,8 @@ namespace Alttp.Maps
         int _frescoIndex;
         Sprite _frescoSprite;
 
-        public Intro()
-            : base("0")
+        public Intro(string id)
+            : base(id)
         {
         }
 
@@ -21,11 +21,11 @@ namespace Alttp.Maps
         {
             (Game as PlayGame).DialogBox.SetDialogStyle(DialogBoxStyle.Empty);
 
-            _frescoSprite = GetEntity<ScriptNpc>("fresco").Sprite;
+            _frescoSprite = GetEntity<Npc>("fresco").Sprite;
             _frescoSprite.SetIgnoreSuspended(true);
             Game.StartDialog("intro0", null, (_) =>
             {
-                GetEntity<ScriptDynamicTile>("black_screen").SetEnabled(false);
+                GetEntity<DynamicTile>("black_screen").SetEnabled(false);
                 Core.Audio?.PlayMusic("legend");
                 NextFresco();
             });
