@@ -51,17 +51,6 @@ namespace Zelda.Game.Script
             ScriptMain.Current = _scriptMain;
         }
 
-        internal static ScriptItem RunItem(EquipmentItem item)
-        {
-            string className =  GetScriptClassName<ScriptItem>(item.Name);
-            if (className == null)
-                return null;
-
-            ScriptItem scriptItem = _objectCreator.CreateObject<ScriptItem>(className);
-            scriptItem.NotifyCreated(item);
-            return scriptItem;
-        }
-
         static string GetScriptClassName<T>(string id)
         {
             var itemTypes = _objectCreator.GetTypesImplementing<T>();

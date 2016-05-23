@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Zelda.Game
 {
-    class Equipment
+    public class Equipment
     {
         readonly Dictionary<string, EquipmentItem> _items = new Dictionary<string, EquipmentItem>();
         bool _suspended;
@@ -18,7 +19,7 @@ namespace Zelda.Game
 
         public void NotifyGameFinished()
         {
-            _items.Values.Do(i => i.Exit());
+            _items.Values.Do(i => i.Finish());
         }
 
         public void Update()
@@ -75,16 +76,18 @@ namespace Zelda.Game
         public void LoadItems()
         {
             // project_db.xml에 정의된 각 장비 아이템들을 생성합니다
-            foreach (var kvp in Core.Mod.GetResources(ResourceType.Item))
-            {
-                var itemId = kvp.Key;
-                var item = new EquipmentItem(this);
-                item.Name = itemId;
-                _items[itemId] = item;
-            }
-
-            _items.Values.Do(i => i.Initialize());
+            Core.Mod.GetResources(ResourceType.Item).Keys.Do(k => _items.Add(k, CreateItem(k)));
             _items.Values.Do(i => i.Start());
+        }
+
+        EquipmentItem CreateItem(string itemId)
+        {
+            var type = Core.Mod.ObjectCreator.GetTypeById<EquipmentItem>(itemId);
+            if (type == null)
+                return new EquipmentItem(this, itemId);
+
+            var args = new Dictionary<string, object>() { { "equipment", this }, { "name", itemId } };
+            return Core.Mod.ObjectCreator.CreateObject<EquipmentItem>(type.Name, args);
         }
 
         public bool ItemExists(string itemName)

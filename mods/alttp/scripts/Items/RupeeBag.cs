@@ -1,11 +1,13 @@
-﻿using Zelda.Game.Script;
+﻿using Zelda.Game;
+using Zelda.Game.Script;
 
 namespace Alttp.Items
 {
     [Id("rupee_bag")]
-    class RupeeBag : ScriptItem
+    class RupeeBag : EquipmentItem
     {
-        protected override void OnCreated()
+        public RupeeBag(Equipment equipment, string name)
+            : base(equipment, name)
         {
             SavegameVariable = "i1034";
         }

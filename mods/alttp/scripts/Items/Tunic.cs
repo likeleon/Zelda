@@ -4,16 +4,17 @@ using Zelda.Game.Script;
 namespace Alttp.Items
 {
     [Id("tunic")]
-    class Tunic : ScriptItem
+    class Tunic : EquipmentItem
     {
-        protected override void OnCreated()
+        public Tunic(Equipment equipment, string name)
+        : base(equipment, name)
         {
             SavegameVariable = "i1128";
         }
 
-        protected override void OnObtained(int variant, string savegameVariable)
+        public override void OnObtained(int variant, string savegameVariable)
         {
-            Game.SetAbility(Ability.Tunic, variant);
+            Savegame.SetAbility(Ability.Tunic, variant);
         }
     }
 }

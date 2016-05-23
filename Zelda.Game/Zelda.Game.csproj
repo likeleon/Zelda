@@ -152,7 +152,6 @@
     <Compile Include="Script\ScriptDynamicTile.cs" />
     <Compile Include="Script\ScriptEntity.cs" />
     <Compile Include="Script\ScriptHero.cs" />
-    <Compile Include="Script\ScriptItem.cs" />
     <Compile Include="Script\ScriptMap.cs" />
     <Compile Include="Script\ScriptContext.EntityApi.cs" />
     <Compile Include="Script\ScriptNpc.cs" />

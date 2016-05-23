@@ -126,17 +126,6 @@ namespace Zelda.Game.Script
             });
         }
 
-        public void SetItemAssigned(int slot, ScriptItem item)
-        {
-            ScriptToCore.Call(() =>
-            {
-                if (slot < 1 || slot > 2)
-                    throw new ArgumentException("The item slot should be 1 or 2", "slot");
-
-                _savegame.Equipment.SetItemAssigned(slot, item._item);
-            });
-        }
-
         public bool GetBooleanValue(string key)
         {
             return ScriptToCore.Call(() => _savegame.GetBoolean(key));
@@ -184,17 +173,6 @@ namespace Zelda.Game.Script
             {
                 _savegame.SetString(Savegame.Key.StartingMap, mapId);
                 _savegame.SetString(Savegame.Key.StartingPoint, destinationName);
-            });
-        }
-
-        public ScriptItem GetItem(string itemName)
-        {
-            return ScriptToCore.Call(() =>
-            {
-                if (!_savegame.Equipment.ItemExists(itemName))
-                    throw new ArgumentException("No such item: '{0}'".F(itemName));
-
-                return _savegame.Equipment.GetItem(itemName).ScriptItem;
             });
         }
 

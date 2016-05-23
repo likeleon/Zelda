@@ -321,5 +321,13 @@ namespace Zelda.Game
 
             return Equipment.GetItem(itemName);
         }
+
+        public void SetItemAssigned(int slot, EquipmentItem item)
+        {
+            if (slot < 1 || slot > 2)
+                throw new ArgumentException("The item slot should be 1 or 2", "slot");
+
+            Equipment.SetItemAssigned(slot, item);
+        }
     }
 }

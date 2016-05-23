@@ -1,33 +1,27 @@
-﻿using Zelda.Game.Script;
+﻿using System;
+using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
-    public class EquipmentItem
+    public class EquipmentItem : ITimerContext, IMenuContext
     {
-        internal Equipment Equipment { get; }
-        public Game Game => Equipment.Game;
         public Savegame Savegame => Equipment.Savegame;
+        public Map Map => Game.CurrentMap;
 
-        public string Name { get; set; }
-
-        public bool IsSaved { get { return !SavegameVariable.IsNullOrEmpty(); } }
-        public string SavegameVariable { get; set; }
-
+        public string Name { get; }
+        public string SavegameVariable { get; set; } = "";
         public string AmountSavegameVariable { get; set; }
-        public bool HasAmount { get { return !AmountSavegameVariable.IsNullOrEmpty(); } }
-
-        public bool IsObtainable { get; set; }
+        public bool HasAmount => !AmountSavegameVariable.IsNullOrEmpty();
+        public bool IsObtainable { get; set; } = true;
         public bool IsAssignable { get; set; }
-
-        public string SoundWhenBrandished { get; set; }
-
-        public ScriptItem ScriptItem { get; private set; }
+        public string SoundWhenBrandished { get; set; } = "treasure";
 
         public int Variant
         {
             get
             {
-                Debug.CheckAssertion(IsSaved, "The item '{0}' is not saved".F(Name));
+                if (!IsSaved)
+                    throw new InvalidOperationException("The item '{0}' is not saved".F(Name));
                 return Savegame.GetInteger(SavegameVariable);
             }
         }
@@ -36,18 +30,20 @@ namespace Zelda.Game
         {
             get
             {
-                Debug.CheckAssertion(HasAmount, "The item '{0}' has no amount".F(Name));
+                if (!HasAmount)
+                    throw new InvalidOperationException("The item '{0}' has no amount".F(Name));
                 return Savegame.GetInteger(AmountSavegameVariable);
             }
         }
 
-        internal EquipmentItem(Equipment equipment)
+        internal Game Game => Equipment.Game;
+        internal Equipment Equipment { get; }
+        internal bool IsSaved => !SavegameVariable.IsNullOrEmpty();
+
+        public EquipmentItem(Equipment equipment, string name)
         {
             Equipment = equipment;
-            Name = "";
-            SavegameVariable = "";
-            IsObtainable = true;
-            SoundWhenBrandished = "treasure";
+            Name = name;
         }
 
         public void SetVariant(int variant)
@@ -57,34 +53,43 @@ namespace Zelda.Game
             Savegame.SetInteger(SavegameVariable, variant);
         }
 
-        public void Initialize()
+        internal void Start()
         {
-            ScriptItem = ScriptContext.RunItem(this);
+            OnStarted();
         }
 
-        public void Start()
+        protected virtual void OnStarted() { }
+
+        internal void Finish()
         {
-            ScriptItem?.NotifyStarted();
+            OnFinished();
+            Timer.RemoveTimers(this);
+            ScriptMenu.RemoveMenus(this);
         }
 
-        public void Exit()
+        protected virtual void OnFinished() { }
+
+        internal void NotifyUsing()
         {
-            ScriptItem?.NotifyFinished();
+            OnUsing();
         }
 
-        public void NotifyUsing()
+        protected virtual void OnUsing() { }
+
+        internal void NotifyAbilityUsed(Ability ability)
         {
-            ScriptItem?.NotifyUsing();
+            OnAbilityUsed();
         }
 
-        public void NotifyAbilityUsed(Ability ability)
-        {
-            ScriptItem?.NotifyAbilityUsed(ability);
-        }
+        protected virtual void OnAbilityUsed() { }
 
-        public void NotifyObtaining(Treasure treasure)
+        public virtual void OnObtaining(int variant, string savegameVariable) { }
+        public virtual void OnObtained(int variant, string savegameVariable) { }
+
+        public void SetFinished()
         {
-            ScriptItem?.NotifyObtaining(treasure.Variant, IsSaved ? SavegameVariable : null);
+            if (Game.Hero.IsUsingItem)
+                Game.Hero.ItemBeingUsed.IsFinished = true;
         }
     }
 }

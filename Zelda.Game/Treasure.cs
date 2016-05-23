@@ -51,7 +51,7 @@ namespace Zelda.Game
             if (Item.IsSaved)
                 Item.SetVariant(Variant);
 
-            Item.NotifyObtaining(this);
+            Item.OnObtaining(Variant, IsSaved ? SavegameVariable : null);
         }
 
         public void Draw(Surface dstSurface, int x, int y)

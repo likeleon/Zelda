@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using Zelda.Game.LowLevel;
 using Zelda.Game.Primitives;
+using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
-    class ObjectCreator
+    public class ObjectCreator
     {
-        public static Action<string> MissingTypeAction = 
-            s => { Debug.Die("Cannot locate type: {0}".F(s)); };
+        public static Action<string> MissingTypeAction = s => { throw new InvalidOperationException("Cannot locate type: {0}".F(s)); };
 
         readonly Cache<string, Type> _typeCache;
         readonly Cache<Type, ConstructorInfo> _ctorCache;
@@ -33,26 +31,43 @@ namespace Zelda.Game
                 }
                 catch (Exception ex)
                 {
-                    Debug.Die("Failed to load assembly '{0}': {1}".F(asmFile, ex.Message));
+                    throw new Exception("Failed to load assembly '{0}': {1}".F(asmFile, ex.Message), ex);
                 }
 
                 _assemblies = asms.ToArray();
             }
         }
-        
-        public Type FindType(string className)
+
+        public Type GetTypeById<T>(string id)
+        {
+            var itemTypes = GetTypesImplementing<T>();
+            if (!itemTypes.Any())
+                return null;
+
+            foreach (var itemType in itemTypes)
+            {
+                string idValue = itemType.GetCustomAttributes<IdAttribute>().DefaultIfEmpty(IdAttribute.Default).First().Id;
+                if (idValue == id)
+                    return itemType;
+            }
+
+            return null;
+        }
+
+
+        Type FindType(string className)
         {
             return _assemblies
                 .Select(tuple => tuple.Item1.GetType(tuple.Item2 + "." + className, false))
                 .FirstOrDefault(t => t != null);
         }
 
-        public ConstructorInfo GetCtor(Type type)
+        ConstructorInfo GetCtor(Type type)
         {
             var flags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
             var ctors = type.GetConstructors(flags).Where(x => x.HasAttribute<UseCtorAttribute>());
             if (ctors.Count() > 1)
-                Debug.Die("ObjectCreator: UseCtor on multiple constructors; invalid.");
+                throw new InvalidOperationException("ObjectCreator: UseCtor on multiple constructors; invalid.");
             return ctors.FirstOrDefault();
         }
 
@@ -90,7 +105,7 @@ namespace Zelda.Game
             {
                 string key = p[i].Name;
                 if (!args.ContainsKey(key))
-                    Debug.Die("ObjectCreator: key '{0}' not found".F(key));
+                    throw new InvalidOperationException("ObjectCreator: key '{0}' not found".F(key));
                 a[i] = args[key];
             }
 

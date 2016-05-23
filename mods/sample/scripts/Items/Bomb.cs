@@ -5,25 +5,26 @@ using Zelda.Game.Script;
 namespace Sample.Items
 {
     [Id("bomb")]
-    class Bomb : ScriptItem
+    class Bomb : EquipmentItem
     {
-        protected override void OnCreated()
+        public Bomb(Equipment equipment, string name)
+        : base(equipment, name)
         {
             SavegameVariable = "bomb";
             IsAssignable = true;
         }
 
-        protected override void OnObtaining(int variant, string savegameVariable)
+        public override void OnObtaining(int variant, string savegameVariable)
         {
-            Game.SetItemAssigned(1, this);
+            Savegame.SetItemAssigned(1, this);
         }
 
         protected override void OnUsing()
         {
-            var hero = Map.GetEntity<ScriptHero>("hero");
-            
-            var xy = hero.Position;
-            var direction = hero.Direction;
+            var hero = Map.GetEntity<Hero>("hero");
+
+            var xy = hero.XY;
+            var direction = hero.AnimationDirection;
             if (direction == Direction4.Right)
                 xy.X += 16;
             else if (direction == Direction4.Up)
@@ -33,7 +34,7 @@ namespace Sample.Items
             else if (direction == Direction4.Down)
                 xy.Y += 16;
 
-            ScriptMap.CreateBomb(Map, new BombData()
+            Map.CreateBomb(new BombData()
             {
                 Layer = hero.Layer,
                 XY = xy

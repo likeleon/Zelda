@@ -32,7 +32,7 @@ namespace Zelda.Game.Script
             if (callback != null)
                 CoreToScript.Call(callback);
 
-            item.ScriptItem.NotifyObtained(treasure);
+            item.OnObtained(treasure.Variant, treasure.IsSaved ? treasure.SavegameVariable : null);
 
             if (hero.IsBrandishingTreasure)
             {

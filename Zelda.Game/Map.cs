@@ -480,7 +480,7 @@ namespace Zelda.Game
                 detector.CheckCollision(entity);
         }
 
-        void CreateTile(EntityData entityData)
+        public void CreateTile(EntityData entityData)
         {
             var data = entityData as TileData;
             var pattern = Tileset.GetTilePattern(data.Pattern);
@@ -507,14 +507,14 @@ namespace Zelda.Game
             return new Size(width, height);
         }
 
-        void CreateDestination(EntityData entityData)
+        public void CreateDestination(EntityData entityData)
         {
             var data = entityData as DestinationData;
             var destination = new Destination(data.Name, data.Layer, data.XY, data.Direction, data.Sprite, data.Default);
             Entities.AddEntity(destination);
         }
 
-        void CreateDestructible(EntityData entityData)
+        public void CreateDestructible(EntityData entityData)
         {
             var data = entityData as DestructibleData;
             var destructible = new Destructible(
@@ -533,7 +533,7 @@ namespace Zelda.Game
             Entities.AddEntity(destructible);
         }
 
-        void CreateChest(EntityData entityData)
+        public void CreateChest(EntityData entityData)
         {
             var data = entityData as ChestData;
             if (data.OpeningMethod == ChestOpeningMethod.ByInteractionIfItem)
@@ -565,7 +565,7 @@ namespace Zelda.Game
             Entities.AddEntity(chest);
         }
 
-        void CreateNpc(EntityData entityData)
+        public void CreateNpc(EntityData entityData)
         {
             var data = entityData as NpcData;
             var npc = new Npc(
@@ -580,7 +580,7 @@ namespace Zelda.Game
             Entities.AddEntity(npc);
         }
 
-        void CreateBlock(EntityData entityData)
+        public void CreateBlock(EntityData entityData)
         {
             var data = entityData as BlockData;
             if (data.MaximumMoves < 0 || data.MaximumMoves > 2)
@@ -598,7 +598,7 @@ namespace Zelda.Game
             Entities.AddEntity(block);
         }
 
-        void CreateDynamicTile(EntityData entityData)
+        public void CreateDynamicTile(EntityData entityData)
         {
             var data = entityData as DynamicTileData;
 
@@ -613,7 +613,7 @@ namespace Zelda.Game
             Entities.AddEntity(dynamicTile);
         }
 
-        void CreateBomb(EntityData entityData)
+        public void CreateBomb(EntityData entityData)
         {
             var data = entityData as BombData;
 

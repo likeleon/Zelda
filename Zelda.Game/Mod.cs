@@ -6,14 +6,15 @@ namespace Zelda.Game
 {
     public class Mod : IDisposable
     {
-        readonly Dictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
-
         public ModFiles ModFiles { get; }
         public ModResources Resources { get; }
+        public ObjectCreator ObjectCreator { get; }
         public string Language { get; private set; }
         public IReadOnlyDictionary<string, Dialog> Dialogs => _dialogs;
         public StringResources Strings { get; } = new StringResources();
         public ModProperties Properties { get; }
+
+        readonly Dictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
 
         public Mod(string programName, string modPath)
         {
@@ -21,6 +22,8 @@ namespace Zelda.Game
 
             Resources = new ModResources();
             Resources.ImportFromModFile(ModFiles, "project_db.xml");
+
+            ObjectCreator = new ObjectCreator(Resources);
 
             Properties = new ModProperties();
             Properties.ImportFromModFile(ModFiles, "mod.xml");
@@ -30,8 +33,7 @@ namespace Zelda.Game
 
         public void Dispose()
         {
-            if (ModFiles != null)
-                ModFiles.Dispose();
+            ModFiles?.Dispose();
         }
 
         public bool ResourceExists(ResourceType resourceType, string id)
