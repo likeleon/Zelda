@@ -1,6 +1,7 @@
 ﻿using System;
 using Zelda.Game;
 using Zelda.Game.LowLevel;
+using Zelda.Game.Movements;
 using Zelda.Game.Script;
 
 namespace Alttp.Menus
@@ -66,13 +67,13 @@ namespace Alttp.Menus
         void StartAnimation()
         {
             // 태양의 이동
-            var sunMovement = ScriptMovement.Create(MovementType.Target) as ScriptTargetMovement;
+            var sunMovement = TargetMovement.Create();
             sunMovement.SetSpeed(64);
             sunMovement.SetTarget(new Point(0, -33));
             sunMovement.PositionChanged += (o, e) => RebuildSurface();
 
             // 검의 이동
-            var swordMovement = ScriptMovement.Create(MovementType.Target) as ScriptTargetMovement;
+            var swordMovement = TargetMovement.Create();
             swordMovement.SetSpeed(96);
             swordMovement.SetTarget(new Point(-48, 48));
             swordMovement.PositionChanged += (o, e) => RebuildSurface();

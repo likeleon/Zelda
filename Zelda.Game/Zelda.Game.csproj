@@ -160,8 +160,6 @@
     <Compile Include="Movements\TargetMovement.cs" />
     <Compile Include="Savegame.cs" />
     <Compile Include="Script\IInputEventHandler.cs" />
-    <Compile Include="Script\ScriptMovement.cs" />
-    <Compile Include="Script\MovementType.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="LowLevel\Surface.cs" />
     <Compile Include="LowLevel\Platform.cs" />

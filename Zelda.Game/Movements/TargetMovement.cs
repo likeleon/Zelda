@@ -1,4 +1,5 @@
 ﻿using System;
+using Zelda.Game.Entities;
 using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Movements
@@ -16,7 +17,15 @@ namespace Zelda.Game.Movements
         int _signX;         // X 방향 (1: 우, -1: 좌)
         int _signY;         // Y 방향 (1: 아래, -1: 위)
 
-        public TargetMovement(Point target, int movingSpeed, bool ignoreObstacles)
+        public static TargetMovement Create()
+        {
+            if (Core.Game != null)
+                throw new NotImplementedException("If we are on a map, the default target should be the hero.");
+            else
+                return new TargetMovement(Point.Zero, 32, false);
+        }
+
+        internal TargetMovement(Point target, int movingSpeed, bool ignoreObstacles)
             : base(ignoreObstacles, true)
         {
             _target = target;
@@ -24,6 +33,28 @@ namespace Zelda.Game.Movements
             _signY = 0;
             _movingSpeed = movingSpeed;
             _nextRecomputationDate = Core.Now;
+        }
+
+        public void Start(Point xy, Action finished)
+        {
+            Stop();
+            SetXY(xy);
+            FinishedCallback = finished;
+        }
+
+        public void Start(Drawable drawable, Action finished)
+        {
+            Stop();
+            drawable.StartMovement(this);
+            FinishedCallback = finished;
+        }
+
+        public void Start(MapEntity entity, Action finished)
+        {
+            Stop();
+            entity.ClearMovement();
+            entity.SetMovement(this);
+            FinishedCallback = finished;
         }
 
         public void SetMovingSpeed(int movingSpeed)
