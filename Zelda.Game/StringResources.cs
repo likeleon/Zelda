@@ -59,7 +59,9 @@ namespace Zelda.Game
 
         public string GetString(string key)
         {
-            Debug.CheckAssertion(HasString(key), "No such string: '{0}'".F(key));
+            if (!HasString(key))
+                throw new ArgumentException("No such string: '{0}'".F(key), nameof(key));
+
             return _strings[key];
         }
 

@@ -326,7 +326,7 @@ namespace Alttp.Menus
             if (nextDialogId != null && nextDialogId != "_unknown")
             {
                 _selectedAnswer = DialogBoxSelectedAnswer.NoQuestion;
-                _dialog = ScriptLanguage.GetDialog(nextDialogId);
+                _dialog = Core.Mod.GetDialog(nextDialogId);
                 ShowDialog();
             }
             else

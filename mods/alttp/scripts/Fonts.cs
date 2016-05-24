@@ -1,4 +1,5 @@
 ﻿using System;
+using Zelda.Game;
 using Zelda.Game.Script;
 
 namespace Alttp
@@ -19,7 +20,7 @@ namespace Alttp
     {
         public static Font GetMenuFont(string language = null)
         {
-            language = language ?? ScriptLanguage.Language;
+            language = language ?? Core.Mod.Language;
 
             if (language == "ko_KR")
                 return new Font("NanumBarunGothic", 12);
@@ -31,7 +32,7 @@ namespace Alttp
 
         public static Font GetDialogFont(string language = null)
         {
-            language = language ?? ScriptLanguage.Language;
+            language = language ?? Core.Mod.Language;
 
             if (language == "ko_KR")
                 return new Font("NanumBarunGothic", 12);

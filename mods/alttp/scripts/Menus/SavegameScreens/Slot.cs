@@ -27,7 +27,7 @@ namespace Alttp.Menus.SavegameScreens
             }
             else
             {
-                var name = "- {0} -".F(ScriptLanguage.GetString("selection_menu.empty"));
+                var name = "- {0} -".F(Core.Mod.GetString("selection_menu.empty"));
                 PlayerNameText.SetText(name);
             }
         }

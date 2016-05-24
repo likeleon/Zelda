@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Zelda.Game.LowLevel;
 
 namespace Zelda.Game
@@ -10,6 +11,7 @@ namespace Zelda.Game
         public ModResources Resources { get; }
         public ObjectCreator ObjectCreator { get; }
         public string Language { get; private set; }
+        public IEnumerable<string> Languages => GetResources(ResourceType.Language).Select(r => r.Key);
         public IReadOnlyDictionary<string, Dialog> Dialogs => _dialogs;
         public StringResources Strings { get; } = new StringResources();
         public ModProperties Properties { get; }
@@ -48,11 +50,15 @@ namespace Zelda.Game
 
         public string GetLanguageName(string languageCode)
         {
+            if (languageCode == null)
+                throw new ArgumentNullException(nameof(languageCode));
+
+            string name;
             var languages = GetResources(ResourceType.Language);
-            if (languages.ContainsKey(languageCode))
-                return languages[languageCode];
-            else
-                return "";
+            if (!languages.TryGetValue(languageCode, out name))
+                throw new ArgumentException("No such language: '{0}'".F(languageCode), nameof(languageCode));
+
+            return name;
         }
 
         public bool StringExists(string key)
@@ -72,7 +78,9 @@ namespace Zelda.Game
 
         public Dialog GetDialog(string dialogId)
         {
-            Debug.CheckAssertion(DialogExists(dialogId), "No such dialog: '{0}'".F(dialogId));
+            if (!DialogExists(dialogId))
+                throw new ArgumentException("No such dialog: '{0}'".F(dialogId), nameof(dialogId));
+
             return Dialogs[dialogId];
         }
 
@@ -83,7 +91,8 @@ namespace Zelda.Game
 
         public void SetLanguage(string languageCode)
         {
-            Debug.CheckAssertion(HasLanguage(languageCode), "No such language: '{0}'".F(languageCode));
+            if (!HasLanguage(languageCode))
+                throw new ArgumentException("No such language: '{0}'".F(languageCode), nameof(languageCode));
 
             Language = languageCode;
 

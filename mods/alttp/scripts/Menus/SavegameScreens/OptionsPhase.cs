@@ -50,21 +50,21 @@ namespace Alttp.Menus.SavegameScreens
 
         class LanguageOption : Option
         {
-            public override string Name { get { return "language"; } }
+            public override string Name => "language";
 
             public LanguageOption(OptionsPhase phase)
                 : base(phase)
             {
-                Values = ScriptLanguage.Languages.ToArray();
-                InitialValue = ScriptLanguage.Language;
+                Values = Core.Mod.Languages.ToArray();
+                InitialValue = Core.Mod.Language;
             }
 
             protected override void ApplyValue(string value)
             {
-                ValueText.SetText(ScriptLanguage.GetLanguageName(value));
-                if (value != ScriptLanguage.Language)
+                ValueText.SetText(Core.Mod.GetLanguageName(value));
+                if (value != Core.Mod.Language)
                 {
-                    ScriptLanguage.SetLanguage(value);
+                    Core.Mod.SetLanguage(value);
                     _phase.ReloadOptionsStrings();
                 }
             }

@@ -1,6 +1,7 @@
 ﻿using Sample.Menus;
 using Sample.Scripts;
 using System;
+using Zelda.Game;
 using Zelda.Game.Script;
 
 namespace Sample
@@ -11,7 +12,7 @@ namespace Sample
         {
             Console.WriteLine("This is a sample mod for Zelda.");
 
-            ScriptLanguage.SetLanguage("en");
+            Core.Mod.SetLanguage("en");
 
             SolarusLogo solarusLogo = new SolarusLogo();
             solarusLogo.Finished += (o, e) => GameManager.StartGame();

@@ -181,7 +181,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="ResourceType.cs" />
-    <Compile Include="Script\ScriptLanguage.cs" />
     <Compile Include="Script\ScriptMain.cs" />
     <Compile Include="Script\ScriptMenu.cs" />
     <Compile Include="Script\ScriptContext.cs" />

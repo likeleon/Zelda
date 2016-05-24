@@ -20,7 +20,7 @@ namespace Alttp.Menus
                 Text = TextSurface.Create(
                     font: font, 
                     fontSize: fontSize, 
-                    text: ScriptLanguage.GetLanguageName(id),
+                    text: Core.Mod.GetLanguageName(id),
                     horizontalAlignment: TextHorizontalAlignment.Center);
             }
         }
@@ -35,21 +35,21 @@ namespace Alttp.Menus
 
         protected override void OnStarted()
         {
-            if (!String.IsNullOrEmpty(ScriptLanguage.Language))
+            if (!Core.Mod.Language.IsNullOrEmpty())
             {
                 ScriptMenu.Stop(this);
                 return;
             }
 
             _surface = Surface.Create(320, 240, true);
-            _numVisibleLanguages = Math.Min(ScriptLanguage.Languages.Count(), _maxVisibleLanguages);
+            _numVisibleLanguages = Math.Min(Core.Mod.Languages.Count(), _maxVisibleLanguages);
 
-            _languages = new Language[ScriptLanguage.Languages.Count()];
+            _languages = new Language[Core.Mod.Languages.Count()];
 
             var defaultId = "en";
             var index = 0;
             var cursorPosition = 0;
-            foreach (var id in ScriptLanguage.Languages)
+            foreach (var id in Core.Mod.Languages)
             {
                 var font = Fonts.GetMenuFont(id);
                 Language language = new Language(id, font.Id, font.Size);
@@ -64,7 +64,7 @@ namespace Alttp.Menus
             if (_languages.Length <= 1)
             {
                 if (_languages.Length == 1)
-                    ScriptLanguage.SetLanguage(_languages[0].Id);
+                    Core.Mod.SetLanguage(_languages[0].Id);
                 ScriptMenu.Stop(this);
             }
             else
@@ -115,8 +115,7 @@ namespace Alttp.Menus
                 if (!_finished)
                 {
                     handled = true;
-                    var language = _languages[_cursorPosition];
-                    ScriptLanguage.SetLanguage(language.Id);
+                    Core.Mod.SetLanguage(_languages[_cursorPosition].Id);
                     _finished = true;
                     _surface.FadeOut();
                     Timer.Start(this, 700, (Action)Stop);
