@@ -1,54 +1,63 @@
 ﻿using System;
-using Zelda.Game.LowLevel;
 using Zelda.Game.Entities;
-using Zelda.Game.Script;
+using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Movements
 {
-    abstract class Movement
+    public abstract class Movement
     {
+        public event EventHandler<Point> PositionChanged;
+
+        public bool IgnoreObstacles { get; set; }
+        public Point XY => Entity?.XY ?? Drawable?.XY ?? _xy;
+        public int X => XY.X;
+        public int Y => XY.Y;
+
+        internal MapEntity Entity { get; private set; }
+        internal Drawable Drawable { get; private set; }
+        internal bool IsSuspended { get; private set; }
+        internal bool IsStopped => !IsStarted;
+        internal virtual bool IsStarted => false;
+        internal virtual bool IsFinished => false;
+        internal Rectangle LastCollisionBoxOnObstacle { get; private set; } = new Rectangle(-1, -1);
+        internal Action FinishedCallback { get; set; }
+
+        protected int WhenSuspended { get; private set; }
+
+        Point _xy;
+        bool _defaultIgnoreObstacles;
+        int _lastMoveDate;     // 마지막으로 X나 Y방향으로 이동한 시각
+        bool _finished;
+
         protected Movement(bool ignoreObstacles)
         {
             _defaultIgnoreObstacles = ignoreObstacles;
-            _currentIgnoreObstacles = ignoreObstacles;
+            IgnoreObstacles = ignoreObstacles;
         }
 
-        #region 조종 오브젝트
-        MapEntity _entity;
-
-        public MapEntity Entity
+        internal void SetEntity(MapEntity entity)
         {
-            get { return _entity; }
-        }
+            if (Drawable != null)
+                throw new InvalidOperationException("This movement is already assigned to a drawable");
 
-        public void SetEntity(MapEntity entity)
-        {
-            Debug.CheckAssertion(_drawable == null, "This movement is already assigned to a drawable");
-
-            _entity = entity;
-            if (_entity == null)
+            Entity = entity;
+            if (Entity == null)
                 _xy = new Point(0, 0);
             else
             {
-                _xy = _entity.XY;
+                _xy = Entity.XY;
                 NotifyMovementChanged();
             }
             
             NotifyObjectControlled();
         }
 
-        Drawable _drawable;
-        public Drawable Drawable
+        internal void SetDrawable(Drawable drawable)
         {
-            get { return _drawable; }
-        }
+            if (Entity != null)
+                throw new InvalidOperationException("This movement is already assigned to an entity");
 
-        public void SetDrawable(Drawable drawable)
-        {
-
-            Debug.CheckAssertion(_entity == null, "This movement is already assigned to an entity");
-
-            _drawable = drawable;
+            Drawable = drawable;
 
             if (drawable == null)
                 _xy = new Point(0, 0);
@@ -61,16 +70,11 @@ namespace Zelda.Game.Movements
             NotifyObjectControlled();
         }
 
-        public virtual void NotifyObjectControlled()
+        internal virtual void NotifyObjectControlled()
         {
         }
-        #endregion
 
-        #region 갱신
-        int _lastMoveDate;     // 마지막으로 X나 Y방향으로 이동한 시각
-        bool _finished;
-
-        public virtual void Update()
+        internal virtual void Update()
         {
             if (!_finished && IsFinished)
             {
@@ -83,59 +87,20 @@ namespace Zelda.Game.Movements
             }
         }
 
-        bool _suspended;
-        public bool IsSuspended
+        internal virtual void SetSuspended(bool suspended)
         {
-            get { return _suspended; }
-        }
-
-        int _whenSuspended;
-        protected int WhenSuspended
-        {
-            get { return _whenSuspended; }
-        }
-
-        public virtual void SetSuspended(bool suspended)
-        {
-            if (suspended == _suspended)
+            if (suspended == IsSuspended)
                 return;
 
-            _suspended = suspended;
+            IsSuspended = suspended;
 
             if (suspended)
-                _whenSuspended = Core.Now;
-        }
-        #endregion
-
-        #region 위치
-        Point _xy;
-        public Point XY
-        {
-            get
-            {
-                if (_entity != null)
-                    return _entity.XY;
-
-                if (_drawable != null)
-                    return _drawable.XY;
-
-                return _xy; 
-            }
-        }
-
-        public int X
-        {
-            get { return XY.X; }
+                WhenSuspended = Core.Now;
         }
 
         public void SetX(int x)
         {
             SetXY(x, Y);
-        }
-
-        public int Y
-        {
-            get { return XY.Y; }
         }
 
         public void SetY(int y)
@@ -150,11 +115,11 @@ namespace Zelda.Game.Movements
 
         public void SetXY(Point xy)
         {
-            if (_entity != null)
-                _entity.XY = xy;
+            if (Entity != null)
+                Entity.XY = xy;
 
-            if (_drawable != null)
-                _drawable.XY = xy;
+            if (Drawable != null)
+                Drawable.XY = xy;
 
             _xy = xy;
 
@@ -162,164 +127,95 @@ namespace Zelda.Game.Movements
             _lastMoveDate = Core.Now;
         }
 
-        public void TranslateX(int dx)
+        internal void TranslateX(int dx)
         {
             TranslateXY(dx, 0);
         }
 
-        public void TranslateY(int dy)
+        internal void TranslateY(int dy)
         {
             TranslateXY(0, dy);
         }
 
-        public void TranslateXY(int dx, int dy)
+        internal void TranslateXY(int dx, int dy)
         {
             SetXY(X + dx, Y + dy);
         }
 
-        public void TranslateXY(Point dxy)
+        internal void TranslateXY(Point dxy)
         {
             TranslateXY(dxy.X, dxy.Y);
         }
 
         // X나 Y가 변경되었을 때 호출합니다
-        public virtual void NotifyPositionChanged()
+        internal virtual void NotifyPositionChanged()
         {
-            if (_scriptMovement != null)
-                _scriptMovement.NotifyPositionChanged(XY);
+            OnPositionChanged(XY);
+            PositionChanged?.Invoke(this, XY);
 
-            if (_entity != null && !_entity.IsBeingRemoved)
-                _entity.NotifyPositionChanged();
+            if (Entity?.IsBeingRemoved == false)
+                Entity.NotifyPositionChanged();
         }
 
+        protected virtual void OnPositionChanged(Point xy) { }
+
         // 이동 특성(speed이나 angle등)이 변화했음을 알립니다
-        public virtual void NotifyMovementChanged()
+        internal virtual void NotifyMovementChanged()
         {
-            if (_entity != null && !_entity.IsBeingRemoved)
-                _entity.NotifyMovementChanged();
+            if (Entity?.IsBeingRemoved == false)
+                Entity.NotifyMovementChanged();
         }
 
         // 이동이 끝났을 때 호출합니다
-        public virtual void NotifyMovementFinished()
+        internal virtual void NotifyMovementFinished()
         {
-            if (_scriptMovement != null)
-            {
-                if (_finishedCallback != null)
-                {
-                    _finishedCallback.Invoke();
-                    _finishedCallback = null;
-                }
-                _scriptMovement.NotifyMovementFinished();
-            }
+            FinishedCallback?.Invoke();
+            FinishedCallback = null;
 
-            if (_entity != null && !_entity.IsBeingRemoved)
-                _entity.NotifyMovementFinished();
-        }
-        #endregion
-
-        #region 이동
-        public bool IsStopped
-        {
-            get { return !IsStarted; }
+            if (Entity?.IsBeingRemoved == false)
+                Entity.NotifyMovementFinished();
         }
 
-        public virtual bool IsStarted
-        {
-            get { return false; }
-        }
-
-        public virtual void Stop()
+        internal virtual void Stop()
         {
         }
 
-        public virtual bool IsFinished
-        {
-            get { return false; }
-        }
-        #endregion
-
-        #region 충돌
-        bool _defaultIgnoreObstacles;
-        
-        bool _currentIgnoreObstacles;
-        public bool IgnoreObstacles
-        {
-            get { return _currentIgnoreObstacles; }
-            set { _currentIgnoreObstacles = value; }
-        }
-
-        public void SetDefaultIgnoreObstacles(bool ignoreObstacles)
+        internal void SetDefaultIgnoreObstacles(bool ignoreObstacles)
         {
             _defaultIgnoreObstacles = ignoreObstacles;
-            _currentIgnoreObstacles = ignoreObstacles;
+            IgnoreObstacles = ignoreObstacles;
         }
         
-        public void RestoreDefaultIgnoreObstacles()
+        internal void RestoreDefaultIgnoreObstacles()
         {
-            _currentIgnoreObstacles = _defaultIgnoreObstacles;
+            IgnoreObstacles = _defaultIgnoreObstacles;
         }
 
-        Rectangle _lastCollisionBoxOnObstacle = new Rectangle(-1, -1);
-        public Rectangle LastCollisionBoxOnObstacle
+        internal bool TestCollisionWithObstacles(int dx, int dy)
         {
-            get { return _lastCollisionBoxOnObstacle; }
-        }
-
-        public bool TestCollisionWithObstacles(int dx, int dy)
-        {
-            if (_entity == null || _currentIgnoreObstacles)
+            if (Entity == null || IgnoreObstacles)
                 return false;
 
-            Map map = _entity.Map;
+            Map map = Entity.Map;
 
-            Rectangle collisionBox = _entity.BoundingBox;
+            Rectangle collisionBox = Entity.BoundingBox;
             collisionBox.AddXY(dx, dy);
 
-            bool collision = map.TestCollisionWithObstacles(_entity.Layer, collisionBox, _entity);
+            bool collision = map.TestCollisionWithObstacles(Entity.Layer, collisionBox, Entity);
 
             if (collision)
-                _lastCollisionBoxOnObstacle = collisionBox;
+                LastCollisionBoxOnObstacle = collisionBox;
 
             return collision;
         }
 
-        public bool TestCollisionWithObstacles(Point dxy)
+        internal bool TestCollisionWithObstacles(Point dxy)
         {
             return TestCollisionWithObstacles(dxy.X, dxy.Y);
         }
-        #endregion
 
-        #region 이동 오브젝트 표시
-        public virtual Direction4 GetDisplayedDirection4()
-        {
-            return Direction4.Down;   // 기본으로 아래 방향
-        }
+        internal virtual Direction4 GetDisplayedDirection4() => Direction4.Down;    // 기본으로 아래 방향
 
-        public virtual Point GetDisplayedXY()
-        {
-            return XY;
-        }
-        #endregion
-
-        #region 스크립트
-        ScriptMovement _scriptMovement;
-        public ScriptMovement ScriptMovement
-        {
-            get { return _scriptMovement; }
-            set { _scriptMovement = value; }
-        }
-
-        Action _finishedCallback;
-        public Action FinishedCallback
-        {
-            get { return _finishedCallback; }
-            set
-            {
-                Debug.CheckAssertion(ScriptMovement != null, "Undefined ScriptMovement");
-
-                _finishedCallback = value;
-            }
-        }
-        #endregion
+        internal virtual Point GetDisplayedXY() => XY;
     }
 }

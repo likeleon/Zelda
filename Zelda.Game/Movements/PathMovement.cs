@@ -4,42 +4,19 @@ using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Movements
 {
-    class PathMovement : PixelMovement
+    public class PathMovement : PixelMovement
     {
-        public PathMovement(List<Direction8> path, int speed, bool loop, bool ignoreObstacles, bool snapToGrid)
-            : base("", 0, false, ignoreObstacles)
-        {
-            CurrentDirection = Direction8.Down;
-            Speed = speed;
-            _loop = loop;
-            SnapToGrid = snapToGrid;
-            SetPath(path);
-        }
-
-        public Direction8 CurrentDirection { get; private set; }
-        public int TotalDistanceCovered { get; private set; }
         public int Speed { get; set; }
-
-        bool _loop;
-        public new bool Loop
-        {
-            get { return _loop; }
-        }
-
+        public new bool Loop => _loop;
         public bool SnapToGrid { get; set; }
+        public List<Direction8> Path => _initialPath;
 
-        List<Direction8> _initialPath;
-        public List<Direction8> Path
-        {
-            get { return _initialPath; }
-        }
+        internal Direction8 CurrentDirection { get; private set; }
+        internal int TotalDistanceCovered { get; private set; }
+        internal override bool IsFinished => (base.IsFinished && _remainingPath.Count <= 0 && !Loop) || _stoppedByObstacle;
+        bool IsCurrentElementaryMoveFinished => base.IsFinished;
 
-        List<Direction8> _remainingPath;
-        bool _snapping;
-        int _stopSnappingDate;
-        bool _stoppedByObstacle;
-
-        readonly static string[] _elementaryMoves = new string[]
+        static readonly string[] ElementaryMoves = new string[]
         {
             " 1  0   1  0   1  0   1  0   1  0   1  0   1  0   1  0", // 8 pixels right
             " 1 -1   1 -1   1 -1   1 -1   1 -1   1 -1   1 -1   1 -1", // 8 pixels right-up
@@ -51,8 +28,8 @@ namespace Zelda.Game.Movements
             " 1  1   1  1   1  1   1  1   1  1   1  1   1  1   1  1"  // 8 pixels right-down
         };
 
-        readonly static Direction4[] _displayedDirections = new Direction4[] 
-        { 
+        static readonly Direction4[] DisplayedDirections = new Direction4[]
+        {
             Direction4.Right,
             Direction4.Right,
             Direction4.Up,
@@ -63,10 +40,24 @@ namespace Zelda.Game.Movements
             Direction4.Right
         };
 
-        public override Direction4 GetDisplayedDirection4()
+        bool _loop;
+        List<Direction8> _initialPath;
+        List<Direction8> _remainingPath;
+        bool _snapping;
+        int _stopSnappingDate;
+        bool _stoppedByObstacle;
+
+        public PathMovement(List<Direction8> path, int speed, bool loop, bool ignoreObstacles, bool snapToGrid)
+            : base("", 0, false, ignoreObstacles)
         {
-            return _displayedDirections[(int)CurrentDirection];
+            CurrentDirection = Direction8.Down;
+            Speed = speed;
+            _loop = loop;
+            SnapToGrid = snapToGrid;
+            SetPath(path);
         }
+
+        internal override Direction4 GetDisplayedDirection4() => DisplayedDirections[(int)CurrentDirection];
 
         public new void SetLoop(bool loop)
         {
@@ -120,7 +111,7 @@ namespace Zelda.Game.Movements
                         "Invalid path '{0}' (bad direction '{1}'".F(String.Join(" ", _initialPath), _remainingPath[0]));
 
                     Delay = SpeedToDelay(Speed, CurrentDirection);
-                    SetTrajectory(_elementaryMoves[(int)CurrentDirection]);
+                    SetTrajectory(ElementaryMoves[(int)CurrentDirection]);
                     _remainingPath.RemoveAt(0);
                 }
             }
@@ -193,13 +184,13 @@ namespace Zelda.Game.Movements
             SetTrajectory(trajectory);
         }
 
-        public override void NotifyObjectControlled()
+        internal override void NotifyObjectControlled()
         {
             base.NotifyObjectControlled();
             Restart();
         }
 
-        public override void SetSuspended(bool suspended)
+        internal override void SetSuspended(bool suspended)
         {
             base.SetSuspended(suspended);
 
@@ -211,16 +202,7 @@ namespace Zelda.Game.Movements
             }
         }
 
-        public override bool IsFinished
-        {
-            get
-            {
-                return (base.IsFinished && _remainingPath.Count <= 0 && !Loop) ||
-                    _stoppedByObstacle;
-            }
-        }
-
-        public override void Update()
+        internal override void Update()
         {
             while (!IsSuspended &&
                    IsCurrentElementaryMoveFinished &&
@@ -232,11 +214,6 @@ namespace Zelda.Game.Movements
             }
 
             base.Update();
-        }
-
-        bool IsCurrentElementaryMoveFinished
-        {
-            get { return base.IsFinished; }
         }
 
         protected override void NotifyStepDone(int stepIndex, bool success)

@@ -3,21 +3,18 @@ using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Movements
 {
-    class TargetMovement : StraightMovement
+    public class TargetMovement : StraightMovement
     {
-        bool _finished;
-        public override bool IsFinished
-        {
-            get { return _finished; }
-        }
+        internal override bool IsFinished => _finished;
 
+        static readonly int RecomputationDelay = 150;
+
+        bool _finished;
         Point _target;
         int _movingSpeed;
         int _nextRecomputationDate;
         int _signX;         // X 방향 (1: 우, -1: 좌)
         int _signY;         // Y 방향 (1: 아래, -1: 위)
-
-        static readonly int RecomputationDelay = 150;
 
         public TargetMovement(Point target, int movingSpeed, bool ignoreObstacles)
             : base(ignoreObstacles, true)
@@ -66,7 +63,7 @@ namespace Zelda.Game.Movements
             }
         }
 
-        public override void NotifyObjectControlled()
+        internal override void NotifyObjectControlled()
         {
             base.NotifyObjectControlled();
 
@@ -74,7 +71,7 @@ namespace Zelda.Game.Movements
             RecomputeMovement();
         }
 
-        public override void Update()
+        internal override void Update()
         {
             if (Core.Now >= _nextRecomputationDate)
             {

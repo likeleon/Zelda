@@ -1,11 +1,26 @@
 ﻿using System;
-using System.ComponentModel;
 using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Movements
 {
-    class StraightMovement : Movement
+    public class StraightMovement : Movement
     {
+        public bool IsSmooth { get; set; }
+        public double Angle { get; private set; }
+
+        // x축 속력 (0:정지, 양수: 우, 음수: 좌)
+        internal double XSpeed { get; private set; }
+
+        // y축 속력 (0:정지, 양수: 아래, 음수: 위)
+        internal double YSpeed { get; private set; }
+
+        // 초기 위치로부터 이 거리만큼 멀어지거나 장애물과 충돌하면 이동을 멈춥니다
+        public int MaxDistance { get; set; }
+
+        internal override bool IsFinished => _finished;
+        internal override bool IsStarted => XSpeed != 0 || YSpeed != 0;
+
+        bool _finished;
         int _nextMoveDateX = Core.Now;    // 다음 X 이동 시각
         int _nextMoveDateY = Core.Now;    // 다음 Y 이동 시각
         int _xDelay;           // x축으로의 1픽셀 이동시의 딜레이
@@ -20,7 +35,7 @@ namespace Zelda.Game.Movements
             IsSmooth = smooth;
         }
 
-        public override void Update()
+        internal override void Update()
         {
             if (!IsSuspended)
             {
@@ -65,7 +80,7 @@ namespace Zelda.Game.Movements
 
                     now = Core.Now;
 
-                    if (!_finished && _maxDistance != 0 && Geometry.GetDistance(_initialXY, XY) >= _maxDistance)
+                    if (!_finished && MaxDistance != 0 && Geometry.GetDistance(_initialXY, XY) >= MaxDistance)
                     {
                         SetFinished();
                     }
@@ -81,13 +96,13 @@ namespace Zelda.Game.Movements
             base.Update();
         }
 
-        public override void NotifyObjectControlled()
+        internal override void NotifyObjectControlled()
         {
             base.NotifyObjectControlled();
             _initialXY = XY;
         }
 
-        public override void SetSuspended(bool suspended)
+        internal override void SetSuspended(bool suspended)
         {
             base.SetSuspended(suspended);
 
@@ -102,62 +117,34 @@ namespace Zelda.Game.Movements
             }
         }
 
-        #region 스피드 벡터
-        double _angle;
-        public double Angle
-        {
-            get { return _angle; }
-        }
-
-        // x축 속력 (0:정지, 양수: 우, 음수: 좌)
-        double _xSpeed;
-        public double XSpeed
-        {
-            get { return _xSpeed; }
-        }
-
-        // y축 속력 (0:정지, 양수: 아래, 음수: 위)
-        double _ySpeed;
-        public double YSpeed
-        {
-            get { return _ySpeed; }
-        }
-
-        // 초기 위치로부터 이 거리만큼 멀어지거나 장애물과 충돌하면 이동을 멈춥니다
-        int _maxDistance;
-        public int MaxDistance
-        {
-            get { return _maxDistance; }
-            set { _maxDistance = value; }
-        }
         public double GetSpeed()
         {
-            return Math.Sqrt(_xSpeed * _xSpeed + _ySpeed * _ySpeed);
+            return Math.Sqrt(XSpeed * XSpeed + YSpeed * YSpeed);
         }
 
         public void SetSpeed(double speed)
         {
-            if (_xSpeed == 0 && _ySpeed == 0)
-                _xSpeed = 1;
+            if (XSpeed == 0 && YSpeed == 0)
+                XSpeed = 1;
 
-            double oldAngle = _angle;
+            double oldAngle = Angle;
             SetXSpeed(speed * Math.Cos(oldAngle));
             SetYSpeed(-speed * Math.Sin(oldAngle));
-            _angle = oldAngle;
+            Angle = oldAngle;
 
             NotifyMovementChanged();
         }
 
-        public void SetXSpeed(double xSpeed)
+        internal void SetXSpeed(double xSpeed)
         {
             if (Math.Abs(xSpeed) <= 1E-6)
                 xSpeed = 0;
 
-            _xSpeed = xSpeed;
+            XSpeed = xSpeed;
             int now = Core.Now;
 
             // _xDelay, _xMove, _nextMoveDateX를 다시 계산합니다
-            if (_xSpeed == 0)
+            if (XSpeed == 0)
             {
                 _xMove = 0;
             }
@@ -176,23 +163,23 @@ namespace Zelda.Game.Movements
                 SetNextMoveDateX(now + _xDelay);
             }
 
-            _angle = Geometry.GetAngle(0, 0, (int)(xSpeed * 100), (int)(_ySpeed * 100));
+            Angle = Geometry.GetAngle(0, 0, (int)(xSpeed * 100), (int)(YSpeed * 100));
             _initialXY = XY;
             _finished = false;
 
             NotifyMovementChanged();
         }
 
-        public void SetYSpeed(double ySpeed)
+        internal void SetYSpeed(double ySpeed)
         {
             if (Math.Abs(ySpeed) <= 1E-6)
                 ySpeed = 0;
 
-            _ySpeed = ySpeed;
+            YSpeed = ySpeed;
             int now = Core.Now;
 
             // _xDelay, _xMove, _nextMoveDateX를 다시 계산합니다
-            if (_ySpeed == 0)
+            if (YSpeed == 0)
             {
                 _yMove = 0;
             }
@@ -211,7 +198,7 @@ namespace Zelda.Game.Movements
                 SetNextMoveDateY(now + _yDelay);
             }
 
-            _angle = Geometry.GetAngle(0, 0, (int)(_xSpeed * 100), (int)(ySpeed * 100));
+            Angle = Geometry.GetAngle(0, 0, (int)(XSpeed * 100), (int)(ySpeed * 100));
             _initialXY = XY;
             _finished = false;
 
@@ -226,50 +213,34 @@ namespace Zelda.Game.Movements
                 SetXSpeed(speed * Math.Cos(angle));
                 SetYSpeed(-speed * Math.Sin(angle));
             }
-            _angle = angle;
+            Angle = angle;
 
             NotifyMovementChanged();
         }
 
-        public override Direction4 GetDisplayedDirection4()
+        internal override Direction4 GetDisplayedDirection4()
         {
-            int direction = (Geometry.RadiansToDegrees(_angle) + 45 + 360) / 90;
+            int direction = (Geometry.RadiansToDegrees(Angle) + 45 + 360) / 90;
             return (Direction4)(direction % 4);
         }
 
-        public bool IsSmooth { get; set; }
-        #endregion
-
-        #region 이동
-        bool _finished;
-        public override bool IsFinished
+        internal override void Stop()
         {
-            get { return _finished; }
-        }
-
-        public override bool IsStarted
-        {
-            get { return _xSpeed != 0 || _ySpeed != 0; }
-        }
-
-        public override void Stop()
-        {
-            double oldAngle = _angle;
+            double oldAngle = Angle;
             SetXSpeed(0);
             SetYSpeed(0);
             _xMove = 0;
             _yMove = 0;
-            _angle = oldAngle;
+            Angle = oldAngle;
 
             NotifyMovementChanged();
         }
 
-        public void SetFinished()
+        internal void SetFinished()
         {
             Stop();
             _finished = true;
         }
-        #endregion
 
         protected void SetNextMoveDateX(int nextMoveDateX)
         {

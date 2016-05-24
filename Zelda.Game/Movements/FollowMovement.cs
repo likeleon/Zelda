@@ -1,10 +1,12 @@
-﻿using Zelda.Game.LowLevel;
-using Zelda.Game.Entities;
+﻿using Zelda.Game.Entities;
+using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Movements
 {
-    class FollowMovement : Movement
+    public class FollowMovement : Movement
     {
+        internal override bool IsFinished => _finished;
+
         MapEntity _entityFollowed;
         readonly int _x;
         readonly int _y;
@@ -18,12 +20,8 @@ namespace Zelda.Game.Movements
             _y = y;
         }
 
-        public override bool IsFinished
-        {
-            get { return _finished; }
-        }
 
-        public override Point GetDisplayedXY()
+        internal override Point GetDisplayedXY()
         {
             if (_entityFollowed == null)
                 return XY;
@@ -36,7 +34,7 @@ namespace Zelda.Game.Movements
             return XY + dxy;
         }
 
-        public override void Update()
+        internal override void Update()
         {
             if (_entityFollowed == null)
                 _finished = true;

@@ -5,39 +5,38 @@ using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Movements
 {
-    class PixelMovement : Movement
+    public class PixelMovement : Movement
     {
+        public int Delay { get; set; }
+        public bool Loop { get; private set; }
+        public IEnumerable<Point> Trajectory => _trajectory;
+
+        internal override bool IsFinished => _finished;
+        internal override bool IsStarted => !IsFinished;
+        internal int Length => _trajectory.Count;
+
+        readonly List<Point> _trajectory = new List<Point>();
+
+        bool _finished;
+        int _nbStepsDone;
+        IEnumerator<Point> _trajectoryEnumerator;
+        int _nextMoveDate;
+        string _trajectoryString;
+
         public PixelMovement(string trajectoryString, int delay, bool loop, bool ignoreObstacles)
             : base(ignoreObstacles)
         {
             Delay = delay;
-            _loop = loop;
+            Loop = loop;
             SetTrajectory(trajectoryString);
-        }
-
-        #region 속성
-        public int Delay { get; set; }
-
-        bool _loop;
-        public bool Loop
-        {
-            get { return _loop; }
         }
 
         public void SetLoop(bool loop)
         {
-            _loop = loop;
+            Loop = loop;
             if (IsFinished && loop)
                 Restart();
         }
-
-        List<Point> _trajectory = new List<Point>();
-        public IEnumerable<Point> Trajectory
-        {
-            get { return _trajectory; }
-        }
-
-        string _trajectoryString;
 
         public void SetTrajectory(string trajectoryString)
         {
@@ -61,33 +60,12 @@ namespace Zelda.Game.Movements
 
         public void SetTrajectory(IEnumerable<Point> trajectory)
         {
-            _trajectory = trajectory.ToList();
-            _trajectoryString = String.Empty;   // 필요할 때 계산됩니다
+            _trajectory.Clear();
+            _trajectory.AddRange(trajectory);
+            _trajectoryString = "";   // 필요할 때 계산됩니다
 
             Restart();
         }
-        #endregion
-
-        #region 상태
-        bool _finished;
-        public override bool IsFinished
-        {
-            get { return _finished; }
-        }
-
-        public override bool IsStarted
-        { 
-            get { return !IsFinished; } 
-        }
-
-        public int Length
-        {
-            get { return _trajectory.Count; }
-        }
-
-        int _nbStepsDone;
-        IEnumerator<Point> _trajectoryEnumerator;
-        int _nextMoveDate;
 
         void Restart()
         {
@@ -107,7 +85,7 @@ namespace Zelda.Game.Movements
             }
         }
 
-        public override void Update()
+        internal override void Update()
         {
             int now = Core.Now;
 
@@ -138,7 +116,7 @@ namespace Zelda.Game.Movements
 
             if (isLast)
             {
-                if (_loop)
+                if (Loop)
                     _trajectoryEnumerator = _trajectory.GetEnumerator();
                 else
                     _finished = true;
@@ -156,7 +134,7 @@ namespace Zelda.Game.Movements
         {
         }
 
-        public override void SetSuspended(bool suspended)
+        internal override void SetSuspended(bool suspended)
         {
             base.SetSuspended(suspended);
 
@@ -167,6 +145,5 @@ namespace Zelda.Game.Movements
                 _nextMoveDate += Core.Now - WhenSuspended;
             }
         }
-        #endregion
     }
 }
