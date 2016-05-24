@@ -100,7 +100,7 @@ namespace Zelda.Game
 
             OnFinished();
             Timer.RemoveTimers(this);
-            ScriptMenu.RemoveMenus(this);
+            Menu.RemoveMenus(this);
             SaveGame.NotifyGameFinished();
             SaveGame.Game = null;
 

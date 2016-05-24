@@ -25,14 +25,10 @@ namespace Zelda.Game.Script
                 CoreToScript.Call(_scriptMain.OnFinished);
             
             ScriptMain.Current = null;
-
-            ScriptMenu.DestroyMenus();
         }
 
         public static void Update()
         {
-            ScriptMenu.UpdateMenus();
-
             CoreToScript.Call(_scriptMain.OnUpdate);
         }
 
@@ -81,63 +77,21 @@ namespace Zelda.Game.Script
         internal static void MainOnDraw(Surface dstSurface)
         {
             CoreToScript.Call(() => _scriptMain.OnDraw(dstSurface));
-            ScriptMenu.MenusOnDraw(_scriptMain, dstSurface);
+            Menu.MenusOnDraw(_scriptMain, dstSurface);
         }
 
         internal static void GameOnDraw(Game game, Surface dstSurface)
         {
             game.SaveGame.ScriptGame.NotifyDraw(dstSurface);
-            ScriptMenu.MenusOnDraw(game.SaveGame.ScriptGame, dstSurface);
+            Menu.MenusOnDraw(game.SaveGame.ScriptGame, dstSurface);
         }
 
         internal static bool MainOnInput(InputEvent inputEvent)
         {
-            bool handled = OnInput(_scriptMain, inputEvent);
+            bool handled = _scriptMain.OnInput(inputEvent);
             if (!handled)
-                handled = ScriptMenu.MenusOnInput(_scriptMain, inputEvent);
+                handled = Menu.MenusOnInput(_scriptMain, inputEvent);
             return handled;
-        }
-        #endregion
-
-        #region 이벤트들
-        internal static bool OnInput(IInputEventHandler handler, InputEvent input)
-        {
-            bool handled = false;
-            if (input.IsKeyboardEvent)
-            {
-                if (input.IsKeyboardKeyPressed)
-                    handled = OnKeyPressed(handler, input) || handled;
-                else if (input.IsKeyboardKeyReleased)
-                    handled = OnKeyReleased(handler, input) || handled;
-            }
-            else if (input.IsCharacterPressed)
-                handled = OnCharacterPressed(handler, input) || handled;
-
-            return handled;
-        }
-
-        static bool OnKeyPressed(IInputEventHandler handler, InputEvent input)
-        {
-            return CoreToScript.Call(() =>
-            {
-                return handler.OnKeyPressed(input.KeyboardKey, new Modifiers(input));
-            });
-        }
-
-        static bool OnKeyReleased(IInputEventHandler handler, InputEvent input)
-        {
-            return CoreToScript.Call(() =>
-            {
-                return handler.OnKeyReleased(input.KeyboardKey);
-            });
-        }
-
-        static bool OnCharacterPressed(IInputEventHandler handler, InputEvent input)
-        {
-            return CoreToScript.Call(() =>
-            {
-                return handler.OnCharacterPressed(input.Character);
-            });
         }
         #endregion
     }

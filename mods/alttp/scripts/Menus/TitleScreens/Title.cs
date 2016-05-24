@@ -1,11 +1,10 @@
 ﻿using System;
 using Zelda.Game;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Alttp.Menus.TitleScreens
 {
-    class TitleScreen : ScriptMenu
+    class TitleScreen : Menu
     {
         readonly bool _debugEnabled;
 
@@ -76,7 +75,7 @@ namespace Alttp.Menus.TitleScreens
         void FinishTitle()
         {
             Core.Audio?.StopMusic();
-            ScriptMenu.Stop(this);
+            Stop();
         }
     }
 }

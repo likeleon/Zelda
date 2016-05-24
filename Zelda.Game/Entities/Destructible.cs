@@ -1,12 +1,11 @@
 ﻿using System;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {
     public class Destructible : Detector
     {
-        public Treasure Treasure { get; set; }
+        internal Treasure Treasure { get; set; }
         public string DestructionSound { get; set; }
         public bool CanExplode { get; set; }
         public bool CanRegenerate { get; set; }
@@ -59,7 +58,6 @@ namespace Zelda.Game.Entities
         internal bool IsWaitingForRegeneration => false;
 
         readonly Ground _modifiedGround;
-        readonly ScriptDestructible _scriptDestructible;
         int _weight;
         bool _canBeCut;
 
@@ -75,8 +73,6 @@ namespace Zelda.Game.Entities
             CreateSprite(AnimationSetId);
 
             UpdateCollisionModes();
-
-            _scriptDestructible = new ScriptDestructible(this);
         }
 
         internal override bool IsObstacleFor(MapEntity other)

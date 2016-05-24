@@ -41,7 +41,7 @@ namespace Alttp.Menus
         Two
     }
 
-    class DialogBox : ScriptMenu
+    class DialogBox : Menu
     {
         static readonly int _numVisibleLines = 3;
         static readonly int _letterSoundDelay = 100;
@@ -116,7 +116,7 @@ namespace Alttp.Menus
         public void Quit()
         {
             if (_game.IsDialogEnabled)
-                ScriptMenu.Stop(this);
+                Stop();
         }
 
         public void SetDialogStyle(DialogBoxStyle style)
@@ -130,13 +130,13 @@ namespace Alttp.Menus
         {
             _dialog = dialog;
             _info = info;
-            ScriptMenu.Start(_game, this);
+            Menu.Start(_game, this);
             return true;
         }
 
         public void OnDialogFinished(Dialog dialog)
         {
-            ScriptMenu.Stop(this);
+            Stop();
             _dialog = null;
             _info = null;
         }

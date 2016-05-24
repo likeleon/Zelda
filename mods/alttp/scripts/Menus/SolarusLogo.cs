@@ -6,7 +6,7 @@ using Zelda.Game.Script;
 
 namespace Alttp.Menus
 {
-    class SolarusLogo : ScriptMenu
+    class SolarusLogo : Menu
     {
         readonly Surface _surface;
         readonly Sprite _title;

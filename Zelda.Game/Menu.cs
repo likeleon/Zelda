@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using Zelda.Game.LowLevel;
 
-namespace Zelda.Game.Script
+namespace Zelda.Game
 {
     public interface IMenuContext { }
 
-    public abstract class ScriptMenu : IInputEventHandler, ITimerContext, IMenuContext
+    public abstract class Menu : IInputEventHandler, ITimerContext, IMenuContext
     {
-        internal class ScriptMenuData
+        public event EventHandler Started;
+        public event EventHandler Finished;
+
+        class MenuData
         {
-            public ScriptMenu Menu { get; set; }
+            public Menu Menu { get; set; }
             public IMenuContext Context { get; set; }
             public bool RecentlyAdded { get; set; }
 
-            public ScriptMenuData(ScriptMenu menu, IMenuContext context)
+            public MenuData(Menu menu, IMenuContext context)
             {
                 Menu = menu;
                 Context = context;
@@ -23,24 +26,17 @@ namespace Zelda.Game.Script
             }
         }
 
-        static List<ScriptMenuData> _menus = new List<ScriptMenuData>();
+        static List<MenuData> _menus = new List<MenuData>();
 
-        public event EventHandler Started;
-        public event EventHandler Finished;
-
-        public static void Start(IMenuContext context, ScriptMenu menu, bool onTop = true)
-        {
-            ScriptToCore.Call(() => AddMenu(menu, context, onTop));
-        }
-
-        static void AddMenu(ScriptMenu menu, IMenuContext context, bool onTop)
+        public static void Start(IMenuContext context, Menu menu, bool onTop = true)
         {
             if (onTop)
-                _menus.Add(new ScriptMenuData(menu, context));
+                _menus.Add(new MenuData(menu, context));
             else
-                _menus.Insert(0, new ScriptMenuData(menu, context));
+                _menus.Insert(0, new MenuData(menu, context));
 
-            menu.NotifyStarted();
+            menu.OnStarted();
+            menu.Started?.Invoke(menu, EventArgs.Empty);
         }
 
         internal static void UpdateMenus()
@@ -71,37 +67,33 @@ namespace Zelda.Game.Script
                 MenuOnDraw(menu.Menu, dstSurface);
         }
 
-        static void MenuOnDraw(ScriptMenu menu, Surface dstSurface)
+        static void MenuOnDraw(Menu menu, Surface dstSurface)
         {
-            CoreToScript.Call(() => menu.OnDraw(dstSurface));
+            menu.OnDraw(dstSurface);
             MenusOnDraw(menu, dstSurface);  // 자식 메뉴들을 그려줍니다
         }
 
-        public static bool IsStarted(ScriptMenu menu)
+        public void Stop()
         {
-            return _menus.Any(m => m.Menu == menu);
-        }
+            var menuData = _menus.Find(m => m.Menu == this);
+            if (menuData == null)
+                return;
 
-        public static void Stop(ScriptMenu menu)
-        {
-            ScriptMenuData menuData = _menus.Find(m => m.Menu == menu);
-            if (menuData != null)
-            {
-                menuData.Menu = null;
-                menuData.Context = null;
-                MenuOnFinished(menu);
-            }
+            menuData.Menu = null;
+            menuData.Context = null;
+            MenuOnFinished(this);
         }
 
         public static void StopAll(IMenuContext context)
         {
-            ScriptToCore.Call(() => RemoveMenus(context));
+            RemoveMenus(context);
         }
 
-        static void MenuOnFinished(ScriptMenu menu)
+        static void MenuOnFinished(Menu menu)
         {
             RemoveMenus(menu);  // 먼저 모든 자식 메뉴들을 정지시킵니다
-            menu.NotifyFinished();
+            menu.OnFinished();
+            menu.Finished?.Invoke(menu, EventArgs.Empty);
             Timer.StopAll(menu); // 이 메뉴에 관련된 타이머들을 모두 정지시킵니다
         }
 
@@ -130,61 +122,22 @@ namespace Zelda.Game.Script
             return false;
         }
 
-        static bool MenuOnInput(ScriptMenu menu, InputEvent input)
+        static bool MenuOnInput(Menu menu, InputEvent input)
         {
             // 자식 메뉴들에게 먼저 이벤트를 보냅니다
             bool handled = MenusOnInput(menu, input);
 
             if (!handled)
-                handled = ScriptContext.OnInput(menu, input);
+                handled = menu.OnInput(input);
 
             return handled;
         }
 
-        public bool IsStarted()
-        {
-            return ScriptToCore.Call(() => IsStarted(this));
-        }
+        public bool IsStarted() => _menus.Any(m => m.Menu == this);
 
-        public void Stop()
-        {
-            ScriptToCore.Call(() => Stop(this));
-        }
-
-        internal void NotifyStarted()
-        {
-            CoreToScript.Call(() =>
-            {
-                OnStarted();
-                if (Started != null)
-                    Started(this, EventArgs.Empty);
-            });
-        }
-
-        internal void NotifyFinished()
-        {
-            CoreToScript.Call(() =>
-            {
-                OnFinished();
-                if (Finished != null)
-                    Finished(this, EventArgs.Empty);
-            });
-        }
-
-        public virtual bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)
-        {
-            return false;
-        }
-
-        public virtual bool OnKeyReleased(KeyboardKey key)
-        {
-            return false;
-        }
-
-        public virtual bool OnCharacterPressed(string character)
-        {
-            return false;
-        }
+        public virtual bool OnKeyPressed(KeyboardKey key, Modifiers modifiers) => false;
+        public virtual bool OnKeyReleased(KeyboardKey key) => false;
+        public virtual bool OnCharacterPressed(string character) => false;
 
         internal static bool OnCommandPressed(IMenuContext context, GameCommand command)
         {
@@ -194,30 +147,18 @@ namespace Zelda.Game.Script
             return handled;
         }
 
-        static bool MenuOnCommandPressed(ScriptMenu menu, GameCommand command)
+        static bool MenuOnCommandPressed(Menu menu, GameCommand command)
         {
             // 자식들이 먼저 처리하게 합니다
             if (OnCommandPressed(menu, command))
                 return true;
 
-            return CoreToScript.Call(() => menu.OnCommandPressed(command));
+            return menu.OnCommandPressed(command);
         }
 
-        protected virtual void OnStarted()
-        {
-        }
-
-        protected virtual void OnDraw(Surface dstSurface)
-        {
-        }
-
-        protected virtual void OnFinished()
-        {
-        }
-
-        protected virtual bool OnCommandPressed(GameCommand command)
-        {
-            return false;
-        }
+        protected virtual void OnStarted() { }
+        protected virtual void OnDraw(Surface dstSurface) { }
+        protected virtual void OnFinished() { }
+        protected virtual bool OnCommandPressed(GameCommand command) => false;
     }
 }

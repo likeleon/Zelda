@@ -78,14 +78,16 @@ namespace Zelda.Game
         static void UpdateGame()
         {
             Game?.Update();
-            Timer.UpdateTimers();
             Drawable.UpdateDrawables();
+            Menu.UpdateMenus();
+            Timer.UpdateTimers();
             ScriptContext.Update();
         }
 
         static void StopGame()
         {
             Game?.Stop();
+            Menu.DestroyMenus();
             Timer.DestroyTimers();
             Drawable.DestroyDrawables();
             ScriptContext.Exit();

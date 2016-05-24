@@ -159,7 +159,7 @@
     <Compile Include="Movements\StraightMovement.cs" />
     <Compile Include="Movements\TargetMovement.cs" />
     <Compile Include="Savegame.cs" />
-    <Compile Include="Script\IInputEventHandler.cs" />
+    <Compile Include="IInputEventHandler.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="LowLevel\Surface.cs" />
     <Compile Include="LowLevel\Platform.cs" />
@@ -180,7 +180,7 @@
     </Compile>
     <Compile Include="ResourceType.cs" />
     <Compile Include="Script\ScriptMain.cs" />
-    <Compile Include="Script\ScriptMenu.cs" />
+    <Compile Include="Menu.cs" />
     <Compile Include="Script\ScriptContext.cs" />
     <Compile Include="SpriteAnimation.cs" />
     <Compile Include="SpriteAnimationDirection.cs" />

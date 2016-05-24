@@ -64,7 +64,7 @@ namespace Zelda.Game
         {
             OnFinished();
             Timer.RemoveTimers(this);
-            ScriptMenu.RemoveMenus(this);
+            Menu.RemoveMenus(this);
         }
 
         protected virtual void OnFinished() { }

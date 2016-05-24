@@ -6,7 +6,7 @@ using Zelda.Game.Script;
 
 namespace Alttp.Menus
 {
-    class LanguageMenu : ScriptMenu
+    class LanguageMenu : Menu
     {
         sealed class Language
         {
@@ -37,7 +37,7 @@ namespace Alttp.Menus
         {
             if (!Core.Mod.Language.IsNullOrEmpty())
             {
-                ScriptMenu.Stop(this);
+                Stop();
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace Alttp.Menus
             {
                 if (_languages.Length == 1)
                     Core.Mod.SetLanguage(_languages[0].Id);
-                ScriptMenu.Stop(this);
+                Stop();
             }
             else
                 SetCursorPosition(cursorPosition);

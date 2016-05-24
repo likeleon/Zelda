@@ -2,11 +2,10 @@
 using System.Linq;
 using Zelda.Game;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Alttp.Menus.SavegameScreens
 {
-    class SavegameScreen : ScriptMenu
+    class SavegameScreen : Menu
     {
         static readonly int _cloudWidth = 111;
         static readonly int _cloudHeight = 88;

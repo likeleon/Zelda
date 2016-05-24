@@ -14,9 +14,9 @@ namespace Sample
 
             Core.Mod.SetLanguage("en");
 
-            SolarusLogo solarusLogo = new SolarusLogo();
+            var solarusLogo = new SolarusLogo();
             solarusLogo.Finished += (o, e) => GameManager.StartGame();
-            ScriptMenu.Start(this, solarusLogo);
+            Menu.Start(this, solarusLogo);
         }
     }
 }

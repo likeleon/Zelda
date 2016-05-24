@@ -29,22 +29,22 @@ namespace Alttp
             solarusLogo.Finished += (_, e) =>
             {
                 if (Game == null)
-                    ScriptMenu.Start(this, languageMenu);
+                    Menu.Start(this, languageMenu);
             };
 
             languageMenu.Finished += (_, e) =>
             {
                 if (Game == null)
-                    ScriptMenu.Start(this, titleScreen);
+                    Menu.Start(this, titleScreen);
             };
 
             titleScreen.Finished += (_, e) =>
             {
                 if (Game == null)
-                    ScriptMenu.Start(this, savegameScreen);
+                    Menu.Start(this, savegameScreen);
             };
 
-            ScriptMenu.Start(this, solarusLogo);
+            Menu.Start(this, solarusLogo);
         }
 
         protected override void OnFinished()
@@ -73,7 +73,7 @@ namespace Alttp
             else if (key == KeyboardKey.F3)
                 StartGameIfSaveExists(3);
             else if (key == KeyboardKey.F12 && !_console.IsEnabled)
-                ScriptMenu.Start(this, _console);
+                Menu.Start(this, _console);
             else
                 handled = false;
 
@@ -90,7 +90,7 @@ namespace Alttp
                 return;
 
             var savegame = Savegame.Load(saveFileName);
-            ScriptMenu.StopAll(this);
+            Menu.StopAll(this);
             StartSavegame(savegame);
         }
 

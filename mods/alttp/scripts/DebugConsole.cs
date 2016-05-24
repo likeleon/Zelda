@@ -2,11 +2,10 @@
 using System.Linq;
 using Zelda.Game;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Alttp
 {
-    class DebugConsole : ScriptMenu
+    class DebugConsole : Menu
     {
         static readonly int _historyCapacity = 50;
         static readonly char[] _controlChars = "!@#$%^&*()".ToCharArray();
@@ -58,7 +57,7 @@ namespace Alttp
         public override bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)
         {
             if (key == KeyboardKey.F12 || key == KeyboardKey.Escape)
-                ScriptMenu.Stop(this);
+                Stop();
             else if (key == KeyboardKey.Backspace)
             {
                 if (OutputText.Length > 0)
