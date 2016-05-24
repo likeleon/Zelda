@@ -1,7 +1,6 @@
 ﻿using System;
 using Zelda.Game.LowLevel;
 using Zelda.Game.Movements;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {

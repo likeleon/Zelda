@@ -1,12 +1,12 @@
 ﻿using Zelda.Game;
 using Zelda.Game.Entities;
-using Zelda.Game.Script;
 
 namespace Sample.Items
 {
     [Id("bomb")]
     class Bomb : EquipmentItem
     {
+        [ObjectCreator.UseCtor]
         public Bomb(Equipment equipment, string name)
         : base(equipment, name)
         {

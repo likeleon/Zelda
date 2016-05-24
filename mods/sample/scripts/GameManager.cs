@@ -14,7 +14,7 @@ namespace Sample.Scripts
                 game.SetLife(game.GetMaxLife());
                 game.SetAbility(Ability.Lift, 2);
             }
-            game.Start();
+            game.Start(new Game(game));
         }
     }
 }

@@ -2,11 +2,10 @@
 using Sample.Scripts;
 using System;
 using Zelda.Game;
-using Zelda.Game.Script;
 
 namespace Sample
 {
-    public class Main : ScriptMain
+    public class Main : Zelda.Game.Main
     {
         protected override void OnStarted()
         {
@@ -18,5 +17,7 @@ namespace Sample
             solarusLogo.Finished += (o, e) => GameManager.StartGame();
             Menu.Start(this, solarusLogo);
         }
+
+        public override void Dispose() { }
     }
 }

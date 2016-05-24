@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml.Serialization;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Zelda.Game.Entities
 {

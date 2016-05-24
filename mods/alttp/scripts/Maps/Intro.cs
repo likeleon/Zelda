@@ -2,7 +2,6 @@
 using System;
 using Zelda.Game;
 using Zelda.Game.Entities;
-using Zelda.Game.Script;
 
 namespace Alttp.Maps
 {
@@ -12,6 +11,7 @@ namespace Alttp.Maps
         int _frescoIndex;
         Sprite _frescoSprite;
 
+        [ObjectCreator.UseCtor]
         public Intro(string id)
             : base(id)
         {

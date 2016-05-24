@@ -6,7 +6,7 @@ using Zelda.Game.LowLevel;
 
 namespace Zelda.Game
 {
-    public class Map
+    public class Map : ITimerContext
     {
         public string Id { get; }
         public string TilesetId { get; private set; }

@@ -1,5 +1,4 @@
 ﻿using System;
-using Zelda.Game.Script;
 
 namespace Zelda.Game
 {

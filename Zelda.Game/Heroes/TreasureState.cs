@@ -1,7 +1,6 @@
 ﻿using System;
-using Zelda.Game.LowLevel;
 using Zelda.Game.Entities;
-using Zelda.Game.Script;
+using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Heroes
 {

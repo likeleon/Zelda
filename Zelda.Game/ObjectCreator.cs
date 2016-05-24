@@ -3,10 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Zelda.Game.Primitives;
-using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class IdAttribute : Attribute
+    {
+        public static readonly IdAttribute Default = new IdAttribute("");
+        public string Id { get; }
+
+        public IdAttribute(string id)
+        {
+            Id = id;
+        }
+    }
+
     public class ObjectCreator
     {
         public static Action<string> MissingTypeAction = s => { throw new InvalidOperationException("Cannot locate type: {0}".F(s)); };
@@ -15,18 +26,18 @@ namespace Zelda.Game
         readonly Cache<Type, ConstructorInfo> _ctorCache;
         readonly Tuple<Assembly, string>[] _assemblies;
 
-        public ObjectCreator(ModResources modResources)
+        public ObjectCreator(Mod mod)
         {
             _typeCache = new Cache<string,Type>(FindType);
             _ctorCache = new Cache<Type, ConstructorInfo>(GetCtor);
 
             var asms = new List<Tuple<Assembly, string>>();
 
-            foreach (var asmFile in modResources.Assemblies)
+            foreach (var asmFile in mod.Resources.Assemblies)
             {
                 try
                 {
-                    var asm = Assembly.Load(Core.Mod.ModFiles.DataFileRead(asmFile));
+                    var asm = Assembly.Load(mod.ModFiles.DataFileRead(asmFile));
                     asms.AddRange(asm.GetNamespaces().Select(ns => new Tuple<Assembly, string>(asm, ns)));
                 }
                 catch (Exception ex)

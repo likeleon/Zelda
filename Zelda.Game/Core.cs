@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Linq;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
     public static class Core
     {
-        public static bool Exiting { get; set; }
         public static Mod Mod { get; private set; }
         public static Video Video => Platform.Video;
         public static Audio Audio => Platform.Audio;
         public static Input Input => Platform.Input;
+        public static Main Main { get; private set; }
         internal static FontResource FontResource => Platform.FontResource;
         internal static SpriteSystem SpriteSystem => Platform.SpriteSystem;
 
         internal static Game Game { get; private set; }
         internal static int Now { get; private set; }
         internal static Platform Platform { get; private set; }
+        internal static bool Exiting { get; set; }
 
         static readonly int TimeStep = 10;  // 업데이트시마다 추가될 게임 시간, 밀리초
 
@@ -39,7 +39,7 @@ namespace Zelda.Game
             _rootSurface = Surface.Create(Video.ModSize, false);
             _rootSurface.IsSoftwareDestination = false;
 
-            ScriptContext.Initialize();
+            PrepareGame();
 
             Video.ShowWindow();
         }
@@ -72,7 +72,15 @@ namespace Zelda.Game
 
         static void PrepareGame()
         {
-            ScriptContext.Initialize();
+            var mainTypes = Mod.ObjectCreator.GetTypesImplementing<Main>();
+            if (!mainTypes.Any())
+                throw new Exception("'Main' based class not found");
+
+            if (mainTypes.Count() > 1)
+                throw new Exception("'Too many 'Main' based classes");
+
+            Main = (Main)Mod.ObjectCreator.CreateBasic(mainTypes.First());
+            Main.OnStarted();
         }
 
         static void UpdateGame()
@@ -81,16 +89,20 @@ namespace Zelda.Game
             Drawable.UpdateDrawables();
             Menu.UpdateMenus();
             Timer.UpdateTimers();
-            ScriptContext.Update();
+            Main.OnUpdate();
         }
 
         static void StopGame()
         {
+            Main.OnFinished();
+
             Game?.Stop();
             Menu.DestroyMenus();
             Timer.DestroyTimers();
             Drawable.DestroyDrawables();
-            ScriptContext.Exit();
+
+            Main.Dispose();
+            Main = null;
         }
 
         // 유저가 프로그램에 대한 종료 요청을 보내기 전까지 메인 루프를 실행한다.
@@ -178,9 +190,11 @@ namespace Zelda.Game
             if (inputEvent.IsWindowClosing)
                 Exiting = true;
 
-            var handled = ScriptContext.MainOnInput(inputEvent);
-            if (!handled && Game != null)
-                Game.NotifyInput(inputEvent);
+            var handled = Main.OnInput(inputEvent);
+            if (!handled)
+                handled = Menu.MenusOnInput(Main, inputEvent);
+            if (!handled)
+                Game?.NotifyInput(inputEvent);
         }
 
         static void Draw()
@@ -188,7 +202,8 @@ namespace Zelda.Game
             _rootSurface.Clear();
 
             Game?.Draw(_rootSurface);
-            ScriptContext.MainOnDraw(_rootSurface);
+            Main.OnDraw(_rootSurface);
+            Menu.MenusOnDraw(Main, _rootSurface);
             Video.Render(_rootSurface);
         }
 

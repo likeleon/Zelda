@@ -25,7 +25,7 @@ namespace Zelda.Game
             Resources = new ModResources();
             Resources.ImportFromModFile(ModFiles, "project_db.xml");
 
-            ObjectCreator = new ObjectCreator(Resources);
+            ObjectCreator = new ObjectCreator(this);
 
             Properties = new ModProperties();
             Properties.ImportFromModFile(ModFiles, "mod.xml");

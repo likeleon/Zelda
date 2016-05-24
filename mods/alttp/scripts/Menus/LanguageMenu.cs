@@ -2,7 +2,6 @@
 using System.Linq;
 using Zelda.Game;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Alttp.Menus
 {
@@ -108,7 +107,7 @@ namespace Alttp.Menus
             if (key == KeyboardKey.Escape)
             {
                 handled = true;
-                ScriptMain.Exit();
+                Core.Main.Exit();
             }
             else if (key == KeyboardKey.Space || key == KeyboardKey.Return)
             {

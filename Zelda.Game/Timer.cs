@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Zelda.Game.Entities;
-using Zelda.Game.Script;
 
 namespace Zelda.Game
 {
@@ -59,9 +58,9 @@ namespace Zelda.Game
             if (context == null)
             {
                 if (Core.Game?.HasCurrentMap == true)
-                    context = Core.Game.CurrentMap.ScriptMap;
+                    context = Core.Game.CurrentMap;
                 else
-                    context = ScriptMain.Current;
+                    context = Main.Current;
             }
 
             var timer = new Timer(delay);

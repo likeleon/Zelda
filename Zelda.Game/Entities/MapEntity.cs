@@ -11,12 +11,12 @@ namespace Zelda.Game.Entities
 
         public Size Size
         {
-            get { return BoudingBox.Size; }
+            get { return _boundingBox.Size; }
             set
             {
                 if (value.Width % 8 != 0 || value.Height % 8 != 0)
                     throw new Exception("Invalid entity size: width and height must be multiple of 8");
-                BoudingBox.Size = value;
+                _boundingBox.Size = value;
             }
         }
 
@@ -25,7 +25,7 @@ namespace Zelda.Game.Entities
             get { return _origin; }
             set
             {
-                BoudingBox.XY += (_origin - value);
+                _boundingBox.XY += (_origin - value);
                 _origin = value;
             }
         }
@@ -38,14 +38,14 @@ namespace Zelda.Game.Entities
 
         public int X
         {
-            get { return BoudingBox.X + _origin.X; }
-            set { BoudingBox.X = value - _origin.X; }
+            get { return _boundingBox.X + _origin.X; }
+            set { _boundingBox.X = value - _origin.X; }
         }
 
         public int Y
         {
-            get { return BoudingBox.Y + _origin.Y; }
-            set { BoudingBox.Y = value - _origin.Y; }
+            get { return _boundingBox.Y + _origin.Y; }
+            set { _boundingBox.Y = value - _origin.Y; }
         }
 
         public Point CenterPoint { get { return BoundingBox.Center; } }
@@ -75,20 +75,25 @@ namespace Zelda.Game.Entities
         internal Ground GroundBelow { get; private set; }
         internal Game Game => Map.Game;
         internal Direction4 Direction { get; set; }
-        internal Rectangle BoundingBox { get; set; }
         internal int Width => BoundingBox.Width;
         internal int Height => BoundingBox.Height;
 
+        internal Rectangle BoundingBox
+        {
+            get { return _boundingBox; }
+            set { _boundingBox = value; }
+        }
+
         internal int TopLeftX
         {
-            get { return BoudingBox.X; }
-            set { BoudingBox.X = value; }
+            get { return _boundingBox.X; }
+            set { _boundingBox.X = value; }
         }
 
         internal int TopLeftY
         {
-            get { return BoudingBox.Y; }
-            set { BoudingBox.Y = value; }
+            get { return _boundingBox.Y; }
+            set { _boundingBox.Y = value; }
         }
 
         internal Point TopLeftXY
@@ -159,7 +164,7 @@ namespace Zelda.Game.Entities
 
         bool _initialized;
         Point _origin;
-        Rectangle BoudingBox;
+        Rectangle _boundingBox;
         int _optimizationDistance = DefaultOptimizationDistance;
         Detector _facingEntity;
         bool _waitingEnabled;
@@ -172,7 +177,7 @@ namespace Zelda.Game.Entities
             Name = name;
             Direction = direction;
             Layer = layer;
-            BoudingBox = new Rectangle(xy, size);
+            _boundingBox = new Rectangle(xy, size);
             OptimizationDistance2 = DefaultOptimizationDistance * DefaultOptimizationDistance;
         }
 
@@ -446,17 +451,17 @@ namespace Zelda.Game.Entities
         
         internal bool Overlaps(Point point)
         {
-            return BoudingBox.Contains(point);
+            return _boundingBox.Contains(point);
         }
 
         internal bool Overlaps(int x, int y)
         {
-            return BoudingBox.Contains(x, y);
+            return _boundingBox.Contains(x, y);
         }
 
         internal bool Overlaps(Rectangle rectangle)
         {
-            return BoudingBox.Overlaps(rectangle);
+            return _boundingBox.Overlaps(rectangle);
         }
 
         internal bool Overlaps(MapEntity other)
@@ -489,7 +494,6 @@ namespace Zelda.Game.Entities
                 return;
 
             Movement.SetEntity(null);
-            Movement.ScriptMovement = null;
             _oldMovements.Add(Movement);
             Movement = null;
         }

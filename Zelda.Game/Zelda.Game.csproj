@@ -143,8 +143,6 @@
     <Compile Include="Movements\PathMovement.cs" />
     <Compile Include="Movements\PixelMovement.cs" />
     <Compile Include="Movements\PlayerMovement.cs" />
-    <Compile Include="Script\CoreToScript.cs" />
-    <Compile Include="Script\ScriptToCore.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SpriteData.cs" />
     <Compile Include="SpriteSystem.cs" />
@@ -179,9 +177,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="ResourceType.cs" />
-    <Compile Include="Script\ScriptMain.cs" />
+    <Compile Include="Main.cs" />
     <Compile Include="Menu.cs" />
-    <Compile Include="Script\ScriptContext.cs" />
     <Compile Include="SpriteAnimation.cs" />
     <Compile Include="SpriteAnimationDirection.cs" />
     <Compile Include="SpriteAnimationSet.cs" />

@@ -1,11 +1,11 @@
 ﻿using Zelda.Game;
-using Zelda.Game.Script;
 
 namespace Alttp.Items
 {
     [Id("tunic")]
     class Tunic : EquipmentItem
     {
+        [ObjectCreator.UseCtor]
         public Tunic(Equipment equipment, string name)
         : base(equipment, name)
         {

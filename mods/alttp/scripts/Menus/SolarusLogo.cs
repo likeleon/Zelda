@@ -2,7 +2,6 @@
 using Zelda.Game;
 using Zelda.Game.LowLevel;
 using Zelda.Game.Movements;
-using Zelda.Game.Script;
 
 namespace Alttp.Menus
 {
@@ -142,7 +141,7 @@ namespace Alttp.Menus
         public override bool OnKeyPressed(KeyboardKey key, Modifiers modifiers)
         {
             if (key == KeyboardKey.Escape)
-                ScriptMain.Exit();
+                Core.Main.Exit();
             else
             {
                 if (_timer != null)

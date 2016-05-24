@@ -2,7 +2,6 @@
 using Zelda.Game;
 using Zelda.Game.Entities;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Alttp.Menus
 {

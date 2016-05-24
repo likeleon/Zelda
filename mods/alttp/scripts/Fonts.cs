@@ -1,6 +1,4 @@
-﻿using System;
-using Zelda.Game;
-using Zelda.Game.Script;
+﻿using Zelda.Game;
 
 namespace Alttp
 {

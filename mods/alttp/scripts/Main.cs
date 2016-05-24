@@ -4,11 +4,10 @@ using Alttp.Menus.TitleScreens;
 using System;
 using Zelda.Game;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 
 namespace Alttp
 {
-    class Main : ScriptMain
+    class Main : Zelda.Game.Main
     {
         bool _debugEnabled;
         readonly DebugConsole _console = new DebugConsole();
@@ -97,6 +96,10 @@ namespace Alttp
         public void StartSavegame(Savegame savegame)
         {
             PlayGame.Run(savegame, this);
+        }
+
+        public override void Dispose()
+        {
         }
     }
 }

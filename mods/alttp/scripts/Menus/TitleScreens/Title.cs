@@ -53,7 +53,7 @@ namespace Alttp.Menus.TitleScreens
 
             if (key == KeyboardKey.Escape)
             {
-                Main.Exit();
+                Core.Main.Exit();
                 handled = true;
             }
             else if (key == KeyboardKey.Space || key == KeyboardKey.Return)

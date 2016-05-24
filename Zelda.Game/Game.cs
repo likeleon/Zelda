@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Zelda.Game.Entities;
 using Zelda.Game.LowLevel;
-using Zelda.Game.Script;
 using Key = Zelda.Game.Savegame.Key;
 
 namespace Zelda.Game
@@ -150,8 +149,11 @@ namespace Zelda.Game
                     _dialogBox.Draw(dstSurface);
             }
 
-            ScriptContext.GameOnDraw(this, dstSurface);
+            OnDraw(dstSurface);
+            Menu.MenusOnDraw(this, dstSurface);
         }
+
+        protected virtual void OnDraw(Surface dstSurface) { }
 
         internal bool NotifyDialogStarted(Dialog dialog, object info)
         {
@@ -209,7 +211,7 @@ namespace Zelda.Game
                     return;
             }
 
-            if (SaveGame.ScriptGame.NotifyCommandPressed(command))
+            if (OnCommandPressed(command))
                 return;
 
             if (command == GameCommand.Pause)
@@ -228,6 +230,8 @@ namespace Zelda.Game
             else if (!IsSuspended)
                 Hero.NotifyCommandPressed(command);
         }
+
+        protected virtual bool OnCommandPressed(GameCommand command) => false;
 
         internal void SetCurrentMap(string mapId, string destinationName)
         {
