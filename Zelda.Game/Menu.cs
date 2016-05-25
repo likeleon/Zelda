@@ -139,7 +139,7 @@ namespace Zelda.Game
         public virtual bool OnKeyReleased(KeyboardKey key) => false;
         public virtual bool OnCharacterPressed(string character) => false;
 
-        internal static bool OnCommandPressed(IMenuContext context, GameCommand command)
+        internal static bool MenusOnCommandPressed(IMenuContext context, GameCommand command)
         {
             bool handled = false;
             foreach (var menu in _menus.Where(m => m.Context == context).Reverse())
@@ -150,7 +150,7 @@ namespace Zelda.Game
         static bool MenuOnCommandPressed(Menu menu, GameCommand command)
         {
             // 자식들이 먼저 처리하게 합니다
-            if (OnCommandPressed(menu, command))
+            if (MenusOnCommandPressed(menu, command))
                 return true;
 
             return menu.OnCommandPressed(command);

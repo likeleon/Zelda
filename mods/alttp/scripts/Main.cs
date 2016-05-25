@@ -12,7 +12,7 @@ namespace Alttp
         bool _debugEnabled;
         readonly DebugConsole _console = new DebugConsole();
 
-        public PlayGame Game { get; set; }
+        public Savegame Game { get; set; }
 
         protected override void OnStarted()
         {

@@ -155,7 +155,7 @@ namespace Zelda.Game
             }
         }
 
-        public void Start(Game game)
+        public void Start(Func<Game> creator)
         {
             if (Core.Mod.GetResources(ResourceType.Map).Count <= 0)
                 throw new InvalidOperationException("Cannot start game: there is no map in this mod");
@@ -167,7 +167,7 @@ namespace Zelda.Game
             }
 
             Core.Game?.Stop();
-            Game = game;
+            Game = creator();
             Core.SetGame(Game);
         }
 

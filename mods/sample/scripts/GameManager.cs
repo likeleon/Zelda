@@ -7,14 +7,14 @@ namespace Sample.Scripts
         public static void StartGame()
         {
             var exists = Savegame.Exists("save1.dat");
-            var game = new Savegame("save1.dat");
+            var savegame = new Savegame("save1.dat");
             if (!exists)
             {
-                game.SetMaxLife(12);
-                game.SetLife(game.GetMaxLife());
-                game.SetAbility(Ability.Lift, 2);
+                savegame.SetMaxLife(12);
+                savegame.SetLife(savegame.GetMaxLife());
+                savegame.SetAbility(Ability.Lift, 2);
             }
-            game.Start(new Game(game));
+            savegame.Start(() => new Game(savegame));
         }
     }
 }

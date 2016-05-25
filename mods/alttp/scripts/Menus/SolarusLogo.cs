@@ -67,13 +67,13 @@ namespace Alttp.Menus
         {
             // 태양의 이동
             var sunMovement = TargetMovement.Create();
-            sunMovement.SetSpeed(64);
+            sunMovement.SetMovingSpeed(64);
             sunMovement.SetTarget(new Point(0, -33));
             sunMovement.PositionChanged += (o, e) => RebuildSurface();
 
             // 검의 이동
             var swordMovement = TargetMovement.Create();
-            swordMovement.SetSpeed(96);
+            swordMovement.SetMovingSpeed(96);
             swordMovement.SetTarget(new Point(-48, 48));
             swordMovement.PositionChanged += (o, e) => RebuildSurface();
 

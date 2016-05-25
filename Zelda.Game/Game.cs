@@ -7,7 +7,7 @@ using Key = Zelda.Game.Savegame.Key;
 
 namespace Zelda.Game
 {
-    public class Game : ITimerContext, IMenuContext
+    public class Game : ITimerContext, IMenuContext, IInputEventHandler
     {
         public Hero Hero { get; }
         public bool IsPaused { get; private set; }
@@ -117,10 +117,21 @@ namespace Zelda.Game
 
         internal bool NotifyInput(InputEvent inputEvent)
         {
-            if (CurrentMap != null && CurrentMap.IsLoaded)
+            if (CurrentMap == null || !CurrentMap.IsLoaded)
+                return true;
+
+            bool handled = this.OnInput(inputEvent);
+            if (!handled)
+                handled = Menu.MenusOnInput(this, inputEvent);
+            if (!handled)
                 Commands.NotifyInput(inputEvent);
             return true;
         }
+
+        public virtual bool OnKeyPressed(KeyboardKey key, Modifiers modifiers) => false;
+
+        public virtual bool OnKeyReleased(KeyboardKey key) => false;
+        public virtual bool OnCharacterPressed(string character) => false;
 
         internal void Update()
         {
@@ -211,8 +222,9 @@ namespace Zelda.Game
                     return;
             }
 
-            if (OnCommandPressed(command))
-                return;
+            bool handled = OnCommandPressed(command);
+            if (!handled)
+                handled = Menu.MenusOnCommandPressed(this, command);
 
             if (command == GameCommand.Pause)
             {

@@ -122,7 +122,7 @@ namespace Zelda.Game.Movements
             return Math.Sqrt(XSpeed * XSpeed + YSpeed * YSpeed);
         }
 
-        public void SetSpeed(double speed)
+        internal void SetSpeed(double speed)
         {
             if (XSpeed == 0 && YSpeed == 0)
                 XSpeed = 1;

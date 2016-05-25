@@ -16,7 +16,7 @@ namespace Alttp.Menus.TitleScreens
         {
             _titleScreen = titleScreen;
 
-            _zsPresentsImg = Surface.Create("title_screen_initialization.png", true);
+            _zsPresentsImg = Surface.Create("title_screen_initialization.png", true, Surface.ImageDirectory.Language);
 
             _zsPresentsPos = new Point(160 - _zsPresentsImg.Width / 2, 120 - _zsPresentsImg.Height / 2);
             Core.Audio?.PlaySound("intro");

@@ -9,9 +9,8 @@ namespace Alttp
 
         public static void Run(Savegame savegame, Main main)
         {
-            var game = new PlayGame(savegame);
-            main.Game = game;
-            savegame.Start(game);
+            main.Game = savegame;
+            savegame.Start(() => new PlayGame(savegame));
         }
 
         PlayGame(Savegame savegame)
