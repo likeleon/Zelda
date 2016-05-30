@@ -5,7 +5,7 @@ using Zelda.Game.Movements;
 
 namespace Zelda.Game.Entities
 {
-    public abstract class MapEntity : DisposableObject
+    public abstract class Entity : DisposableObject
     {
         public Layer Layer { get; private set; }
 
@@ -169,7 +169,7 @@ namespace Zelda.Game.Entities
         Detector _facingEntity;
         bool _waitingEnabled;
 
-        protected MapEntity(string name, Direction4 direction, Layer layer, Point xy, Size size)
+        protected Entity(string name, Direction4 direction, Layer layer, Point xy, Size size)
         {
             if (size.Width % 8 != 0 || size.Height % 8 != 0)
                 throw new ArgumentOutOfRangeException("Invalid entity size: width and height must be multiple of 8");
@@ -464,7 +464,7 @@ namespace Zelda.Game.Entities
             return _boundingBox.Overlaps(rectangle);
         }
 
-        internal bool Overlaps(MapEntity other)
+        internal bool Overlaps(Entity other)
         {
             return Overlaps(other.BoundingBox);
         }
@@ -517,11 +517,11 @@ namespace Zelda.Game.Entities
         {
         }
 
-        internal virtual void NotifyMovingBy(MapEntity entity)
+        internal virtual void NotifyMovingBy(Entity entity)
         {
         }
 
-        internal virtual void NotifyMovedBy(MapEntity entity)
+        internal virtual void NotifyMovedBy(Entity entity)
         {
         }
 
@@ -585,12 +585,12 @@ namespace Zelda.Game.Entities
         {
         }
 
-        internal virtual bool IsObstacleFor(MapEntity other)
+        internal virtual bool IsObstacleFor(Entity other)
         {
             return false;
         }
 
-        internal virtual bool IsObstacleFor(MapEntity other, Rectangle candidatePosition)
+        internal virtual bool IsObstacleFor(Entity other, Rectangle candidatePosition)
         {
             return IsObstacleFor(other);
         }

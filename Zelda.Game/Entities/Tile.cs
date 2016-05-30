@@ -2,7 +2,7 @@
 
 namespace Zelda.Game.Entities
 {
-    public class Tile : MapEntity
+    public class Tile : Entity
     {
         public override EntityType Type => EntityType.Tile;
 

@@ -82,12 +82,12 @@ namespace Zelda.Game
             if (Core.Game != null)
                 return;
 
-            if (context is Map || context is MapEntity || context is EquipmentItem)
+            if (context is Map || context is Entity || context is EquipmentItem)
             {
                 var initiallySuspended = false;
-                if (context is MapEntity)
+                if (context is Entity)
                 {
-                    var entity = context as MapEntity;
+                    var entity = context as Entity;
                     initiallySuspended = entity.IsSuspended || !entity.IsEnabled;
                 }
                 else
@@ -156,7 +156,7 @@ namespace Zelda.Game
             _timers.Clear();
         }
 
-        internal static void SetEntityTimersSuspended(MapEntity entity, bool suspended)
+        internal static void SetEntityTimersSuspended(Entity entity, bool suspended)
         {
             foreach (var kvp in _timers.Where(t => t.Value.Context == entity))
                 kvp.Key.SetSuspended(suspended);

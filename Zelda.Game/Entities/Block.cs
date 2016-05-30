@@ -52,7 +52,7 @@ namespace Zelda.Game.Entities
             IsDrawnInYOrder = Sprite.Size.Height > 16;
         }
 
-        internal override bool IsObstacleFor(MapEntity other) => other.IsBlockObstacle(this);
+        internal override bool IsObstacleFor(Entity other) => other.IsBlockObstacle(this);
         internal override bool IsDestructibleObstacle(Destructible destructible) => true;
         internal override bool IsHeroObstacle(Hero hero) => Movement == null;
 
@@ -63,7 +63,7 @@ namespace Zelda.Game.Entities
             CheckCollisionWithDetectors();
         }
 
-        internal override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        internal override void NotifyCollision(Entity entityOverlapping, CollisionMode collisionMode)
         {
             entityOverlapping.NotifyCollisionWithBlock(this);
         }
@@ -119,11 +119,11 @@ namespace Zelda.Game.Entities
             }
         }
 
-        internal override void NotifyMovingBy(MapEntity entity)
+        internal override void NotifyMovingBy(Entity entity)
         {
         }
 
-        internal override void NotifyMovedBy(MapEntity entity)
+        internal override void NotifyMovedBy(Entity entity)
         {
         }
 

@@ -27,7 +27,7 @@ namespace Zelda.Game.Entities
             OptimizationDistance = 0;   // 주인공이 멀리 있더라도 폭파될 수 있도록
         }
 
-        internal override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        internal override void NotifyCollision(Entity entityOverlapping, CollisionMode collisionMode)
         {
             entityOverlapping.NotifyCollisionWithBomb(this, collisionMode);
         }

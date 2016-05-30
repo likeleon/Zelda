@@ -83,7 +83,7 @@ namespace Zelda.Game.Heroes
             Hero.UpdateMovement();
         }
 
-        public override bool CanBeHurt(MapEntity attacker)
+        public override bool CanBeHurt(Entity attacker)
         {
             return true;
         }

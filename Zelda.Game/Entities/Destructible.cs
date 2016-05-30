@@ -75,13 +75,13 @@ namespace Zelda.Game.Entities
             UpdateCollisionModes();
         }
 
-        internal override bool IsObstacleFor(MapEntity other)
+        internal override bool IsObstacleFor(Entity other)
         {
             return ModifiedGround == Ground.Wall &&
                    other.IsDestructibleObstacle(this);
         }
 
-        internal override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        internal override void NotifyCollision(Entity entityOverlapping, CollisionMode collisionMode)
         {
             entityOverlapping.NotifyCollisionWithDestructible(this, collisionMode);
         }

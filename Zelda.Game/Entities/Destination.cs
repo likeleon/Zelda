@@ -2,7 +2,7 @@
 
 namespace Zelda.Game.Entities
 {
-    public class Destination : MapEntity
+    public class Destination : Entity
     {
         public override EntityType Type => EntityType.Destination;
 

@@ -39,7 +39,7 @@ namespace Zelda.Game.Entities
             }
         }
 
-        internal override void NotifyCollision(MapEntity otherEntity, Sprite thisSprite, Sprite otherSprite)
+        internal override void NotifyCollision(Entity otherEntity, Sprite thisSprite, Sprite otherSprite)
         {
             otherEntity.NotifyCollisionWithExplosion(this, otherSprite);
         }

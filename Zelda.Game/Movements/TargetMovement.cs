@@ -49,7 +49,7 @@ namespace Zelda.Game.Movements
             FinishedCallback = finished;
         }
 
-        public void Start(MapEntity entity, Action finished)
+        public void Start(Entity entity, Action finished)
         {
             Stop();
             entity.ClearMovement();

@@ -13,7 +13,7 @@ namespace Zelda.Game.Movements
         public int X => XY.X;
         public int Y => XY.Y;
 
-        internal MapEntity Entity { get; private set; }
+        internal Entity Entity { get; private set; }
         internal Drawable Drawable { get; private set; }
         internal bool IsSuspended { get; private set; }
         internal bool IsStopped => !IsStarted;
@@ -35,7 +35,7 @@ namespace Zelda.Game.Movements
             IgnoreObstacles = ignoreObstacles;
         }
 
-        internal void SetEntity(MapEntity entity)
+        internal void SetEntity(Entity entity)
         {
             if (Drawable != null)
                 throw new InvalidOperationException("This movement is already assigned to a drawable");

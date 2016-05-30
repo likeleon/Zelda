@@ -7,12 +7,12 @@ namespace Zelda.Game.Movements
     {
         internal override bool IsFinished => _finished;
 
-        MapEntity _entityFollowed;
+        Entity _entityFollowed;
         readonly int _x;
         readonly int _y;
         bool _finished;
 
-        public FollowMovement(MapEntity entityFollowed, int x, int y, bool ignoreObstacles)
+        public FollowMovement(Entity entityFollowed, int x, int y, bool ignoreObstacles)
             : base(ignoreObstacles)
         {
             _entityFollowed = entityFollowed;

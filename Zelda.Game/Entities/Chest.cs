@@ -41,9 +41,9 @@ namespace Zelda.Game.Entities
             IsDrawnInYOrder = sprite.MaxSize.Height > Height;
         }
 
-        internal override bool IsObstacleFor(MapEntity other) => true;
+        internal override bool IsObstacleFor(Entity other) => true;
 
-        internal override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        internal override void NotifyCollision(Entity entityOverlapping, CollisionMode collisionMode)
         {
             if (!IsSuspended)
                 entityOverlapping.NotifyCollisionWithChest(this);

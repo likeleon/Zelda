@@ -4,7 +4,7 @@ using Zelda.Game.Movements;
 
 namespace Zelda.Game.Entities
 {
-    public class CarriedItem : MapEntity
+    public class CarriedItem : Entity
     {
         public enum Behavior
         {
@@ -45,7 +45,7 @@ namespace Zelda.Game.Entities
         Direction4 _throwingDirection = Direction4.Right;
         int _explosionDate;
 
-        internal CarriedItem(Hero hero, MapEntity originalEntity, string animationSetId, string destructionSoundId, int damageOnEnemies, int explosionDate)
+        internal CarriedItem(Hero hero, Entity originalEntity, string animationSetId, string destructionSoundId, int damageOnEnemies, int explosionDate)
             : base("", Direction4.Right, hero.Layer, new Point(0, 0), new Size(0, 0))
         {
             _hero = hero;

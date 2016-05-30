@@ -2,7 +2,7 @@
 
 namespace Zelda.Game.Entities
 {
-    public class DynamicTile : MapEntity
+    public class DynamicTile : Entity
     {
         public override EntityType Type => EntityType.DynamicTile;
         public override Ground ModifiedGround => _tilePattern.Ground;

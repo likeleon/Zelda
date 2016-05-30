@@ -111,7 +111,7 @@
     <Compile Include="Entities\Hero.cs" />
     <Compile Include="Entities\Layer.cs" />
     <Compile Include="Entities\MapEntities.cs" />
-    <Compile Include="Entities\MapEntity.cs" />
+    <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\NonAnimatedRegions.cs" />
     <Compile Include="Entities\Npc.cs" />
     <Compile Include="Entities\ParallaxScrollingTilePattern.cs" />

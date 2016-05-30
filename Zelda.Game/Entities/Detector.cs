@@ -2,7 +2,7 @@
 
 namespace Zelda.Game.Entities
 {
-    public abstract class Detector : MapEntity
+    public abstract class Detector : Entity
     {
         public virtual bool LayerIndependentCollisions { get; set; }
 
@@ -38,7 +38,7 @@ namespace Zelda.Game.Entities
             base.NotifyLayerChanged();
         }
 
-        internal void CheckCollision(MapEntity entity)
+        internal void CheckCollision(Entity entity)
         {
             if (entity == this)
                 return;
@@ -54,7 +54,7 @@ namespace Zelda.Game.Entities
             }
         }
 
-        internal void CheckCollision(MapEntity entity, Sprite sprite)
+        internal void CheckCollision(Entity entity, Sprite sprite)
         {
             if (HasCollisionMode(CollisionMode.Sprite) &&
                 entity != this &&
@@ -91,9 +91,9 @@ namespace Zelda.Game.Entities
 
         protected void EnablePixelCollisions() => Sprites.Do(s => s.EnablePixelCollisions());
 
-        protected bool TestCollisionFacingPoint(MapEntity entity) => entity.IsFacingPointIn(BoundingBox);
+        protected bool TestCollisionFacingPoint(Entity entity) => entity.IsFacingPointIn(BoundingBox);
 
-        internal virtual void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode) { }
-        internal virtual void NotifyCollision(MapEntity otherEntity, Sprite thisSprite, Sprite otherSprite) { }
+        internal virtual void NotifyCollision(Entity entityOverlapping, CollisionMode collisionMode) { }
+        internal virtual void NotifyCollision(Entity otherEntity, Sprite thisSprite, Sprite otherSprite) { }
     }
 }

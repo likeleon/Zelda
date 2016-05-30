@@ -5,7 +5,7 @@ using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Entities
 {
-    public class Hero : MapEntity
+    public class Hero : Entity
     {
         public override EntityType Type => EntityType.Hero;
         public bool IsInvincible { get; private set; }
@@ -64,12 +64,12 @@ namespace Zelda.Game.Entities
                 SetInvincible(false, 0);
         }
 
-        internal virtual bool CanBeHurt(MapEntity attacker)
+        internal virtual bool CanBeHurt(Entity attacker)
         {
             return !IsInvincible && State.CanBeHurt(attacker);
         }
 
-        internal void Hurt(MapEntity source, Sprite sourceSprite, int damage)
+        internal void Hurt(Entity source, Sprite sourceSprite, int damage)
         {
             var sourceXY = source.XY;
             if (sourceSprite != null)
@@ -479,7 +479,7 @@ namespace Zelda.Game.Entities
             }
         }
 
-        internal override bool IsObstacleFor(MapEntity other) => other.IsHeroObstacle(this);
+        internal override bool IsObstacleFor(Entity other) => other.IsHeroObstacle(this);
         internal override bool IsBlockObstacle(Block block) => block.IsHeroObstacle(this);
         
         internal void CheckPosition()

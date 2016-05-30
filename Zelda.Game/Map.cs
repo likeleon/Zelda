@@ -63,7 +63,7 @@ namespace Zelda.Game
             Destination destination = null;
             if (!String.IsNullOrEmpty(DestinationName))
             {
-                MapEntity entity = Entities.FindEntity(DestinationName);
+                Entity entity = Entities.FindEntity(DestinationName);
                 if (entity == null || entity.Type != EntityType.Destination)
                     Debug.Error("Map '{0}': No such destination: '{1}'".F(Id, DestinationName));
                 else
@@ -270,7 +270,7 @@ namespace Zelda.Game
         // 특정 포인트가 맵의 그라운드와 충돌하는지를 체크합니다.
         // 그라운드는 타일 혹은 타일을 변화시키는 것들(예를 들면, 다이나믹 타일이나 파괴 가능한 아이템)입니다.
         // 포인트가 맵 외부일 경우에도 true를 반환합니다.
-        internal bool TestCollisionWithGround(Layer layer, int x, int y, MapEntity entityToCheck, ref bool foundDiagonalWall)
+        internal bool TestCollisionWithGround(Layer layer, int x, int y, Entity entityToCheck, ref bool foundDiagonalWall)
         {
             bool onObstacle = false;
             int xInTile = 0, yInTile = 0;
@@ -359,7 +359,7 @@ namespace Zelda.Game
             return onObstacle;
         }
 
-        internal bool TestCollisionWithObstacles(Layer layer, Rectangle collisionBox, MapEntity entityToCheck)
+        internal bool TestCollisionWithObstacles(Layer layer, Rectangle collisionBox, Entity entityToCheck)
         {
             // 이 함수는 매우 자주 불리우며, 성능상의 이유로 충돌 박스의 경계선만을 체크합니다.
 
@@ -417,7 +417,7 @@ namespace Zelda.Game
             return TestCollisionWithEntities(layer, collisionBox, entityToCheck);
         }
 
-        internal bool TestCollisionWithEntities(Layer layer, Rectangle collisionBox, MapEntity entityToCheck)
+        internal bool TestCollisionWithEntities(Layer layer, Rectangle collisionBox, Entity entityToCheck)
         {
             var obstacleEntities = Entities.GetObstacleEntities(layer);
             foreach (var entity in obstacleEntities)
@@ -451,7 +451,7 @@ namespace Zelda.Game
             return Entities.GetTileGround(layer, x, y);
         }
 
-        internal void CheckCollisionWithDetectors(MapEntity entity)
+        internal void CheckCollisionWithDetectors(Entity entity)
         {
             if (IsSuspended)
                 return;
@@ -460,7 +460,7 @@ namespace Zelda.Game
                 detector.CheckCollision(entity);
         }
 
-        internal void CheckCollisionWithDetectors(MapEntity entity, Sprite sprite)
+        internal void CheckCollisionWithDetectors(Entity entity, Sprite sprite)
         {
             if (IsSuspended)
                 return;
@@ -621,7 +621,7 @@ namespace Zelda.Game
             Entities.AddEntity(bomb);
         }
 
-        public T GetEntity<T>(string name) where T : MapEntity
+        public T GetEntity<T>(string name) where T : Entity
         {
             var entity = Entities.FindEntity(name);
             if (entity?.IsBeingRemoved == true)

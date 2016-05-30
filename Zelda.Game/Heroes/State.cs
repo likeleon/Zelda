@@ -187,7 +187,7 @@ namespace Zelda.Game.Heroes
         }
 
         #region 적들
-        public virtual bool CanBeHurt(MapEntity attacker)
+        public virtual bool CanBeHurt(Entity attacker)
         {
             return false;
         }

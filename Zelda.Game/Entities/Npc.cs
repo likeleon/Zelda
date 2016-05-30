@@ -65,11 +65,11 @@ namespace Zelda.Game.Entities
             }
         }
 
-        internal override bool IsObstacleFor(MapEntity other) => other.IsNpcObstacle(this);
+        internal override bool IsObstacleFor(Entity other) => other.IsNpcObstacle(this);
         internal override bool IsNpcObstacle(Npc npc) => (_subtype != NpcSubtype.UsualNpc || npc._subtype != NpcSubtype.UsualNpc);
         internal override bool IsHeroObstacle(Hero hero) => true;
 
-        internal override void NotifyCollision(MapEntity entityOverlapping, CollisionMode collisionMode)
+        internal override void NotifyCollision(Entity entityOverlapping, CollisionMode collisionMode)
         {
             if (collisionMode == CollisionMode.Facing && entityOverlapping.IsHero)
             {

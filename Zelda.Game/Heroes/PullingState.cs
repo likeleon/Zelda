@@ -149,7 +149,7 @@ namespace Zelda.Game.Heroes
 
                 Hero.ClearMovement();
                 _pullingMovement = null;
-                MapEntity entityJustMoved = _pulledEntity;
+                Entity entityJustMoved = _pulledEntity;
                 _pulledEntity = null;
                 entityJustMoved.NotifyMovedBy(Hero);
             }
@@ -182,7 +182,7 @@ namespace Zelda.Game.Heroes
             get { return true; }
         }
 
-        public override bool CanBeHurt(MapEntity attacker)
+        public override bool CanBeHurt(Entity attacker)
         {
             return !IsMovingGrabbedEntity;
         }
