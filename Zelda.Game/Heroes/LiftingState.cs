@@ -4,9 +4,9 @@ namespace Zelda.Game.Heroes
 {
     class LiftingState : State
     {
-        CarriedItem _liftedItem;
+        CarriedObject _liftedItem;
 
-        public LiftingState(Hero hero, CarriedItem liftedItem)
+        public LiftingState(Hero hero, CarriedObject liftedItem)
             : base(hero, "lifting")
         {
             _liftedItem = liftedItem;
@@ -37,12 +37,12 @@ namespace Zelda.Game.Heroes
 
                 switch (nextState.PreviousCarriedItemBehavior)
                 {
-                    case CarriedItem.Behavior.Throw:
+                    case CarriedObject.Behavior.Throw:
                         ThrowItem();
                         break;
 
-                    case CarriedItem.Behavior.Destroy:
-                    case CarriedItem.Behavior.Keep:
+                    case CarriedObject.Behavior.Destroy:
+                    case CarriedObject.Behavior.Keep:
                         _liftedItem = null;
                         break;
                 }
@@ -59,7 +59,7 @@ namespace Zelda.Game.Heroes
 
             if (!IsSuspended && !_liftedItem.IsBeingLifted)
             {
-                CarriedItem carriedItem = _liftedItem;
+                CarriedObject carriedItem = _liftedItem;
                 _liftedItem = null;
                 Hero.SetState(new CarryingState(Hero, carriedItem));
             }

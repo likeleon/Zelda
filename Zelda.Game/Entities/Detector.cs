@@ -8,12 +8,11 @@ namespace Zelda.Game.Entities
 
         internal override bool IsDetector => true;
 
-        CollisionMode _collisionModes;
+        CollisionMode _collisionModes = CollisionMode.None;
 
-        internal protected Detector(CollisionMode collisionModes, string name, Layer layer, Point xy, Size size)
+        internal protected Detector(string name, Layer layer, Point xy, Size size)
             : base(name, 0, layer, xy, size)
         {
-            _collisionModes = collisionModes;
         }
 
 

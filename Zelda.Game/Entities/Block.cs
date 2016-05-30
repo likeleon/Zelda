@@ -35,7 +35,7 @@ namespace Zelda.Game.Entities
         bool _soundPlayed;
 
         public Block(string name, Layer layer, Point xy, Direction4 direction, string spriteName, bool canBePushed, bool canBePulled, int maximumMoves)
-            : base(CollisionMode.Facing, name, layer, xy, new Size(16, 16))
+            : base(name, layer, xy, new Size(16, 16))
         {
             _maximumMoves = maximumMoves;
             _initialMaximumMoves = maximumMoves;
@@ -44,12 +44,14 @@ namespace Zelda.Game.Entities
             IsPushable = canBePushed;
             IsPullable = canBePulled;
 
-            Debug.CheckAssertion(maximumMoves >= 0 && maximumMoves <= 2,
-                "MaximumMoves must be between 0 and 2");
+            if (maximumMoves < 0 || maximumMoves > 2)
+                throw new ArgumentOutOfRangeException(nameof(maximumMoves), "MaximumMoves must be between 0 and 2");
+
+            SetCollisionModes(CollisionMode.Facing);
             Origin = new Point(8, 13);
             Direction = direction;
-            CreateSprite(spriteName);
-            IsDrawnInYOrder = Sprite.Size.Height > 16;
+            var sprite = CreateSprite(spriteName);
+            IsDrawnInYOrder = sprite.Size.Height > 16;
         }
 
         internal override bool IsObstacleFor(Entity other) => other.IsBlockObstacle(this);

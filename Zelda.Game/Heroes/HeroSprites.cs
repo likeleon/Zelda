@@ -1,13 +1,36 @@
 ﻿using System;
-using Zelda.Game.LowLevel;
 using Zelda.Game.Entities;
 
 namespace Zelda.Game.Heroes
 {
     class HeroSprites
     {
+        public string TunicSpriteId { get; private set; }
+        public Direction4 AnimationDirection => _tunicSprite.CurrentDirection;
+        public Direction8 AnimationDirection8 => AnimationDirection.ToDirection8();
+        public bool IsBlinking { get; private set; }
+        public bool IsWalking { get; private set; }
+        public CarriedObject LiftedItem { get; set; }
+
+        static readonly Direction4[,] _animationDirections = new Direction4[,]
+        {
+            { Direction4.Right, Direction4.None },   // right
+            { Direction4.Right, Direction4.Up  },   // right-up: right or up
+            { Direction4.Up,   Direction4.None },   // up
+            { Direction4.Left,  Direction4.Up  },   // left-up: left or up
+            { Direction4.Left,  Direction4.None },   // left
+            { Direction4.Left,  Direction4.Down },   // left-down: left or down
+            { Direction4.Down,  Direction4.None },   // down
+            { Direction4.Right, Direction4.Down }    // right-down: right or down
+        };
+
         readonly Hero _hero;
         readonly Equipment _equipment;
+        bool _hasDefaultTunicSprite = true;
+        Sprite _tunicSprite;
+        Direction4 _animationDirectionSaved = Direction4.None;
+        int _whenSuspended;
+        int _endBlinkDate;
 
         public HeroSprites(Hero hero, Equipment equipment)
         {
@@ -16,9 +39,6 @@ namespace Zelda.Game.Heroes
 
             RebuildEquipment();
         }
-
-        #region Tunic
-        public string TunicSpriteId { get; private set; }
 
         string GetDefaultTunicSpriteId()
         {
@@ -39,49 +59,53 @@ namespace Zelda.Game.Heroes
             {
                 animation = _tunicSprite.CurrentAnimation;
                 direction = _tunicSprite.CurrentDirection;
+                _hero.RemoveSprite(_tunicSprite);
                 _tunicSprite = null;
             }
 
             _tunicSprite = Sprite.Create(spriteId, false);
             _tunicSprite.EnablePixelCollisions();
-            if (!String.IsNullOrEmpty(animation))
+            if (animation != null)
             {
                 _tunicSprite.SetCurrentAnimation(animation);
                 _tunicSprite.SetCurrentDirection(direction);
             }
-        }
 
-        Sprite _tunicSprite;
-        #endregion
+            _hasDefaultTunicSprite = spriteId == GetDefaultTunicSpriteId();
+        }
 
         // 영웅과 장비품의 스프라이트와 사운드 데이터를 읽어들입니다.
         // 게임 시작 시점과 영웅 장비가 교체된 직후에 호출되어야 합니다.
         public void RebuildEquipment()
         {
-            Direction4 animationDirection = Direction4.None;
-            if (_tunicSprite != null)
-            {
-                // 방향 저장
-                animationDirection = _tunicSprite.CurrentDirection;
-            }
+            _hero.DefaultSpriteName = "tunic";
+
+            // 방향 저장
+            var animationDirection = _tunicSprite?.CurrentDirection;
 
             // 영웅 몸체
-            SetTunicSpriteId(GetDefaultTunicSpriteId());
+            if (_hasDefaultTunicSprite)
+                SetTunicSpriteId(GetDefaultTunicSpriteId());
 
             // 방향 복구
-            if (animationDirection != Direction4.None)
-                SetAnimationDirection(animationDirection);
+            if (animationDirection.HasValue)
+                SetAnimationDirection(animationDirection.Value);
         }
 
         public void DrawOnMap()
         {
-            Map map = _hero.Map;
+            var x = _hero.X;
+            var y = _hero.Y;
 
-            Point xy = _hero.GetDisplayedXY();
-            map.DrawSprite(_tunicSprite, xy.X, xy.Y);
+            var map = _hero.Map;
 
-            if (LiftedItem != null)
-                LiftedItem.DrawOnMap();
+            var displayedXY = _hero.GetDisplayedXY();
+            x = displayedXY.X;
+            y = displayedXY.Y;
+
+            map.DrawSprite(_tunicSprite, x, y);
+
+            LiftedItem?.DrawOnMap();
         }
 
         public void SetSuspended(bool suspended)
@@ -98,19 +122,15 @@ namespace Zelda.Game.Heroes
 
         public void Update()
         {
-            _tunicSprite.Update();
+            // Keep the current sprites here in case they change from a script during the operation.
+            var tunicSprite = _tunicSprite;
 
-            _hero.CheckCollisionWithDetectors(_tunicSprite);
+            tunicSprite.Update();
 
-            if (LiftedItem != null && _walking)
-                LiftedItem.Sprite.SetCurrentFrame(_tunicSprite.CurrentFrame % 3);
+            _hero.CheckCollisionWithDetectors(tunicSprite);
 
-            if (IsBlinking &&
-                _endBlinkDate != 0 &&
-                Core.Now >= _endBlinkDate)
-            {
+            if (IsBlinking && _endBlinkDate != 0 && Core.Now >= _endBlinkDate)
                 StopBlink();
-            }
         }
 
         public void NotifyMapStarted()
@@ -120,32 +140,8 @@ namespace Zelda.Game.Heroes
 
         public void NotifyTilesetChanged()
         {
-            if (LiftedItem != null)
-                LiftedItem.NotifyTilesetChanged();
+            LiftedItem?.NotifyTilesetChanged();
         }
-
-        #region 애니메이션
-        public Direction4 AnimationDirection
-        {
-            get { return _tunicSprite.CurrentDirection; }
-        }
-        
-        public Direction8 AnimationDirection8
-        {
-            get { return AnimationDirection.ToDirection8(); }
-        }
-
-        static readonly Direction4[,] _animationDirections = new Direction4[,]
-        {
-            { Direction4.Right, Direction4.None },   // right
-            { Direction4.Right, Direction4.Up  },   // right-up: right or up
-            { Direction4.Up,   Direction4.None },   // up
-            { Direction4.Left,  Direction4.Up  },   // left-up: left or up
-            { Direction4.Left,  Direction4.None },   // left
-            { Direction4.Left,  Direction4.Down },   // left-down: left or down
-            { Direction4.Down,  Direction4.None },   // down
-            { Direction4.Right, Direction4.Down }    // right-down: right or down
-        };
 
         public Direction4 GetAnimationDirection(Direction8 keysDirection, Direction8 realMovementDirection)
         {
@@ -176,12 +172,9 @@ namespace Zelda.Game.Heroes
 
         public void SetAnimationDirection(Direction4 direction)
         {
-            Debug.CheckAssertion(direction >= 0 && (int)direction < 4, "Invalid direction for SetAnimationDirection");
-
             _tunicSprite.SetCurrentDirection(direction);
+            LiftedItem?.GetSprite().RestartAnimation();
         }
-
-        Direction4 _animationDirectionSaved = Direction4.None;
 
         public void SaveAnimationDirection()
         {
@@ -195,7 +188,7 @@ namespace Zelda.Game.Heroes
 
         public void SetAnimationStoppedCommon()
         {
-            _walking = false;
+            IsWalking = false;
         }
 
         public void SetAnimationStoppedNormal()
@@ -213,13 +206,12 @@ namespace Zelda.Game.Heroes
             SetAnimationStoppedCommon();
             SetTunicAnimation("carrying_stopped");
 
-            if (LiftedItem != null)
-                LiftedItem.SetAnimationStopped();
+            LiftedItem?.SetAnimationStopped();
         }
 
         public void SetAnimationWalkingCommon()
         {
-            _walking = true;
+            IsWalking = true;
         }
 
         public void SetAnimationWalkingNormal()
@@ -236,8 +228,7 @@ namespace Zelda.Game.Heroes
             SetAnimationWalkingCommon();
             SetTunicAnimation("carrying_walking");
 
-            if (LiftedItem != null)
-                LiftedItem.SetAnimationWalking();
+            LiftedItem?.SetAnimationWalking();
         }
 
         public void SetAnimationGrabbing()
@@ -275,24 +266,12 @@ namespace Zelda.Game.Heroes
         {
             _tunicSprite.SetCurrentAnimation(animation);
         }
-        #endregion
-
-        #region 상태
-        int _whenSuspended;
-
-        bool _blinking;
-        public bool IsBlinking
-        {
-            get { return _blinking; }
-        }
-
-        int _endBlinkDate;
 
         public void Blink(int duration)
         {
             int blinkDelay = 50;
 
-            _blinking = true;
+            IsBlinking = true;
             _tunicSprite.SetBlinking(blinkDelay);
 
             if (duration == 0)
@@ -303,20 +282,10 @@ namespace Zelda.Game.Heroes
 
         public void StopBlink()
         {
-            _blinking = false;
+            IsBlinking = false;
             _endBlinkDate = 0;
 
             _tunicSprite.SetBlinking(0);
         }
-
-        bool _walking;
-
-        public bool IsWalking
-        {
-            get { return _walking; }
-        }
-        #endregion
-
-        public CarriedItem LiftedItem { get; set; }
     }
 }

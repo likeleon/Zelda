@@ -242,14 +242,14 @@ namespace Zelda.Game.Heroes
             get { return CarriedItem != null; }
         }
 
-        public virtual CarriedItem CarriedItem
+        public virtual CarriedObject CarriedItem
         {
             get { return null; }
         }
 
-        public virtual CarriedItem.Behavior PreviousCarriedItemBehavior
+        public virtual CarriedObject.Behavior PreviousCarriedItemBehavior
         {
-            get { return CarriedItem.Behavior.Throw; }
+            get { return CarriedObject.Behavior.Throw; }
         }
         #endregion
 

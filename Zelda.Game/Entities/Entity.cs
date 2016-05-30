@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Zelda.Game.LowLevel;
 using Zelda.Game.Movements;
 
@@ -7,6 +8,19 @@ namespace Zelda.Game.Entities
 {
     public abstract class Entity : DisposableObject
     {
+        public class NamedSprite
+        {
+            public string Name { get; }
+            public Sprite Sprite { get; }
+            internal bool Removed { get; set; } = false;
+
+            public NamedSprite(string name, Sprite sprite)
+            {
+                Name = name;
+                Sprite = sprite;
+            }
+        }
+
         public Layer Layer { get; private set; }
 
         public Size Size
@@ -49,16 +63,6 @@ namespace Zelda.Game.Entities
         }
 
         public Point CenterPoint { get { return BoundingBox.Center; } }
-
-        public int OptimizationDistance
-        {
-            get { return _optimizationDistance; }
-            set
-            {
-                _optimizationDistance = value;
-                OptimizationDistance2 = value * value;
-            }
-        }
 
         public bool IsVisible { get; private set; } = true;
         public bool IsEnabled { get; private set; } = true;
@@ -112,14 +116,15 @@ namespace Zelda.Game.Entities
             }
         }
 
-        internal int OptimizationDistance2 { get; private set; }
-
         internal bool IsAlignedToGrid => IsAlignedToGridX && IsAlignedToGridY;
         internal bool IsAlignedToGridX => TopLeftX % 8 == 0;
         internal bool IsAlignedToGridY => TopLeftY % 8 == 0;
-        internal IEnumerable<Sprite> Sprites => _sprites;
-        internal bool HasSprite => _sprites.Count > 0; 
-        public Sprite Sprite => _sprites[0];
+
+        internal bool HasSprite => _sprites.Any(s => !s.Removed); 
+        internal IEnumerable<Sprite> Sprites => _sprites.Where(s => !s.Removed).Select(s => s.Sprite);
+        internal IEnumerable<NamedSprite> NamedSprites => _sprites;
+        internal string DefaultSpriteName { get; set; }
+
         internal bool IsSuspended { get; private set; }
         internal Movement Movement { get; private set; }
 
@@ -145,7 +150,6 @@ namespace Zelda.Game.Entities
         internal Savegame Savegame => Game.SaveGame;
         internal int WhenSuspended { get; private set; }
 
-        static readonly int DefaultOptimizationDistance = 400;
         static readonly Point[] DirectionsToXyMoves = new Point[]
         {
             new Point( 1,  0),
@@ -158,16 +162,13 @@ namespace Zelda.Game.Entities
             new Point( 1,  1),
         };
 
-        readonly List<Sprite> _sprites = new List<Sprite>();
-        readonly List<Sprite> _oldSprites = new List<Sprite>();
+        readonly List<NamedSprite> _sprites = new List<NamedSprite>();
         readonly List<Movement> _oldMovements = new List<Movement>();
 
         bool _initialized;
         Point _origin;
         Rectangle _boundingBox;
-        int _optimizationDistance = DefaultOptimizationDistance;
         Detector _facingEntity;
-        bool _waitingEnabled;
 
         protected Entity(string name, Direction4 direction, Layer layer, Point xy, Size size)
         {
@@ -178,7 +179,6 @@ namespace Zelda.Game.Entities
             Direction = direction;
             Layer = layer;
             _boundingBox = new Rectangle(xy, size);
-            OptimizationDistance2 = DefaultOptimizationDistance * DefaultOptimizationDistance;
         }
 
         protected override void OnDispose(bool disposing)
@@ -196,25 +196,29 @@ namespace Zelda.Game.Entities
 
             if (enabled)
             {
-                _waitingEnabled = true;
-                return;
+                IsEnabled = true;
+
+                if (!IsSuspended)
+                {
+                    Movement?.SetSuspended(false);
+                    _sprites.Where(s => !s.Removed).Do(s => s.Sprite.SetSuspended(false));
+                    if (IsOnMap)
+                        Timer.SetEntityTimersSuspended(this, false);
+                }
             }
-
-            IsEnabled = false;
-            _waitingEnabled = false;
-
-            if (!IsSuspended)
+            else
             {
-                if (Movement != null)
-                    Movement.SetSuspended(true);
+                IsEnabled = false;
 
-                foreach (var sprite in _sprites)
-                    sprite.SetSuspended(true);
+                if (!IsSuspended)
+                {
+                    Movement?.SetSuspended(true);
+                    _sprites.Where(s => !s.Removed).Do(s => s.Sprite.SetSuspended(true));
 
-                if (IsOnMap)
-                    Timer.SetEntityTimersSuspended(this, false);
+                    if (IsOnMap)
+                        Timer.SetEntityTimersSuspended(this, true);
+                }
             }
-            // TODO: NotifyEnabled(false);
         }
 
         public void RemoveFromMap()
@@ -271,8 +275,7 @@ namespace Zelda.Game.Entities
 
         internal virtual void NotifyTilesetChanged()
         {
-            foreach (Sprite sprite in _sprites)
-                sprite.SetTileset(Map.Tileset);
+            Sprites.Do(s => s.SetTileset(Map.Tileset));
         }
 
         internal void SetLayer(Layer layer)
@@ -292,9 +295,10 @@ namespace Zelda.Game.Entities
         // 이동도 없다면, 북쪽을 바라보는 것으로 가정합니다.
         internal virtual Point GetFacingPoint()
         {
-            Direction4 direction4 = Direction4.Up; // 기본으로 북쪽
-            if (HasSprite && Sprite.NumDirections == 4)
-                direction4 = Sprite.CurrentDirection;
+            var direction4 = Direction4.Up; // 기본으로 북쪽
+            var sprite = GetSprite();
+            if (sprite?.NumDirections == 4)
+                direction4 = sprite.CurrentDirection;
             else if (Movement != null)
                 direction4 = Movement.GetDisplayedDirection4();
 
@@ -329,41 +333,50 @@ namespace Zelda.Game.Entities
             return touchingPoint;
         }
 
-        public Sprite CreateSpriteEx(string animationSetId, string spriteName = "")
+        public Sprite GetSprite(string spriteName = null)
         {
-            var sprite = CreateSprite(animationSetId, spriteName);
-            sprite.EnablePixelCollisions();
-            if (IsSuspended)
-                sprite.SetSuspended(true);
-            return sprite;
+            if (_sprites.Count <= 0)
+                return null;
+
+            string validSpriteName;
+            if (spriteName == null)
+            {
+                if (DefaultSpriteName == null)
+                    return Sprites.FirstOrDefault();
+                else
+                    validSpriteName = DefaultSpriteName;
+            }
+            else
+                validSpriteName = spriteName;
+
+            return _sprites.FirstOrDefault(s => s.Name == validSpriteName && !s.Removed)?.Sprite;
         }
 
         internal Sprite CreateSprite(string animationSetId, string spriteName = "")
         {
             var sprite = Sprite.Create(animationSetId, false);
-            _sprites.Add(sprite);
+            _sprites.Add(new NamedSprite(spriteName, sprite));
             return sprite;
         }
 
-        public void RemoveSprite(Sprite sprite)
+        public bool RemoveSprite(Sprite sprite)
         {
-            sprite = sprite ?? Sprite;
-            if (_sprites.Contains(sprite))
-                _oldSprites.Add(sprite);
-            else
-                Debug.Die("This sprite does not belong to this entity");
+            var namedSprite = _sprites.FirstOrDefault(s => s.Sprite == sprite && !s.Removed);
+            if (namedSprite == null)
+                return false;
+
+            namedSprite.Removed = true;
+            return true;
         }
 
         internal void ClearSprites()
         {
-            _oldSprites.AddRange(_sprites);
-            _sprites.Clear();
+            _sprites.Do(s => s.Removed = true);
         }
 
         void ClearOldSprites()
         {
-            _sprites.RemoveAll(_oldSprites.Contains);
-            _oldSprites.Clear();
+            _sprites.RemoveAll(s => s.Removed);
         }
 
         internal virtual void NotifySpriteFrameChanged(Sprite sprite, string animation, int frame)
@@ -381,14 +394,14 @@ namespace Zelda.Game.Entities
             if (suspended)
                 WhenSuspended = Core.Now;
 
-            foreach (var sprite in _sprites)
-                sprite.SetSuspended(suspended || !IsEnabled);
-
-            if (Movement != null)
-                Movement.SetSuspended(suspended || !IsEnabled);
+            Sprites.Do(s => s.SetSuspended(suspended && !IsEnabled));
+            Movement?.SetSuspended(suspended || !IsEnabled);
 
             if (IsOnMap)
                 Timer.SetEntityTimersSuspended(this, suspended || !IsEnabled);
+
+            if (!suspended)
+                CheckCollisionWithDetectors();
         }
 
         internal virtual void Update()
@@ -396,13 +409,14 @@ namespace Zelda.Game.Entities
             if (Type == EntityType.Tile)
                 throw new InvalidOperationException("Attempt to update a static tile");
 
-            EnableIfNecessary();
-
+            if (IsBeingRemoved)
+                return;
+            
             if (_facingEntity?.IsBeingRemoved == true)
                 FacingEntity = null;
 
             // 스프라이트 업데이트
-            foreach (var sprite in _sprites)
+            foreach (var sprite in Sprites)
             {
                 sprite.Update();
                 if (sprite.HasFrameChanged)
@@ -422,31 +436,9 @@ namespace Zelda.Game.Entities
             ClearOldMovements();
         }
         
-        void EnableIfNecessary()
-        {
-            if (!_waitingEnabled)
-                return;
-
-            if (IsObstacleFor(Hero) && Overlaps(Hero))
-                return;
-
-            IsEnabled = true;
-            _waitingEnabled = false;
-            // TODO: NotifyEnabled(true);
-
-            if (IsSuspended)
-                return;
-
-            Movement?.SetSuspended(false);
-            _sprites.Do(s => s.SetSuspended(false));
-
-            if (IsOnMap)
-                Timer.SetEntityTimersSuspended(this, false);
-        }
-
         internal virtual void DrawOnMap()
         {
-            _sprites.Do(s => Map.DrawSprite(s, GetDisplayedXY()));
+            Sprites.Do(s => Map.DrawSprite(s, GetDisplayedXY()));
         }
         
         internal bool Overlaps(Point point)
@@ -527,8 +519,10 @@ namespace Zelda.Game.Entities
 
         internal virtual void NotifyLayerChanged()
         {
-            if (IsOnMap)
-                CheckCollisionWithDetectors();
+            if (!IsOnMap)
+                return;
+
+            CheckCollisionWithDetectors();
         }
 
         internal virtual void NotifyFacingEntityChanged(Detector facingEntity)
@@ -543,18 +537,14 @@ namespace Zelda.Game.Entities
         internal void CheckCollisionWithDetectors()
         {
             if (!IsOnMap)
-                return; // 초기화 중입니다
+                return; // 초기화 중
 
             if (!IsEnabled)
                 return;
 
-            // 간단한 충돌 검사
             Map.CheckCollisionWithDetectors(this);
 
-            // 픽셀단위 충돌 검사
-            foreach (Sprite sprite in _sprites)
-                if (sprite.ArePixelCollisionsEnabled())
-                    Map.CheckCollisionWithDetectors(this, sprite);
+            Sprites.Where(s => s.ArePixelCollisionsEnabled()).Do(s => Map.CheckCollisionWithDetectors(this, s));
         }
 
         internal void CheckCollisionWithDetectors(Sprite sprite)

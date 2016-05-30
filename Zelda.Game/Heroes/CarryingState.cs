@@ -4,9 +4,9 @@ namespace Zelda.Game.Heroes
 {
     class CarryingState : PlayerMovementState
     {
-        CarriedItem _carriedItem;
+        CarriedObject _carriedItem;
 
-        public CarryingState(Hero hero, CarriedItem carriedItem)
+        public CarryingState(Hero hero, CarriedObject carriedItem)
             : base(hero, "carrying")
         {
             _carriedItem = carriedItem;
@@ -35,12 +35,12 @@ namespace Zelda.Game.Heroes
             {
                 switch (nextState.PreviousCarriedItemBehavior)
                 {
-                    case CarriedItem.Behavior.Throw:
+                    case CarriedObject.Behavior.Throw:
                         ThrowItem();
                         break;
 
-                    case CarriedItem.Behavior.Destroy:
-                    case CarriedItem.Behavior.Keep:
+                    case CarriedObject.Behavior.Destroy:
+                    case CarriedObject.Behavior.Keep:
                         _carriedItem = null;
                         break;
 
@@ -113,14 +113,14 @@ namespace Zelda.Game.Heroes
             Sprites.SetAnimationWalkingCarrying();
         }
 
-        public override CarriedItem CarriedItem
+        public override CarriedObject CarriedItem
         {
             get { return _carriedItem; }
         }
 
-        public override CarriedItem.Behavior PreviousCarriedItemBehavior
+        public override CarriedObject.Behavior PreviousCarriedItemBehavior
         {
-            get { return CarriedItem.Behavior.Keep; }
+            get { return CarriedObject.Behavior.Keep; }
         }
 
         public override void NotifyLayerChanged()

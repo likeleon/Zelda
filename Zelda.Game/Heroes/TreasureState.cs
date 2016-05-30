@@ -78,9 +78,9 @@ namespace Zelda.Game.Heroes
                 y - 24 - cameraPosition.Y);
         }
 
-        public override CarriedItem.Behavior PreviousCarriedItemBehavior
+        public override CarriedObject.Behavior PreviousCarriedItemBehavior
         {
-            get { return CarriedItem.Behavior.Destroy; }
+            get { return CarriedObject.Behavior.Destroy; }
         }
 
         public override bool IsBrandishingTreasure

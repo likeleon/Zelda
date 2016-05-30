@@ -140,7 +140,7 @@ namespace Zelda.Game.Entities
             SetState(new GrabbingState(this));
         }
 
-        internal void StartLifting(CarriedItem itemToLift)
+        internal void StartLifting(CarriedObject itemToLift)
         {
             SetState(new LiftingState(this, itemToLift));
         }

@@ -17,14 +17,14 @@ namespace Zelda.Game.Entities
         int _explosionDate = Core.Now + 6000;
 
         internal Bomb(string name, Layer layer, Point xy)
-            : base(CollisionMode.Facing, name, layer, xy, new Size(16, 16))
+            : base(name, layer, xy, new Size(16, 16))
         {
-            CreateSprite("entities/bomb");
-            Sprite.EnablePixelCollisions();
+            SetCollisionModes(CollisionMode.Facing);
+            var sprite = CreateSprite("entities/bomb");
+            sprite.EnablePixelCollisions();
             Size = new Size(16, 16);
             Origin = new Point(8, 13);
             IsDrawnInYOrder = true;
-            OptimizationDistance = 0;   // 주인공이 멀리 있더라도 폭파될 수 있도록
         }
 
         internal override void NotifyCollision(Entity entityOverlapping, CollisionMode collisionMode)
@@ -50,7 +50,7 @@ namespace Zelda.Game.Entities
                 Hero.FacingEntity == this &&
                 Hero.IsFacingPointIn(BoundingBox))
             {
-                Hero.StartLifting(new CarriedItem(Hero, this, "entities/bomb", String.Empty, 0, _explosionDate));
+                Hero.StartLifting(new CarriedObject(Hero, this, "entities/bomb", null, 0, _explosionDate));
                 Core.Audio?.Play("lift");
                 RemoveFromMap();
                 return true;
@@ -85,8 +85,12 @@ namespace Zelda.Game.Entities
 
             if (Core.Now >= _explosionDate)
                 Explode();
-            else if (Core.Now >= _explosionDate - 1500 && Sprite.CurrentAnimation != "stopped_explosion_soon")
-                Sprite.SetCurrentAnimation("stopped_explosion_soon");
+            else if (Core.Now >= _explosionDate - 1500)
+            {
+                var sprite = GetSprite();
+                if (sprite != null && sprite.CurrentAnimation != "stopped_explosion_soon")
+                    sprite.SetCurrentAnimation("stopped_explosion_soon");
+            }
 
             if (Movement?.IsFinished == true)
                 ClearMovement();

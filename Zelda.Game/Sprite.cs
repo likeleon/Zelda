@@ -115,9 +115,19 @@ namespace Zelda.Game
             }
         }
 
+        internal void StartAnimation()
+        {
+            RestartAnimation();
+        }
+
         internal void RestartAnimation()
         {
             SetCurrentFrame(0);
+        }
+
+        internal void StopAnimation()
+        {
+            IsAnimationFinished = true;
         }
 
         public void SetCurrentDirection(Direction4 currentDirection)

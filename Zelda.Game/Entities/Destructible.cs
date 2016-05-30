@@ -62,7 +62,7 @@ namespace Zelda.Game.Entities
         bool _canBeCut;
 
         internal Destructible(string name, Layer layer, Point xy, string animationSetId, Treasure treasure, Ground modifiedGround)
-            : base((int)CollisionMode.None, name, layer, xy, new Size(16, 16))
+            : base(name, layer, xy, new Size(16, 16))
         {
             _modifiedGround = modifiedGround;
             AnimationSetId = animationSetId;
@@ -109,7 +109,7 @@ namespace Zelda.Game.Entities
             if (Equipment.HasAbility(Ability.Lift, Weight))
             {
                 int explosionDate = 0;
-                Hero.StartLifting(new CarriedItem(
+                Hero.StartLifting(new CarriedObject(
                     Hero,
                     this,
                     AnimationSetId,

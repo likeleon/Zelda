@@ -20,7 +20,7 @@ namespace Zelda.Game.Entities
     {
         public override EntityType Type => EntityType.Npc;
         public bool IsSolid => _subtype != NpcSubtype.UsualNpc;
-        public bool CanBeLifted => HasSprite && Sprite.AnimationSetId == "entities/sign";
+        public bool CanBeLifted => GetSprite()?.AnimationSetId == "entities/sign";
 
         readonly NpcSubtype _subtype;
         readonly NpcBehavior _behavior;
@@ -28,10 +28,11 @@ namespace Zelda.Game.Entities
         readonly string _dialogToShow;
 
         internal Npc(Game game, string name, Layer layer, Point xy, NpcSubtype subtype, string spriteName, Direction4 initialDirection, string behaviorString)
-            : base(CollisionMode.Facing | CollisionMode.Overlapping, name, layer, xy, new Size(0, 0))
+            : base(name, layer, xy, new Size(0, 0))
         {
             _subtype = subtype;
 
+            SetCollisionModes(CollisionMode.Facing | CollisionMode.Overlapping); 
             InitializeSprite(spriteName, initialDirection);
             Size = new Size(16, 16);
             Origin = new Point(8, 13);
@@ -57,12 +58,12 @@ namespace Zelda.Game.Entities
 
         void InitializeSprite(string spriteName, Direction4 initialDirection)
         {
-            if (!spriteName.IsNullOrEmpty())
-            {
-                CreateSprite(spriteName);
-                if (initialDirection != Direction4.None)
-                    Sprite.SetCurrentDirection(initialDirection);
-            }
+            if (spriteName == null)
+                return;
+
+            var sprite = CreateSprite(spriteName);
+            if (initialDirection != Direction4.None)
+                sprite.SetCurrentDirection(initialDirection);
         }
 
         internal override bool IsObstacleFor(Entity other) => other.IsNpcObstacle(this);
@@ -98,13 +99,15 @@ namespace Zelda.Game.Entities
             if (!Hero.IsFree || CommandsEffects.ActionCommandEffect == ActionCommandEffect.None)
                 return false;
 
-            ActionCommandEffect effect = CommandsEffects.ActionCommandEffect;
+            var effect = CommandsEffects.ActionCommandEffect;
             CommandsEffects.ActionCommandEffect = ActionCommandEffect.None;
+
+            var sprite = GetSprite();
 
             if (_subtype == NpcSubtype.UsualNpc)
             {
-                Direction4 direction = (Direction4)(((int)Hero.AnimationDirection + 2) % 4);
-                Sprite.SetCurrentDirection(direction);
+                var direction = (Direction4)(((int)Hero.AnimationDirection + 2) % 4);
+                sprite?.SetCurrentDirection(direction);
             }
 
             if (effect != ActionCommandEffect.Lift)
@@ -119,10 +122,10 @@ namespace Zelda.Game.Entities
             {
                 if (Equipment.HasAbility(Ability.Lift))
                 {
-                    Hero.StartLifting(new CarriedItem(
+                    Hero.StartLifting(new CarriedObject(
                         Hero,
                         this,
-                        Sprite.AnimationSetId,
+                        sprite?.AnimationSetId ?? "stopped",
                         "stone",
                         2,
                         0));
@@ -145,14 +148,14 @@ namespace Zelda.Game.Entities
 
             if (_subtype == NpcSubtype.UsualNpc)
             {
-                if (Movement != null)
+                var sprite = GetSprite();
+                if (Movement != null && sprite != null)
                 {
                     // NPC가 이동 중입니다
-                    if (Sprite.CurrentAnimation != "walking")
-                        Sprite.SetCurrentAnimation("walking");
+                    if (sprite.CurrentAnimation != "walking")
+                        sprite.SetCurrentAnimation("walking");
 
-                    Direction4 direction4 = Movement.GetDisplayedDirection4();
-                    Sprite.SetCurrentDirection(direction4);
+                    sprite.SetCurrentDirection(Movement.GetDisplayedDirection4());
                 }
 
                 if (Hero.FacingEntity == this &&
@@ -169,7 +172,7 @@ namespace Zelda.Game.Entities
             base.NotifyMovementFinished();
 
             if (_subtype == NpcSubtype.UsualNpc)
-                Sprite.SetCurrentAnimation("stopped");
+                GetSprite()?.SetCurrentAnimation("stopped");
         }
     }
 
@@ -185,7 +188,7 @@ namespace Zelda.Game.Entities
         {
             Direction = xmlData.Direction.CheckField("Direction");
             Subtype = xmlData.Subtype.CheckField("Subtype");
-            Sprite = xmlData.Sprite.OptField(string.Empty);
+            Sprite = xmlData.Sprite.OptField(null);
             Behavior = xmlData.Behavior.OptField("map");
         }
 

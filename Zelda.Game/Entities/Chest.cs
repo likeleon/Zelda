@@ -13,7 +13,7 @@ namespace Zelda.Game.Entities
     public class Chest : Detector
     {        
         public override EntityType Type => EntityType.Chest;
-        public bool IsOpen => _open;
+        public bool IsOpen { get; private set; }
 
         internal ChestOpeningMethod OpeningMethod { get; set; }
         internal string OpeningCondition { get; set; }
@@ -23,15 +23,16 @@ namespace Zelda.Game.Entities
         readonly Treasure _treasure;
         bool _treasureGiven;
         int _treasureDate;
-        bool _open;
 
         internal Chest(string name, Layer layer, Point xy, string spriteName, Treasure treasure)
-            : base(CollisionMode.Facing, name, layer, xy, new Size(16, 16))
+            : base(name, layer, xy, new Size(16, 16))
         {
             _treasure = treasure;
-            _open = treasure.IsFound;
-            _treasureGiven = _open;
+            IsOpen = treasure.IsFound;
+            _treasureGiven = IsOpen;
             OpeningMethod = ChestOpeningMethod.ByInteraction;
+
+            SetCollisionModes(CollisionMode.Facing);
 
             var sprite = CreateSprite(spriteName);
             sprite.SetCurrentAnimation(IsOpen ? "open" : "closed");
@@ -144,15 +145,17 @@ namespace Zelda.Game.Entities
 
         public void SetOpen(bool open)
         {
-            if (open == _open)
+            if (open == IsOpen)
                 return;
 
-            _open = open;
+            IsOpen = open;
+
+            var sprite = GetSprite();
             if (open)
-                Sprite.SetCurrentAnimation("open");
+                sprite?.SetCurrentAnimation("open");
             else
             {
-                Sprite.SetCurrentAnimation("closed");
+                sprite?.SetCurrentAnimation("closed");
                 _treasureGiven = false;
             }
         }

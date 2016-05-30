@@ -4,7 +4,7 @@ using Zelda.Game.Movements;
 
 namespace Zelda.Game.Entities
 {
-    public class CarriedItem : Entity
+    public class CarriedObject : Entity
     {
         public enum Behavior
         {
@@ -17,7 +17,7 @@ namespace Zelda.Game.Entities
 
         internal bool IsBeingLifted { get; private set; } = true;
         internal bool IsBeingThrown { get; private set; }
-        internal bool IsBroken => _isBreaking && (Sprite.IsAnimationFinished || CanExplode);
+        internal bool IsBroken => _isBreaking && (_mainSprite.IsAnimationFinished || CanExplode);
         internal override bool CanBeObstacle => false;
         internal bool CanExplode => _explosionDate != 0;
         internal bool WillExplodeSoon => CanExplode && Core.Now >= _explosionDate - 1500;
@@ -41,11 +41,12 @@ namespace Zelda.Game.Entities
         int _yIncrement;
         int _nextDownDate;
         int _itemHeight;
+        Sprite _mainSprite;
         Sprite _shadowSprite;
         Direction4 _throwingDirection = Direction4.Right;
         int _explosionDate;
 
-        internal CarriedItem(Hero hero, Entity originalEntity, string animationSetId, string destructionSoundId, int damageOnEnemies, int explosionDate)
+        internal CarriedObject(Hero hero, Entity originalEntity, string animationSetId, string destructionSoundId, int damageOnEnemies, int explosionDate)
             : base("", Direction4.Right, hero.Layer, new Point(0, 0), new Size(0, 0))
         {
             _hero = hero;
@@ -62,12 +63,15 @@ namespace Zelda.Game.Entities
             IsDrawnInYOrder = true;
 
             var movement = new PixelMovement(LiftingTrajectories[(int)direction], 100, false, true);
-            CreateSprite(animationSetId);
-            Sprite.SetCurrentAnimation("stopped");
+            _mainSprite = CreateSprite(animationSetId, "main");
+            _mainSprite.EnablePixelCollisions();
+            _mainSprite.SetCurrentAnimation("stopped");
+            DefaultSpriteName = "main";
             SetMovement(movement);
 
-            _shadowSprite = Sprite.Create("entities/shadow", false);
+            _shadowSprite = CreateSprite("entities/shadow", "shadow");
             _shadowSprite.SetCurrentAnimation("big");
+            _shadowSprite.StopAnimation();
         }
 
         public void ThrowItem(Direction4 direction)
@@ -78,10 +82,11 @@ namespace Zelda.Game.Entities
 
             Core.Audio?.Play("throw");
 
-            Sprite.SetCurrentAnimation("stopped");
+            _mainSprite.SetCurrentAnimation("stopped");
+            _shadowSprite.StartAnimation();
 
             Y = _hero.Y;
-            StraightMovement movement = new StraightMovement(false, false);
+            var movement = new StraightMovement(false, false);
             movement.SetSpeed(200);
             movement.SetAngle(Geometry.DegreesToRadians((int)direction * 90));
             ClearMovement();
@@ -137,14 +142,17 @@ namespace Zelda.Game.Entities
             }
 
             Movement.Stop();
+            _shadowSprite.StopAnimation();
 
             if (!CanExplode)
             {
-                if (!String.IsNullOrEmpty(_destructionSoundId))
+                if (_destructionSoundId != null)
                     Core.Audio?.Play(_destructionSoundId);
 
-                if (Sprite.HasAnimation("destroy"))
-                    Sprite.SetCurrentAnimation("destroy");
+                if (_mainSprite.HasAnimation("destroy"))
+                    _mainSprite.SetCurrentAnimation("destroy");
+                else
+                    RemoveFromMap();
             }
             else
             {
@@ -178,26 +186,23 @@ namespace Zelda.Game.Entities
                     BreakItem();
                 else if (WillExplodeSoon)
                 {
-                    string animation = Sprite.CurrentAnimation;
+                    var animation = _mainSprite.CurrentAnimation;
                     if (animation == "stopped")
-                        Sprite.SetCurrentAnimation("stopped_explosion_soon");
+                        _mainSprite.SetCurrentAnimation("stopped_explosion_soon");
                     else if (animation == "walking")
-                        Sprite.SetCurrentAnimation("walking_explosion_soon");
+                        _mainSprite.SetCurrentAnimation("walking_explosion_soon");
                 }
             }
 
-            if (IsBeingThrown)
+            if (IsBroken)
+                RemoveFromMap();
+            else if (IsBeingThrown)
             {
-                _shadowSprite.Update();
-
-                if (IsBroken)
-                    RemoveFromMap();
-                else if (Movement.IsStopped || _yIncrement >= 7)
+                if (Movement.IsStopped || _yIncrement >= 7)
                     BreakItemOnGround();
                 else
                 {
-                    int now = Core.Now;
-                    while (now >= _nextDownDate)
+                    while (Core.Now >= _nextDownDate)
                     {
                         _nextDownDate += 40;
                         _itemHeight -= _yIncrement;
@@ -210,13 +215,19 @@ namespace Zelda.Game.Entities
         internal void SetAnimationStopped()
         {
             if (!IsBeingLifted && !IsBeingThrown)
-                Sprite.SetCurrentAnimation("stopped");
+            {
+                var animation = WillExplodeSoon ? "stopped_explosion_soon" : "stopped";
+                _mainSprite.SetCurrentAnimation(animation);
+            }
         }
 
         internal void SetAnimationWalking()
         {
             if (!IsBeingLifted && !IsBeingThrown)
-                Sprite.SetCurrentAnimation("walking");
+            {
+                var animation = WillExplodeSoon ? "walking_explosion_soon" : "walking";
+                _mainSprite.SetCurrentAnimation(animation);
+            }
         }
 
         internal override void DrawOnMap()
@@ -226,7 +237,7 @@ namespace Zelda.Game.Entities
             else
             {
                 Map.DrawSprite(_shadowSprite, XY);
-                Map.DrawSprite(Sprite, X, Y - _itemHeight);
+                Map.DrawSprite(_mainSprite, X, Y - _itemHeight);
             }
         }
 

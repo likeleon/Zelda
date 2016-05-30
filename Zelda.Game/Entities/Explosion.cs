@@ -9,12 +9,13 @@ namespace Zelda.Game.Entities
         internal override bool CanBeObstacle => false;
 
         public Explosion(string name, Layer layer, Point xy, bool withDamage)
-            : base(CollisionMode.Sprite | CollisionMode.Overlapping, name, layer, xy, new Size(48, 48))
+            : base(name, layer, xy, new Size(48, 48))
         {
-            CreateSprite("entities/explosion");
+            SetCollisionModes(CollisionMode.Sprite | CollisionMode.Overlapping);
 
-            OptimizationDistance = 2000;
-            Sprite.EnablePixelCollisions();
+            var sprite = CreateSprite("entities/explosion");
+            sprite.EnablePixelCollisions();
+
             if (withDamage)
             {
                 Size = new Size(48, 48);
@@ -26,7 +27,7 @@ namespace Zelda.Game.Entities
         {
             base.Update();
 
-            if (Sprite.IsAnimationFinished)
+            if (GetSprite()?.IsAnimationFinished == true)
                 RemoveFromMap();
         }
 

@@ -37,9 +37,9 @@ namespace Zelda.Game.Heroes
             }
         }
 
-        public override CarriedItem.Behavior PreviousCarriedItemBehavior
+        public override CarriedObject.Behavior PreviousCarriedItemBehavior
         {
-            get { return CarriedItem.Behavior.Destroy; }
+            get { return CarriedObject.Behavior.Destroy; }
         }
 
         public override bool IsFree

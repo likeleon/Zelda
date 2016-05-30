@@ -81,7 +81,7 @@ namespace Zelda.Game
                 var data = buffer.XmlDeserialize<MapXmlData>();
                 Location = new Point(data.Properties.X.OptField(0), data.Properties.Y.OptField(0));
                 Size = new Size(data.Properties.Width.CheckField("Width"), data.Properties.Height.CheckField("Height"));
-                World = data.Properties.World.OptField(String.Empty);
+                World = data.Properties.World.OptField(null);
                 Floor = data.Properties.Floor.OptField(MapData.NoFloor);
                 TilesetId = data.Properties.Tileset.CheckField("Tileset");
                 MusicId = data.Properties.Music.OptField(Music.None);

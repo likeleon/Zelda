@@ -21,7 +21,7 @@ namespace Alttp.Maps
         {
             (Game as PlayGame).DialogBox.SetDialogStyle(DialogBoxStyle.Empty);
 
-            _frescoSprite = GetEntity<Npc>("fresco").Sprite;
+            _frescoSprite = GetEntity<Npc>("fresco").GetSprite();
             _frescoSprite.SetIgnoreSuspended(true);
             Game.StartDialog("intro0", null, (_) =>
             {
