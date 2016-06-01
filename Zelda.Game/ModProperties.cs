@@ -4,61 +4,41 @@ using Zelda.Game.LowLevel;
 
 namespace Zelda.Game
 {
-    public class ModProperties : XmlData
+    [XmlRoot("Mod")]
+    public class ModProperties : IXmlDeserialized
     {
         public string ZeldaVersion { get; set; }
-        public string ModWriteDir { get; set; }
         public string TitleBar { get; set; }
-        public Size NormalModSize { get; set; }
-        public Size MinModSize { get; set; }
-        public Size MaxModSize { get; set; }
 
-        protected override bool OnImportFromBuffer(byte[] buffer)
+        [XmlElement("WriteDir")]
+        public string ModWriteDir { get; set; }
+
+        [XmlElement("NormalModSize")]
+        public string NormalModSizeStr { get; set; } = DefaultModSize;
+
+        [XmlElement("MinModSize")]
+        public string MinModSizeStr { get; set; } = DefaultModSize;
+
+        [XmlElement("MaxModSize")]
+        public string MaxModSizeStr { get; set; } = DefaultModSize;
+
+        [XmlIgnore] public Size NormalModSize { get; private set; }
+        [XmlIgnore] public Size MinModSize { get; private set; }
+        [XmlIgnore] public Size MaxModSize { get; private set; }
+
+        static readonly string DefaultModSize = "320x240";
+
+        public void OnDeserialized()
         {
-            try
-            {
-                var data = buffer.XmlDeserialize<ModPropertiesXmlData>();
-                ZeldaVersion = data.ZeldaVersion;
-                ModWriteDir = data.ModWriteDir;
-                TitleBar = data.TitleBar;
+            NormalModSize = NormalModSizeStr.ToSize();
+            MinModSize = MinModSizeStr.ToSize();
+            MaxModSize = MaxModSizeStr.ToSize();
 
-                NormalModSize = new Size(320, 240);
-                MinModSize = data.MinModSizeString?.ToSize() ?? NormalModSize;
-                MaxModSize = data.MaxModSizeString?.ToSize() ?? NormalModSize;
-
-                if (NormalModSize.Width < MinModSize.Width || NormalModSize.Height < MinModSize.Height ||
-                    NormalModSize.Width > MaxModSize.Width || NormalModSize.Height > MaxModSize.Height)
-                    throw new Exception("Invalid range of mod sizes");
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.Die("Failed to load mod.xml: " + ex.Message);
-                return false;
-            }
-        }
-
-        [XmlRoot("Mod")]
-        public class ModPropertiesXmlData
-        {
-            [XmlElement]
-            public string ZeldaVersion { get; set; }
-
-            [XmlElement("WriteDir")]
-            public string ModWriteDir { get; set; }
-
-            [XmlElement]
-            public string TitleBar { get; set; }
-
-            [XmlElement("NormalModSize")]
-            public string NormalModSizeString { get; set; }
-
-            [XmlElement("MinModSize")]
-            public string MinModSizeString { get; set; }
-
-            [XmlElement("MaxModSize")]
-            public string MaxModSizeString { get; set; }
+            if (NormalModSize.Width < MinModSize.Width || 
+                NormalModSize.Height < MinModSize.Height ||
+                NormalModSize.Width > MaxModSize.Width || 
+                NormalModSize.Height > MaxModSize.Height)
+                throw new Exception("Invalid range of mod sizes");
         }
     }
 }

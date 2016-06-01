@@ -27,8 +27,7 @@ namespace Zelda.Game
 
             ObjectCreator = new ObjectCreator(this);
 
-            Properties = new ModProperties();
-            Properties.ImportFromModFile(ModFiles, "mod.xml");
+            Properties = XmlLoader.Load<ModProperties>(ModFiles, "mod.xml");
 
             ModFiles.SetModWriteDir(Properties.ModWriteDir);
         }

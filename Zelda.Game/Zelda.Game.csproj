@@ -150,6 +150,7 @@
     <Compile Include="Transition.cs" />
     <Compile Include="TransitionFade.cs" />
     <Compile Include="Treasure.cs" />
+    <Compile Include="XmlLoader.cs" />
     <Compile Include="ZeldaFatalException.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapData.cs" />
