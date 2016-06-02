@@ -56,19 +56,13 @@ namespace Zelda.Editor.Modules.Mods.Models
             { ResourceType.Font,     "New font..."                },
         };
 
-        public static ModResources Load(string rootPath, IMod mod)
-        {
-            var modResources = new ModResources(mod);
-            modResources._resources.ImportFromFile(rootPath);
-            return modResources;
-        }
-
-        ModResources(IMod mod)
+        public ModResources(IMod mod, string rootPath)
         {
             if (mod == null)
                 throw new ArgumentNullException("mod");
 
             _mod = mod;
+            _resources = XmlLoader.Load<Game.ModResources>(rootPath);
         }
 
         public bool Add(ResourceType resourceType, string id, string description)

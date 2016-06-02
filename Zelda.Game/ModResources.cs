@@ -1,68 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
 namespace Zelda.Game
 {
-    public class ModResources : XmlData
+    [XmlRoot("ProjectDB")]
+    public class ModResources : IXmlDeserialized, IXmlSerializing
     {
-        public class ProjectDB
+        public class Resource
         {
-            public class Resource
-            {
-                [XmlAttribute]
-                public string Id { get; set; }
+            [XmlAttribute]
+            public string Id { get; set; }
 
-                [XmlAttribute]
-                public string Description { get; set; }
-            }
-
-            [XmlArrayItem("Assembly")]
-            public string[] Assemblies { get; set; }
-
-            [XmlArrayItem("Map")]
-            public Resource[] Maps { get; set; }
-
-            [XmlArrayItem("Tileset")]
-            public Resource[] Tilesets { get; set; }
-
-            [XmlArrayItem("Sprite")]
-            public Resource[] Sprites { get; set; }
-
-            [XmlArrayItem("Music")]
-            public Resource[] Musics { get; set; }
-
-            [XmlArrayItem("Sound")]
-            public Resource[] Sounds { get; set; }
-
-            [XmlArrayItem("Item")]
-            public Resource[] Items { get; set; }
-
-            [XmlArrayItem("Enemy")]
-            public Resource[] Enemies { get; set; }
-
-            [XmlArrayItem("Entity")]
-            public Resource[] Entities { get; set; }
-
-            [XmlArrayItem("Language")]
-            public Resource[] Languages { get; set; }
-
-            [XmlArrayItem("Font")]
-            public Resource[] Fonts { get; set; }
-
-            // TODO XmlChoiceIdentifierAttribute 사용
+            [XmlAttribute]
+            public string Description { get; set; }
         }
 
         public class ResourceMap : Dictionary<string, string>
         {
         }
-   
-        readonly static Dictionary<ResourceType, string> _resourceTypeNames;
-        readonly Dictionary<ResourceType, ResourceMap> _resourceMaps;
 
-        public IEnumerable<string> Assemblies { get; private set; }
+        // TODO XmlChoiceIdentifierAttribute 사용
+        [XmlArrayItem("Assembly")]
+        public string[] Assemblies { get; set; }
+
+        [XmlArrayItem("Map")]
+        public Resource[] Maps { get; set; }
+
+        [XmlArrayItem("Tileset")]
+        public Resource[] Tilesets { get; set; }
+
+        [XmlArrayItem("Sprite")]
+        public Resource[] Sprites { get; set; }
+
+        [XmlArrayItem("Music")]
+        public Resource[] Musics { get; set; }
+
+        [XmlArrayItem("Sound")]
+        public Resource[] Sounds { get; set; }
+
+        [XmlArrayItem("Item")]
+        public Resource[] Items { get; set; }
+
+        [XmlArrayItem("Enemy")]
+        public Resource[] Enemies { get; set; }
+
+        [XmlArrayItem("Entity")]
+        public Resource[] Entities { get; set; }
+
+        [XmlArrayItem("Language")]
+        public Resource[] Languages { get; set; }
+
+        [XmlArrayItem("Font")]
+        public Resource[] Fonts { get; set; }
+
+        static readonly IReadOnlyDictionary<ResourceType, string> _resourceTypeNames;
+
+        readonly Dictionary<ResourceType, ResourceMap> _resourceMaps = new Dictionary<ResourceType, ResourceMap>();
 
         static ModResources()
         {
@@ -78,74 +73,43 @@ namespace Zelda.Game
                 .ToDictionary(t => t, t => new ResourceMap());
         }
 
-        protected override bool OnImportFromBuffer(byte[] buffer)
+        public void OnDeserialized()
         {
-            try
-            {
-                var db = buffer.XmlDeserialize<ProjectDB>();
-
-                Assemblies = db.Assemblies.ToArray();
-
-                FillResourceMap(ResourceType.Map, db.Maps);
-                FillResourceMap(ResourceType.Tileset, db.Tilesets);
-                FillResourceMap(ResourceType.Sprite, db.Sprites);
-                FillResourceMap(ResourceType.Music, db.Musics);
-                FillResourceMap(ResourceType.Sound, db.Sounds);
-                FillResourceMap(ResourceType.Item, db.Items);
-                FillResourceMap(ResourceType.Enemy, db.Enemies);
-                FillResourceMap(ResourceType.Entity, db.Entities);
-                FillResourceMap(ResourceType.Language, db.Languages);
-                FillResourceMap(ResourceType.Font, db.Fonts);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.Error("Failed to load mod resource list 'project_db.xml': {0}".F(ex));
-                return false;
-            }
+            FillResourceMap(ResourceType.Map, Maps);
+            FillResourceMap(ResourceType.Tileset, Tilesets);
+            FillResourceMap(ResourceType.Sprite, Sprites);
+            FillResourceMap(ResourceType.Music, Musics);
+            FillResourceMap(ResourceType.Sound, Sounds);
+            FillResourceMap(ResourceType.Item, Items);
+            FillResourceMap(ResourceType.Enemy, Enemies);
+            FillResourceMap(ResourceType.Entity, Entities);
+            FillResourceMap(ResourceType.Language, Languages);
+            FillResourceMap(ResourceType.Font, Fonts);
         }
 
-        void FillResourceMap(ResourceType resourceType, ProjectDB.Resource[] resources)
+        void FillResourceMap(ResourceType resourceType, Resource[] resources)
         {
-            if (resources == null)
-                return;
-
-            foreach (var resource in resources)
-                _resourceMaps[resourceType].Add(resource.Id, resource.Description);
+            resources?.Do(r => _resourceMaps[resourceType].Add(r.Id, r.Description));
         }
 
-        protected override bool OnExportToStream(Stream stream)
+        public void OnSerializing()
         {
-            try
-            {
-                var db = new ProjectDB();
-                db.Assemblies = Assemblies.ToArray();
-
-                db.Maps = ExportResourceMap(ResourceType.Map);
-                db.Tilesets = ExportResourceMap(ResourceType.Tileset);
-                db.Sprites = ExportResourceMap(ResourceType.Sprite);
-                db.Musics = ExportResourceMap(ResourceType.Music);
-                db.Sounds = ExportResourceMap(ResourceType.Sound);
-                db.Items = ExportResourceMap(ResourceType.Item);
-                db.Enemies = ExportResourceMap(ResourceType.Enemy);
-                db.Entities = ExportResourceMap(ResourceType.Entity);
-                db.Languages = ExportResourceMap(ResourceType.Language);
-                db.Fonts = ExportResourceMap(ResourceType.Font);
-
-                db.XmlSerialize(stream);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.Error("Failed to save mod resource list 'project_db.xml': {0}".F(ex));
-                return false;
-            }
+            Maps = ExportResourceMap(ResourceType.Map);
+            Tilesets = ExportResourceMap(ResourceType.Tileset);
+            Sprites = ExportResourceMap(ResourceType.Sprite);
+            Musics = ExportResourceMap(ResourceType.Music);
+            Sounds = ExportResourceMap(ResourceType.Sound);
+            Items = ExportResourceMap(ResourceType.Item);
+            Enemies = ExportResourceMap(ResourceType.Enemy);
+            Entities = ExportResourceMap(ResourceType.Entity);
+            Languages = ExportResourceMap(ResourceType.Language);
+            Fonts = ExportResourceMap(ResourceType.Font);
         }
 
-        ProjectDB.Resource[] ExportResourceMap(ResourceType resourceType)
+        Resource[] ExportResourceMap(ResourceType resourceType)
         {
             return _resourceMaps[resourceType]
-            .Select(kvp => new ProjectDB.Resource() { Id = kvp.Key, Description = kvp.Value })
+            .Select(kvp => new Resource() { Id = kvp.Key, Description = kvp.Value })
             .ToArray();
         }
 

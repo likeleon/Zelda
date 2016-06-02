@@ -21,14 +21,9 @@ namespace Zelda.Game
         public Mod(string programName, string modPath)
         {
             ModFiles = new ModFiles(this, programName, modPath);
-
-            Resources = new ModResources();
-            Resources.ImportFromModFile(ModFiles, "project_db.xml");
-
+            Resources = XmlLoader.Load<ModResources>(ModFiles, "project_db.xml");
             ObjectCreator = new ObjectCreator(this);
-
             Properties = XmlLoader.Load<ModProperties>(ModFiles, "mod.xml");
-
             ModFiles.SetModWriteDir(Properties.ModWriteDir);
         }
 
