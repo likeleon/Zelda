@@ -70,9 +70,7 @@ namespace Zelda.Editor.Modules.Mods.Models
             if (!_resources.Add(resourceType, id, description))
                 return false;
 
-            if (ElementAdded != null)
-                ElementAdded(this, new ElementAddedEventArgs(resourceType, id, description));
-
+            ElementAdded?.Invoke(this, new ElementAddedEventArgs(resourceType, id, description));
             return true;
         }
 
@@ -81,9 +79,7 @@ namespace Zelda.Editor.Modules.Mods.Models
             if (!_resources.Remove(resourceType, id))
                 return false;
 
-            if (ElementRemoved != null)
-                ElementRemoved(this, new ElementRemovedEventArgs(resourceType, id));
-
+            ElementRemoved?.Invoke(this, new ElementRemovedEventArgs(resourceType, id));
             return true;
         }
 
@@ -102,16 +98,14 @@ namespace Zelda.Editor.Modules.Mods.Models
             if (!_resources.SetDescription(type, id, description))
                 return false;
 
-            if (ElementDescriptionChanged != null)
-                ElementDescriptionChanged(this, new ElementDescriptionChangedEventArgs(type, id, description));
+            ElementDescriptionChanged?.Invoke(this, new ElementDescriptionChangedEventArgs(type, id, description));
             return true;
         }
 
         public void Save()
         {
             var fileName = _mod.GetResourceListPath();
-            if (!_resources.ExportToFile(fileName))
-                throw new Exception("Cannot write file '{0}'".F(fileName));
+            XmlSaver.Save(_resources, fileName);
         }
 
         public bool Exists(ResourceType type, string id)
@@ -146,7 +140,7 @@ namespace Zelda.Editor.Modules.Mods.Models
 
         public IEnumerable<string> GetElements(ResourceType resourceType)
         {
-            return _resources.GetElements(resourceType).Keys;
+            return _resources.ResourceMaps[resourceType].Keys;
         }
     }
 }

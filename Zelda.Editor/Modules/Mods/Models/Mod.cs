@@ -34,7 +34,7 @@ namespace Zelda.Editor.Modules.Mods.Models
         {
             RootPath = properties.ModPath.RootPath;
             Name = Path.GetFileName(RootPath);
-            Resources = ModResources.Load(GetResourceListPath(), this);
+            Resources = new ModResources(this, GetResourceListPath());
             Properties = properties;
         }
 

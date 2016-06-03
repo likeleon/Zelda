@@ -39,7 +39,7 @@ namespace Zelda.Game
 
         public IReadOnlyDictionary<string, string> GetResources(ResourceType resourceType)
         {
-            return Resources.GetElements(resourceType);
+            return Resources.ResourceMaps[resourceType];
         }
 
         public string GetLanguageName(string languageCode)

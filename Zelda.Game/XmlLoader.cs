@@ -9,9 +9,9 @@ namespace Zelda.Game
         void OnDeserialized();
     }
 
-    public interface IXmlSerializing
+    public interface IPrepareXmlSerialize
     {
-        void OnSerializing();
+        void OnPrepareSerialize();
     }
 
     public static class XmlLoader

@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 namespace Zelda.Game
 {
     [XmlRoot("ProjectDB")]
-    public class ModResources : IXmlDeserialized, IXmlSerializing
+    public class ModResources : IXmlDeserialized, IPrepareXmlSerialize
     {
         public class Resource
         {
@@ -55,6 +55,9 @@ namespace Zelda.Game
         [XmlArrayItem("Font")]
         public Resource[] Fonts { get; set; }
 
+        [XmlIgnore]
+        public IReadOnlyDictionary<ResourceType, ResourceMap> ResourceMaps => _resourceMaps;
+
         static readonly IReadOnlyDictionary<ResourceType, string> _resourceTypeNames;
 
         readonly Dictionary<ResourceType, ResourceMap> _resourceMaps = new Dictionary<ResourceType, ResourceMap>();
@@ -92,7 +95,7 @@ namespace Zelda.Game
             resources?.Do(r => _resourceMaps[resourceType].Add(r.Id, r.Description));
         }
 
-        public void OnSerializing()
+        public void OnPrepareSerialize()
         {
             Maps = ExportResourceMap(ResourceType.Map);
             Tilesets = ExportResourceMap(ResourceType.Tileset);
@@ -109,13 +112,13 @@ namespace Zelda.Game
         Resource[] ExportResourceMap(ResourceType resourceType)
         {
             return _resourceMaps[resourceType]
-            .Select(kvp => new Resource() { Id = kvp.Key, Description = kvp.Value })
-            .ToArray();
+                .Select(kvp => new Resource() { Id = kvp.Key, Description = kvp.Value })
+                .ToArray();
         }
 
         public bool Add(ResourceType resourceType, string id, string description)
         {
-            var resource = GetElements(resourceType);
+            var resource = ResourceMaps[resourceType];
             if (resource.ContainsKey(id))
                 return false;
 
@@ -125,8 +128,7 @@ namespace Zelda.Game
 
         public bool Remove(ResourceType resourceType, string id)
         {
-            var resource = GetElements(resourceType);
-            return resource.Remove(id);
+            return ResourceMaps[resourceType].Remove(id);
         }
 
         public bool Rename(ResourceType resourceType, string oldId, string newId)
@@ -147,8 +149,7 @@ namespace Zelda.Game
             if (!Exists(resourceType, id))
                 return false;
 
-            var resources = GetElements(resourceType);
-            resources[id] = description;
+            ResourceMaps[resourceType][id] = description;
             return true;
         }
 
@@ -162,21 +163,14 @@ namespace Zelda.Game
 
         public bool Exists(ResourceType resourceType, string id)
         {
-            var resource = GetElements(resourceType);
-            return resource.ContainsKey(id);
-        }
-
-        public ResourceMap GetElements(ResourceType resourceType)
-        {
-            return _resourceMaps[resourceType];
+            return ResourceMaps[resourceType].ContainsKey(id);
         }
 
         public string GetDescription(ResourceType resourceType, string id)
         {
-            var resource = GetElements(resourceType);
-            if (!resource.ContainsKey(id))
-                return string.Empty;
-            return resource[id];
+            string desc;
+            ResourceMaps[resourceType].TryGetValue(id, out desc);
+            return desc;
         }
 
         public static string GetResourceTypeName(ResourceType resourceType)
