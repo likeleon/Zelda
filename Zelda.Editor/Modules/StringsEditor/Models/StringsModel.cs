@@ -22,7 +22,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
         readonly IMod _mod;
         readonly string _languageId;
         readonly StringResources _resources = new StringResources();
-        readonly StringResources _translationResources = new StringResources();
+        StringResources _translationResources;
         string _translationId;
 
         public NodeTree<StringNode> StringTree { get; private set; }
@@ -45,8 +45,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
             _languageId = languageId;
 
             var path = _mod.GetStringsPath(languageId);
-            if (!_resources.ImportFromFile(path))
-                throw new Exception("Cannot open strings data file '{0}'".F(path));
+            _resources = XmlLoader.Load<StringResources>(path);
 
             BuildStringTree();
         }
@@ -94,8 +93,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
         public void Save()
         {
             var path = _mod.GetStringsPath(_languageId);
-            if (!_resources.ExportToFile(path))
-                throw new Exception("Cannot save strings data file '{0}'".F(path));
+            XmlSaver.Save(_resources, path);
         }
 
         public bool StringExists(string key)
@@ -105,7 +103,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 
         public bool TranslatedStringExists(string key)
         {
-            return _translationResources.HasString(key);
+            return _translationResources?.HasString(key) ?? false;
         }
 
         public string GetString(string key)
@@ -187,9 +185,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
             ClearTranslation();
 
             var path = _mod.GetStringsPath(languageId);
-            if (!_translationResources.ImportFromFile(path))
-                throw new Exception("Cannot open strings data file '{0}'".F(path));
-
+            _translationResources = XmlLoader.Load<StringResources>(path);
             _translationResources.Strings.Keys.Do(stringKey => StringTree.AddRef(stringKey));
             UpdateChildIcons(StringTree.Root);
             TranslationId = languageId;
@@ -208,14 +204,14 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
         public void ClearTranslation()
         {
             ClearTranslationFromTree();
-            _translationResources.Clear();
+            _translationResources?.Clear();
             UpdateChildIcons(StringTree.Root);
             TranslationId = null;
         }
 
         void ClearTranslationFromTree()
         {
-            foreach (var id in _translationResources.Strings.Keys)
+            foreach (var id in _translationResources?.Strings.Keys)
             {
                 var node = StringTree.Find(id);
                 if (node != null)
@@ -226,7 +222,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
         public string GetTranslatedString(string key)
         {
             if (!TranslatedStringExists(key))
-                return string.Empty;
+                return null;
 
             return _translationResources.GetString(key);
         }
@@ -280,9 +276,7 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
             var node = StringTree.AddKey(newKey);
             UpdateIcon(node);
 
-            if (StringKeyChanged != null)
-                StringKeyChanged(this, new StringKeyChangedEventArgs(key, newKey));
-
+            StringKeyChanged?.Invoke(this, new StringKeyChangedEventArgs(key, newKey));
             return newKey;
         }
     }

@@ -1,50 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
 namespace Zelda.Game
 {
-    public class StringResources : XmlData
+    [XmlRoot("Strings")]
+    public class StringResources : IXmlDeserialized, IPrepareXmlSerialize
     {
-        public IReadOnlyDictionary<string, string> Strings { get { return _strings; } }
+        public class Text
+        {
+            [XmlAttribute]
+            public string Key { get; set; }
+
+            [XmlText]
+            public string Value { get; set; }
+        }
+
+        [XmlElement("Text")]
+        public Text[] Texts { get; set; }
+
+        [XmlIgnore]
+        public IReadOnlyDictionary<string, string> Strings => _strings;
 
         readonly SortedDictionary<string, string> _strings = new SortedDictionary<string, string>(StringComparer.Ordinal);
 
-        protected override bool OnImportFromBuffer(byte[] buffer)
+        public void OnDeserialized()
         {
-            try
-            {
-                var data = buffer.XmlDeserialize<StringXmlData>();
-                data.Texts.EmptyIfNull().Do(d => _strings.Add(d.Key, d.Value));
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.Error("Failed to import string resources: {0}".F(ex));
-                return false;
-            }
+            Texts.EmptyIfNull().Do(t => _strings.Add(t.Key, t.Value));
         }
 
-        protected override bool OnExportToStream(Stream stream)
+        public void OnPrepareSerialize()
         {
-            try
-            {
-                var data = new StringXmlData();
-                data.Texts = _strings.Select(kvp => new StringXmlData.Text()
-                {
-                    Key = kvp.Key,
-                    Value = kvp.Value
-                }).ToArray();
-                data.XmlSerialize(stream);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.Error("Failed to export string resources: {0}".F(ex));
-                return false;
-            }
+            Texts = _strings.Select(x => new Text() { Key = x.Key, Value = x.Value }).ToArray();
         }
 
         public void Clear()
@@ -67,16 +55,18 @@ namespace Zelda.Game
 
         public void SetString(string key, string value)
         {
-            Debug.CheckAssertion(HasString(key), "No such string: '{0}'".F(key));
+            if (!HasString(key))
+                throw new ArgumentException("No such string: '{0}'".F(key), nameof(key));
+
             _strings[key] = value;
         }
 
-        public bool AddString(string key, string @string)
+        public void AddString(string key, string str)
         {
-            if (_strings.ContainsKey(key))
-                return false;
-            _strings.Add(key, @string);
-            return true;
+            if (HasString(key))
+                throw new ArgumentException("Duplicate string '{0}'".F(key), nameof(key));
+
+            _strings.Add(key, str);
         }
 
         public bool RemoveString(string key)
@@ -84,34 +74,17 @@ namespace Zelda.Game
             return _strings.Remove(key);
         }
 
-        public bool SetStringKey(string oldKey, string newKey)
+        public void SetStringKey(string oldKey, string newKey)
         {
             if (!HasString(oldKey))
-                return false;
+                throw new ArgumentException("No such string: '{0}'".F(oldKey), nameof(oldKey));
 
             if (HasString(newKey))
-                return false;
+                throw new ArgumentException("Duplicate string '{0}'".F(newKey), nameof(newKey));
 
-            var @string = GetString(oldKey);
+            var str = GetString(oldKey);
             RemoveString(oldKey);
-            AddString(newKey, @string);
-            return true;
+            AddString(newKey, str);
         }
-    }
-
-    [XmlRoot("Strings")]
-    public class StringXmlData
-    {
-        public class Text
-        {
-            [XmlAttribute]
-            public string Key { get; set; }
-
-            [XmlText]
-            public string Value { get; set; }
-        }
-
-        [XmlElement("Text")]
-        public Text[] Texts { get; set; }
     }
 }

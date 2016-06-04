@@ -13,7 +13,7 @@ namespace Zelda.Game
         public string Language { get; private set; }
         public IEnumerable<string> Languages => GetResources(ResourceType.Language).Select(r => r.Key);
         public IReadOnlyDictionary<string, Dialog> Dialogs => _dialogs;
-        public StringResources Strings { get; } = new StringResources();
+        public StringResources Strings { get; private set; }
         public ModProperties Properties { get; }
 
         readonly Dictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
@@ -90,8 +90,7 @@ namespace Zelda.Game
 
             Language = languageCode;
 
-            Strings.Clear();
-            Strings.ImportFromBuffer(ModFiles.DataFileRead("text/strings.xml", true));
+            Strings = XmlLoader.Load<StringResources>(ModFiles.DataFileRead("text/strings.xml", true));
 
             _dialogs.Clear();
             var resources = XmlLoader.Load<DialogResources>(ModFiles, "text/dialogs.xml", true);

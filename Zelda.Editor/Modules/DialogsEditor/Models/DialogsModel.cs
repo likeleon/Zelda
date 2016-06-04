@@ -196,7 +196,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             if (!TranslatedDialogExists(id))
                 return null;
 
-            return _translationResources?.GetDialog(id).Text;
+            return _translationResources.GetDialog(id).Text;
         }
 
         public IReadOnlyDictionary<string, string> GetDialogProperties(string id)
