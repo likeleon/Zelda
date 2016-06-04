@@ -22,8 +22,8 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         readonly IMod _mod;
         readonly string _languageId;
-        readonly DialogResources _resources = new DialogResources();
-        readonly DialogResources _translationResources = new DialogResources();
+        readonly DialogResources _resources;
+        DialogResources _translationResources;
         string _translationId;
 
         public NodeTree<DialogNode> DialogTree { get; private set; }
@@ -46,8 +46,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             _languageId = languageId;
 
             var path = _mod.GetDialogsPath(languageId);
-            if (!_resources.ImportFromFile(path))
-                throw new Exception("Cannot open dialogs data file '{0}'".F(path));
+            _resources = XmlLoader.Load<DialogResources>(path);
 
             BuildDialogTree();
         }
@@ -91,8 +90,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         public void Save()
         {
             var path = _mod.GetDialogsPath(_languageId);
-            if (!_resources.ExportToFile(path))
-                throw new Exception("Cannot save dialogs data file '{0}'".F(path));
+            XmlSaver.Save(_resources, path);
         }
 
         public bool DialogExists(string id)
@@ -153,8 +151,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             ClearTranslation();
 
             var path = _mod.GetDialogsPath(languageId);
-            if (!_translationResources.ImportFromFile(path))
-                throw new Exception("Cannot open dialogs data file '{0}'".F(path));
+            _translationResources = XmlLoader.Load<DialogResources>(path);
 
             _translationResources.Dialogs.Keys.Do(dialogId => DialogTree.AddRef(dialogId));
             UpdateChildIcons(DialogTree.Root);
@@ -165,7 +162,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
         public void ClearTranslation()
         {
             ClearTranslationFromTree();
-            _translationResources.Clear();
+            _translationResources = null;
             UpdateChildIcons(DialogTree.Root);
 
             TranslationId = null;
@@ -173,7 +170,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         void ClearTranslationFromTree()
         {
-            foreach (var id in _translationResources.Dialogs.Keys)
+            foreach (var id in _translationResources?.Dialogs.Keys)
             {
                 var node = DialogTree.Find(id);
                 if (node != null)
@@ -191,7 +188,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         public bool TranslatedDialogExists(string id)
         {
-            return _translationResources.HasDialog(id);
+            return _translationResources?.HasDialog(id) ?? false;
         }
 
         public string GetTranslatedDialogText(string id)
@@ -199,7 +196,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
             if (!TranslatedDialogExists(id))
                 return null;
 
-            return _translationResources.GetDialog(id).Text;
+            return _translationResources?.GetDialog(id).Text;
         }
 
         public IReadOnlyDictionary<string, string> GetDialogProperties(string id)

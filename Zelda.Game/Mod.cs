@@ -93,23 +93,18 @@ namespace Zelda.Game
             Strings.Clear();
             Strings.ImportFromBuffer(ModFiles.DataFileRead("text/strings.xml", true));
 
-            var resources = new DialogResources();
-            var success = resources.ImportFromBuffer(ModFiles.DataFileRead("text/dialogs.xml", true));
-
             _dialogs.Clear();
-            if (success)
+            var resources = XmlLoader.Load<DialogResources>(ModFiles, "text/dialogs.xml", true);
+            foreach (var dialogData in resources.Dialogs.Values)
             {
-                foreach (var dialogData in resources.Dialogs.Values)
+                var dialog = new Dialog()
                 {
-                    var dialog = new Dialog()
-                    {
-                        Id = dialogData.Id,
-                        Text = dialogData.Text
-                    };
-                    dialogData.Properties.Do(kvp => dialog.SetProperty(kvp.Key, kvp.Value));
+                    Id = dialogData.Id,
+                    Text = dialogData.Text
+                };
+                dialogData.Properties.Do(kvp => dialog.SetProperty(kvp.Key, kvp.Value));
 
-                    _dialogs.Add(dialog.Id, dialog);
-                }
+                _dialogs.Add(dialog.Id, dialog);
             }
         }
     }

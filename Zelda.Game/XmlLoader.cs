@@ -33,7 +33,7 @@ namespace Zelda.Game
 
         public static T Load<T>(ModFiles modFiles, string fileName, bool languageSpecific = false)
         {
-            if (!modFiles.DataFileExists(fileName))
+            if (!modFiles.DataFileExists(fileName, languageSpecific))
                 throw new Exception("Cannot find mod file '{0}".F(fileName));
 
             return Load<T>(modFiles.DataFileRead(fileName, languageSpecific));
