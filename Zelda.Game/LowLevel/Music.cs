@@ -15,8 +15,8 @@ namespace Zelda.Game.LowLevel
 
     class Music
     {
-        public static string None { get; } = "None";
-        public static string Unchanged { get; } = "Same";
+        public const string None = "None";
+        public const string Unchanged = "Same";
 
         public string Id { get; }
         public bool Loop { get; }

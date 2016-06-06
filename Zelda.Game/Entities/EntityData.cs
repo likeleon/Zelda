@@ -5,7 +5,7 @@ using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Entities
 {
-    public abstract class EntityData
+    public abstract class EntityData : IXmlDeserialized, IPrepareXmlSerialize
     {
         public EntityType Type { get; private set;  }
         public string Name { get; set; }
@@ -45,6 +45,9 @@ namespace Zelda.Game.Entities
             Layer = xmlData.Layer.CheckField<Layer>("Layer");
             XY = new Point(xmlData.X.CheckField("X"), xmlData.Y.CheckField("Y"));
         }
+
+        public abstract void OnDeserialized();
+        public abstract void OnPrepareSerialize();
 
         public bool ExportToStream(Stream stream)
         {
