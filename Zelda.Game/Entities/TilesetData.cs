@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using Zelda.Game.LowLevel;
 
@@ -14,116 +14,71 @@ namespace Zelda.Game.Entities
         Self
     }
 
-    class TilePatternData
+    public class TilePatternData : IXmlDeserialized
     {
-        public Ground Ground { get; set; }
-        public Layer DefaultLayer { get; set; }
-        public TileScrolling Scrolling { get; set; }
+        [XmlAttribute]
+        public string Id { get; set; }
+        public Ground Ground { get; set; } = Ground.Traversable;
+        public Layer DefaultLayer { get; set; } = Layer.Low;
+
+        [DefaultValue(TileScrolling.None)]
+        public TileScrolling Scrolling { get; set; } = TileScrolling.None;
+
+        [XmlElement("X")]
+        public int[] X { get; set; }
+
+        [XmlElement("Y")]
+        public int[] Y { get; set; }
+
+        public int Width { get; set; }
+        public int Height { get; set; }
+
+        [XmlIgnore]
         public Rectangle[] Frames { get; set; }
 
         public TilePatternData()
-            : this(new Rectangle(0, 0, 16, 16))
         {
+            SetFrame(new Rectangle(0, 0, 16, 16));
         }
 
-        public TilePatternData(Rectangle frame)
+        public void OnDeserialized()
         {
-            Ground = Entities.Ground.Traversable;
-            DefaultLayer = Layer.Low;
-            Scrolling = TileScrolling.None;
+            int numX = X.Length;
+            int numY = Y.Length;
+            if (numX != 1 && numX != 3 && numX != 4)
+                throw new InvalidDataException("Invalid number of frames for x");
+            if (numY != 1 && numY != 3 && numY != 4)
+                throw new InvalidDataException("Invalid number of frames for y");
+            if (numX != numY)
+                throw new InvalidDataException("The length of x and y must match");
+
+            Frames = new Rectangle[numX];
+            for (int i = 0; i < numX; ++i)
+                Frames[i] = new Rectangle(X[i], Y[i], Width, Height);
+        }
+
+        public void SetFrame(Rectangle frame)
+        {
             Frames = new Rectangle[] { frame };
         }
     }
 
-    class TilesetData : XmlData
-    {
-        [Description("타일셋의 배경색")]
-        Color _backgroundColor = Color.White;
-        public Color BackgroundColor
-        {
-            get { return _backgroundColor; }
-            set { _backgroundColor = value; }
-        }
-
-        readonly Dictionary<string, TilePatternData> _patterns = new Dictionary<string, TilePatternData>();
-        public IDictionary<string, TilePatternData> Patterns
-        {
-            get { return _patterns; }
-        }
-
-        protected override bool OnImportFromBuffer(byte[] buffer)
-        {
-            try
-            {
-                TilesetXmlData data = buffer.XmlDeserialize<TilesetXmlData>();
-                BackgroundColor = data.BackgroundColor.CheckColor("BackgroundColor");
-                foreach (var pattern in data.TilePatterns)
-                {
-                    string id = pattern.Id.CheckField("Id");
-                
-                    TilePatternData patternData = new TilePatternData();
-                    patternData.Ground = pattern.Ground.CheckField<Ground>("Ground");
-                    patternData.DefaultLayer = pattern.DefaultLayer.CheckField<Layer>("DefaultLayer");
-                    patternData.Scrolling = pattern.Scrolling.OptField<TileScrolling>("Scrolling", TileScrolling.None);
-                    
-                    int width = pattern.Width.CheckField("Width");
-                    int height = pattern.Height.CheckField("Height");
-                    int numX = pattern.X.Length;
-                    int numY = pattern.Y.Length;
-                    if (numX != 1 && numX != 3 && numX != 4)
-                        throw new InvalidDataException("Invalid number of frames for x");
-                    if (numY != 1 && numY != 3 && numY != 4)
-                        throw new InvalidDataException("Invalid number of frames for y");
-                    if (numX != numY)
-                        throw new InvalidDataException("The length of x and y must match");
-
-                    Rectangle[] frames = new Rectangle[numX];
-                    for (int i = 0; i < pattern.X.Length; ++i)
-                        frames[i] = new Rectangle(pattern.X[i], pattern.Y[i], width, height);
-                    patternData.Frames = frames;
-
-                    AddPattern(id, patternData);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.Error("Failed to load tileset: {0}".F(ex.Message));
-                return false;
-            }
-            return true;
-        }
-
-        private bool AddPattern(string patternId, TilePatternData pattern)
-        {
-            if (_patterns.ContainsKey(patternId))
-                return false;
-            
-            _patterns.Add(patternId, pattern);
-            return true;
-        }
-    }
-
     [XmlRoot("Tileset")]
-    public class TilesetXmlData
+    public class TilesetData : IXmlDeserialized
     {
-        public class TilePatternXmlData
-        {
-            [XmlAttribute]
-            public string Id { get; set; }
-            public Ground? Ground { get; set; }
-            public Layer? DefaultLayer { get; set; }
-            public TileScrolling? Scrolling { get; set; }
-            [XmlElement("X")]
-            public int[] X { get; set; }
-            [XmlElement("Y")]
-            public int[] Y { get; set; }
-            public int? Width { get; set; }
-            public int? Height { get; set; }
-        }
-
-        public ColorXmlData BackgroundColor { get; set; }
+        public Color BackgroundColor { get; set; } = Color.White;
 
         [XmlElement("TilePattern")]
-        public TilePatternXmlData[] TilePatterns { get; set; }
+        public TilePatternData[] PatternDatas { get; set; }
+
+        [XmlIgnore]
+        public IReadOnlyDictionary<string, TilePatternData> Patterns { get; private set; }
+
+        public void OnDeserialized()
+        {
+            PatternDatas.Do(p => p.OnDeserialized());
+
+            Patterns = PatternDatas.ToDictionary(p => p.Id, p => p);
+        }
     }
 }

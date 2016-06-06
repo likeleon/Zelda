@@ -123,7 +123,6 @@ namespace Zelda.Game
             Floor = data.Floor;
             TilesetId = data.TilesetId;
             Tileset = new Tileset(data.TilesetId);
-            Tileset.Load();
 
             Entities = new MapEntities(game, this);
 

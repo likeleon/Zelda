@@ -1,131 +1,71 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Entities
 {
     class Tileset
     {
-        readonly string _id;
-        public string Id
-        {
-            get { return _id; }
-        }
-
-        Color _backgroundColor;
-        public Color BackgroundColor
-        {
-            get { return _backgroundColor; }
-        }
-
-        Surface _tilesImage;
-        public Surface TilesImage
-        {
-            get { return _tilesImage; }
-        }
-
-        Surface _entitiesImage;
-        public Surface EntitiesImage
-        {
-            get { return _entitiesImage; }
-        }
-
-        public bool IsLoaded
-        {
-            get { return _tilesImage != null; }
-        }
+        public string Id { get; }
+        public Color BackgroundColor { get; }
+        public Surface TilesImage { get; }
+        public Surface EntitiesImage { get; }
+        public bool IsLoaded => TilesImage != null;
 
         readonly Dictionary<string, TilePattern> _tilePatterns = new Dictionary<string, TilePattern>();
 
         public Tileset(string id)
         {
-            _id = id;
-        }
+            Id = id;
 
-        public void Load()
-        {
             // 타일셋 데이터 파일을 읽습니다
-            string fileName = "tilesets/" + _id + ".xml";
-            TilesetData data = new TilesetData();
-            bool success = data.ImportFromModFile(Core.Mod.ModFiles, fileName);
-            if (success)
-            {
-                _backgroundColor = data.BackgroundColor;
-                foreach (var pattern in data.Patterns)
-                    AddTilePattern(pattern.Key, pattern.Value);
-            }
+            var fileName = "tilesets/" + Id + ".xml";
+            var data = XmlLoader.Load<TilesetData>(Core.Mod.ModFiles, fileName);
+            BackgroundColor = data.BackgroundColor;
+            data.Patterns.Do(x => AddTilePattern(x.Key, x.Value));
 
             // 타일셋 이미지들을 읽습니다
-            fileName = "tilesets/" + _id + ".tiles.png";
-            _tilesImage = Surface.Create(fileName, false, Surface.ImageDirectory.Data);
-            if (_tilesImage == null)
-            {
-                Debug.Error("Missing tiles image for tileset '{0}': {1}".F(_id, fileName));
-                _tilesImage = Surface.Create(16, 16, false);
-            }
+            fileName = "tilesets/" + Id + ".tiles.png";
+            TilesImage = Surface.Create(fileName, false, Surface.ImageDirectory.Data);
+            if (TilesImage == null)
+                throw new Exception("Missing tiles image for tileset '{0}': {1}".F(Id, fileName));
 
-            fileName = "tilesets/" + _id + ".entities.png";
-            _entitiesImage = Surface.Create(fileName, false, Surface.ImageDirectory.Data);
-            if (_entitiesImage == null)
-            {
-                Debug.Error("Missing entities image for tileset '{0}': {1}".F(_id, fileName));
-                _entitiesImage = Surface.Create(16, 16, false);
-            }
+            fileName = "tilesets/" + Id + ".entities.png";
+            EntitiesImage = Surface.Create(fileName, false, Surface.ImageDirectory.Data);
+            if (EntitiesImage == null)
+                throw new Exception("Missing entities image for tileset '{0}': {1}".F(Id, fileName));
         }
 
-        public void Unload()
-        {
-            _tilePatterns.Clear();
-            _tilesImage.Dispose();
-            _tilesImage = null;
-            _entitiesImage.Dispose();
-            _entitiesImage = null;
-        }
-
-        private void AddTilePattern(string id, TilePatternData patternData)
+        void AddTilePattern(string id, TilePatternData p)
         {
             TilePattern tilePattern = null;
 
-            Rectangle[] frames = patternData.Frames;
-            TileScrolling scrolling = patternData.Scrolling;
-            Ground ground = patternData.Ground;
-
-            if (frames.Length == 1)
+            if (p.Frames.Length == 1)
             {
-                Rectangle frame = frames[0];
-                switch (scrolling)
+                var frame = p.Frames[0];
+                switch (p.Scrolling)
                 {
                     case TileScrolling.None:
-                        tilePattern = new SimpleTilePattern(ground, frame.XY, frame.Size);
+                        tilePattern = new SimpleTilePattern(p.Ground, frame.XY, frame.Size);
                         break;
 
                     case TileScrolling.Parallax:
-                        tilePattern = new ParallaxScrollingTilePattern(ground, frame.XY, frame.Size);
+                        tilePattern = new ParallaxScrollingTilePattern(p.Ground, frame.XY, frame.Size);
                         break;
 
                     case TileScrolling.Self:
-                        tilePattern = new SelfScrollingTilePattern(ground, frame.XY, frame.Size);
+                        tilePattern = new SelfScrollingTilePattern(p.Ground, frame.XY, frame.Size);
                         break;
                 }
             }
             else
             {
-                if (scrolling == TileScrolling.Self)
-                {
-                    Debug.Error("Multi-frame is not supported for self-scrolling tiles");
-                    return;
-                }
+                if (p.Scrolling == TileScrolling.Self)
+                    throw new Exception("Multi-frame is not supported for self-scrolling tiles");
 
-                bool parallax = scrolling == TileScrolling.Parallax;
-                AnimatedTilePattern.AnimationSequence sequence = (frames.Length == 3) ?
-                    AnimatedTilePattern.AnimationSequence.Sequence012 : AnimatedTilePattern.AnimationSequence.Sequence0121;
-                tilePattern = new AnimatedTilePattern(
-                    ground,
-                    sequence,
-                    frames[0].Size,
-                    frames[0].XY,
-                    frames[1].XY,
-                    frames[2].XY,
-                    parallax);
+                bool parallax = p.Scrolling == TileScrolling.Parallax;
+                var sequence = (p.Frames.Length == 3) ? AnimatedTilePattern.AnimationSequence.Sequence012 : AnimatedTilePattern.AnimationSequence.Sequence0121;
+                tilePattern = new AnimatedTilePattern(p.Ground, sequence, p.Frames[0].Size, p.Frames[0].XY, p.Frames[1].XY, p.Frames[2].XY, parallax);
             }
 
             _tilePatterns.Add(id, tilePattern);
@@ -135,7 +75,7 @@ namespace Zelda.Game.Entities
         {
             TilePattern pattern;
             if (!_tilePatterns.TryGetValue(id, out pattern))
-                Debug.Die("No such tile pattern in tileset '{0}': {1}".F(Id, id));
+                throw new ArgumentException("No such tile pattern in tileset '{0}': {1}".F(Id, id), nameof(id));
 
             return pattern;
         }
