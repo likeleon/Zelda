@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Entities
@@ -176,43 +177,17 @@ namespace Zelda.Game.Entities
         }
     }
 
-    class NpcData : EntityData
+    public class NpcData : EntityData
     {
+        public override EntityType Type => EntityType.Npc;
+
         public Direction4 Direction { get; set; }
         public NpcSubtype Subtype { get; set; }
+        
+        [DefaultValue(null)]
         public string Sprite { get; set; }
-        public string Behavior { get; set; }
 
-        public NpcData(NpcXmlData xmlData)
-            : base(EntityType.Npc, xmlData)
-        {
-            Direction = xmlData.Direction.CheckField("Direction");
-            Subtype = xmlData.Subtype.CheckField("Subtype");
-            Sprite = xmlData.Sprite.OptField(null);
-            Behavior = xmlData.Behavior.OptField("map");
-        }
-
-        protected override EntityXmlData ExportXmlData()
-        {
-            var data = new NpcXmlData();
-            data.Direction = Direction;
-            data.Subtype = Subtype;
-            if (!Sprite.IsNullOrEmpty())
-                data.Sprite = Sprite;
-            if (Behavior != "map")
-                data.Behavior = Behavior;
-            return data;
-        }
-    }
-
-    public class NpcXmlData : EntityXmlData
-    {
-        public Direction4? Direction { get; set; }
-        public NpcSubtype? Subtype { get; set; }
-        public string Sprite { get; set; }
-        public string Behavior { get; set; }
-
-        public bool ShouldSerializeSprite() { return !Sprite.IsNullOrEmpty(); }
-        public bool ShouldSerializeBehavior() { return Behavior != "map"; }
+        [DefaultValue("map")]
+        public string Behavior { get; set; } = "map";
     }
 }

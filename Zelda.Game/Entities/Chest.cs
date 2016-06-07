@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Entities
@@ -161,69 +162,31 @@ namespace Zelda.Game.Entities
         }
     }
 
-    class ChestData : EntityData
+    public class ChestData : EntityData
     {
+        public override EntityType Type => EntityType.Chest;
+
+        [DefaultValue(null)]
         public string TreasureName { get; set; }
-        public int TreasureVariant { get; set; }
+
+        [DefaultValue(1)]
+        public int TreasureVariant { get; set; } = 1;
+
+        [DefaultValue(null)]
         public string TreasureSavegameVariable { get; set; }
+
         public string Sprite { get; set; }
-        public ChestOpeningMethod OpeningMethod { get; set; }
+
+        [DefaultValue(ChestOpeningMethod.ByInteraction)]
+        public ChestOpeningMethod OpeningMethod { get; set; } = ChestOpeningMethod.ByInteraction;
+
+        [DefaultValue(null)]
         public string OpeningCondition { get; set; }
+
+        [DefaultValue(false)]
         public bool OpeningConditionConsumed { get; set; }
+
+        [DefaultValue(null)]
         public string CannotOpenDialog { get; set; }
-
-        public ChestData(ChestXmlData xmlData)
-            : base(EntityType.Chest, xmlData)
-        {
-            TreasureName = xmlData.TreasureName.OptField("");
-            TreasureVariant = xmlData.TreasureVariant.OptField(1);
-            TreasureSavegameVariable = xmlData.TreasureSavegameVariable.OptField("");
-            Sprite = xmlData.Sprite.CheckField("");
-            OpeningMethod = xmlData.OpeningMethod.OptField("OpeningMethod", ChestOpeningMethod.ByInteraction);
-            OpeningCondition = xmlData.OpeningCondition.OptField("");
-            OpeningConditionConsumed = xmlData.OpeningConditionConsumed.OptField(false);
-            CannotOpenDialog = xmlData.CannotOpenDialog.OptField("");
-        }
-
-        protected override EntityXmlData ExportXmlData()
-        {
-            var data = new ChestXmlData();
-            if (!TreasureName.IsNullOrEmpty())
-                data.TreasureName = TreasureName;
-            if (TreasureVariant != 1)
-                data.TreasureVariant = TreasureVariant;
-            if (!TreasureSavegameVariable.IsNullOrEmpty())
-                data.TreasureSavegameVariable = TreasureSavegameVariable;
-            data.Sprite = Sprite;
-            if (OpeningMethod != ChestOpeningMethod.ByInteraction)
-                data.OpeningMethod = OpeningMethod;
-            if (!OpeningCondition.IsNullOrEmpty())
-                data.OpeningCondition = OpeningCondition;
-            if (OpeningConditionConsumed)
-                data.OpeningConditionConsumed = OpeningConditionConsumed;
-            if (!CannotOpenDialog.IsNullOrEmpty())
-                data.CannotOpenDialog = CannotOpenDialog;
-            return data;
-        }
-    }
-
-    public class ChestXmlData : EntityXmlData
-    {
-        public string TreasureName { get; set; }
-        public int? TreasureVariant { get; set; }
-        public string TreasureSavegameVariable { get; set; }
-        public string Sprite { get; set; }
-        public ChestOpeningMethod? OpeningMethod { get; set; }
-        public string OpeningCondition { get; set; }
-        public bool? OpeningConditionConsumed { get; set; }
-        public string CannotOpenDialog { get; set; }
-
-        public bool ShouldSerializeTreasureName() { return !TreasureName.IsNullOrEmpty(); }
-        public bool ShouldSerializeTreasureVariant() { return TreasureVariant != 1; }
-        public bool ShouldSerializeTreasureSavegameVariable() { return !TreasureSavegameVariable.IsNullOrEmpty(); }
-        public bool ShouldSerializeOpeningMethod() { return OpeningMethod != ChestOpeningMethod.ByInteraction; }
-        public bool ShouldSerializeOpeningCondition() { return !OpeningCondition.IsNullOrEmpty(); }
-        public bool ShouldSerializeOpeningConditionConsumed() { return OpeningConditionConsumed == true; }
-        public bool ShouldSerializeCannotOpenDialog() { return !CannotOpenDialog.IsNullOrEmpty(); }
     }
 }

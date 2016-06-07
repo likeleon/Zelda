@@ -108,9 +108,6 @@ namespace Zelda.Game.Entities
 
     public class BombData : EntityData
     {
-        public BombData()
-            : base(EntityType.Bomb)
-        {
-        }
+        public override EntityType Type => EntityType.Bomb;
     }
 }

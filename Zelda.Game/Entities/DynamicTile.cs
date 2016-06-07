@@ -27,39 +27,13 @@ namespace Zelda.Game.Entities
         }
     }
 
-    class DynamicTileData : EntityData
+    public class DynamicTileData : EntityData
     {
+        public override EntityType Type => EntityType.DynamicTile;
+
         public string Pattern { get; set; }
         public int Width { get; set;  }
         public int Height { get; set; }
         public bool EnabledAtStart { get; set; }
-
-        public DynamicTileData(DynamicTileXmlData xmlData)
-            : base(EntityType.DynamicTile, xmlData)
-        {
-            Pattern = xmlData.Pattern.CheckField("Pattern");
-            Width = xmlData.Width.CheckField("Width");
-            Height = xmlData.Height.CheckField("Height");
-            EnabledAtStart = xmlData.EnabledAtStart.CheckField("EnabledAtStart");
-        }
-
-        protected override EntityXmlData ExportXmlData()
-        {
-            return new DynamicTileXmlData()
-            {
-                Pattern = Pattern,
-                Width = Width,
-                Height = Height,
-                EnabledAtStart = EnabledAtStart
-            };
-        }
-    }
-
-    public class DynamicTileXmlData : EntityXmlData
-    {
-        public string Pattern { get; set; }
-        public int? Width { get; set; }
-        public int? Height { get; set; }
-        public bool? EnabledAtStart { get; set; }
     }
 }

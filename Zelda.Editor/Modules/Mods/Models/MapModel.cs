@@ -44,8 +44,7 @@ namespace Zelda.Editor.Modules.Mods.Models
             for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
                 _entities[layer].ForEach(e => e.NotifyTilesetChanged());
 
-            if (TilesetIdChanged != null)
-                TilesetIdChanged(this, tilesetId);
+            TilesetIdChanged?.Invoke(this, tilesetId);
         }
 
         public void SetSize(Size size)
@@ -54,15 +53,12 @@ namespace Zelda.Editor.Modules.Mods.Models
                 return;
 
             _map.Size = size;
-            if (SizeChanged != null)
-                SizeChanged(this, size);
+            SizeChanged?.Invoke(this, size);
         }
 
         public void Save()
         {
-            var path = _mod.GetMapDataFilePath(MapId);
-            if (!_map.ExportToFile(path))
-                throw new Exception("Cannot save map data file '{0}'".F(path));
+            XmlSaver.Save(_map, _mod.GetMapDataFilePath(MapId));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Entities
@@ -141,87 +142,40 @@ namespace Zelda.Game.Entities
         }
     }
 
-    class DestructibleData : EntityData
+    public class DestructibleData : EntityData
     {
+        public override EntityType Type => EntityType.Destructible;
+
+        [DefaultValue(null)]
         public string TreasureName { get; set; }
-        public int TreasureVariant { get; set; }
+
+        [DefaultValue(1)]
+        public int TreasureVariant { get; set; } = 1;
+
+        [DefaultValue(null)]
         public string TreasureSavegameVariable { get; set; }
+
         public string Sprite { get; set; }
+
+        [DefaultValue(null)]
         public string DestructionSound { get; set; }
+
+        [DefaultValue(0)]
         public int Weight { get; set; }
+
+        [DefaultValue(false)]
         public bool CanBeCut { get; set; }
+
+        [DefaultValue(false)]
         public bool CanExplode { get; set; }
+
+        [DefaultValue(false)]
         public bool CanRegenerate { get; set; }
-        public int DamageOnEnemies { get; set; }
-        public Ground Ground { get; set; }
 
-        public DestructibleData(DestructibleXmlData xmlData)
-            : base(EntityType.Destructible, xmlData)
-        {
-            TreasureName = xmlData.TreasureName.OptField("");
-            TreasureVariant = xmlData.TreasureVariant.OptField(1);
-            TreasureSavegameVariable = xmlData.TreasureSavegameVariable.OptField("");
-            Sprite = xmlData.Sprite.CheckField("Sprite");
-            DestructionSound = xmlData.DestructionSound.OptField("");
-            Weight = xmlData.Weight.OptField(0);
-            CanBeCut = xmlData.CanBeCut.OptField(false);
-            CanExplode = xmlData.CanExplode.OptField(false);
-            CanRegenerate = xmlData.CanRegenerate.OptField(false);
-            DamageOnEnemies = xmlData.DamageOnEnemies.OptField(1);
-            Ground = xmlData.Ground.OptField("Ground", Ground.Wall);
-        }
+        [DefaultValue(1)]
+        public int DamageOnEnemies { get; set; } = 1;
 
-        protected override EntityXmlData ExportXmlData()
-        {
-            var data = new DestructibleXmlData();
-            if (!TreasureName.IsNullOrEmpty())
-                data.TreasureName = TreasureName;
-            if (TreasureVariant != 1)
-                data.TreasureVariant = TreasureVariant;
-            if (!TreasureSavegameVariable.IsNullOrEmpty())
-                data.TreasureSavegameVariable = TreasureSavegameVariable;
-            data.Sprite = Sprite;
-            if (!DestructionSound.IsNullOrEmpty())
-                data.DestructionSound = DestructionSound;
-            if (Weight != 0)
-                data.Weight = Weight;
-            if (CanBeCut != false)
-                data.CanBeCut = CanBeCut;
-            if (CanExplode != false)
-                data.CanExplode = CanExplode;
-            if (CanRegenerate != false)
-                data.CanRegenerate = CanRegenerate;
-            if (DamageOnEnemies != 1)
-                data.DamageOnEnemies = DamageOnEnemies;
-            if (Ground != Ground.Wall)
-                data.Ground = Ground;
-            return data;
-        }
-    }
-
-    public class DestructibleXmlData : EntityXmlData
-    {
-        public string TreasureName { get; set; }
-        public int? TreasureVariant { get; set; }
-        public string TreasureSavegameVariable { get; set; }
-        public string Sprite { get; set; }
-        public string DestructionSound { get; set; }
-        public int? Weight { get; set; }
-        public bool? CanBeCut { get; set; }
-        public bool? CanExplode { get; set; }
-        public bool? CanRegenerate { get; set; }
-        public int? DamageOnEnemies { get; set; }
-        public Ground? Ground { get; set; }
-
-        public bool ShouldSerializeTreasureName() { return !TreasureName.IsNullOrEmpty(); }
-        public bool ShouldSerializeTreasureVariant() { return TreasureVariant != -1; }
-        public bool ShouldSerializeTreasureSavegameVariable() { return !TreasureSavegameVariable.IsNullOrEmpty(); }
-        public bool ShouldSerializeDestructionSound() { return !DestructionSound.IsNullOrEmpty(); }
-        public bool ShouldSerializeWeight() { return Weight != 0; }
-        public bool ShouldSerializeCanBeCut() { return CanBeCut == true; }
-        public bool ShouldSerializeCanExplode() { return CanExplode == true; }
-        public bool ShouldSerializeCanRegenerate() { return CanRegenerate == true; }
-        public bool ShouldSerializeDamageOnEnemies() { return DamageOnEnemies != -1; }
-        public bool ShouldSerializeGround() { return Ground != Entities.Ground.Wall; }
+        [DefaultValue(Ground.Wall)]
+        public Ground Ground { get; set; } = Ground.Wall;
     }
 }

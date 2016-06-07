@@ -106,12 +106,8 @@ namespace Zelda.Game
         // 맵 데이터 파일을 읽습니다.
         void LoadMapData(Game game)
         {
-            MapData data = new MapData();
             string fileName = "maps/" + Id + ".xml";
-            bool success = data.ImportFromModFile(Core.Mod.ModFiles, fileName);
-
-            if (!success)
-                Debug.Die("Failed to load map data file '{0}'".F(fileName));
+            var data = XmlLoader.Load<MapData>(Core.Mod.ModFiles, fileName);
 
             // 읽어낸 데이터로 맵을 초기화합니다
             Game = game;

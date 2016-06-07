@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Zelda.Game.LowLevel;
 using Zelda.Game.Movements;
 
@@ -155,45 +156,16 @@ namespace Zelda.Game.Entities
         }
     }
 
-    class BlockData : EntityData
+    public class BlockData : EntityData
     {
-        public Direction4 Direction { get; set; }
+        public override EntityType Type => EntityType.Block;
+
+        [DefaultValue(Direction4.None)]
+        public Direction4 Direction { get; set; } = Direction4.None;
+
         public string Sprite { get; set; }
         public bool Pushable { get; set; }
         public bool Pullable {  get; set; }
         public int MaximumMoves { get; set; }
-
-        public BlockData(BlockXmlData xmlData)
-            : base(EntityType.Block, xmlData)
-        {
-            Direction = xmlData.Direction.OptField("Direction", Direction4.None);
-            Sprite = xmlData.Sprite.CheckField("entities/block");
-            Pushable = xmlData.Pushable.CheckField("Pushable");
-            Pullable = xmlData.Pullable.CheckField("Pullable");
-            MaximumMoves = xmlData.MaximumMoves.CheckField("MaximumMoves");
-        }
-
-        protected override EntityXmlData ExportXmlData()
-        {
-            var data = new BlockXmlData();
-            if (Direction != Direction4.None)
-                data.Direction = Direction;
-            data.Sprite = Sprite;
-            data.Pushable = Pushable;
-            data.Pullable = Pullable;
-            data.MaximumMoves = MaximumMoves;
-            return data;
-        }
-    }
-
-    public class BlockXmlData : EntityXmlData
-    {
-        public Direction4? Direction { get; set; }
-        public string Sprite { get; set; }
-        public bool? Pushable { get; set; }
-        public bool? Pullable { get; set; }
-        public int? MaximumMoves { get; set; }
-
-        public bool ShouldSerializeDirection() { return Direction != Direction4.None; }
     }
 }

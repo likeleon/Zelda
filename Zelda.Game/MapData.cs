@@ -78,8 +78,8 @@ namespace Zelda.Game
 
         public MapProperties Properties { get; set; }
 
-        [XmlIgnore] public Point Location { get; private set; }
-        [XmlIgnore] public Size Size { get; private set; }
+        [XmlIgnore] public Point Location { get; set; }
+        [XmlIgnore] public Size Size { get; set; }
 
         public string World { get; set; }
         [XmlIgnore] public bool HasWorld => World != null;

@@ -32,35 +32,11 @@ namespace Zelda.Game.Entities
         }
     }
 
-    class TileData : EntityData
+    public class TileData : EntityData
     {
+        public override EntityType Type => EntityType.Tile;
         public int Width { get; set; }
         public int Height { get; set; }
-        public string Pattern { get; set; }
-
-        public TileData(TileXmlData xmlData)
-            : base(EntityType.Tile, xmlData)
-        {
-            Width = xmlData.Width.CheckField("Width");
-            Height = xmlData.Height.CheckField("Height");
-            Pattern = xmlData.Pattern.CheckField("Pattern");
-        }
-
-        protected override EntityXmlData ExportXmlData()
-        {
-            return new TileXmlData()
-            {
-                Width = Width,
-                Height = Height,
-                Pattern = Pattern
-            };
-        }
-    }
-
-    public class TileXmlData : EntityXmlData
-    {
-        public int? Width { get; set; }
-        public int? Height { get; set; }
         public string Pattern { get; set; }
     }
 }

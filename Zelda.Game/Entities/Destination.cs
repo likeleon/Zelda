@@ -1,4 +1,5 @@
-﻿using Zelda.Game.LowLevel;
+﻿using System.ComponentModel;
+using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Entities
 {
@@ -16,44 +17,21 @@ namespace Zelda.Game.Entities
             
             Origin = new Point(8, 13);
 
-            if (!spriteName.IsNullOrEmpty())
+            if (spriteName != null)
                 CreateSprite(spriteName);
         }
     }
 
-    class DestinationData : EntityData
+    public class DestinationData : EntityData
     {
+        public override EntityType Type => EntityType.Destination;
+
         public Direction4 Direction { get; set; }
+
+        [DefaultValue(null)]
         public string Sprite { get; set; }
+
+        [DefaultValue(false)]
         public bool Default { get; set; }
-
-        public DestinationData(DestinationXmlData xmlData)
-            : base(EntityType.Destination, xmlData)
-        {
-            Direction = xmlData.Direction.CheckField("Direction");
-            Sprite = xmlData.Sprite.OptField("");
-            Default = xmlData.Default.OptField(false);
-        }
-
-        protected override EntityXmlData ExportXmlData()
-        {
-            var data = new DestinationXmlData();
-            data.Direction = Direction;
-            if (!Sprite.IsNullOrEmpty())
-                data.Sprite = Sprite;
-            if (Default)
-                data.Default = true;
-            return data;
-        }
-    }
-
-    public class DestinationXmlData : EntityXmlData
-    {
-        public Direction4? Direction { get; set; }
-        public string Sprite { get; set; }
-        public bool? Default { get; set; }
-
-        public bool ShouldSerializeSprite() { return !Sprite.IsNullOrEmpty(); }
-        public bool ShouldSerializeDefault() { return Default == true; }
     }
 }
