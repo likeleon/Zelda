@@ -10,17 +10,10 @@ namespace Zelda.Game.Entities
             Sequence0121 = 2
         }
 
-        public override bool IsDrawnAtItsPosition
-        {
-            get { return !_parallax; }
-        }
-
-        readonly AnimationSequence _sequence;
-        readonly bool _parallax;
-        readonly Rectangle[] _positionInTileset = new Rectangle[3];
+        public override bool IsDrawnAtItsPosition => !_parallax;
 
         static int _frameCounter;
-        static int[] _currentFrames = new int[3] { 0, 0, 0};
+        static int[] _currentFrames = new int[3] { 0, 0, 0 };
         static int _nextFrameDate;
         static readonly int _tileFrameInterval = 250;
         static readonly int[,] _frames = new int[,]
@@ -29,9 +22,11 @@ namespace Zelda.Game.Entities
             { 0, 1, 2, 1, 0, 1, 2, 1, 0, 1, 2, 1 }
         };
 
-        public AnimatedTilePattern(Ground ground, AnimationSequence sequence,
-            Size size, Point xy1, Point xy2, Point xy3,
-                bool parallax)
+        readonly AnimationSequence _sequence;
+        readonly bool _parallax;
+        readonly Rectangle[] _positionInTileset = new Rectangle[3];
+
+        public AnimatedTilePattern(Ground ground, AnimationSequence sequence, Size size, Point xy1, Point xy2, Point xy3, bool parallax)
             : base(ground, size)
         {
             _sequence = sequence;
@@ -56,14 +51,13 @@ namespace Zelda.Game.Entities
 
         public override void Draw(Surface dstSurface, Point dstPosition, Tileset tileset, Point viewport)
         {
-            Surface tilesetImage = tileset.TilesImage;
-            Rectangle src = _positionInTileset[_currentFrames[(int)_sequence]];
-            Point dst = dstPosition;
+            var src = _positionInTileset[_currentFrames[(int)_sequence]];
+            var dst = dstPosition;
 
             if (_parallax)
                 dst += viewport / ParallaxScrollingTilePattern.Ratio;
 
-            tilesetImage.DrawRegion(src, dstSurface, dst);
+            tileset.TilesImage.DrawRegion(src, dstSurface, dst);
         }
     }
 }
