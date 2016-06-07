@@ -10,7 +10,7 @@ namespace Zelda.Game.Entities
         public string DestructionSound { get; set; }
         public bool CanExplode { get; set; }
         public bool CanRegenerate { get; set; }
-        public int DamageOnEnemies { get; set; }
+        public int DamageOnEnemies { get; set; } = 1;
 
         public bool CanBeCut
         {
@@ -62,13 +62,18 @@ namespace Zelda.Game.Entities
         int _weight;
         bool _canBeCut;
 
-        internal Destructible(string name, Layer layer, Point xy, string animationSetId, Treasure treasure, Ground modifiedGround)
-            : base(name, layer, xy, new Size(16, 16))
+        internal Destructible(DestructibleData data, Game game)
+            : base(data.Name, data.Layer, data.XY, new Size(16, 16))
         {
-            _modifiedGround = modifiedGround;
-            AnimationSetId = animationSetId;
-            Treasure = treasure;
-            DamageOnEnemies = 1;
+            _modifiedGround = data.Ground;
+            AnimationSetId = data.Sprite;
+            Treasure = new Treasure(game, data.TreasureName, data.TreasureVariant, data.TreasureSavegameVariable);
+            DestructionSound = data.DestructionSound;
+            Weight = data.Weight;
+            CanBeCut = data.CanBeCut;
+            CanExplode = data.CanExplode;
+            CanRegenerate = data.CanRegenerate;
+            DamageOnEnemies = data.DamageOnEnemies;
 
             Origin = new Point(8, 13);
             CreateSprite(AnimationSetId);
@@ -177,5 +182,10 @@ namespace Zelda.Game.Entities
 
         [DefaultValue(Ground.Wall)]
         public Ground Ground { get; set; } = Ground.Wall;
+
+        internal override void CreateEntity(Map map)
+        {
+            map.Entities.AddEntity(new Destructible(this, map.Game));
+        }
     }
 }

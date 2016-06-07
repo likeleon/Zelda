@@ -60,6 +60,24 @@ namespace Zelda.Game.Entities
             _namedEntities[Hero.Name] = Hero;
         }
 
+        internal void CreateEntities(MapData data)
+        {
+            // 엔티티들을 생성합니다
+            for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
+            {
+                for (int i = 0; i < data.GetNumEntities((Layer)layer); ++i)
+                {
+                    var entityData = data.GetEntity(new EntityIndex((Layer)layer, i));
+                    var type = entityData.Type;
+                    if (!type.CanBeStoredInMapFile())
+                        throw new InvalidOperationException("Illegal entity type in map file: " + type);
+
+                    entityData.CreateEntity(_map);
+                }
+            }
+
+        }
+
         public Entity FindEntity(string name)
         {
             Entity entity;

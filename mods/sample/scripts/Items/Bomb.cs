@@ -34,11 +34,7 @@ namespace Sample.Items
             else if (direction == Direction4.Down)
                 xy.Y += 16;
 
-            Map.CreateBomb(new BombData()
-            {
-                Layer = hero.Layer,
-                XY = xy
-            });
+            Map.CreateEntity(new BombData() { Layer = hero.Layer, XY = xy });
             SetFinished();
         }
     }

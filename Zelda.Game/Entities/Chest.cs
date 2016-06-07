@@ -25,17 +25,32 @@ namespace Zelda.Game.Entities
         bool _treasureGiven;
         int _treasureDate;
 
-        internal Chest(string name, Layer layer, Point xy, string spriteName, Treasure treasure)
-            : base(name, layer, xy, new Size(16, 16))
+        internal Chest(ChestData data, Game game)
+            : base(data.Name, data.Layer, data.XY, new Size(16, 16))
         {
-            _treasure = treasure;
-            IsOpen = treasure.IsFound;
+            OpeningMethod = data.OpeningMethod;
+            OpeningCondition = data.OpeningCondition;
+            OpeningConditionConsumed = data.OpeningConditionConsumed;
+            CannotOpenDialogId = data.CannotOpenDialog;
+
+            if (OpeningMethod == ChestOpeningMethod.ByInteractionIfItem)
+            {
+                if (!game.Equipment.ItemExists(OpeningCondition))
+                    throw new Exception("Bad field 'OpeningCondition' (no such equipement item: '{0}'".F(OpeningCondition));
+
+                var item = game.Equipment.GetItem(OpeningCondition);
+                if (!item.IsSaved)
+                    throw new Exception("Bad field 'OpeneingCondition' (equipment item '{0}' is not saved".F(OpeningCondition));
+            }
+            
+            _treasure = new Treasure(game, data.TreasureName, data.TreasureVariant, data.TreasureSavegameVariable);
+            IsOpen = _treasure.IsFound;
             _treasureGiven = IsOpen;
             OpeningMethod = ChestOpeningMethod.ByInteraction;
 
             SetCollisionModes(CollisionMode.Facing);
 
-            var sprite = CreateSprite(spriteName);
+            var sprite = CreateSprite(data.Sprite);
             sprite.SetCurrentAnimation(IsOpen ? "open" : "closed");
 
             Origin = new Point(Width / 2, Height - 3);
@@ -188,5 +203,10 @@ namespace Zelda.Game.Entities
 
         [DefaultValue(null)]
         public string CannotOpenDialog { get; set; }
+
+        internal override void CreateEntity(Map map)
+        {
+            map.Entities.AddEntity(new Chest(this, map.Game));
+        }
     }
 }

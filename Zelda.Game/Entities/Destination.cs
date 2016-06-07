@@ -10,15 +10,15 @@ namespace Zelda.Game.Entities
         internal override bool CanBeObstacle => false;
         internal bool IsDefault { get; }
 
-        internal Destination(string name, Layer layer, Point xy, Direction4 heroDirection, string spriteName, bool isDefault)
-            : base(name, heroDirection, layer, xy, new Size(16, 16))
+        internal Destination(DestinationData data)
+            : base(data.Name, data.Direction, data.Layer, data.XY, new Size(16, 16))
         {
-            IsDefault = isDefault;
+            IsDefault = data.Default;
             
             Origin = new Point(8, 13);
 
-            if (spriteName != null)
-                CreateSprite(spriteName);
+            if (data.Sprite != null)
+                CreateSprite(data.Sprite);
         }
     }
 
@@ -33,5 +33,10 @@ namespace Zelda.Game.Entities
 
         [DefaultValue(false)]
         public bool Default { get; set; }
+
+        internal override void CreateEntity(Map map)
+        {
+            map.Entities.AddEntity(new Destination(this));
+        }
     }
 }

@@ -8,15 +8,16 @@ namespace Zelda.Game.Entities
         public override Ground ModifiedGround => _tilePattern.Ground;
         internal override bool IsGroundModifier => true;
 
-        readonly string _tilePatternId;
+        public string TilePatternId { get; }
+
         readonly TilePattern _tilePattern;
 
-        internal DynamicTile(string name, Layer layer, Point xy, Size size, Tileset tileset, string tilePatternId, bool enabled)
-            : base(name, Direction4.Right, layer, xy, size)
+        internal DynamicTile(DynamicTileData data, Size size, Tileset tileset)
+            : base(data.Name, Direction4.Right, data.Layer, data.XY, size)
         {
-            _tilePatternId = tilePatternId;
-            _tilePattern = tileset.GetTilePattern(tilePatternId);
-            SetEnabled(enabled);
+            TilePatternId = data.Pattern;
+            _tilePattern = tileset.GetTilePattern(TilePatternId);
+            SetEnabled(data.EnabledAtStart);
         }
 
         internal override void DrawOnMap()
@@ -35,5 +36,10 @@ namespace Zelda.Game.Entities
         public int Width { get; set;  }
         public int Height { get; set; }
         public bool EnabledAtStart { get; set; }
+
+        internal override void CreateEntity(Map map)
+        {
+            map.Entities.AddEntity(new DynamicTile(this, EntityCreationCheckSize(Width, Height), map.Tileset));
+        }
     }
 }

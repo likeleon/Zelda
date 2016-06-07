@@ -1,4 +1,5 @@
-﻿using Zelda.Game.LowLevel;
+﻿using System;
+using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Entities
 {
@@ -38,5 +39,19 @@ namespace Zelda.Game.Entities
         public int Width { get; set; }
         public int Height { get; set; }
         public string Pattern { get; set; }
+
+        internal override void CreateEntity(Map map)
+        {
+            var pattern = map.Tileset.GetTilePattern(Pattern);
+            var size = EntityCreationCheckSize(Width, Height);
+            for (int y = XY.Y; y < XY.Y + size.Height; y += pattern.Height)
+            {
+                for (int x = XY.X; x < XY.X + size.Width; x += pattern.Width)
+                {
+                    var tile = new Tile(Layer, new Point(x, y), pattern.Size, map.Tileset, Pattern);
+                    map.Entities.AddEntity(tile);
+                }
+            }
+        }
     }
 }

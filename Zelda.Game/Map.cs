@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Zelda.Game.Entities;
 using Zelda.Game.LowLevel;
@@ -31,8 +30,6 @@ namespace Zelda.Game
         internal int Height8 { get; private set; }
         internal bool IsSuspended { get; private set; }
 
-        readonly Dictionary<EntityType, Action<EntityData>> _entityCreationMethods;
-
         Surface _backgroundSurface;
         Surface _foregroundSurface;
 
@@ -40,17 +37,6 @@ namespace Zelda.Game
         {
             Id = id;
             CameraPosition = new Rectangle(new Point(), Core.Video.ModSize);
-
-            _entityCreationMethods = new Dictionary<EntityType, Action<EntityData>>()
-             {
-                { EntityType.Tile, CreateTile },
-                { EntityType.Destination, CreateDestination },
-                { EntityType.Destructible, CreateDestructible },
-                { EntityType.Chest, CreateChest },
-                { EntityType.Npc, CreateNpc },
-                { EntityType.Block, CreateBlock },
-                { EntityType.DynamicTile, CreateDynamicTile }
-             };
         }
 
         internal Destination GetDestination()
@@ -81,7 +67,22 @@ namespace Zelda.Game
             _backgroundSurface = Surface.Create(Core.Video.ModSize, false);
             _backgroundSurface.IsSoftwareDestination = false;
 
-            LoadMapData(game);
+            string fileName = "maps/" + Id + ".xml";
+            var data = XmlLoader.Load<MapData>(Core.Mod.ModFiles, fileName);
+
+            // 읽어낸 데이터로 맵을 초기화합니다
+            Game = game;
+            Location = new Rectangle(data.Location, data.Size);
+            Width8 = data.Size.Width / 8;
+            Height8 = data.Size.Height / 8;
+            MusicId = data.MusicId;
+            World = data.World;
+            Floor = data.Floor;
+            TilesetId = data.TilesetId;
+            Tileset = new Tileset(data.TilesetId);
+
+            Entities = new MapEntities(game, this);
+            Entities.CreateEntities(data);
 
             BuildBackgroundSurface();
             BuildForegroundSurface();
@@ -101,40 +102,6 @@ namespace Zelda.Game
             Entities = null;
 
             IsLoaded = false;
-        }
-
-        // 맵 데이터 파일을 읽습니다.
-        void LoadMapData(Game game)
-        {
-            string fileName = "maps/" + Id + ".xml";
-            var data = XmlLoader.Load<MapData>(Core.Mod.ModFiles, fileName);
-
-            // 읽어낸 데이터로 맵을 초기화합니다
-            Game = game;
-            Location = new Rectangle(data.Location, data.Size);
-            Width8 = data.Size.Width / 8;
-            Height8 = data.Size.Height / 8;
-            MusicId = data.MusicId;
-            World = data.World;
-            Floor = data.Floor;
-            TilesetId = data.TilesetId;
-            Tileset = new Tileset(data.TilesetId);
-
-            Entities = new MapEntities(game, this);
-
-            // 엔티티들을 생성합니다
-            for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
-            {
-                for (int i = 0; i < data.GetNumEntities((Layer)layer); ++i)
-                {
-                    var entityData = data.GetEntity(new EntityIndex((Layer)layer, i));
-                    var type = entityData.Type;
-                    if (!type.CanBeStoredInMapFile())
-                        Debug.Error("Illegal entity type in map file: " + type);
-
-                    _entityCreationMethods[type](entityData);
-                }
-            }
         }
 
         void BuildBackgroundSurface()
@@ -475,147 +442,6 @@ namespace Zelda.Game
                 detector.CheckCollision(entity);
         }
 
-        public void CreateTile(EntityData entityData)
-        {
-            var data = entityData as TileData;
-            var pattern = Tileset.GetTilePattern(data.Pattern);
-
-            var size = EntityCreationCheckSize(data.Width, data.Height);
-            for (int y = data.XY.Y; y < data.XY.Y + size.Height; y += pattern.Height)
-            {
-                for (int x = data.XY.X; x < data.XY.X + size.Width; x += pattern.Width)
-                {
-                    var tile = new Tile(data.Layer, new Point(x, y), pattern.Size, Tileset, data.Pattern);
-                    Entities.AddEntity(tile);
-                }
-            }
-        }
-
-        static Size EntityCreationCheckSize(int width, int height)
-        {
-            if (width < 0 || width % 8 != 0)
-                throw new Exception("Invalid width {0}: should be a positive multiple of 8".F(width));
-
-            if (height < 0 || height % 8 != 0)
-                throw new Exception("Invalid height {0}: should be a positive multiple of 8".F(height));
-
-            return new Size(width, height);
-        }
-
-        public void CreateDestination(EntityData entityData)
-        {
-            var data = entityData as DestinationData;
-            var destination = new Destination(data.Name, data.Layer, data.XY, data.Direction, data.Sprite, data.Default);
-            Entities.AddEntity(destination);
-        }
-
-        public void CreateDestructible(EntityData entityData)
-        {
-            var data = entityData as DestructibleData;
-            var destructible = new Destructible(
-                data.Name,
-                data.Layer,
-                data.XY,
-                data.Sprite,
-                new Treasure(Game, data.TreasureName, data.TreasureVariant, data.TreasureSavegameVariable),
-                data.Ground);
-            destructible.DestructionSound = data.DestructionSound;
-            destructible.Weight = data.Weight;
-            destructible.CanBeCut = data.CanBeCut;
-            destructible.CanExplode = data.CanExplode;
-            destructible.CanRegenerate = data.CanRegenerate;
-            destructible.DamageOnEnemies = data.DamageOnEnemies;
-            Entities.AddEntity(destructible);
-        }
-
-        public void CreateChest(EntityData entityData)
-        {
-            var data = entityData as ChestData;
-            if (data.OpeningMethod == ChestOpeningMethod.ByInteractionIfItem)
-            {
-                if (!data.OpeningCondition.IsNullOrEmpty() ||
-                    !Game.Equipment.ItemExists(data.OpeningCondition))
-                {
-                    string msg = "Bad field 'OpeningCondition' (no such equipement item: '{0}'".F(data.OpeningCondition);
-                    throw new Exception(msg);
-                }
-                var item = Game.Equipment.GetItem(data.OpeningCondition);
-                if (!item.IsSaved)
-                {
-                    string msg = "Bad field 'OpeneingCondition' (equipment item '{0}' is not saved".F(data.OpeningCondition);
-                    throw new Exception(msg);
-                }
-            }
-
-            var chest = new Chest(
-                data.Name,
-                data.Layer,
-                data.XY,
-                data.Sprite,
-                new Treasure(Game, data.TreasureName, data.TreasureVariant, data.TreasureSavegameVariable));
-            chest.OpeningMethod = data.OpeningMethod;
-            chest.OpeningCondition = data.OpeningCondition;
-            chest.OpeningConditionConsumed = data.OpeningConditionConsumed;
-            chest.CannotOpenDialogId = data.CannotOpenDialog;
-            Entities.AddEntity(chest);
-        }
-
-        public void CreateNpc(EntityData entityData)
-        {
-            var data = entityData as NpcData;
-            var npc = new Npc(
-                Game,
-                data.Name,
-                data.Layer,
-                data.XY,
-                data.Subtype,
-                data.Sprite,
-                data.Direction,
-                data.Behavior);
-            Entities.AddEntity(npc);
-        }
-
-        public void CreateBlock(EntityData entityData)
-        {
-            var data = entityData as BlockData;
-            if (data.MaximumMoves < 0 || data.MaximumMoves > 2)
-                throw new Exception("Invalid MaximumMoves: {0}".F(data.MaximumMoves));
-
-            var block = new Block(
-                data.Name,
-                data.Layer,
-                data.XY,
-                data.Direction,
-                data.Sprite,
-                data.Pushable,
-                data.Pullable,
-                data.MaximumMoves);
-            Entities.AddEntity(block);
-        }
-
-        public void CreateDynamicTile(EntityData entityData)
-        {
-            var data = entityData as DynamicTileData;
-
-            var dynamicTile = new DynamicTile(
-                data.Name,
-                data.Layer,
-                data.XY,
-                EntityCreationCheckSize(data.Width, data.Height),
-                Tileset,
-                data.Pattern,
-                data.EnabledAtStart);
-            Entities.AddEntity(dynamicTile);
-        }
-
-        public void CreateBomb(EntityData entityData)
-        {
-            var data = entityData as BombData;
-
-            var bomb = new Bomb(data.Name, data.Layer, data.XY);
-            Entities.AddEntity(bomb);
-        }
-
         public T GetEntity<T>(string name) where T : Entity
         {
             var entity = Entities.FindEntity(name);
@@ -623,6 +449,11 @@ namespace Zelda.Game
                 return null;
 
             return entity as T;
+        }
+
+        public void CreateEntity(EntityData data)
+        {
+            data.CreateEntity(this);
         }
     }
 }

@@ -28,33 +28,33 @@ namespace Zelda.Game.Entities
         readonly string _itemName;
         readonly string _dialogToShow;
 
-        internal Npc(Game game, string name, Layer layer, Point xy, NpcSubtype subtype, string spriteName, Direction4 initialDirection, string behaviorString)
-            : base(name, layer, xy, new Size(0, 0))
+        internal Npc(NpcData data)
+            : base(data.Name, data.Layer, data.XY, new Size(0, 0))
         {
-            _subtype = subtype;
+            _subtype = data.Subtype;
 
             SetCollisionModes(CollisionMode.Facing | CollisionMode.Overlapping); 
-            InitializeSprite(spriteName, initialDirection);
+            InitializeSprite(data.Sprite, data.Direction);
             Size = new Size(16, 16);
             Origin = new Point(8, 13);
-            Direction = initialDirection;
+            Direction = data.Direction;
 
-            IsDrawnInYOrder = subtype == NpcSubtype.UsualNpc;
+            IsDrawnInYOrder = _subtype == NpcSubtype.UsualNpc;
 
-            if (behaviorString == "map")
+            if (data.Behavior == "map")
                 _behavior = NpcBehavior.MapScript;
-            else if (behaviorString.StartsWith("item#"))
+            else if (data.Behavior.StartsWith("item#"))
             {
                 _behavior = NpcBehavior.ItemScript;
-                _itemName = behaviorString.Substring(5);
+                _itemName = data.Behavior.Substring(5);
             }
-            else if (behaviorString.StartsWith("dialog#"))
+            else if (data.Behavior.StartsWith("dialog#"))
             {
                 _behavior = NpcBehavior.Dialog;
-                _dialogToShow = behaviorString.Substring(7);
+                _dialogToShow = data.Behavior.Substring(7);
             }
             else
-                throw new Exception("Invalid behavior string for NPC '{0}': '{1'}".F(name, behaviorString));
+                throw new Exception("Invalid behavior string for NPC '{0}': '{1'}".F(data.Name, data.Behavior));
         }
 
         void InitializeSprite(string spriteName, Direction4 initialDirection)
@@ -189,5 +189,10 @@ namespace Zelda.Game.Entities
 
         [DefaultValue("map")]
         public string Behavior { get; set; } = "map";
+
+        internal override void CreateEntity(Map map)
+        {
+            map.Entities.AddEntity(new Npc(this));
+        }
     }
 }

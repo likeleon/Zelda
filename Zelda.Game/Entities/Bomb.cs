@@ -16,8 +16,8 @@ namespace Zelda.Game.Entities
 
         int _explosionDate = Core.Now + 6000;
 
-        internal Bomb(string name, Layer layer, Point xy)
-            : base(name, layer, xy, new Size(16, 16))
+        internal Bomb(BombData data)
+            : base(data.Name, data.Layer, data.XY, new Size(16, 16))
         {
             SetCollisionModes(CollisionMode.Facing);
             var sprite = CreateSprite("entities/bomb");
@@ -109,5 +109,10 @@ namespace Zelda.Game.Entities
     public class BombData : EntityData
     {
         public override EntityType Type => EntityType.Bomb;
+
+        internal override void CreateEntity(Map map)
+        {
+            map.Entities.AddEntity(new Bomb(this));
+        }
     }
 }

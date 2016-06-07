@@ -35,23 +35,24 @@ namespace Zelda.Game.Entities
         Point _initialPosition;
         bool _soundPlayed;
 
-        public Block(string name, Layer layer, Point xy, Direction4 direction, string spriteName, bool canBePushed, bool canBePulled, int maximumMoves)
-            : base(name, layer, xy, new Size(16, 16))
+        public Block(BlockData data)
+            : base(data.Name, data.Layer, data.XY, new Size(16, 16))
         {
-            _maximumMoves = maximumMoves;
-            _initialMaximumMoves = maximumMoves;
-            _lastPosition = xy;
-            _initialPosition = xy;
-            IsPushable = canBePushed;
-            IsPullable = canBePulled;
+            if (data.MaximumMoves < 0 || data.MaximumMoves > 2)
+                throw new Exception("Invalid MaximumMoves: {0}".F(data.MaximumMoves));
 
-            if (maximumMoves < 0 || maximumMoves > 2)
-                throw new ArgumentOutOfRangeException(nameof(maximumMoves), "MaximumMoves must be between 0 and 2");
+            _maximumMoves = data.MaximumMoves;
+            _initialMaximumMoves = data.MaximumMoves;
+            _lastPosition = data.XY;
+            _initialPosition = data.XY;
+            IsPushable = data.Pushable;
+            IsPullable = data.Pullable;
+
 
             SetCollisionModes(CollisionMode.Facing);
             Origin = new Point(8, 13);
-            Direction = direction;
-            var sprite = CreateSprite(spriteName);
+            Direction = data.Direction;
+            var sprite = CreateSprite(data.Sprite);
             IsDrawnInYOrder = sprite.Size.Height > 16;
         }
 
@@ -167,5 +168,10 @@ namespace Zelda.Game.Entities
         public bool Pushable { get; set; }
         public bool Pullable {  get; set; }
         public int MaximumMoves { get; set; }
+
+        internal override void CreateEntity(Map map)
+        {
+            map.Entities.AddEntity(new Block(this));
+        }
     }
 }
