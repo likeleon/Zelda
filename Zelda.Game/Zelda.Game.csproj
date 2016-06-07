@@ -67,6 +67,7 @@
     <Compile Include="Arguments.cs" />
     <Compile Include="CommandsEffects.cs" />
     <Compile Include="Containers\Grid.cs" />
+    <Compile Include="Entities\TileInfo.cs" />
     <Compile Include="LowLevel\Input.cs" />
     <Compile Include="LowLevel\MusicSystem.cs" />
     <Compile Include="LowLevel\Sound.cs" />

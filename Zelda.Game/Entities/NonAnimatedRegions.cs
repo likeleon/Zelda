@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Zelda.Game.Containers;
 using Zelda.Game.LowLevel;
 
@@ -9,48 +10,50 @@ namespace Zelda.Game.Entities
     {
         readonly Map _map;
         readonly Layer _layer;
-        readonly List<Tile> _tiles = new List<Tile>();
+        readonly List<TileInfo> _tiles = new List<TileInfo>();
         readonly bool[] _areSquaresAnimated;
-        readonly Grid<Tile> _nonAnimatedTiles;
+        readonly Grid<TileInfo> _nonAnimatedTiles;
         Surface[] _optimizedTilesSurfaces;
 
         public NonAnimatedRegions(Map map, Layer layer)
         {
             _map = map;
             _layer = layer;
-            _nonAnimatedTiles = new Grid<Tile>(map.Size, new Size(512, 256));
+            _nonAnimatedTiles = new Grid<TileInfo>(map.Size, new Size(512, 256));
             _areSquaresAnimated = new bool[_map.Width8 * _map.Height8];
         }
 
-        public void AddTile(Tile tile)
+        public void AddTile(TileInfo tileInfo)
         {
-            Debug.CheckAssertion(_optimizedTilesSurfaces == null, "Tile regions are already built");
-            Debug.CheckAssertion(tile != null, "Missing tile");
-            Debug.CheckAssertion(tile.Layer == _layer, "Wrong layer for add tile");
+            if (_optimizedTilesSurfaces != null)
+                throw new InvalidOperationException("Tile regions are already built");
+            if (tileInfo.Layer != _layer)
+                throw new InvalidOperationException("Wrong layer for add tile");
 
-            _tiles.Add(tile);
+            _tiles.Add(tileInfo);
         }
 
         // 애니메이션되지 않는 타일들을 한번만 그리기 위해 애니메이션되는 것들을 찾아냅니다
-        public void Build(List<Tile> rejectedTiles)
+        public void Build(List<TileInfo> rejectedTiles)
         {
-            Debug.CheckAssertion(_optimizedTilesSurfaces == null, "Tile regions are already built");
+            if (_optimizedTilesSurfaces != null)
+                throw new InvalidOperationException("Tile regions are already built");
 
-            for (int i = 0; i < _areSquaresAnimated.Length; ++i)
+            for (var i = 0; i < _areSquaresAnimated.Length; ++i)
                 _areSquaresAnimated[i] = false;
         
             _optimizedTilesSurfaces = new Surface[_nonAnimatedTiles.NumCells];
 
             // 맵 상에서 애니메이션되어야 하는 8x8 영역들을 표시해둡니다
-            foreach (Tile tile in _tiles)
+            foreach (var tile in _tiles)
             {
-                if (!tile.IsAnimated)
+                if (!tile.Pattern.IsAnimated)
                     continue;
 
-                int tileX8 = tile.X / 8;
-                int tileY8 = tile.Y / 8;
-                int tileWidth8 = tile.Width / 8;
-                int tileHeight8 = tile.Height / 8;
+                int tileX8 = tile.Box.X / 8;
+                int tileY8 = tile.Box.Y / 8;
+                int tileWidth8 = tile.Box.Width / 8;
+                int tileHeight8 = tile.Box.Height / 8;
 
                 for (int y = 0; y < tileHeight8; ++y)
                 {
@@ -68,11 +71,11 @@ namespace Zelda.Game.Entities
             }
 
             // 애니메이션되는 타일들의 리스트를 구성합니다
-            foreach (Tile tile in _tiles)
+            foreach (var tile in _tiles)
             {
-                if (!tile.IsAnimated)
+                if (!tile.Pattern.IsAnimated)
                 {
-                    _nonAnimatedTiles.Add(tile, tile.BoundingBox);
+                    _nonAnimatedTiles.Add(tile, tile.Box);
                     if (OverlapsAnimatedTile(tile))
                         rejectedTiles.Add(tile);
                 }
@@ -88,15 +91,15 @@ namespace Zelda.Game.Entities
         }
 
         // 'tile'이 애니메이션되는 다른 타일과 겹치는지를 반환합니다 
-        bool OverlapsAnimatedTile(Tile tile)
+        bool OverlapsAnimatedTile(TileInfo tile)
         {
             if (tile.Layer != _layer)
                 return false;
 
-            int tileX8 = tile.X / 8;
-            int tileY8 = tile.Y / 8;
-            int tileWidth8 = tile.Width / 8;
-            int tileHeight8 = tile.Height / 8;
+            int tileX8 = tile.Box.X / 8;
+            int tileY8 = tile.Box.Y / 8;
+            int tileWidth8 = tile.Box.Width / 8;
+            int tileHeight8 = tile.Box.Height / 8;
 
             for (int y = 0; y < tileHeight8; ++y)
             {
@@ -176,8 +179,12 @@ namespace Zelda.Game.Entities
             Surface cellSurface = Surface.Create(cellSize, false);
             _optimizedTilesSurfaces[cellIndex] = cellSurface;
 
-            foreach (Tile tile in _nonAnimatedTiles.GetElements(cellIndex))
-                tile.Draw(cellSurface, cellXY);
+            foreach (var tile in _nonAnimatedTiles.GetElements(cellIndex))
+            {
+                var box = tile.Box;
+                var dstPosition = new Rectangle(box.X - cellXY.X, box.Y - cellXY.Y, box.Width, box.Height);
+                tile.Pattern.FillSurface(cellSurface, dstPosition, _map.Tileset, cellXY);
+            }
 
             // 애니메이션되지 않는 타일들은 애니메이션되는 타일들 다음에 그려지기 때문에,
             // 애니메이션이 필요한 영역에는 그려져서는 안 됩니다.

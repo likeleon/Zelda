@@ -47,7 +47,7 @@ namespace Zelda.Game.Entities
         int _explosionDate;
 
         internal CarriedObject(Hero hero, Entity originalEntity, string animationSetId, string destructionSoundId, int damageOnEnemies, int explosionDate)
-            : base("", Direction4.Right, hero.Layer, new Point(0, 0), new Size(0, 0))
+            : base(null, Direction4.Right, hero.Layer, new Point(0, 0), new Size(0, 0))
         {
             _hero = hero;
             _destructionSoundId = destructionSoundId;

@@ -1,5 +1,4 @@
-﻿using System;
-using Zelda.Game.LowLevel;
+﻿using Zelda.Game.LowLevel;
 
 namespace Zelda.Game.Entities
 {
@@ -12,11 +11,11 @@ namespace Zelda.Game.Entities
         internal TilePattern Pattern { get; }
         internal override bool IsDrawnAtItsPosition => Pattern.IsDrawnAtItsPosition;
 
-        internal Tile(Layer layer, Point xy, Size size, Tileset tileset, string tilePatternId)
-            : base("", 0, layer, xy, size)
+        internal Tile(TileInfo tileInfo)
+            : base(null, 0, tileInfo.Layer, tileInfo.Box.XY, tileInfo.Box.Size)
         {
-            TilePatternId = tilePatternId;
-            Pattern = tileset.GetTilePattern(tilePatternId);
+            TilePatternId = tileInfo.PatternId;
+            Pattern = tileInfo.Pattern;
         }
 
         internal void Draw(Surface dstSurface, Point viewport)
@@ -44,14 +43,10 @@ namespace Zelda.Game.Entities
         {
             var pattern = map.Tileset.GetTilePattern(Pattern);
             var size = EntityCreationCheckSize(Width, Height);
+
             for (int y = XY.Y; y < XY.Y + size.Height; y += pattern.Height)
-            {
                 for (int x = XY.X; x < XY.X + size.Width; x += pattern.Width)
-                {
-                    var tile = new Tile(Layer, new Point(x, y), pattern.Size, map.Tileset, Pattern);
-                    map.Entities.AddEntity(tile);
-                }
-            }
+                    map.Entities.AddTileInfo(new TileInfo(Layer, new Rectangle(new Point(x, y), pattern.Size), Pattern, pattern));
         }
     }
 }

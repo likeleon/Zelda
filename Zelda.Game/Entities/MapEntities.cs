@@ -110,12 +110,7 @@ namespace Zelda.Game.Entities
             if (entity == null)
                 return;
 
-            if (entity.Type == EntityType.Tile)
-            {
-                // 타일들은 충돌 체크와 렌더링에 최적화가 필요합니다
-                AddTile(entity as Tile);
-            }
-            else
+            if (entity.Type != EntityType.Tile)
             {
                 Layer layer = entity.Layer;
 
@@ -168,7 +163,7 @@ namespace Zelda.Game.Entities
             }
 
             // TODO: 같은 이름의 엔티티가 이미 있다면 이름을 바꿔줍니다
-            if (!String.IsNullOrEmpty(entity.Name))
+            if (entity.Name != null)
             {
                 if (_namedEntities.ContainsKey(entity.Name))
                     throw new NotImplementedException("AddEntity duplicated name: {0}".F(entity.Name));
@@ -176,7 +171,8 @@ namespace Zelda.Game.Entities
                 _namedEntities.Add(entity.Name, entity);
             }
 
-            entity.SetMap(_map);
+            if (entity.Type != EntityType.Hero)
+                entity.SetMap(_map);
         }
 
         public void ScheduleAddEntity(Entity entity)
@@ -184,26 +180,28 @@ namespace Zelda.Game.Entities
             _entitiesToAdd.Add(entity);
         }
         
-        void AddTile(Tile tile)
+        internal void AddTileInfo(TileInfo tileInfo)
         {
-            Layer layer = tile.Layer;
+            var box = tileInfo.Box;
+            var layer = tileInfo.Layer;
+
+            var pattern = tileInfo.Pattern;
+            if (pattern == null)
+                throw new InvalidOperationException("Missing tile pattern");
+
+            if (box.Width != pattern.Width || box.Height != pattern.Height)
+                throw new Exception("Static tile size must match tile pattern size");
 
             // 타일을 맵에 추가합니다
-            _nonAnimatedRegions[(int)layer].AddTile(tile);
-
-            TilePattern pattern = tile.Pattern;
-            Debug.CheckAssertion(
-                tile.Width == pattern.Width &&
-                tile.Height == pattern.Height,
-                "Static tile size must match tile pattern size");
+            _nonAnimatedRegions[(int)layer].AddTile(tileInfo);
 
             // Ground 리스트 갱신
-            Ground ground = pattern.Ground;
+            var ground = pattern.Ground;
 
-            int tileX8 = tile.X / 8;
-            int tileY8 = tile.Y / 8;
-            int tileWidth8 = tile.Width / 8;
-            int tileHeight8 = tile.Height / 8;
+            int tileX8 = box.X / 8;
+            int tileY8 = box.Y / 8;
+            int tileWidth8 = box.Width / 8;
+            int tileHeight8 = box.Height / 8;
 
             int i = 0, j = 0;
             Ground nonObstacleTriangle = Ground.Empty;
@@ -232,8 +230,7 @@ namespace Zelda.Game.Entities
                 // 나머지 부분(대각선)은 WallTopRight가 됩니다
                 case Ground.WallTopRight:
                 case Ground.WallTopRightWater:
-                    nonObstacleTriangle = (ground == Ground.WallTopRight) ?
-                        Ground.Traversable : Ground.DeepWater;
+                    nonObstacleTriangle = (ground == Ground.WallTopRight) ? Ground.Traversable : Ground.DeepWater;
 
                     // 각 행의 각 8x8 영역들을 순회합니다
                     for (i = 0; i < tileHeight8; ++i)
@@ -253,8 +250,7 @@ namespace Zelda.Game.Entities
 
                 case Ground.WallTopLeft:
                 case Ground.WallTopLeftWater:
-                    nonObstacleTriangle = (ground == Ground.WallTopLeft) ?
-                        Ground.Traversable : Ground.DeepWater;
+                    nonObstacleTriangle = (ground == Ground.WallTopLeft) ? Ground.Traversable : Ground.DeepWater;
                     for (i = 0; i < tileHeight8; ++i)
                     {
                         for (j = tileWidth8 - i; j < tileWidth8; ++j)
@@ -269,8 +265,7 @@ namespace Zelda.Game.Entities
 
                 case Ground.WallBottomLeft:
                 case Ground.WallBottomLeftWater:
-                    nonObstacleTriangle = (ground == Ground.WallBottomLeft) ?
-                        Ground.Traversable : Ground.DeepWater;
+                    nonObstacleTriangle = (ground == Ground.WallBottomLeft) ? Ground.Traversable : Ground.DeepWater;
                     for (i = 0; i < tileHeight8; ++i)
                     {
                         for (j = i + 1; j < tileWidth8; ++j)
@@ -285,8 +280,7 @@ namespace Zelda.Game.Entities
 
                 case Ground.WallBottomRight:
                 case Ground.WallBottomRightWater:
-                    nonObstacleTriangle = (ground == Ground.WallBottomRight) ?
-                        Ground.Traversable : Ground.DeepWater;
+                    nonObstacleTriangle = (ground == Ground.WallBottomRight) ? Ground.Traversable : Ground.DeepWater;
                     for (i = 0; i < tileHeight8; ++i)
                     {
                         SetTileGround(layer, tileX8 + tileWidth8 - i - 1, tileY8 + i, Ground.WallBottomRight);
@@ -416,17 +410,25 @@ namespace Zelda.Game.Entities
         // 맵의 모든 엔티티들에게 맵이 시작(활성화)되었음을 알립니다
         public void NotifyMapStarted()
         {
-            foreach (Entity entity in _allEntities)
+            for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
+            {
+                var tilesInAnimatedRegionsInfo = new List<TileInfo>();
+                _nonAnimatedRegions[layer].Build(tilesInAnimatedRegionsInfo);
+                foreach (var tileInfo in tilesInAnimatedRegionsInfo)
+                {
+                    var tile = new Tile(tileInfo);
+                    _tilesInAnimatedRegions[layer].Add(tile);
+                    AddEntity(tile);
+                }
+            }
+
+            foreach (var entity in _allEntities)
             {
                 entity.NotifyMapStarted();
                 entity.NotifyTilesetChanged();
             }
             Hero.NotifyMapStarted();
             Hero.NotifyTilesetChanged();
-
-            // 애니메이션되지 않는 타일들의 pre-drawing 데이터들을 구성합니다
-            for (int layer = 0; layer < (int)Layer.NumLayer; ++layer)
-                _nonAnimatedRegions[layer].Build(_tilesInAnimatedRegions[layer]);
         }
 
         public void NotifyTilesetChanged()
