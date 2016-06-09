@@ -137,8 +137,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
             _resources.GetDialog(id).Text = text;
 
-            if (DialogTextChanged != null)
-                DialogTextChanged(this, text);
+            DialogTextChanged?.Invoke(this, text);
         }
 
         public void SetTranslationId(string languageId)
@@ -161,6 +160,9 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         public void ClearTranslation()
         {
+            if (_translationResources == null)
+                return;
+
             ClearTranslationFromTree();
             _translationResources = null;
             UpdateChildIcons(DialogTree.Root);
@@ -170,7 +172,7 @@ namespace Zelda.Editor.Modules.DialogsEditor.Models
 
         void ClearTranslationFromTree()
         {
-            foreach (var id in _translationResources?.Dialogs.Keys)
+            foreach (var id in _translationResources.Dialogs.Keys)
             {
                 var node = DialogTree.Find(id);
                 if (node != null)

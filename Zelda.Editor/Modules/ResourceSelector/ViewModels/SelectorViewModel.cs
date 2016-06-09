@@ -12,23 +12,20 @@ namespace Zelda.Editor.Modules.ResourceSelector.ViewModels
     {
         public event EventHandler<Item> SelectedItemChanged;
 
-        Item _selectedItem;
-
-        public ResourceModel Model { get; private set; }
+        public ResourceModel Model { get; }
         public Item SelectedItem
         {
             get { return _selectedItem; }
             set
             {
                 if (this.SetProperty(ref _selectedItem, value))
-                {
-                    if (SelectedItemChanged != null)
-                        SelectedItemChanged(this, value);
-                }
+                    SelectedItemChanged?.Invoke(this, value);
             }
         }
 
-        public IEnumerable<Item> RootItems { get { return Model.InvisibleRootItem.Children; } }
+        public IEnumerable<Item> RootItems => Model.InvisibleRootItem.Children;
+
+        Item _selectedItem;
 
         public SelectorViewModel(IMod mod, ResourceType resourceType)
         {

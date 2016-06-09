@@ -321,7 +321,10 @@ namespace Zelda.Game.LowLevel
             IntPtr internalSurface = IntPtr.Zero;
             IntPtr internalFont = Core.FontResource.GetOutlineFont(Font, FontSize);
             SDL.SDL_Color internalColor;
-            TextColor.GetComponents(out internalColor.r, out internalColor.g, out internalColor.b, out internalColor.a);
+            internalColor.r = TextColor.R;
+            internalColor.g = TextColor.G;
+            internalColor.b = TextColor.B;
+            internalColor.a = TextColor.A;
 
             switch (RenderingMode)
             {

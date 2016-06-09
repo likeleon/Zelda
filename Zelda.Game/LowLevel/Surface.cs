@@ -211,11 +211,9 @@ namespace Zelda.Game.LowLevel
             byte currentOpacity = Math.Min(_internalOpacity, opacity);
 
             // 배경색을 그립니다
-            if (_internalColor != null)
+            if (_internalColor.HasValue)
             {
-                byte r, g, b, a;
-                _internalColor.Value.GetComponents(out r, out g, out b, out a);
-                SDL.SDL_SetRenderDrawColor(renderer, r, g, b, Math.Min(a, currentOpacity));
+                SDL.SDL_SetRenderDrawColor(renderer, _internalColor.Value.R, _internalColor.Value.G, _internalColor.Value.B, Math.Min(_internalColor.Value.A, currentOpacity));
                 SDL.SDL_RenderFillRect(renderer, ref clipRect._rect);
             }
 

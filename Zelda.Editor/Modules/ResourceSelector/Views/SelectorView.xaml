@@ -44,7 +44,7 @@
         </local:ItemDataTemplateSelector>
     </UserControl.Resources>
     <ComboBox ItemsSource="{Binding RootItems}"
-              SelectedItem="{Binding SelectedItem}"
+              SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
               ItemTemplateSelector="{StaticResource ItemDataTemplateSelector}">
     </ComboBox>
 </UserControl>

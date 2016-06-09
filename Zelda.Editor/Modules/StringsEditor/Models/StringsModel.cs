@@ -203,8 +203,11 @@ namespace Zelda.Editor.Modules.StringsEditor.Models
 
         public void ClearTranslation()
         {
+            if (_translationResources == null)
+                return;
+
             ClearTranslationFromTree();
-            _translationResources?.Clear();
+            _translationResources = null;
             UpdateChildIcons(StringTree.Root);
             TranslationId = null;
         }

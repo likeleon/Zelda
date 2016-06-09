@@ -83,7 +83,7 @@ namespace Zelda.Game
 
         public void OnDeserialized()
         {
-            _dialogs = DialogDatas.ToDictionary(d => d.Id, d => d);
+            _dialogs = DialogDatas.EmptyIfNull().ToDictionary(d => d.Id, d => d);
         }
 
         public void OnPrepareSerialize()

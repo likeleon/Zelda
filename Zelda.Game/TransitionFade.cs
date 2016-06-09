@@ -84,10 +84,7 @@ namespace Zelda.Game
             }
             else
             {
-                byte r, g, b, a;
-                _transitionColor.GetComponents(out r, out g, out b, out a);
-                Color fadeColor = new Color(r, g, b, 255 - Math.Min(alphaImpl, a));
-
+                var fadeColor = new Color(_transitionColor.R, _transitionColor.G, _transitionColor.B, 255 - Math.Min(alphaImpl, _transitionColor.A));
                 dstSurface.FillWithColor(fadeColor);
             }
 
